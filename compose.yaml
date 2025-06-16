@@ -1,20 +1,61 @@
+version: '3.8'  # Version de la syntaxe Docker Compose (3.8 = stable, compatible avec Docker 20+)
 
-services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-REDACTED}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+services:  # Définition des services (chaque container que tu vas lancer)
+
+  php:  # Service pour ton backend Symfony (PHP-FPM)
+    build:  # On va construire une image Docker personnalisée
+      context: .  # Le contexte de build (le dossier courant où est le Dockerfile)
+      dockerfile: Dockerfile  # Le fichier Dockerfile à utiliser
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      - .:/var/www/symfony  # Montage du code local dans le container (le dossier Symfony)
+    networks:
+      - connectPerso  # Connexion au réseau Docker nommé 'connectPerso'
 
-volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  front:
+    build:
+      context: ./front
+    working_dir: /app
+    volumes:
+      - ./front:/app
+    ports:
+      - "5173:5173"
+    command: npm run dev:dock
+
+  nginx:  # Service pour Nginx, qui sert Symfony
+    image: nginx:stable  # Utilisation de l'image officielle de Nginx (stable version)
+    ports:
+      - "8080:80"  # Mapping du port 8080 de ta machine vers le port 80 dans le container
+    volumes:
+      - .:/var/www/symfony  # On donne accès à Nginx aux fichiers Symfony
+      - ./ngninx.conf:/etc/nginx/nginx.conf  # On remplace la conf Nginx par la tienne (local -> container)
+    depends_on:
+      - php  # Nginx doit attendre que PHP-FPM (php) soit prêt
+    networks:
+      - connectPerso  # Connexion au même réseau Docker
+
+  db:  # Service pour la base de données MySQL
+    image: mysql:8.0  # Utilisation de l'image officielle MySQL 8.0
+    environment:  # Variables d'environnement pour configurer MySQL
+      MYSQL_ROOT_PASSWORD: REDACTED  # Mot de passe pour le compte root
+      MYSQL_DATABASE: courTotal  # Base de données à créer automatiquement
+    ports:
+      - "3307:3306"  # Mapping du port 3307 de ta machine vers 3306 dans le container (évite conflits)
+    networks:
+      - connectPerso  # Connexion au même réseau Docker
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: REDACTED
+    networks:
+      - connectPerso
+
+
+
+networks:  # Déclaration des réseaux Docker
+  connectPerso:  # Nom du réseau personnalisé
+    driver: bridge  # Type de réseau 'bridge' (isolé entre containers, mais accessible entre eux)
