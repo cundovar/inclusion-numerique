@@ -9,7 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
-class ProductController extends AbstractDashboardController
+class DashboardController extends AbstractDashboardController
 {
     public function index(): Response
     {
@@ -39,7 +39,7 @@ class ProductController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('My Project');
+            ->setTitle('Symfony');
     }
 
     public function configureMenuItems(): iterable
