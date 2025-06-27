@@ -1,0 +1,31 @@
+// Changer la couleur de fond de la sidebar
+.sidebar {
+    background-color: #1e1e2f;
+}
+
+// Changer la couleur des titres de section
+.menu-section {
+    color: #f0a500;
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+// Modifier les liens du menu
+.menu-item a {
+    color: #ffffff;
+    font-weight: normal;
+
+    &:hover {
+        color: #00d1b2;
+    }
+}
+
+
+/* Limite la taille des icônes du menu EasyAdmin */
+.sidebar-menu .menu-item i.fa {
+    font-size: 1rem; /* ou 16px */
+    vertical-align: middle;
+    line-height: 1;
+}
+

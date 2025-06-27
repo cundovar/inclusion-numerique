@@ -1,0 +1,12 @@
+node_modules
+vendor
+.git
+.env.local
+.env.*
+.env
+.env.prod
+.env.dev
+.env.test
+.env.local.php
+.env.local.yaml
+.env.local.yml

@@ -8,11 +8,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class SpaController extends AbstractController
 {
-    #[Route('/', name: 'spa')]
+    #[Route('/spa/{vueRouting}', name: 'spa_app', requirements: ['vueRouting' => '.*'])]// ignorer les routes de l'api et du build
     public function index(): Response
     {
         return $this->render('spa/index.html.twig', [
-            'controller_name' => 'SpaController',
+            
         ]);
     }
 }

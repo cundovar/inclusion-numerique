@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Vue + Symfony{% endblock %}</title>
+    <link rel="manifest" href="/spa/manifest.webmanifest" />
+<meta name="theme-color" content="#42b983" />
+
+    {% block vite %}
+      {% if app.debug %}
+        <script type="module" src="/build/@vite/client"></script>
+        <script type="module" src="/build/src/main.js"></script>
+      {% else %}
+        {{ vite_entry_script_tags('src/main.js') }}
+      {% endif %}
+    {% endblock %}
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+  </body>
+</html>

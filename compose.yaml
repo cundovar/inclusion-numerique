@@ -20,6 +20,15 @@ services:  # Définition des services (chaque container que tu vas lancer)
     ports:
       - "5173:5173"
     command: npm run dev:dock
+    networks:
+      - connectPerso  
+
+  node:
+    image: node:20
+    working_dir: /var/www/symfony
+    volumes:
+      - .:/var/www/symfony
+    command: tail -f /dev/null  
 
   nginx:  # Service pour Nginx, qui sert Symfony
     image: nginx:stable  # Utilisation de l'image officielle de Nginx (stable version)
@@ -27,7 +36,7 @@ services:  # Définition des services (chaque container que tu vas lancer)
       - "8080:80"  # Mapping du port 8080 de ta machine vers le port 80 dans le container
     volumes:
       - .:/var/www/symfony  # On donne accès à Nginx aux fichiers Symfony
-      - ./ngninx.conf:/etc/nginx/nginx.conf  # On remplace la conf Nginx par la tienne (local -> container)
+      - ./nginx.conf:/etc/nginx/nginx.conf  # On remplace la conf Nginx par la tienne (local -> container)
     depends_on:
       - php  # Nginx doit attendre que PHP-FPM (php) soit prêt
     networks:

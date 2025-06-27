@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250616120615 extends AbstractMigration
+final class Version20250620110512 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,16 +21,19 @@ final class Version20250616120615 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE lesson ADD CONSTRAINT FK_F87474F3AFC2B591 FOREIGN KEY (module_id) REFERENCES module (id)
+            ALTER TABLE menu ADD page_id INT DEFAULT NULL
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE menu ADD CONSTRAINT FK_7D053A93AFC2B591 FOREIGN KEY (module_id) REFERENCES module (id)
+            ALTER TABLE menu ADD CONSTRAINT FK_7D053A93C4663E4 FOREIGN KEY (page_id) REFERENCES pages (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE menu ADD CONSTRAINT FK_7D053A93CDF80196 FOREIGN KEY (lesson_id) REFERENCES lesson (id)
+            CREATE INDEX IDX_7D053A93C4663E4 ON menu (page_id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE menu ADD CONSTRAINT FK_7D053A93727ACA70 FOREIGN KEY (parent_id) REFERENCES menu (id)
+            DROP INDEX UNIQ_C242628989D9B62 ON module
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE module DROP slug, DROP description
         SQL);
     }
 
@@ -38,16 +41,19 @@ final class Version20250616120615 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE lesson DROP FOREIGN KEY FK_F87474F3AFC2B591
+            ALTER TABLE menu DROP FOREIGN KEY FK_7D053A93C4663E4
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE menu DROP FOREIGN KEY FK_7D053A93AFC2B591
+            DROP INDEX IDX_7D053A93C4663E4 ON menu
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE menu DROP FOREIGN KEY FK_7D053A93CDF80196
+            ALTER TABLE menu DROP page_id
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE menu DROP FOREIGN KEY FK_7D053A93727ACA70
+            ALTER TABLE module ADD slug VARCHAR(255) NOT NULL, ADD description LONGTEXT DEFAULT NULL
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE UNIQUE INDEX UNIQ_C242628989D9B62 ON module (slug)
         SQL);
     }
 }

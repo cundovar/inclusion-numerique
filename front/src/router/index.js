@@ -1,33 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../views/Home.vue';
-import CourVue from '../views/CourVue.vue';
+import HomeComponent from '../views/components/HomeComponent.vue';
+import PageComponent from '../views/components/PageComponent.vue';
+
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'home',
+    component: HomeComponent
   },
   {
-    path: '/test',
-    name: 'test',
-    component: CourVue
-    
-    
-   
-    
-  },
-  {
-    path: '/data',
-    name: 'DataBing',
-    component: {
-      template: DataBing
-    }
+    path: '/pages/:slug',
+    name: 'pages',
+    component: PageComponent,
+    props: true
   }
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+  history: createWebHistory('/spa'),
+  routes
 });
-
 export default router;
