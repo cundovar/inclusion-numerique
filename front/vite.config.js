@@ -67,9 +67,9 @@ export default defineConfig({
     }
   },
   build: {
+    manifest: 'manifest.json', // Force la sortie à public/build/manifest.json
     outDir: '../public/build', // ✅ JS/CSS ici
     emptyOutDir: true,
-    manifest: true,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/main.js')

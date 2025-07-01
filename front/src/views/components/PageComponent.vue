@@ -1,18 +1,18 @@
 <template>
-  <main class=" pb-96 ">
+  <div class=" pb-96 -z-10 shadow-2xl bg-blue-200 rounded-2xl  ">
     <div v-if="pageContent">
-      <h1 class="text-2xl w-full text-center p-5 border mb-5">{{ pageContent.title }}</h1>
-      <div class="text-center w-full p-5 bg-gray-600" v-html="pageContent.menu.label"></div>
+      <div class=" md:ml-20 p-5" v-html=" 'accueil/' +pageContent.menu.label"></div>
+      <h1 class="text-2xl text-center p-5 max-md:p-0 mb-5">  {{ pageContent.title }}</h1>
       <!-- <p>{{ pageContent.content }}</p> -->
-      <div class="text-center w-full p-5 bg-gray-700" v-html="pageContent.content"></div>
-      <div v-if="pageContent.code">
-        <div v-html="pageContent.code"></div>
+      <!-- <div class="text-center w-full p-5 bg-gray-700" v-html="pageContent.content"></div> -->
+      <div class="" v-if="pageContent.code">
+        <div class="text-center  max-md:w-full xl:w-3/4 m-auto  p-5"  v-html="pageContent.code"></div>
       </div>
     </div>
-    <div v-else>
-        <p>spinner</p>
+    <div class="flex justify-center items-center h-full" v-else>
+      <i class="pi pi-spin m-5 p-5 rounded-full  shadow-2xl pi-cog" style="font-size: 3rem"></i>
     </div>
-  </main>
+  </div>
     </template>
   
   <script>

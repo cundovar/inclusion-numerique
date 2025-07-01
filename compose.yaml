@@ -51,6 +51,8 @@ services:  # Définition des services (chaque container que tu vas lancer)
       - "3307:3306"  # Mapping du port 3307 de ta machine vers 3306 dans le container (évite conflits)
     networks:
       - connectPerso  # Connexion au même réseau Docker
+    volumes:
+      - ./mysql_data:/var/lib/mysql
   
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -63,8 +65,9 @@ services:  # Définition des services (chaque container que tu vas lancer)
     networks:
       - connectPerso
 
-
-
 networks:  # Déclaration des réseaux Docker
   connectPerso:  # Nom du réseau personnalisé
     driver: bridge  # Type de réseau 'bridge' (isolé entre containers, mais accessible entre eux)
+
+volumes:
+  mysql_data:
