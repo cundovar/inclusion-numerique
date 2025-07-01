@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div style="max-width: 400px; margin: 50px auto;">
+    <h1 style="text-align: center; margin-bottom: 20px;">Veuillez vous connecter</h1>
+
+    {% if error %}
+        <div style="color: #a94442; background-color: #f2dede; border: 1px solid #ebccd1; padding: 10px; margin-bottom: 15px;">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    {% if app.user %}
+        <div style="color: #31708f; background-color: #d9edf7; border: 1px solid #bce8f1; padding: 10px; margin-bottom: 15px;">
+            Connecté en tant que {{ app.user.userIdentifier }}.
+            <a href="{{ path('app_logout') }}">Se déconnecter</a>
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        <div style="margin-bottom: 15px;">
+            <label for="inputUsername">Nom d’utilisateur</label><br>
+            <input 
+                type="text" 
+                id="inputUsername" 
+                name="username" 
+                value="{{ last_username }}" 
+                placeholder="Entrez votre nom d’utilisateur" 
+                autocomplete="username" 
+                required 
+                autofocus
+                style="width: 100%; padding: 8px; box-sizing: border-box;"
+            >
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label for="inputPassword">Mot de passe</label><br>
+            <input 
+                type="password" 
+                id="inputPassword" 
+                name="password" 
+                placeholder="Entrez votre mot de passe" 
+                autocomplete="current-password" 
+                required
+                style="width: 100%; padding: 8px; box-sizing: border-box;"
+            >
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <div style="margin-bottom: 15px;">
+            <input type="checkbox" id="rememberMe" name="_remember_me">
+            <label for="rememberMe">Se souvenir de moi</label>
+        </div>
+
+        <div>
+            <button type="submit" style="width: 100%; padding: 10px;">Se connecter</button>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px;">
+            <a href="{{ path('app_register') }}">Créer un compte</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

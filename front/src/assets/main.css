@@ -1,18 +1,21 @@
 :root{
     --primary-color: rgb(227, 235, 243);
     --color-text: rgb(88, 89, 90);
+    --background-color: rgb(72, 88, 104);
 }
 
-
-/* *{
-    border: 1px solid red;
-} */
-
-
-
+*{
+  
+   /* border:1px solid red;   outline: none;  
+  box-sizing: border-box;
+    box-shadow: none;
+    text-decoration: none;
+    list-style: none;
+   */
+}
 body{
 
-    background-color: var(--primary-color);
+    background-color: var(--background-color);
     min-height: 100vh;
     max-height: 100%;
     
@@ -38,6 +41,8 @@ h4{
     font-size: 1rem !important;
 }
 
+
+
 pre{
 
     background-color: rgb(239, 240, 235) !important;
@@ -46,8 +51,10 @@ pre{
     margin-top: 10px !important;
     margin-bottom: 10px !important;
     border-radius: 20px !important;
+ 
     
 }
+
 
 .principal{
     display: flex !important;
