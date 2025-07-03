@@ -5,16 +5,17 @@
 }
 
 *{
+    box-sizing: border-box;
+  
   
    /* border:1px solid red;   outline: none;  
-  box-sizing: border-box;
     box-shadow: none;
     text-decoration: none;
     list-style: none;
    */
 }
 body{
-
+min-width: 350px;
     background-color: var(--background-color);
     min-height: 100vh;
     max-height: 100%;
@@ -25,6 +26,10 @@ body{
    
    
 
+}
+
+nav{
+    min-width: 350px !important;
 }
 
 

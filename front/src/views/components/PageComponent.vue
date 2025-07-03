@@ -1,5 +1,5 @@
 <template>
-  <div class=" pb-96 -z-10 shadow-2xl bg-blue-200 rounded-2xl  ">
+  <div  class=" pb-96 -z-10 shadow-2xl bg-blue-200 rounded-2xl  ">
     <div v-if="pageContent">
       <div class=" md:ml-20 p-5" v-html=" 'accueil/' +pageContent.menu.label"></div>
       <h1 class="text-2xl text-center p-5 max-md:p-0 mb-5">  {{ pageContent.title }}</h1>

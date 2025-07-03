@@ -3,25 +3,25 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-<div style="max-width: 400px; margin: 50px auto;">
-    <h1 style="text-align: center; margin-bottom: 20px;">Veuillez vous connecter</h1>
+<div class="login-container">
+    <h1>Veuillez vous connecter</h1>
 
     {% if error %}
-        <div style="color: #a94442; background-color: #f2dede; border: 1px solid #ebccd1; padding: 10px; margin-bottom: 15px;">
+        <div class="alert alert-danger">
             {{ error.messageKey|trans(error.messageData, 'security') }}
         </div>
     {% endif %}
 
     {% if app.user %}
-        <div style="color: #31708f; background-color: #d9edf7; border: 1px solid #bce8f1; padding: 10px; margin-bottom: 15px;">
+        <div class="alert alert-info">
             Connecté en tant que {{ app.user.userIdentifier }}.
             <a href="{{ path('app_logout') }}">Se déconnecter</a>
         </div>
     {% endif %}
 
     <form method="post" novalidate>
-        <div style="margin-bottom: 15px;">
-            <label for="inputUsername">Nom d’utilisateur</label><br>
+        <div class="form-group">
+            <label for="inputUsername">Nom d’utilisateur</label>
             <input 
                 type="text" 
                 id="inputUsername" 
@@ -31,12 +31,11 @@
                 autocomplete="username" 
                 required 
                 autofocus
-                style="width: 100%; padding: 8px; box-sizing: border-box;"
             >
         </div>
 
-        <div style="margin-bottom: 15px;">
-            <label for="inputPassword">Mot de passe</label><br>
+        <div class="form-group">
+            <label for="inputPassword">Mot de passe</label>
             <input 
                 type="password" 
                 id="inputPassword" 
@@ -44,24 +43,109 @@
                 placeholder="Entrez votre mot de passe" 
                 autocomplete="current-password" 
                 required
-                style="width: 100%; padding: 8px; box-sizing: border-box;"
             >
         </div>
 
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-        <div style="margin-bottom: 15px;">
+        <div class="form-check">
             <input type="checkbox" id="rememberMe" name="_remember_me">
             <label for="rememberMe">Se souvenir de moi</label>
         </div>
 
-        <div>
-            <button type="submit" style="width: 100%; padding: 10px;">Se connecter</button>
-        </div>
+        <button type="submit">Se connecter</button>
 
-        <div style="text-align: center; margin-top: 10px;">
+        <div class="register-link">
             <a href="{{ path('app_register') }}">Créer un compte</a>
         </div>
     </form>
 </div>
+{% endblock %}
+{% block stylesheets %}
+<style>
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-check input {
+    margin-right: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 10px;
+}
+
+*{
+    border: 1px solid red;
+}
+
+@media (max-width: 480px) {
+
+    .login-container {
+        margin: 20px;
+        padding: 10px;
+        width: 100%;
+    }
+
+    button {
+        padding: 8px;
+    }
+}
+</style>    
 {% endblock %}

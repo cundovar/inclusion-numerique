@@ -1,101 +1,209 @@
 <template>
-  <div  id="app2" class="relative w-full xl:w-4/5 m-auto ">
+  <div
+    v-if="user.roles.includes('ROLE_USER')"
+    id="app2"
+    class="relative w-full xl:w-4/5 m-auto"
+  >
     <div class="h-20"></div>
-    <div  class="  bg-[var(--primary-color)]  flex max-md:fixed w-full z-50  h-20 shadow-xl justify-between items-center  p-5 md:hidden">
-       <div @click="toggleMenu" class="cursor-pointer">
-         <i v-if="!isMenuOpen" class="  pi pi-bars cursor-pointer " style="font-size: 1.5rem"></i>
-         <i v-else class="pi pi-times  cursor-pointer" style="font-size: 1.5rem"></i>
-
-       </div>
-      <inputSearch v-model="search" @search="launchSearch" placeholder="Rechercher" />
-
-      
+    <div
+      class="bg-[var(--primary-color)] flex max-md:fixed w-full z-50 h-20 shadow-xl justify-between items-center p-5 md:hidden"
+    >
+      <div @click="toggleMenu" class="cursor-pointer">
+        <i
+          v-if="!isMenuOpen"
+          class="text-blue-950 pi pi-bars cursor-pointer"
+          style="font-size: 1.5rem"
+        ></i>
+        <i
+          v-else
+          class="pi pi-times cursor-pointer"
+          style="font-size: 1.5rem"
+        ></i>
       </div>
-  
-   
-    
+
+      <a
+        v-if="user.roles.includes('ROLE_ADMIN')"
+        target="_blank"
+        href="http://localhost:8080/page-content"
+        class="cursor-pointer text-amber-900 right-5 top-5"
+      >
+        admin
+      </a>
+      <inputSearch
+        v-model="search"
+        @search="launchSearch"
+        placeholder="Rechercher"
+      />
+    </div>
+
     <nav
-    @mouseleave="isMdOuPlus && (hoveredCategory = null)"
-  :class="[
-    '   md:p-5 xl:w-1/5 z-10',
-    isMdOuPlus ? 'fixed flex  flex-col md:w-1/4' : (isMenuOpen ? 'flex bg-[var(--primary-color)] pb-96 fixed top-20 left-0 right-0    max-h-[calc(100vh-56px)]  overflow-y-auto flex-col w-full max-md:z-50' : 'hidden')
-  ]">
-<div class="md:hidden  relative flex justify-end items-end self-end ">
+      @mouseleave="isMdOuPlus && (hoveredCategory = null)"
+      :class="[
+        'md:p-5 xl:w-1/5 fixed z-10 max-md:z-50 max-md:top-20 transition-transform duration-300 ease-in-out',
+        isMdOuPlus
+          ? 'flex   flex-col w-1/4 translate-x-0'
+          : isMenuOpen
+          ? 'w-full top-20  translate-x-0  max-h-[calc(100vh-56px)]  overflow-y-auto flex-col max-md:z-50'
+          : 'w-full -translate-x-full',
+      ]"
+    >
+      <div class="md:hidden relative flex justify-end items-end self-end"></div>
 
-  </div>
-
-  <p class="p-2  bg-pink-400 text-end cursor-pointer" @click="logout">deconnexion</p>
+      <p class="p-2 bg-pink-400 text-end cursor-pointer" @click="logout">
+        deconnexion
+      </p>
 
       <div
-        class=" cursor-pointer flex flex-col justify-center "
+        class="cursor-pointer flex flex-col justify-center"
         v-for="cat in cats"
         :key="cat.id"
-       
-       @mouseenter="isMdOuPlus && (hoveredCategory = cat.name)"
-        
+        @mouseenter="isMdOuPlus && (hoveredCategory = cat.name)"
       >
+        <h1
+          class="text-2xl pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
+        >
+          {{ cat.name }}
+        </h1>
 
-    
-  
-        <h1 class="text-2xl pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1 ">{{ cat.name }}</h1>
-   
-        <div class="  right-0  overflow-hidden">
-          
+        <div class="right-0 md:max-h-[15rem] div-scrollbar overflow-y-auto ">
           <div
-            
-         v-if="isMdOuPlus && hoveredCategory === cat.name || !isMdOuPlus"
-            class="   "
+            class="md:flex md:flex-col md:gap-y-1 "
+            v-if="(isMdOuPlus && hoveredCategory === cat.name) || !isMdOuPlus"
             v-for="group in menusByCategory[cat.name]"
             :key="group.label"
           >
-          <div class="p-2 border-b hover:bg-indigo-200  border-b-blue-300 border-t-blue-300 bg-indigo-100  md:text-center text-xl border-t ">
+            <div
+              class="p-2 md:w-2/3 md:mt-1 md:text-start md:bg-transparent md:text-white max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
+            > 
+              {{ group.label }} :
+            </div>
 
-            {{ group.label }}
-          </div>
-            
-            <button class=" w-full  flex hover:bg-gray-300  flex-col gap-2" v-for="menu in group.items" :key="menu.page.slug">
-              <router-link :to="`/pages${menu.page.slug}`"  @click="toggleMenu" class=" focus:bg-gray-300 focus:text-white z-50 hover:text-blue-600">
-              <p class="p-2 md:text-white hover:text-fuchsia-900  max-md:text-start max-md:ml-1 "> -- {{ menu.title }}</p>
+            <button
+              class=" w-full border md:rounded-xl  flex hover:bg-gray-300 bg-gray-100 flex-col gap-2"
+              v-for="menu in group.items"
+              :key="menu.page.slug"
+            >
+              <router-link
+                :to="`/pages${menu.page.slug}`"
+                @click="toggleMenu"
+                class="focus:bg-gray-400  focus:text-white z-50 hover:text-blue-600"
+              >
+                <p
+                  class="p-2  md:text-blue-500 hover:text-fuchsia-900 flex justify-around max-md:justify-start items-center max-md:text-start max-md:ml-1"
+                >
+                <div class="flex justify-center items-center w-1/3">
+                  <i
+                    class="pi pi-code max-md:text-blue-600 md:text-yellow-600"
+                  ></i>
+                  </div>
+                  
+                <div class="w-2/3 flex justify-start items-center">
+                  {{ menu.title }}
+                </div>
+                </p>
               </router-link>
             </button>
           </div>
-        
-        
-        
         </div>
       </div>
-      <div class="flex  mt-10 w-full  justify-end items-center   max-md:hidden ">
-        <inputSearch v-model="search" @search="launchSearch" placeholder="Rechercher" />
+      <div
+        class="flex mt-10 w-full md:justify-start justify-end items-center max-md:hidden"
+      >
+        <inputSearch
+          v-model="search"
+          @search="launchSearch"
+          placeholder="Rechercher"
+        />
+      </div>
+<!-- resultat de la recherche en desktop -->
+      <div
+        v-if=" searchResults.length"
+        class="p-4 max-md:hidden bg-gray-100 w-96rounded-xl my-4"
+      >
+        <h2 class="text-lg font-bold mb-2">Résultats de la recherche :</h2>
+        <ul>
+          <li
+            v-for="menu in searchResults"
+            :key="menu.page.slug"
+            class="hover:bg-pink-200 p-1 border-b"
+          >
+            <router-link
+              :to="`/pages${menu.page.slug}`"
+              class="hover:underline p-2"
+            >
+              {{ menu.title }}
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
+      <div v-else-if="search.value" class="italic text-gray-500 my-4">
+        Aucun résultat trouvé.
+      </div>
+    </nav>
+    <a
+      v-if="user.roles.includes('ROLE_ADMIN')"
+      target="_blank"
+      href="http://localhost:8080/page-content"
+      class="cursor-pointer absolute text-amber-200 right-5 top-5"
+    >
+      admin
+    </a>
+
+    <h2 class="absolute text-amber-200  top-5 right-5" v-else="user.roles.includes('ROLE_USER')"> bonjour {{ user.username }}</h2>
+
+
+    <!-- resultat de la recherche en mobile -->
+    <div
+        v-if="modalIsOpen && searchResults.length"
+        class="p-4  md:hidden bg-gray-100 modal w-96rounded-xl my-4"
+      >
+      <i
+          @click="closeModal"
+          class="text-blue-950 pi pi-times float-end cursor-pointer"
+          style="font-size: 1.5rem"
+        ></i>
+        <h2 class="text-lg font-bold mb-2">Résultats de la recherche :</h2>
+        <ul>
+          <li
+            v-for="menu in searchResults"
+            :key="menu.page.slug"
+            class="hover:bg-pink-200 p-1 border-b"
+          >
+            <router-link
+              :to="`/pages${menu.page.slug}`"
+              class="hover:underline p-2"
+            >
+              {{ menu.title }}
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
+      <div v-else-if="search.value" class="italic text-gray-500 my-4">
+        Aucun résultat trouvé.
       </div>
 
 
-      <div v-if="searchResults.length" class="p-4 bg-gray-100  w-96rounded-xl my-4">
-  <h2 class="text-lg font-bold mb-2">Résultats de la recherche :</h2>
-  <ul>
-    <li v-for="menu in searchResults" :key="menu.page.slug" class=" hover:bg-pink-200 p-1 border-b">
-      <router-link :to="`/pages${menu.page.slug}`" class="hover:underline  p-2">
-        {{ menu.title }}
-      </router-link>
-    </li>
-  </ul>
-</div>
 
-<div v-else-if="search.value" class="italic text-gray-500 my-4">
-  Aucun résultat trouvé.
-</div>
-    </nav>
-
-    <main class="md:w-3/4 self-end  max-md:z-10 max-md:w-full h-auto xl:w-4/5  right-0  overflow-hidden">
-   
+    <main
+      class="md:w-3/4 self-end max-md:z-10 max-md:w-full h-auto xl:w-4/5 right-0 overflow-hidden"
+    >
       <router-view />
     </main>
+  </div>
+
+  <div v-else>
+    <h1>Vous n'avez pas accès à cette page</h1>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed,onUnmounted } from "vue";
+import { ref, onMounted, computed, onUnmounted } from "vue";
 import axios from "axios";
- import inputSearch from "./views/components/inputSearch.vue";
+import router from "./router";
+import inputSearch from "./views/components/inputSearch.vue";
+import { openDB } from 'idb';
 
 const cats = ref([]);
 const menus = ref([]);
@@ -104,17 +212,111 @@ const isMenuOpen = ref(false);
 const isMdOuPlus = ref(window.innerWidth >= 768); // md = 768px en Tailwind
 const search = ref("");
 const searchResults = ref([]);
+const user = ref({ username: "", roles: [] });
+const modalIsOpen = ref(true);
+
+
+// --- DB IndexedDB pour PWA ---
+const dbPromise = openDB('spa-db', 1, {
+  upgrade(db) {
+    db.createObjectStore('menus', { keyPath: 'id' });
+    db.createObjectStore('categories', { keyPath: 'id' });
+    db.createObjectStore('user', { keyPath: 'username' });
+  }
+});
+async function saveMenusToDB(menusArray) {
+  const db = await dbPromise;
+  const tx = db.transaction('menus', 'readwrite');
+  
+  menusArray.forEach(item => {
+    const pureItem = JSON.parse(JSON.stringify(item)); 
+    tx.store.put(pureItem);
+  });
+  
+  await tx.done;
+}
 
 
 
- const logout = () => {
-   axios.post("/logout");
- };
+async function saveCatsToDB(catsArray) {
+  const db = await dbPromise;
+  const tx = db.transaction('categories', 'readwrite');
+  // convertion en données json
+  catsArray.forEach(item => {
+    const pureItem = JSON.parse(JSON.stringify(item)); 
+    tx.store.put(pureItem);
+  });
+  
+  await tx.done;
+}
+
+async function saveUserToDB(user) {
+  const db = await dbPromise;
+  // convertion en données json
+  const tx = db.transaction('user', 'readwrite');
+  const jsonUser = JSON.parse(JSON.stringify(user)); 
+  tx.store.put(jsonUser);
+  await tx.done;
+}
+
+// --- Chargement user dans IndexedDB pour le offline ---
+
+async function loadUserFromDB() {
+  const db = await dbPromise;
+  const user = await db.get('user', 1);
+  return user;
+}
+
+async function loadMenusFromDB() {
+  const db = await dbPromise;
+  return db.getAll('menus');
+}
+
+async function loadCatsFromDB() {
+  const db = await dbPromise;
+  return db.getAll('categories');
+}
+
+
+
+
+
+const fetchUser = async () => {
+  try {
+    const response = await axios.get("/user-api/me");
+    user.value = response.data;
+    console.log("User:", user.value);
+    // --- Stockage user dans IndexedDB pour le offline ---
+    await saveUserToDB(user.value);
+
+  } catch (error) {
+   if(!error.response){
+    // pas de repopose alors surement or connection
+    console.warn("Pas de reponse, surement en offline");
+    user.value = await loadUserFromDB();
+    console.log("User offline:", user.value);
+   }else if(error.response.status === 401){
+    console.error("Erreur lors de la récupération de l'utilisateur", error);
+    router.push("/login");
+   }else{
+    console.error("autre error", error);
+   
+   }
+  }
+};
+//deconnexion
+const logout = () => {
+  axios.post("/logout").then(() => {
+    window.location.href = "/login";
+  });
+};
+//menu
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
   console.log(isMenuOpen.value);
 };
 
+//menus
 const fetchMenus = async () => {
   try {
     const [response, responses2] = await Promise.all([
@@ -125,13 +327,25 @@ const fetchMenus = async () => {
     cats.value = response.data.member;
     menus.value = responses2.data.member;
 
+    // --- Stockage dans IndexedDB pour le offline ---
+    await saveMenusToDB(menus.value);
+    await saveCatsToDB(cats.value);
+
     console.log("Categories:", cats.value);
     console.log("Menus:", menus.value);
   } catch (error) {
     console.error("Erreur lors de la récupération des menus:", error);
+
+    // Chargement offline
+    cats.value = await loadCatsFromDB();
+    menus.value = await loadMenusFromDB();
+
+    console.log("Categories offline:", cats.value);
+    console.log("Menus offline:", menus.value);
   }
 };
 
+//update is md ou plus
 const updateIsMdOrAbove = () => {
   isMdOuPlus.value = window.innerWidth >= 768;
   console.log(isMdOuPlus.value);
@@ -140,7 +354,7 @@ onMounted(() => {
   fetchMenus();
   window.addEventListener("resize", updateIsMdOrAbove);
   console.log("true");
-
+  fetchUser();
 });
 onUnmounted(() => {
   window.removeEventListener("resize", updateIsMdOrAbove);
@@ -154,17 +368,17 @@ const launchSearch = () => {
     return;
   }
 
-  console.log("menus",  menus.value);
+  console.log("menus", menus.value);
 
   const query = search.value.toLowerCase();
-
+  //recherche
   searchResults.value = menus.value.filter((menu) => {
-    const title = menu.title?.toLowerCase() || '';
-    const content = menu.content?.toLowerCase() || '';
-    const label = menu.menu.label?.toLowerCase() || '';
-    const code = menu.code?.toLowerCase() || '';
-    const slug = menu.page.slug?.toLowerCase() || '';
-    const category = menu.category.name?.toLowerCase() || '';
+    const title = menu.title?.toLowerCase() || "";
+    const content = menu.content?.toLowerCase() || "";
+    const label = menu.menu.label?.toLowerCase() || "";
+    const code = menu.code?.toLowerCase() || "";
+    const slug = menu.page.slug?.toLowerCase() || "";
+    const category = menu.category.name?.toLowerCase() || "";
 
     return (
       title.includes(query) ||
@@ -176,12 +390,11 @@ const launchSearch = () => {
     );
   });
 };
-
-
-
-
-
-
+// close modal
+const closeModal = () => {
+  modalIsOpen.value = false;
+  
+};
 
 const menusByCategory = computed(() => {
   const result = {};
@@ -196,7 +409,7 @@ const menusByCategory = computed(() => {
         if (!grouped[label]) {
           grouped[label] = {
             label: label,
-            items: []
+            items: [],
           };
         }
         grouped[label].items.push(menu);
@@ -215,5 +428,29 @@ nav {
   scroll-behavior: smooth;
 }
 
+.div-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: 	#778899 transparent;
+}
 
+/* Chrome, Edge, Safari */
+.div-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 4px;
+}
+
+.div-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.div-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #87cefa;
+  border-radius: 10px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.div-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* tu peux mettre une variation de ta couleur principale */
+}
 </style>
