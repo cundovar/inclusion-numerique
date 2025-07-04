@@ -27,7 +27,7 @@
         href="http://localhost:8080/page-content"
         class="cursor-pointer text-amber-900 right-5 top-5"
       >
-        admin
+        adm
       </a>
       <inputSearch
         v-model="search"
@@ -43,32 +43,38 @@
         isMdOuPlus
           ? 'flex   flex-col w-1/4 translate-x-0'
           : isMenuOpen
-          ? 'w-full top-20  translate-x-0  max-h-[calc(100vh-56px)]  overflow-y-auto flex-col max-md:z-50'
+          ? 'w-full shadow-black pl-2 pr-2 shadow-2xl translate-x-0  max-h-[calc(100vh-56px)]  overflow-y-auto flex-col max-md:z-50'
           : 'w-full -translate-x-full',
       ]"
     >
+    <p class="p-2 bg-amber-200 max-md:hidden cursor-pointer"> bonjour <span class="font-bold"> {{ user.username }}</span></p>
       <div class="md:hidden relative flex justify-end items-end self-end"></div>
-
-      <p class="p-2 bg-pink-400 text-end cursor-pointer" @click="logout">
+      <a class="md:hidden  bg-gray-500 gap-2 flex items-center justify-center p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
+        <i class="pi pi-github cursor-pointer   text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
+       <p class="text-amber-200  font-bold"> GITHUB </p>
+    </a>
+      <p class=" font-bold max-md:text-xl p-2 max-md:bg-pink-200 bg-pink-400 text-end cursor-pointer" @click="logout">
         deconnexion
       </p>
 
       <div
+     @click="!isMdOuPlus && (openMenu(cat.name))"
         class="cursor-pointer flex flex-col justify-center"
         v-for="cat in cats"
         :key="cat.id"
         @mouseenter="isMdOuPlus && (hoveredCategory = cat.name)"
+
       >
         <h1
-          class="text-2xl pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
+          class="text-2xl  pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
         >
-          {{ cat.name }}
+          <button class="cursor-pointer max-md:w-full max-md:h-full max-md:focus:text-white max-md:bg-blue-200 max-md:text-center  focus:bg-blue-500">{{ cat.name }}</button>
         </h1>
 
         <div class="right-0 md:max-h-[15rem] div-scrollbar overflow-y-auto ">
           <div
             class="md:flex md:flex-col md:gap-y-1 "
-            v-if="(isMdOuPlus && hoveredCategory === cat.name) || !isMdOuPlus"
+            v-if="(isMdOuPlus && hoveredCategory === cat.name) || (!isMdOuPlus && clickMenu === cat.name)"
             v-for="group in menusByCategory[cat.name]"
             :key="group.label"
           >
@@ -79,27 +85,32 @@
             </div>
 
             <button
-              class=" w-full border md:rounded-xl  flex hover:bg-gray-300 bg-gray-100 flex-col gap-2"
+              class=" w-full  md:rounded-xl shadow-2xl flex hover:bg-gray-300 bg-gray-100 flex-col gap-2"
               v-for="menu in group.items"
               :key="menu.page.slug"
             >
               <router-link
                 :to="`/pages${menu.page.slug}`"
                 @click="toggleMenu"
-                class="focus:bg-gray-400  focus:text-white z-50 hover:text-blue-600"
+                class="focus:bg-gray-400   focus:text-white z-50 hover:text-blue-600"
               >
                 <p
                   class="p-2  md:text-blue-500 hover:text-fuchsia-900 flex justify-around max-md:justify-start items-center max-md:text-start max-md:ml-1"
                 >
-                <div class="flex justify-center items-center w-1/3">
+                <div class="flex  justify-center items-center w-1/3">
                   <i
                     class="pi pi-code max-md:text-blue-600 md:text-yellow-600"
                   ></i>
                   </div>
                   
-                <div class="w-2/3 flex justify-start items-center">
-                  {{ menu.title }}
-                </div>
+                  <div class="flex-1 text-center border-blue-300 shadow border flex justify-center items-center">
+                    {{ capitalize(menu.title) }}
+                  </div>
+                  <div class="flex  justify-center items-center w-1/3">
+                    <i
+                      class="pi pi-code max-md:text-blue-600 md:text-yellow-600"
+                    ></i>
+                    </div>
                 </p>
               </router-link>
             </button>
@@ -130,8 +141,10 @@
             <router-link
               :to="`/pages${menu.page.slug}`"
               class="hover:underline p-2"
+
             >
-              {{ menu.title }}
+            
+              {{ capitalize(menu.title) }}
             </router-link>
           </li>
         </ul>
@@ -149,10 +162,12 @@
     >
       admin
     </a>
-
-    <h2 class="absolute text-amber-200  top-5 right-5" v-else="user.roles.includes('ROLE_USER')"> bonjour {{ user.username }}</h2>
-
-
+    
+    
+    <h2 class="absolute text-amber-200   top-5 right-5" v-else="user.roles.includes('ROLE_USER')"> bonjour {{ user.username }}</h2>
+    
+    <list_logo/>
+    
     <!-- resultat de la recherche en mobile -->
     <div
         v-if="modalIsOpen && searchResults.length"
@@ -174,7 +189,7 @@
               :to="`/pages${menu.page.slug}`"
               class="hover:underline p-2"
             >
-              {{ menu.title }}
+              {{ capitalize(menu.title) }}
             </router-link>
           </li>
         </ul>
@@ -204,7 +219,10 @@ import axios from "axios";
 import router from "./router";
 import inputSearch from "./views/components/inputSearch.vue";
 import { openDB } from 'idb';
-
+import { scrollToTop } from "./utlis/domUtils";
+import { capitalize } from "./utlis/stringsUtlis";
+import { orderMenuTitle } from "./utlis/arrayUtills";
+import list_logo from "./views/components/list_logo.vue";
 const cats = ref([]);
 const menus = ref([]);
 const hoveredCategory = ref(null);
@@ -214,7 +232,12 @@ const search = ref("");
 const searchResults = ref([]);
 const user = ref({ username: "", roles: [] });
 const modalIsOpen = ref(true);
+const isMobile=ref(window.innerWidth < 768);
+const clickMenu=ref(null);
+  
 
+
+orderMenuTitle(menus.value, 'title', true);
 
 // --- DB IndexedDB pour PWA ---
 const dbPromise = openDB('spa-db', 1, {
@@ -283,7 +306,7 @@ async function loadCatsFromDB() {
 
 const fetchUser = async () => {
   try {
-    const response = await axios.get("/user-api/me");
+    const response = await axios.get(" /user-api/me");
     user.value = response.data;
     console.log("User:", user.value);
     // --- Stockage user dans IndexedDB pour le offline ---
@@ -315,6 +338,14 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
   console.log(isMenuOpen.value);
 };
+// openmenu en mobile
+const openMenu = (catName) => {
+  if (clickMenu.value === catName) {
+    clickMenu.value = null;
+  } else {
+    clickMenu.value = catName;
+  }
+};
 
 //menus
 const fetchMenus = async () => {
@@ -344,15 +375,19 @@ const fetchMenus = async () => {
     console.log("Menus offline:", menus.value);
   }
 };
-
+const updateIsMobile=()=>{
+  isMobile.value = window.innerWidth < 768;
+  console.log( "format mobile",isMobile.value);
+}
 //update is md ou plus
 const updateIsMdOrAbove = () => {
   isMdOuPlus.value = window.innerWidth >= 768;
-  console.log(isMdOuPlus.value);
+  console.log("format md ou plus",isMdOuPlus.value);
 };
 onMounted(() => {
   fetchMenus();
   window.addEventListener("resize", updateIsMdOrAbove);
+  updateIsMobile()
   console.log("true");
   fetchUser();
 });
@@ -423,6 +458,13 @@ const menusByCategory = computed(() => {
 </script>
 
 <style scoped>
+/* 
+*{
+
+  border: 1px solid red;
+} */
+
+
 nav {
   margin-top: 10px;
   scroll-behavior: smooth;

@@ -13,6 +13,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\Admin\PageContentCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
+
 #[Route('/admin')]
 class DashboardController extends AbstractDashboardController
 {
@@ -37,8 +39,15 @@ class DashboardController extends AbstractDashboardController
             ->setTitle('Admin');
     }
 
+
+
     public function configureMenuItems(): iterable
     {
+
+        
+
+
+
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
     
         yield MenuItem::section('📚 Cours');

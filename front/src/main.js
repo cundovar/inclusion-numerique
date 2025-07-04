@@ -5,6 +5,14 @@ import App from './App.vue';
 import router from './router';
 import { registerSW } from 'virtual:pwa-register'
 
+// primsjs Charge les langages dont tu as besoin
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-okaidia.css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-markup';
+
+
 createApp(App).use(router).mount('#app');
 registerSW({
     onNeedRefresh() {

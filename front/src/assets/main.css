@@ -7,13 +7,16 @@
 *{
     box-sizing: border-box;
   
+
+    
+  }
   
    /* border:1px solid red;   outline: none;  
     box-shadow: none;
     text-decoration: none;
     list-style: none;
    */
-}
+
 body{
 min-width: 350px;
     background-color: var(--background-color);
@@ -47,7 +50,7 @@ h4{
 }
 
 
-
+/* 
 pre{
 
     background-color: rgb(239, 240, 235) !important;
@@ -58,9 +61,9 @@ pre{
     border-radius: 20px !important;
  
     
-}
+} */
 
-
+/* css des pages contents */
 .principal{
     display: flex !important;
     flex-direction: column !important;
@@ -70,6 +73,25 @@ pre{
   
    
 }
+
+.principal p{
+
+
+    color: var(--color-text) !important;
+    text-align: start !important;
+}
+
+.principal h2{
+    color: var(--color-text) !important;
+    text-align: start !important;
+    font-size: 1.2rem !important;
+    text-align: center !important;
+   margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+    text-decoration: underline !important;
+}
+    
+
 
 
 
