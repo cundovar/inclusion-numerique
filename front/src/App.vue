@@ -47,15 +47,17 @@
           : 'w-full -translate-x-full',
       ]"
     >
-    <p class="p-2 bg-amber-200 max-md:hidden cursor-pointer"> bonjour <span class="font-bold"> {{ user.username }}</span></p>
+    <p class="p-2  bg-amber-200 max-md:hidden cursor-pointer"> bonjour <span class="font-bold"> {{ user.username }}</span></p>
       <div class="md:hidden relative flex justify-end items-end self-end"></div>
-      <a class="md:hidden  bg-gray-500 gap-2 flex items-center justify-center p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
+      <a class="md:hidden  bg-gray-500 gap-2 flex items-center justify-start p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
         <i class="pi pi-github cursor-pointer   text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
        <p class="text-amber-200  font-bold"> GITHUB </p>
     </a>
-      <p class=" font-bold max-md:text-xl p-2 max-md:bg-pink-200 bg-pink-400 text-end cursor-pointer" @click="logout">
+      <p class=" font-bold max-md:text-xl p-2 max-md:bg-pink-200 bg-pink-400 text-center cursor-pointer" @click="logout">
         deconnexion
       </p>
+<!-- list de lien mdn pour mobile dans nav  -->
+  <lienMDN/>
 
       <div
      @click="!isMdOuPlus && (openMenu(cat.name))"
@@ -66,20 +68,20 @@
 
       >
         <h1
-          class="text-2xl  pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
+          class="text-2xl max-md:text-xl max-md:drop-shadow-xl max-md:drop-shadow-gray-400 max-md:border-b max-md:border-gray-400 pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
         >
           <button class="cursor-pointer max-md:w-full max-md:h-full max-md:focus:text-white max-md:bg-blue-200 max-md:text-center  focus:bg-blue-500">{{ cat.name }}</button>
         </h1>
 
         <div class="right-0 md:max-h-[15rem] div-scrollbar overflow-y-auto ">
           <div
-            class="md:flex md:flex-col md:gap-y-1 "
+            class="md:flex  md:flex-col md:gap-y-1 "
             v-if="(isMdOuPlus && hoveredCategory === cat.name) || (!isMdOuPlus && clickMenu === cat.name)"
             v-for="group in menusByCategory[cat.name]"
             :key="group.label"
           >
             <div
-              class="p-2 md:w-2/3 md:mt-1 md:text-start md:bg-transparent md:text-white max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
+              class="p-2 md:w-2/3 md:mt-1  md:text-start md:bg-transparent md:text-white max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
             > 
               {{ group.label }} :
             </div>
@@ -164,7 +166,7 @@
     </a>
     
     
-    <h2 class="absolute text-amber-200   top-5 right-5" v-else="user.roles.includes('ROLE_USER')"> bonjour {{ user.username }}</h2>
+    <h2 class="absolute text-amber-200   top-5 right-5" v-else="user.roles.includes('ROLE_USER')"> visiteur</h2>
     
     <list_logo/>
     
@@ -223,6 +225,10 @@ import { scrollToTop } from "./utlis/domUtils";
 import { capitalize } from "./utlis/stringsUtlis";
 import { orderMenuTitle } from "./utlis/arrayUtills";
 import list_logo from "./views/components/list_logo.vue";
+import { logos } from "./tab-object/list-logo";
+import lienMDN from "./views/components/menuMobile/lienMDN.vue";
+
+
 const cats = ref([]);
 const menus = ref([]);
 const hoveredCategory = ref(null);
