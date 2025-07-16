@@ -29,35 +29,102 @@ export default defineConfig({
       injectRegister: 'auto',             // Injection automatique du registre du service worker
       outDir: '../public/spa',            // Où mettre le service worker et le manifest
       manifest: {                         // Contenu du manifest PWA
-        name: 'spa hibryde vue_symfony',  // Nom complet de l'application
-        short_name: 'spaVueSymfo',        // Nom court (pour l'écran d'accueil)
+        name: 'SPA Hybride Vue Symfony',  // Nom complet de l'application
+        short_name: 'SpaVueSymfo',        // Nom court (pour l'écran d'accueil)
         start_url: '/spa/',               // URL de démarrage quand l'app est lancée
         scope: '/spa/',                   // Limite les pages où le PWA fonctionne
-        description: 'mon truc',          // Description de l'app
-        theme_color: '#ffffff',           // Couleur du thème (barre de statut, etc)
-        display: 'standalone',            // Affichage comme une vraie app (sans barre d’adresse)
+        description: 'Application hybride combinant Vue.js et Symfony pour une expérience utilisateur optimale',
+        theme_color: '#3b82f6',           // Couleur du thème (barre de statut, etc)
+        background_color: '#ffffff',      // Couleur de fond au lancement
+        display: 'standalone',            // Affichage comme une vraie app (sans barre d'adresse)
+        lang: 'fr',                       // Langue de l'application
         includeAssets: ['favicon.svg', 'robots.txt', 'sitemaps.xml'], // Fichiers inclus dans la PWA
         icons: [                          // Icônes de l'application
           {
             src: '/spa/pwa.png',          // Chemin de l'icône 192x192
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           },
           {
             src: '/spa/pwa1.png',         // Chemin de l'icône 512x512
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       },
       workbox: {                          // Configuration de Workbox pour gérer le cache
-        globDirectory: '../public/build', // Où chercher les fichiers à mettre en cache
+        globDirectory: '../public/spa',   // Où chercher les fichiers à mettre en cache (aligné avec outDir)
         globPatterns: ['**/*.{js,wasm,css,html,png,svg}'], // Quels types de fichiers à inclure
-        globIgnores: ['manifest.webmanifest', 'workbox-*.js', 'sw.js'] // Quels fichiers ignorer
+        globIgnores: ['manifest.webmanifest', 'workbox-*.js', 'sw.js'], // Quels fichiers ignorer
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 an
+              },
+              cacheKeyWillBeUsed: async ({ request }) => {
+                return `${request.url}`;
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gstatic-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 an
+              },
+            },
+          },
+          {
+            urlPattern: /\/api\/categories/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-categories-cache',
+              expiration: {
+                maxEntries: 5,
+                maxAgeSeconds: 60 * 60 // 1 heure
+              },
+              networkTimeoutSeconds: 3,
+            },
+          },
+          {
+            urlPattern: /\/api\/page_contents$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-page-contents-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 // 1 heure
+              },
+              networkTimeoutSeconds: 3,
+            },
+          },
+          {
+            urlPattern: /\/api\/page_contents\/\d+/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-individual-pages-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 // 24 heures
+              },
+              networkTimeoutSeconds: 3,
+            },
+          },
+        ]
       },
       screenshots: [                      // Capture d'écran de l'app (pour le store, par ex)
         {
-          src: '../public/spa/screenshot.png',
+          src: '/spa/screenshot.png',
           type: 'image/png',
           sizes: '720x1280',
           form_factor: 'wide'

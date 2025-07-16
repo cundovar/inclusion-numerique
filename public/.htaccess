@@ -1,9 +1,43 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Servir directement les fichiers PWA statiques
+    RewriteCond %{REQUEST_URI} ^/spa/(manifest\.webmanifest|sw\.js|workbox-.*\.js|.*\.(png|svg|ico))$
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Ignore files and directories
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
 
-    RewriteRule ^ index.php [L]
+    # Let Vue handle routing in SPA
+    RewriteRule ^ index.php [QSA,L]
 </IfModule>
 
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+    AddType application/javascript .js
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Configuration PWA spécifique
+    <Files "manifest.webmanifest">
+        Header set Content-Type "application/manifest+json"
+        Header set Cache-Control "public, max-age=3600"
+    </Files>
+    
+    <FilesMatch "sw\.js|workbox-.*\.js">
+        Header set Content-Type "application/javascript"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
+
+    # Long cache for static assets
+    <FilesMatch "\.(js|css|jpg|jpeg|png|svg|gif|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "max-age=604800, public"
+    </FilesMatch>
+
+    # Force no-cache for index.php (optional for dev)
+    <FilesMatch "index\.php$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+</IfModule>

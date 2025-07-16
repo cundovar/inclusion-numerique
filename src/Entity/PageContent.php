@@ -16,7 +16,9 @@ use ApiPlatform\Metadata\ApiFilter;
 #[ORM\Entity(repositoryClass: PageContentRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['page_content:read']],
-    denormalizationContext: ['groups' => ['page_content:write']]
+    denormalizationContext: ['groups' => ['page_content:write']],
+    paginationEnabled: false // pour forcer api plateforme à ne pas paginer et de proposer que 30 éléments par page
+
 )]
 #[ApiFilter(SearchFilter::class, properties: ['page.slug' => 'exact'])]
 class PageContent

@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions générales d'utilisation{% endblock %}
+
+{% block body %}
+<style>
+    .terms-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        line-height: 1.6;
+    }
+    .terms-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    .terms-section {
+        margin-bottom: 25px;
+    }
+    .terms-section h2 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #007bff;
+    }
+    .terms-section p {
+        margin-bottom: 10px;
+        text-align: justify;
+    }
+    .terms-section ul {
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+    .terms-section li {
+        margin-bottom: 5px;
+    }
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 15px;
+        background: #007bff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+    .back-link:hover {
+        background: #0056b3;
+    }
+</style>
+
+<div class="terms-container">
+    <h1 class="terms-title">Conditions générales d'utilisation</h1>
+    
+    <div class="terms-section">
+        <h2>1. Acceptation des conditions</h2>
+        <p>En utilisant ce site web, vous acceptez d'être lié par ces conditions générales d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser ce site.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>2. Utilisation du site</h2>
+        <p>Vous vous engagez à utiliser ce site uniquement à des fins légales et de manière à ne pas porter atteinte aux droits d'autrui ou restreindre leur utilisation du site.</p>
+        <p>Il est interdit de :</p>
+        <ul>
+            <li>Utiliser le site à des fins illégales ou non autorisées</li>
+            <li>Transmettre des virus ou du code malveillant</li>
+            <li>Tenter d'accéder à des zones restreintes du site</li>
+            <li>Reproduire, dupliquer ou copier le contenu sans autorisation</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h2>3. Compte utilisateur</h2>
+        <p>Vous êtes responsable de maintenir la confidentialité de vos informations de connexion et de toutes les activités qui se déroulent sous votre compte.</p>
+        <p>Vous devez nous informer immédiatement de toute utilisation non autorisée de votre compte.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>4. Propriété intellectuelle</h2>
+        <p>Le contenu de ce site, incluant mais non limité aux textes, images, logos et code, est protégé par les lois sur la propriété intellectuelle.</p>
+        <p>Toute reproduction ou utilisation non autorisée est strictement interdite.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>5. Responsabilité</h2>
+        <p>Ce site est fourni "en l'état" sans garantie d'aucune sorte. Nous ne sommes pas responsables des dommages directs, indirects ou consécutifs résultant de l'utilisation du site.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>6. Modifications</h2>
+        <p>Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications prendront effet dès leur publication sur le site.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>7. Contact</h2>
+        <p>Pour toute question concernant ces conditions générales, vous pouvez nous contacter à l'adresse email fournie sur le site.</p>
+    </div>
+
+    <p><strong>Dernière mise à jour :</strong> {{ "now"|date("d/m/Y") }}</p>
+    
+    <a href="{{ path('app_register') }}" class="back-link">Retour à l'inscription</a>
+</div>
+{% endblock %}

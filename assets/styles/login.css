@@ -19,13 +19,13 @@ h1 {
 .alert-danger {
     color: #a94442;
     background-color: #f2dede;
-    border: 1px solid #ebccd1;
+    border: none;
 }
 
 .alert-info {
     color: #31708f;
     background-color: #d9edf7;
-    border: 1px solid #bce8f1;
+    border: none;
 }
 
 .form-group {
@@ -36,6 +36,7 @@ h1 {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
+    border: none;
 }
 
 .form-check {

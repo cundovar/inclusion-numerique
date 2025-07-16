@@ -1,0 +1,245 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "title": "Installation et Configuration",
+      "category": "setup",
+      "description": "Guide complet pour installer et configurer Vue.js",
+      "content": {
+        "introduction": "Vue.js est un framework JavaScript progressif pour créer des interfaces utilisateur interactives.",
+        "steps": [
+          "Installation de Node.js",
+          "Vue CLI ou Vite",
+          "Création d'un projet Vue",
+          "Structure des dossiers",
+          "Configuration de l'environnement"
+        ],
+        "code": "# Installation globale de Vue CLI\nnpm install -g @vue/cli\n\n# Création d'un projet\nvue create my-vue-app\n\n# Ou avec Vite (recommandé)\nnpm create vue@latest my-vue-app\ncd my-vue-app\nnpm install\nnpm run dev"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Premiers Composants",
+      "category": "components",
+      "description": "Créer vos premiers composants Vue",
+      "content": {
+        "introduction": "Les composants sont les blocs de construction de base de Vue.js.",
+        "steps": [
+          "Structure d'un composant Vue",
+          "Template, Script et Style",
+          "Props et émissions",
+          "Composition API vs Options API"
+        ],
+        "code": "<template>\n  <div class=\"greeting\">\n    <h1>{{ message }}</h1>\n    <button @click=\"updateMessage\">Cliquer</button>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\n\nconst message = ref('Hello Vue 3!')\n\nconst updateMessage = () => {\n  message.value = 'Message mis à jour !'\n}\n</script>\n\n<style scoped>\n.greeting {\n  color: #42b883;\n  font-family: Arial, sans-serif;\n}\n</style>"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Réactivité avec ref et reactive",
+      "category": "reactivity",
+      "description": "Comprendre le système de réactivité de Vue 3",
+      "content": {
+        "introduction": "La réactivité est au cœur de Vue.js, permettant aux données de déclencher automatiquement les mises à jour de l'interface.",
+        "steps": [
+          "ref() pour les valeurs primitives",
+          "reactive() pour les objets",
+          "Différences entre ref et reactive",
+          "Accès aux valeurs réactives"
+        ],
+        "code": "import { ref, reactive } from 'vue'\n\n// Réactivité avec ref\nconst count = ref(0)\nconst message = ref('Hello')\n\n// Réactivité avec reactive\nconst state = reactive({\n  user: {\n    name: 'John',\n    age: 30\n  },\n  items: ['apple', 'banana']\n})\n\n// Utilisation\nconst increment = () => {\n  count.value++ // Attention au .value avec ref\n}\n\nconst updateUser = () => {\n  state.user.name = 'Jane' // Pas de .value avec reactive\n  state.items.push('orange')\n}"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Computed Properties",
+      "category": "reactivity",
+      "description": "Créer des propriétés calculées avec computed",
+      "content": {
+        "introduction": "Les computed properties permettent de créer des valeurs dérivées qui se mettent à jour automatiquement.",
+        "steps": [
+          "Import de computed",
+          "Propriétés calculées simples",
+          "Computed avec getter et setter",
+          "Performance et mise en cache"
+        ],
+        "code": "import { ref, computed } from 'vue'\n\nconst firstName = ref('John')\nconst lastName = ref('Doe')\n\n// Computed simple (getter seulement)\nconst fullName = computed(() => {\n  return `${firstName.value} ${lastName.value}`\n})\n\n// Computed avec getter et setter\nconst fullNameEditable = computed({\n  get() {\n    return `${firstName.value} ${lastName.value}`\n  },\n  set(newValue) {\n    const names = newValue.split(' ')\n    firstName.value = names[0]\n    lastName.value = names[1] || ''\n  }\n})\n\n// Utilisation\nconsole.log(fullName.value) // 'John Doe'\nfullNameEditable.value = 'Jane Smith' // Met à jour firstName et lastName"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Watchers",
+      "category": "reactivity",
+      "description": "Surveiller les changements avec watch et watchEffect",
+      "content": {
+        "introduction": "Les watchers permettent de réagir aux changements de données de manière programmatique.",
+        "steps": [
+          "watch() pour surveiller des sources spécifiques",
+          "watchEffect() pour les effets automatiques",
+          "Options des watchers",
+          "Nettoyage des watchers"
+        ],
+        "code": "import { ref, watch, watchEffect } from 'vue'\n\nconst count = ref(0)\nconst name = ref('John')\n\n// Watch simple\nwatch(count, (newValue, oldValue) => {\n  console.log(`Count changed from ${oldValue} to ${newValue}`)\n})\n\n// Watch multiple sources\nwatch([count, name], ([newCount, newName], [oldCount, oldName]) => {\n  console.log(`Count: ${newCount}, Name: ${newName}`)\n})\n\n// Watch avec options\nwatch(name, (newName) => {\n  console.log(`Name changed to ${newName}`)\n}, {\n  immediate: true, // Exécute immédiatement\n  deep: true // Pour les objets imbriqués\n})\n\n// watchEffect\nwatchEffect(() => {\n  console.log(`The count is ${count.value}`)\n  // Se re-exécute automatiquement quand count change\n})"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Props et Émissions",
+      "category": "components",
+      "description": "Communication entre composants parents et enfants",
+      "content": {
+        "introduction": "Les props permettent de passer des données aux composants enfants, et les émissions permettent la communication inverse.",
+        "steps": [
+          "Définition des props",
+          "Validation des props",
+          "Émissions d'événements",
+          "v-model sur composants personnalisés"
+        ],
+        "code": "// Composant enfant\n<template>\n  <div>\n    <h2>{{ title }}</h2>\n    <p>Count: {{ count }}</p>\n    <button @click=\"increment\">+</button>\n    <button @click=\"decrement\">-</button>\n  </div>\n</template>\n\n<script setup>\n// Définition des props\nconst props = defineProps({\n  title: {\n    type: String,\n    required: true\n  },\n  count: {\n    type: Number,\n    default: 0\n  }\n})\n\n// Définition des émissions\nconst emit = defineEmits(['increment', 'decrement'])\n\nconst increment = () => {\n  emit('increment')\n}\n\nconst decrement = () => {\n  emit('decrement')\n}\n</script>\n\n// Composant parent\n<template>\n  <Counter \n    :title=\"title\" \n    :count=\"count\" \n    @increment=\"handleIncrement\"\n    @decrement=\"handleDecrement\"\n  />\n</template>\n\n<script setup>\nimport { ref } from 'vue'\nimport Counter from './Counter.vue'\n\nconst title = ref('Mon Compteur')\nconst count = ref(0)\n\nconst handleIncrement = () => {\n  count.value++\n}\n\nconst handleDecrement = () => {\n  count.value--\n}\n</script>"
+      }
+    },
+    {
+      "id": 7,
+      "title": "Directives Vue",
+      "category": "directives",
+      "description": "Utiliser les directives intégrées de Vue",
+      "content": {
+        "introduction": "Les directives sont des attributs spéciaux qui appliquent des comportements réactifs au DOM.",
+        "steps": [
+          "v-if, v-else, v-show",
+          "v-for pour les listes",
+          "v-model pour les formulaires",
+          "v-on pour les événements"
+        ],
+        "code": "<template>\n  <div>\n    <!-- Rendu conditionnel -->\n    <p v-if=\"isVisible\">Je suis visible</p>\n    <p v-else>Je suis caché</p>\n    \n    <!-- v-show (toggle CSS display) -->\n    <p v-show=\"showElement\">Toggle avec CSS</p>\n    \n    <!-- Listes -->\n    <ul>\n      <li v-for=\"item in items\" :key=\"item.id\">\n        {{ item.name }}\n      </li>\n    </ul>\n    \n    <!-- Formulaires -->\n    <input v-model=\"message\" placeholder=\"Tapez ici\">\n    <p>{{ message }}</p>\n    \n    <!-- Événements -->\n    <button @click=\"handleClick\">Cliquer</button>\n    <button @click=\"count++\">Count: {{ count }}</button>\n    \n    <!-- Classes et styles dynamiques -->\n    <div :class=\"{ active: isActive, 'text-danger': hasError }\">\n      Classes dynamiques\n    </div>\n    \n    <div :style=\"{ color: textColor, fontSize: fontSize + 'px' }\">\n      Styles dynamiques\n    </div>\n  </div>\n</template>\n\n<script setup>\nimport { ref } from 'vue'\n\nconst isVisible = ref(true)\nconst showElement = ref(true)\nconst message = ref('')\nconst count = ref(0)\nconst isActive = ref(false)\nconst hasError = ref(false)\nconst textColor = ref('blue')\nconst fontSize = ref(16)\n\nconst items = ref([\n  { id: 1, name: 'Item 1' },\n  { id: 2, name: 'Item 2' },\n  { id: 3, name: 'Item 3' }\n])\n\nconst handleClick = () => {\n  isActive.value = !isActive.value\n}\n</script>"
+      }
+    },
+    {
+      "id": 8,
+      "title": "Composables",
+      "category": "composition",
+      "description": "Créer des composables réutilisables",
+      "content": {
+        "introduction": "Les composables sont des fonctions qui utilisent la Composition API pour encapsuler et réutiliser la logique réactive.",
+        "steps": [
+          "Création d'un composable",
+          "Logique réactive partagée",
+          "Composables avec paramètres",
+          "Composables pour les appels API"
+        ],
+        "code": "// composables/useCounter.js\nimport { ref, computed } from 'vue'\n\nexport function useCounter(initialValue = 0) {\n  const count = ref(initialValue)\n  \n  const increment = () => {\n    count.value++\n  }\n  \n  const decrement = () => {\n    count.value--\n  }\n  \n  const reset = () => {\n    count.value = initialValue\n  }\n  \n  const isEven = computed(() => count.value % 2 === 0)\n  \n  return {\n    count,\n    increment,\n    decrement,\n    reset,\n    isEven\n  }\n}\n\n// composables/useFetch.js\nimport { ref, watchEffect } from 'vue'\n\nexport function useFetch(url) {\n  const data = ref(null)\n  const loading = ref(true)\n  const error = ref(null)\n  \n  watchEffect(async () => {\n    loading.value = true\n    error.value = null\n    \n    try {\n      const response = await fetch(url.value)\n      data.value = await response.json()\n    } catch (err) {\n      error.value = err.message\n    } finally {\n      loading.value = false\n    }\n  })\n  \n  return { data, loading, error }\n}\n\n// Utilisation dans un composant\n<script setup>\nimport { useCounter } from './composables/useCounter'\nimport { useFetch } from './composables/useFetch'\nimport { ref } from 'vue'\n\nconst { count, increment, decrement, isEven } = useCounter(10)\n\nconst url = ref('https://api.example.com/data')\nconst { data, loading, error } = useFetch(url)\n</script>"
+      }
+    },
+    {
+      "id": 9,
+      "title": "Vue Router",
+      "category": "routing",
+      "description": "Navigation et routage dans Vue.js",
+      "content": {
+        "introduction": "Vue Router est la solution officielle de routage pour Vue.js, permettant de créer des applications single-page.",
+        "steps": [
+          "Installation de Vue Router",
+          "Configuration des routes",
+          "Navigation programmatique",
+          "Guards de navigation"
+        ],
+        "code": "// router/index.js\nimport { createRouter, createWebHistory } from 'vue-router'\nimport Home from '../views/Home.vue'\nimport About from '../views/About.vue'\nimport User from '../views/User.vue'\n\nconst routes = [\n  {\n    path: '/',\n    name: 'Home',\n    component: Home\n  },\n  {\n    path: '/about',\n    name: 'About',\n    component: About\n  },\n  {\n    path: '/user/:id',\n    name: 'User',\n    component: User,\n    props: true\n  },\n  {\n    path: '/admin',\n    name: 'Admin',\n    component: () => import('../views/Admin.vue'),\n    beforeEnter: (to, from, next) => {\n      // Guard de route\n      if (isAuthenticated()) {\n        next()\n      } else {\n        next('/login')\n      }\n    }\n  }\n]\n\nconst router = createRouter({\n  history: createWebHistory(),\n  routes\n})\n\n// Guard global\nrouter.beforeEach((to, from, next) => {\n  console.log(`Navigation de ${from.path} vers ${to.path}`)\n  next()\n})\n\nexport default router\n\n// Dans un composant\n<template>\n  <div>\n    <nav>\n      <router-link to=\"/\">Home</router-link>\n      <router-link to=\"/about\">About</router-link>\n      <router-link :to=\"{ name: 'User', params: { id: 123 } }\">\n        User 123\n      </router-link>\n    </nav>\n    \n    <router-view />\n  </div>\n</template>\n\n<script setup>\nimport { useRouter, useRoute } from 'vue-router'\n\nconst router = useRouter()\nconst route = useRoute()\n\n// Navigation programmatique\nconst goToUser = (userId) => {\n  router.push(`/user/${userId}`)\n}\n\n// Accès aux paramètres\nconsole.log(route.params.id)\n</script>"
+      }
+    },
+    {
+      "id": 10,
+      "title": "Pinia - Gestion d'État",
+      "category": "state",
+      "description": "Gérer l'état global avec Pinia",
+      "content": {
+        "introduction": "Pinia est la solution officielle de gestion d'état pour Vue.js, remplaçant Vuex.",
+        "steps": [
+          "Installation de Pinia",
+          "Création d'un store",
+          "Actions et getters",
+          "Utilisation dans les composants"
+        ],
+        "code": "// stores/counter.js\nimport { defineStore } from 'pinia'\n\nexport const useCounterStore = defineStore('counter', {\n  state: () => ({\n    count: 0,\n    name: 'Eduardo'\n  }),\n  \n  getters: {\n    doubleCount: (state) => state.count * 2,\n    \n    // Getter avec paramètres\n    countPlusOne: (state) => {\n      return (value) => state.count + value\n    }\n  },\n  \n  actions: {\n    increment() {\n      this.count++\n    },\n    \n    async fetchUserData() {\n      try {\n        const response = await fetch('/api/user')\n        const userData = await response.json()\n        this.name = userData.name\n      } catch (error) {\n        console.error('Error fetching user:', error)\n      }\n    }\n  }\n})\n\n// Avec Composition API\nexport const useCounterStore = defineStore('counter', () => {\n  const count = ref(0)\n  const name = ref('Eduardo')\n  \n  const doubleCount = computed(() => count.value * 2)\n  \n  function increment() {\n    count.value++\n  }\n  \n  return { count, name, doubleCount, increment }\n})\n\n// Dans un composant\n<template>\n  <div>\n    <p>Count: {{ store.count }}</p>\n    <p>Double: {{ store.doubleCount }}</p>\n    <p>Name: {{ store.name }}</p>\n    <button @click=\"store.increment\">Increment</button>\n  </div>\n</template>\n\n<script setup>\nimport { useCounterStore } from '@/stores/counter'\n\nconst store = useCounterStore()\n\n// Ou avec destructuring\nconst { count, doubleCount, increment } = store\n</script>"
+      }
+    },
+    {
+      "id": 11,
+      "title": "Appels API avec Axios",
+      "category": "api",
+      "description": "Effectuer des requêtes HTTP avec Axios",
+      "content": {
+        "introduction": "Axios est une bibliothèque populaire pour effectuer des requêtes HTTP dans Vue.js.",
+        "steps": [
+          "Installation d'Axios",
+          "Configuration globale",
+          "Intercepteurs de requêtes",
+          "Gestion des erreurs"
+        ],
+        "code": "// plugins/axios.js\nimport axios from 'axios'\n\n// Configuration globale\nconst apiClient = axios.create({\n  baseURL: 'https://api.example.com',\n  timeout: 10000,\n  headers: {\n    'Content-Type': 'application/json'\n  }\n})\n\n// Intercepteur de requête\napiClient.interceptors.request.use(\n  (config) => {\n    const token = localStorage.getItem('authToken')\n    if (token) {\n      config.headers.Authorization = `Bearer ${token}`\n    }\n    return config\n  },\n  (error) => Promise.reject(error)\n)\n\n// Intercepteur de réponse\napiClient.interceptors.response.use(\n  (response) => response,\n  (error) => {\n    if (error.response?.status === 401) {\n      // Rediriger vers login\n      router.push('/login')\n    }\n    return Promise.reject(error)\n  }\n)\n\nexport default apiClient\n\n// composables/useApi.js\nimport { ref } from 'vue'\nimport apiClient from '@/plugins/axios'\n\nexport function useApi() {\n  const loading = ref(false)\n  const error = ref(null)\n  \n  const request = async (method, url, data = null) => {\n    loading.value = true\n    error.value = null\n    \n    try {\n      const response = await apiClient[method](url, data)\n      return response.data\n    } catch (err) {\n      error.value = err.message\n      throw err\n    } finally {\n      loading.value = false\n    }\n  }\n  \n  return {\n    loading,\n    error,\n    get: (url) => request('get', url),\n    post: (url, data) => request('post', url, data),\n    put: (url, data) => request('put', url, data),\n    delete: (url) => request('delete', url)\n  }\n}\n\n// Dans un composant\n<script setup>\nimport { ref, onMounted } from 'vue'\nimport { useApi } from '@/composables/useApi'\n\nconst { loading, error, get, post } = useApi()\nconst users = ref([])\n\nconst fetchUsers = async () => {\n  try {\n    users.value = await get('/users')\n  } catch (err) {\n    console.error('Error fetching users:', err)\n  }\n}\n\nconst createUser = async (userData) => {\n  try {\n    const newUser = await post('/users', userData)\n    users.value.push(newUser)\n  } catch (err) {\n    console.error('Error creating user:', err)\n  }\n}\n\nonMounted(() => {\n  fetchUsers()\n})\n</script>"
+      }
+    },
+    {
+      "id": 12,
+      "title": "Formulaires et Validation",
+      "category": "forms",
+      "description": "Créer et valider des formulaires en Vue.js",
+      "content": {
+        "introduction": "La gestion des formulaires est essentielle dans les applications Vue.js.",
+        "steps": [
+          "v-model et liaison bidirectionnelle",
+          "Validation côté client",
+          "Gestion des erreurs",
+          "Soumission de formulaires"
+        ],
+        "code": "<template>\n  <form @submit.prevent=\"submitForm\">\n    <div class=\"form-group\">\n      <label for=\"name\">Nom:</label>\n      <input\n        id=\"name\"\n        v-model=\"form.name\"\n        type=\"text\"\n        :class=\"{ 'error': errors.name }\"\n        @blur=\"validateField('name')\"\n      >\n      <span v-if=\"errors.name\" class=\"error-message\">{{ errors.name }}</span>\n    </div>\n\n    <div class=\"form-group\">\n      <label for=\"email\">Email:</label>\n      <input\n        id=\"email\"\n        v-model=\"form.email\"\n        type=\"email\"\n        :class=\"{ 'error': errors.email }\"\n        @blur=\"validateField('email')\"\n      >\n      <span v-if=\"errors.email\" class=\"error-message\">{{ errors.email }}</span>\n    </div>\n\n    <div class=\"form-group\">\n      <label for=\"age\">Âge:</label>\n      <input\n        id=\"age\"\n        v-model.number=\"form.age\"\n        type=\"number\"\n        :class=\"{ 'error': errors.age }\"\n        @blur=\"validateField('age')\"\n      >\n      <span v-if=\"errors.age\" class=\"error-message\">{{ errors.age }}</span>\n    </div>\n\n    <div class=\"form-group\">\n      <label>\n        <input\n          v-model=\"form.newsletter\"\n          type=\"checkbox\"\n        >\n        S'abonner à la newsletter\n      </label>\n    </div>\n\n    <button type=\"submit\" :disabled=\"!isFormValid || loading\">\n      {{ loading ? 'Envoi...' : 'Envoyer' }}\n    </button>\n  </form>\n</template>\n\n<script setup>\nimport { ref, reactive, computed } from 'vue'\nimport { useApi } from '@/composables/useApi'\n\nconst { loading, post } = useApi()\n\nconst form = reactive({\n  name: '',\n  email: '',\n  age: null,\n  newsletter: false\n})\n\nconst errors = ref({})\n\nconst rules = {\n  name: {\n    required: true,\n    minLength: 2\n  },\n  email: {\n    required: true,\n    email: true\n  },\n  age: {\n    required: true,\n    min: 18,\n    max: 120\n  }\n}\n\nconst validateField = (fieldName) => {\n  const value = form[fieldName]\n  const rule = rules[fieldName]\n  \n  if (rule.required && (!value || value === '')) {\n    errors.value[fieldName] = 'Ce champ est requis'\n    return false\n  }\n  \n  if (rule.minLength && value.length < rule.minLength) {\n    errors.value[fieldName] = `Minimum ${rule.minLength} caractères`\n    return false\n  }\n  \n  if (rule.email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value)) {\n    errors.value[fieldName] = 'Email invalide'\n    return false\n  }\n  \n  if (rule.min && value < rule.min) {\n    errors.value[fieldName] = `Valeur minimale: ${rule.min}`\n    return false\n  }\n  \n  if (rule.max && value > rule.max) {\n    errors.value[fieldName] = `Valeur maximale: ${rule.max}`\n    return false\n  }\n  \n  delete errors.value[fieldName]\n  return true\n}\n\nconst isFormValid = computed(() => {\n  return Object.keys(rules).every(field => validateField(field)) &&\n         Object.keys(errors.value).length === 0\n})\n\nconst submitForm = async () => {\n  if (!isFormValid.value) return\n  \n  try {\n    await post('/submit-form', form)\n    alert('Formulaire envoyé avec succès!')\n    // Reset form\n    Object.assign(form, {\n      name: '',\n      email: '',\n      age: null,\n      newsletter: false\n    })\n  } catch (error) {\n    alert('Erreur lors de l\\'envoi du formulaire')\n  }\n}\n</script>\n\n<style scoped>\n.form-group {\n  margin-bottom: 1rem;\n}\n\n.error {\n  border-color: red;\n}\n\n.error-message {\n  color: red;\n  font-size: 0.875rem;\n}\n</style>"
+      }
+    },
+    {
+      "id": 13,
+      "title": "Tests avec Vitest",
+      "category": "testing",
+      "description": "Tester vos composants Vue avec Vitest",
+      "content": {
+        "introduction": "Vitest est un framework de test rapide et moderne pour Vue.js.",
+        "steps": [
+          "Installation de Vitest",
+          "Configuration des tests",
+          "Tests de composants",
+          "Tests d'intégration"
+        ],
+        "code": "// vite.config.js\nimport { defineConfig } from 'vite'\nimport vue from '@vitejs/plugin-vue'\n\nexport default defineConfig({\n  plugins: [vue()],\n  test: {\n    environment: 'jsdom',\n    globals: true\n  }\n})\n\n// tests/Counter.test.js\nimport { mount } from '@vue/test-utils'\nimport { describe, it, expect } from 'vitest'\nimport Counter from '../src/components/Counter.vue'\n\ndescribe('Counter', () => {\n  it('renders initial count', () => {\n    const wrapper = mount(Counter, {\n      props: { initialCount: 5 }\n    })\n    \n    expect(wrapper.text()).toContain('Count: 5')\n  })\n  \n  it('increments count when button is clicked', async () => {\n    const wrapper = mount(Counter)\n    \n    await wrapper.find('button').trigger('click')\n    \n    expect(wrapper.text()).toContain('Count: 1')\n  })\n  \n  it('emits update event when count changes', async () => {\n    const wrapper = mount(Counter)\n    \n    await wrapper.find('button').trigger('click')\n    \n    expect(wrapper.emitted()).toHaveProperty('update')\n    expect(wrapper.emitted().update[0]).toEqual([1])\n  })\n})\n\n// tests/composables/useCounter.test.js\nimport { describe, it, expect } from 'vitest'\nimport { useCounter } from '../../src/composables/useCounter'\n\ndescribe('useCounter', () => {\n  it('initializes with default value', () => {\n    const { count } = useCounter()\n    expect(count.value).toBe(0)\n  })\n  \n  it('initializes with custom value', () => {\n    const { count } = useCounter(10)\n    expect(count.value).toBe(10)\n  })\n  \n  it('increments count', () => {\n    const { count, increment } = useCounter()\n    increment()\n    expect(count.value).toBe(1)\n  })\n  \n  it('calculates if count is even', () => {\n    const { count, increment, isEven } = useCounter()\n    expect(isEven.value).toBe(true)\n    \n    increment()\n    expect(isEven.value).toBe(false)\n  })\n})\n\n// package.json scripts\n{\n  \"scripts\": {\n    \"test\": \"vitest\",\n    \"test:ui\": \"vitest --ui\",\n    \"test:coverage\": \"vitest --coverage\"\n  }\n}"
+      }
+    },
+    {
+      "id": 14,
+      "title": "Optimisation des Performances",
+      "category": "performance",
+      "description": "Optimiser les performances de vos applications Vue",
+      "content": {
+        "introduction": "L'optimisation des performances est cruciale pour offrir une expérience utilisateur fluide.",
+        "steps": [
+          "Lazy loading des composants",
+          "v-memo pour la mémorisation",
+          "Optimisation des listes",
+          "Code splitting"
+        ],
+        "code": "// Lazy loading des composants\nconst LazyComponent = defineAsyncComponent(() => import('./LazyComponent.vue'))\n\n// Avec gestion du loading\nconst LazyComponent = defineAsyncComponent({\n  loader: () => import('./LazyComponent.vue'),\n  loadingComponent: LoadingComponent,\n  errorComponent: ErrorComponent,\n  delay: 200,\n  timeout: 3000\n})\n\n// v-memo pour la mémorisation\n<template>\n  <div v-memo=\"[name, age]\">\n    <p>{{ name }} - {{ age }} ans</p>\n    <expensiveComponent />\n  </div>\n</template>\n\n// Optimisation des listes avec v-memo\n<template>\n  <div v-for=\"item in list\" :key=\"item.id\" v-memo=\"[item.id, item.selected]\">\n    <p>{{ item.name }}</p>\n    <button @click=\"selectItem(item)\">Select</button>\n  </div>\n</template>\n\n// Utilisation de shallowRef pour les objets volumineux\nimport { shallowRef, triggerRef } from 'vue'\n\nconst bigObject = shallowRef({\n  // Objet volumineux\n  data: new Array(10000).fill(0).map((_, i) => ({ id: i, value: i }))\n})\n\n// Déclencher manuellement la réactivité\nconst updateBigObject = () => {\n  bigObject.value.data.push({ id: Date.now(), value: Math.random() })\n  triggerRef(bigObject) // Déclenche la mise à jour\n}\n\n// Optimisation avec v-once\n<template>\n  <!-- Rendu une seule fois -->\n  <div v-once>\n    <h1>{{ title }}</h1>\n    <ExpensiveComponent />\n  </div>\n</template>\n\n// Code splitting par route\nconst routes = [\n  {\n    path: '/home',\n    component: () => import('./views/Home.vue')\n  },\n  {\n    path: '/about',\n    component: () => import('./views/About.vue')\n  }\n]\n\n// Utilisation de defineAsyncComponent avec preload\nconst PreloadedComponent = defineAsyncComponent({\n  loader: () => import('./PreloadedComponent.vue'),\n  // Précharge le composant\n  preload: true\n})\n\n// Optimisation des watchers\nconst stopWatcher = watch(source, callback, {\n  flush: 'post', // Exécuter après le rendu\n  deep: false // Éviter deep watch si pas nécessaire\n})\n\n// Arrêter le watcher quand plus nécessaire\nonUnmounted(() => {\n  stopWatcher()\n})"
+      }
+    },
+    {
+      "id": 15,
+      "title": "Déploiement et Build",
+      "category": "deployment",
+      "description": "Construire et déployer votre application Vue",
+      "content": {
+        "introduction": "Le déploiement est la dernière étape pour mettre votre application Vue en production.",
+        "steps": [
+          "Build de production",
+          "Configuration des variables d'environnement",
+          "Optimisation du build",
+          "Déploiement sur différentes plateformes"
+        ],
+        "code": "// vite.config.js pour la production\nimport { defineConfig } from 'vite'\nimport vue from '@vitejs/plugin-vue'\n\nexport default defineConfig({\n  plugins: [vue()],\n  build: {\n    // Optimisations de build\n    outDir: 'dist',\n    assetsDir: 'assets',\n    minify: 'terser',\n    terserOptions: {\n      compress: {\n        drop_console: true,\n        drop_debugger: true\n      }\n    },\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          vendor: ['vue', 'vue-router', 'pinia'],\n          ui: ['element-plus']\n        }\n      }\n    }\n  },\n  base: '/my-app/' // Pour déploiement en sous-dossier\n})\n\n// Variables d'environnement\n// .env.production\nVITE_API_URL=https://api.prod.example.com\nVITE_APP_TITLE=Mon App Production\n\n// .env.development\nVITE_API_URL=http://localhost:3000\nVITE_APP_TITLE=Mon App Dev\n\n// Utilisation dans le code\nconst apiUrl = import.meta.env.VITE_API_URL\nconst appTitle = import.meta.env.VITE_APP_TITLE\n\n// Script de build\n// package.json\n{\n  \"scripts\": {\n    \"build\": \"vite build\",\n    \"build:staging\": \"vite build --mode staging\",\n    \"preview\": \"vite preview\",\n    \"analyze\": \"vite-bundle-analyzer dist\"\n  }\n}\n\n// Dockerfile pour containerisation\nFROM node:18-alpine as build-stage\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY . .\nRUN npm run build\n\nFROM nginx:stable-alpine as production-stage\nCOPY --from=build-stage /app/dist /usr/share/nginx/html\nCOPY nginx.conf /etc/nginx/conf.d/default.conf\nEXPOSE 80\nCMD [\"nginx\", \"-g\", \"daemon off;\"]\n\n// Configuration nginx\nserver {\n  listen 80;\n  server_name localhost;\n  root /usr/share/nginx/html;\n  index index.html;\n  \n  # Gestion des routes SPA\n  location / {\n    try_files $uri $uri/ /index.html;\n  }\n  \n  # Cache des assets\n  location ~* \\.(js|css|png|jpg|jpeg|gif|ico|svg)$ {\n    expires 1y;\n    add_header Cache-Control \"public, immutable\";\n  }\n}\n\n// Déploiement avec GitHub Actions\n# .github/workflows/deploy.yml\nname: Deploy to Production\n\non:\n  push:\n    branches: [main]\n\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      \n      - name: Setup Node.js\n        uses: actions/setup-node@v3\n        with:\n          node-version: '18'\n          cache: 'npm'\n          \n      - name: Install dependencies\n        run: npm ci\n        \n      - name: Build\n        run: npm run build\n        \n      - name: Deploy to S3\n        uses: aws-actions/configure-aws-credentials@v2\n        with:\n          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}\n          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}\n          aws-region: us-east-1\n          \n      - name: Upload to S3\n        run: aws s3 sync dist/ s3://my-bucket --delete"
+      }
+    }
+  ]
+}

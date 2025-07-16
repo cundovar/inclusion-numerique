@@ -1,0 +1,9 @@
+when@dev:
+    _pentatrion_vite:
+        prefix: /build
+        resource: "@PentatrionViteBundle/Resources/config/routing.yaml"
+
+when@prod:
+    _pentatrion_vite_prod:
+        prefix: /build
+        resource: "@PentatrionViteBundle/Resources/config/routing.yaml"

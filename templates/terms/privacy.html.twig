@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité{% endblock %}
+
+{% block body %}
+<style>
+    .privacy-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        line-height: 1.6;
+    }
+    .privacy-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    .privacy-section {
+        margin-bottom: 25px;
+    }
+    .privacy-section h2 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #007bff;
+    }
+    .privacy-section p {
+        margin-bottom: 10px;
+        text-align: justify;
+    }
+    .privacy-section ul {
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+    .privacy-section li {
+        margin-bottom: 5px;
+    }
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 15px;
+        background: #007bff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+    .back-link:hover {
+        background: #0056b3;
+    }
+</style>
+
+<div class="privacy-container">
+    <h1 class="privacy-title">Politique de confidentialité</h1>
+    
+    <div class="privacy-section">
+        <h2>1. Collecte des données</h2>
+        <p>Nous collectons les informations suivantes lors de votre inscription :</p>
+        <ul>
+            <li>Nom d'utilisateur</li>
+            <li>Mot de passe (stocké de manière sécurisée)</li>
+            <li>Adresse IP pour des raisons de sécurité</li>
+            <li>Données de navigation (cookies)</li>
+        </ul>
+    </div>
+
+    <div class="privacy-section">
+        <h2>2. Utilisation des données</h2>
+        <p>Vos données personnelles sont utilisées pour :</p>
+        <ul>
+            <li>Gérer votre compte utilisateur</li>
+            <li>Améliorer nos services</li>
+            <li>Assurer la sécurité du site</li>
+            <li>Vous contacter si nécessaire</li>
+        </ul>
+    </div>
+
+    <div class="privacy-section">
+        <h2>3. Partage des données</h2>
+        <p>Nous ne partageons pas vos données personnelles avec des tiers, sauf :</p>
+        <ul>
+            <li>Si requis par la loi</li>
+            <li>Pour protéger nos droits légaux</li>
+            <li>Avec votre consentement explicite</li>
+        </ul>
+    </div>
+
+    <div class="privacy-section">
+        <h2>4. Sécurité des données</h2>
+        <p>Nous mettons en place des mesures techniques et organisationnelles appropriées pour protéger vos données personnelles contre l'accès non autorisé, la divulgation, la modification ou la destruction.</p>
+    </div>
+
+    <div class="privacy-section">
+        <h2>5. Cookies</h2>
+        <p>Notre site utilise des cookies pour améliorer votre expérience utilisateur. Vous pouvez désactiver les cookies dans les paramètres de votre navigateur.</p>
+    </div>
+
+    <div class="privacy-section">
+        <h2>6. Vos droits</h2>
+        <p>Vous avez le droit de :</p>
+        <ul>
+            <li>Accéder à vos données personnelles</li>
+            <li>Rectifier des informations inexactes</li>
+            <li>Supprimer vos données (droit à l'oubli)</li>
+            <li>Limiter le traitement de vos données</li>
+            <li>Retirer votre consentement</li>
+        </ul>
+    </div>
+
+    <div class="privacy-section">
+        <h2>7. Durée de conservation</h2>
+        <p>Vos données personnelles sont conservées pendant la durée nécessaire aux finalités pour lesquelles elles ont été collectées, ou selon les obligations légales applicables.</p>
+    </div>
+
+    <div class="privacy-section">
+        <h2>8. Contact</h2>
+        <p>Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, vous pouvez nous contacter à l'adresse email fournie sur le site.</p>
+    </div>
+
+    <p><strong>Dernière mise à jour :</strong> {{ "now"|date("d/m/Y") }}</p>
+    
+    <a href="{{ path('app_register') }}" class="back-link">Retour à l'inscription</a>
+</div>
+{% endblock %}

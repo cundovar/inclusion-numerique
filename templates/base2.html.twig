@@ -6,15 +6,30 @@
     <link rel="manifest" href="/spa/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
-<meta name="theme-color" content="#42b983" />
+    <meta name="theme-color" content="#42b983" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🔵</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    <!-- Meta tags pour iOS et PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="spaVueSymfo">
+    
+    <!-- Icônes Apple -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/spa/pwa1.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/spa/pwa.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/spa/pwa.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/spa/pwa.png">
+    
+    <!-- Splash screen iOS -->
+    <link rel="apple-touch-startup-image" href="/spa/pwa1.png">
 
     {% block vite %}
       {% if app.debug %}
         <script type="module" src="/build/@vite/client"></script>
         <script type="module" src="/build/src/main.js"></script>
       {% else %}
-        <script type="module" src="/build/assets/main-CHY1xWom.js"></script>
-        <link rel="stylesheet" href="/build/assets/main-CFaeBMhn.css">
+          {{ vite_entry_script_tags('src/main.js') }}
+    {{ vite_entry_link_tags('src/main.js') }}
       {% endif %}
     {% endblock %}
   </head>

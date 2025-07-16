@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\PagesRepository;
 use App\Repository\MenuRepository;
+use App\Repository\PageContentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -50,4 +51,6 @@ public function show(int $id): JsonResponse
     
         return new JsonResponse($jsonMenus, Response::HTTP_OK, [], true);
     }
+
+
 }

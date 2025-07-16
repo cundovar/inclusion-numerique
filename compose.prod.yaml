@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=1
+    volumes:
+      - .:/var/www/symfony
+      - ./var/cache:/var/www/symfony/var/cache
+      - ./var/log:/var/www/symfony/var/log
+    networks:
+      - connectPerso
+
+  nginx:
+    image: nginx:stable
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/symfony
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - php
+    networks:
+      - connectPerso
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: courTotal5
+    ports:
+      - "3307:3306"
+    networks:
+      - connectPerso
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+networks:
+  connectPerso:
+    driver: bridge
+
+volumes:
+  mysql_data:

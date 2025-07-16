@@ -52,7 +52,7 @@ services:  # Définition des services (chaque container que tu vas lancer)
     networks:
       - connectPerso  # Connexion au même réseau Docker
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
   
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

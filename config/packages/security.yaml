@@ -10,13 +10,21 @@ security:
                 class: App\Entity\User
                 property: username
     firewalls:
-        api:
-            pattern: ^/api
-            stateless: true
-            
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+            
+        api_favorites:
+            pattern: ^/api/me-favorites
+            stateless: false
+            provider: app_user_provider
+            context: main
+        
+            
+        api_public:
+            pattern: ^/api
+            security: false
+            
         main:
             lazy: true
             provider: app_user_provider
@@ -24,27 +32,17 @@ security:
             logout:
                 path: app_logout
                 target: app_login
-                # where to redirect after logout
-                # target: app_any_route
 
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
                 path: /
-                # by default, the feature is enabled by checking a checkbox in the
-                # login form, uncomment the following line to always enable it.
-                #always_remember_me: true
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/api/me-favorites, roles: ROLE_USER }
          - { path: ^/spa, roles: ROLE_USER }
 
 when@test:

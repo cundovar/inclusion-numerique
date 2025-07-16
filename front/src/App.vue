@@ -1,12 +1,57 @@
 <template>
-  <div
-    v-if="user.roles.includes('ROLE_USER')"
-    id="app2"
-    class="relative w-full xl:w-4/5 m-auto"
+   <pagesFrame/>
+  
+  <!-- Pop-up de téléchargement d'app mobile -->
+  <div 
+    v-if="showMobileAppPopup" 
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
+    <div class="bg-white rounded-lg p-6 mx-4 max-w-sm w-full shadow-xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">Télécharger l'app</h3>
+        <button 
+          @click="closeMobileAppPopup"
+          class="text-gray-400 hover:text-gray-600 text-xl"
+        >
+          ×
+        </button>
+      </div>
+      
+      <div class="text-center">
+        <p class="text-gray-600 mb-4">
+          Téléchargez notre application mobile pour une meilleure expérience !
+        </p>
+        
+        <div class="flex flex-col gap-3">
+          <button 
+            @click="installPWA"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
+          >
+            <i class="pi pi-download"></i>
+            Installer l'application
+          </button>
+          
+          <a 
+            :href="currentOrigin" 
+            class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-green-700 transition-colors"
+          >
+            <i class="pi pi-external-link"></i>
+            Ouvrir dans le navigateur
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    
+    id="app2"
+    class="relative w-full xl:w-full m-auto"
+  >
+ 
     <div class="h-20"></div>
     <div
-      class="bg-[var(--primary-color)] flex max-md:fixed w-full z-50 h-20 shadow-xl justify-between items-center p-5 md:hidden"
+      class="  border-blue-950 bg-[var(--primary-color)] flex max-md:fixed w-full z-50 h-20 shadow-xl justify-between items-center p-5 md:hidden"
     >
       <div @click="toggleMenu" class="cursor-pointer">
         <i
@@ -24,7 +69,7 @@
       <a
         v-if="user.roles.includes('ROLE_ADMIN')"
         target="_blank"
-        href="http://localhost:8080/page-content"
+        :href="APP_CONFIG.ADMIN_URL"
         class="cursor-pointer text-amber-900 right-5 top-5"
       >
         adm
@@ -39,23 +84,46 @@
     <nav
       @mouseleave="isMdOuPlus && (hoveredCategory = null)"
       :class="[
-        'md:p-5 xl:w-1/5 fixed z-10 max-md:z-50 max-md:top-20 transition-transform duration-300 ease-in-out',
+        'md:p-5  fixed z-10 max-md:z-50 max-md:top-20 transition-transform duration-300 ease-in-out',
         isMdOuPlus
-          ? 'flex   flex-col w-1/4 translate-x-0'
+          ? 'flex   flex-col translate-x-0'
           : isMenuOpen
           ? 'w-full shadow-black pl-2 pr-2 shadow-2xl translate-x-0  max-h-[calc(100vh-56px)]  overflow-y-auto flex-col max-md:z-50'
           : 'w-full -translate-x-full',
       ]"
     >
-    <p class="p-2  bg-amber-200 max-md:hidden cursor-pointer"> bonjour <span class="font-bold"> {{ user.username }}</span></p>
-      <div class="md:hidden relative flex justify-end items-end self-end"></div>
+    
+    
+    
+    
+    
+    <div class="md:hidden relative flex justify-end items-end self-end"></div>
+    <router-link 
+      to="/profile" 
+    >
+    <p class="p-2  bg-amber-200 hover:bg-amber-300 max-md:hidden cursor-pointer"> <span class="pi pi-user">  </span>  bonjour <span class="font-bold"> {{ user.username }}</span> </p>
+    
+  </router-link>
       <a class="md:hidden  bg-gray-500 gap-2 flex items-center justify-start p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
         <i class="pi pi-github cursor-pointer   text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
        <p class="text-amber-200  font-bold"> GITHUB </p>
-    </a>
-      <p class=" font-bold max-md:text-xl p-2 max-md:bg-pink-200 bg-pink-400 text-center cursor-pointer" @click="logout">
+   
+      </a>
+      <p class=" font-bold max-md:text-xl p-2 max-md:bg-pink-200 hover:bg-pink-300 bg-pink-400 text-center cursor-pointer" @click="logout">
         deconnexion
       </p>
+      
+      <!-- Bouton de test temporaire -->
+     <!--
+      #  <button 
+          @click="showMobileAppPopup = true" 
+          class="bg-red-500 text-white p-2 m-2 rounded"
+        >
+          Test Popup
+        </button> #}
+    
+    
+    -->
 <!-- list de lien mdn pour mobile dans nav  -->
   <lienMDN/>
 
@@ -130,36 +198,45 @@
       </div>
 <!-- resultat de la recherche en desktop -->
       <div
-        v-if=" searchResults.length"
-        class="p-4 max-md:hidden bg-gray-100 w-96rounded-xl my-4"
+        v-if="searchResults.length"
+        class="search-results p-4 max-md:hidden bg-gray-100 w-96 rounded-xl my-4 max-h-96 overflow-y-auto shadow-lg"
       >
-        <h2 class="text-lg font-bold mb-2">Résultats de la recherche :</h2>
-        <ul>
+        <div class="mb-2 text-sm text-gray-600 font-medium">
+          {{ searchResults.length }} résultat(s) trouvé(s)
+        </div>
+        <ul class="space-y-2">
           <li
             v-for="menu in searchResults"
             :key="menu.page.slug"
-            class="hover:bg-pink-200 p-1 border-b"
+            class="hover:bg-pink-200 p-3 border-b border-gray-200 rounded-lg transition-colors duration-200"
           >
             <router-link
               :to="`/pages${menu.page.slug}`"
-              class="hover:underline p-2"
-
+              class="block hover:underline"
+              @click="search = ''; searchResults = []"
             >
-            
-              {{ capitalize(menu.title) }}
+              <div class="font-medium text-gray-800">
+                {{ capitalize(menu.title) }}
+              </div>
+              <div class="text-sm text-gray-600 mt-1">
+                {{ menu.category?.name || 'Catégorie non définie' }}
+              </div>
+              <div v-if="menu.content" class="text-xs text-gray-500 mt-1 truncate">
+                {{ menu.content.substring(0, 100) }}...
+              </div>
             </router-link>
           </li>
         </ul>
       </div>
 
-      <div v-else-if="search.value" class="italic text-gray-500 my-4">
-        Aucun résultat trouvé.
+      <div v-else-if="search && search.trim()" class="italic text-gray-500 my-4 max-md:hidden">
+        Aucun résultat trouvé pour "{{ search }}".
       </div>
     </nav>
     <a
       v-if="user.roles.includes('ROLE_ADMIN')"
       target="_blank"
-      href="http://localhost:8080/page-content"
+      :href="APP_CONFIG.ADMIN_URL"
       class="cursor-pointer absolute text-amber-200 right-5 top-5"
     >
       admin
@@ -173,46 +250,73 @@
     <!-- resultat de la recherche en mobile -->
     <div
         v-if="modalIsOpen && searchResults.length"
-        class="p-4  md:hidden bg-gray-100 modal w-96rounded-xl my-4"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 md:hidden"
       >
-      <i
-          @click="closeModal"
-          class="text-blue-950 pi pi-times float-end cursor-pointer"
-          style="font-size: 1.5rem"
-        ></i>
-        <h2 class="text-lg font-bold mb-2">Résultats de la recherche :</h2>
-        <ul>
+      <div class="bg-white rounded-lg w-full max-w-md max-h-96 overflow-hidden shadow-xl">
+        <div class="flex justify-between items-center p-4 border-b">
+          <h2 class="text-lg font-bold">Résultats de recherche</h2>
+          <i
+            @click="closeModal"
+            class="text-blue-950 pi pi-times cursor-pointer text-xl"
+          ></i>
+        </div>
+        <div class="p-2 text-sm text-gray-600 border-b">
+          {{ searchResults.length }} résultat(s) trouvé(s)
+        </div>
+        <ul class="overflow-y-auto max-h-80 p-2">
           <li
             v-for="menu in searchResults"
             :key="menu.page.slug"
-            class="hover:bg-pink-200 p-1 border-b"
+            class="hover:bg-pink-200 p-3 border-b border-gray-200 transition-colors duration-200"
           >
             <router-link
               :to="`/pages${menu.page.slug}`"
-              class="hover:underline p-2"
+              class="block hover:underline"
+              @click="closeModal(); search = ''; searchResults = []"
             >
-              {{ capitalize(menu.title) }}
+              <div class="font-medium text-gray-800">
+                {{ capitalize(menu.title) }}
+              </div>
+              <div class="text-sm text-gray-600 mt-1">
+                {{ menu.category?.name || 'Catégorie non définie' }}
+              </div>
+              <div v-if="menu.content" class="text-xs text-gray-500 mt-1 truncate">
+                {{ menu.content.substring(0, 80) }}...
+              </div>
             </router-link>
           </li>
         </ul>
       </div>
+    </div>
 
-      <div v-else-if="search.value" class="italic text-gray-500 my-4">
-        Aucun résultat trouvé.
+    <div v-else-if="modalIsOpen && search && search.trim()" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 md:hidden">
+      <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-xl">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">Recherche</h2>
+          <i
+            @click="closeModal"
+            class="text-blue-950 pi pi-times cursor-pointer text-xl"
+          ></i>
+        </div>
+        <div class="italic text-gray-500 text-center">
+          Aucun résultat trouvé pour "{{ search }}".
+        </div>
       </div>
+    </div>
 
 
 
     <main
-      class="md:w-3/4 self-end max-md:z-10 max-md:w-full h-auto xl:w-4/5 right-0 overflow-hidden"
+      class="md:w-3/4  xl:p-20 self-end max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden"
     >
       <router-view />
+      <AfertLogin v-if="$route.path === '/'" />
     </main>
+
+    <navFooterMobil/>
   </div>
 
-  <div v-else>
-    <h1>Vous n'avez pas accès à cette page</h1>
-  </div>
+
 </template>
 
 <script setup>
@@ -227,112 +331,38 @@ import { orderMenuTitle } from "./utlis/arrayUtills";
 import list_logo from "./views/components/list_logo.vue";
 import { logos } from "./tab-object/list-logo";
 import lienMDN from "./views/components/menuMobile/lienMDN.vue";
+import navFooterMobil from "./views/components/NavFooterMobil/Main.vue";
+import {useData} from "./utlis/fetchDataPwa";
+import pagesFrame from "./views/components/MenuPageFramwork/PagesFrame.vue";
+import { APP_CONFIG } from "./config/app.js";
+import AfertLogin from "./views/components/AfertLogin.vue";
 
 
-const cats = ref([]);
-const menus = ref([]);
+
 const hoveredCategory = ref(null);
 const isMenuOpen = ref(false);
 const isMdOuPlus = ref(window.innerWidth >= 768); // md = 768px en Tailwind
 const search = ref("");
 const searchResults = ref([]);
-const user = ref({ username: "", roles: [] });
+
 const modalIsOpen = ref(true);
 const isMobile=ref(window.innerWidth < 768);
 const clickMenu=ref(null);
+const { menus, user,cats, fetchMenus, fetchUser } = useData()
+
+// Pop-up mobile app
+const showMobileAppPopup = ref(false);
+let deferredPrompt = null;
+const currentOrigin = ref(window.location.origin);
   
 
 
-orderMenuTitle(menus.value, 'title', true);
-
-// --- DB IndexedDB pour PWA ---
-const dbPromise = openDB('spa-db', 1, {
-  upgrade(db) {
-    db.createObjectStore('menus', { keyPath: 'id' });
-    db.createObjectStore('categories', { keyPath: 'id' });
-    db.createObjectStore('user', { keyPath: 'username' });
-  }
-});
-async function saveMenusToDB(menusArray) {
-  const db = await dbPromise;
-  const tx = db.transaction('menus', 'readwrite');
-  
-  menusArray.forEach(item => {
-    const pureItem = JSON.parse(JSON.stringify(item)); 
-    tx.store.put(pureItem);
-  });
-  
-  await tx.done;
-}
-
-
-
-async function saveCatsToDB(catsArray) {
-  const db = await dbPromise;
-  const tx = db.transaction('categories', 'readwrite');
-  // convertion en données json
-  catsArray.forEach(item => {
-    const pureItem = JSON.parse(JSON.stringify(item)); 
-    tx.store.put(pureItem);
-  });
-  
-  await tx.done;
-}
-
-async function saveUserToDB(user) {
-  const db = await dbPromise;
-  // convertion en données json
-  const tx = db.transaction('user', 'readwrite');
-  const jsonUser = JSON.parse(JSON.stringify(user)); 
-  tx.store.put(jsonUser);
-  await tx.done;
-}
-
-// --- Chargement user dans IndexedDB pour le offline ---
-
-async function loadUserFromDB() {
-  const db = await dbPromise;
-  const user = await db.get('user', 1);
-  return user;
-}
-
-async function loadMenusFromDB() {
-  const db = await dbPromise;
-  return db.getAll('menus');
-}
-
-async function loadCatsFromDB() {
-  const db = await dbPromise;
-  return db.getAll('categories');
-}
 
 
 
 
 
-const fetchUser = async () => {
-  try {
-    const response = await axios.get(" /user-api/me");
-    user.value = response.data;
-    console.log("User:", user.value);
-    // --- Stockage user dans IndexedDB pour le offline ---
-    await saveUserToDB(user.value);
 
-  } catch (error) {
-   if(!error.response){
-    // pas de repopose alors surement or connection
-    console.warn("Pas de reponse, surement en offline");
-    user.value = await loadUserFromDB();
-    console.log("User offline:", user.value);
-   }else if(error.response.status === 401){
-    console.error("Erreur lors de la récupération de l'utilisateur", error);
-    router.push("/login");
-   }else{
-    console.error("autre error", error);
-   
-   }
-  }
-};
 //deconnexion
 const logout = () => {
   axios.post("/logout").then(() => {
@@ -353,34 +383,8 @@ const openMenu = (catName) => {
   }
 };
 
-//menus
-const fetchMenus = async () => {
-  try {
-    const [response, responses2] = await Promise.all([
-      axios.get("/api/categories"),
-      axios.get("/api/page_contents"),
-    ]);
 
-    cats.value = response.data.member;
-    menus.value = responses2.data.member;
 
-    // --- Stockage dans IndexedDB pour le offline ---
-    await saveMenusToDB(menus.value);
-    await saveCatsToDB(cats.value);
-
-    console.log("Categories:", cats.value);
-    console.log("Menus:", menus.value);
-  } catch (error) {
-    console.error("Erreur lors de la récupération des menus:", error);
-
-    // Chargement offline
-    cats.value = await loadCatsFromDB();
-    menus.value = await loadMenusFromDB();
-
-    console.log("Categories offline:", cats.value);
-    console.log("Menus offline:", menus.value);
-  }
-};
 const updateIsMobile=()=>{
   isMobile.value = window.innerWidth < 768;
   console.log( "format mobile",isMobile.value);
@@ -392,10 +396,22 @@ const updateIsMdOrAbove = () => {
 };
 onMounted(() => {
   fetchMenus();
-  window.addEventListener("resize", updateIsMdOrAbove);
-  updateIsMobile()
-  console.log("true");
   fetchUser();
+  window.addEventListener("resize", updateIsMdOrAbove);
+  updateIsMobile();
+  
+  // Écouter l'événement beforeinstallprompt pour PWA
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+  
+  // Vérifier si le pop-up mobile app doit être affiché avec un délai
+  setTimeout(() => {
+    checkMobileAppPopup();
+  }, 500);
+  
+  console.log("true");
 });
 onUnmounted(() => {
   window.removeEventListener("resize", updateIsMdOrAbove);
@@ -412,29 +428,119 @@ const launchSearch = () => {
   console.log("menus", menus.value);
 
   const query = search.value.toLowerCase();
-  //recherche
+  
+  // Recherche approfondie dans tous les contenus
   searchResults.value = menus.value.filter((menu) => {
     const title = menu.title?.toLowerCase() || "";
     const content = menu.content?.toLowerCase() || "";
-    const label = menu.menu.label?.toLowerCase() || "";
+    const label = menu.menu?.label?.toLowerCase() || "";
     const code = menu.code?.toLowerCase() || "";
-    const slug = menu.page.slug?.toLowerCase() || "";
-    const category = menu.category.name?.toLowerCase() || "";
-
-    return (
-      title.includes(query) ||
-      content.includes(query) ||
-      label.includes(query) ||
-      code.includes(query) ||
-      slug.includes(query) ||
-      category.includes(query)
-    );
+    const slug = menu.page?.slug?.toLowerCase() || "";
+    const category = menu.category?.name?.toLowerCase() || "";
+    const type = menu.type?.toLowerCase() || "";
+    
+    // Recherche aussi dans les pageBlocks si disponibles
+    let blockContent = "";
+    if (menu.pageBlocks && Array.isArray(menu.pageBlocks)) {
+      blockContent = menu.pageBlocks.map(block => {
+        const blockTitle = block.title?.toLowerCase() || "";
+        const blockContent = block.content?.toLowerCase() || "";
+        const blockCode = block.code?.toLowerCase() || "";
+        return blockTitle + " " + blockContent + " " + blockCode;
+      }).join(" ");
+    }
+    
+    // Recherche dans toutes les propriétés disponibles
+    const searchableText = [
+      title,
+      content,
+      label,
+      code,
+      slug,
+      category,
+      type,
+      blockContent
+    ].join(" ");
+    
+    return searchableText.includes(query);
   });
+  
+  // Trier les résultats par pertinence (titre en premier, puis contenu)
+  searchResults.value.sort((a, b) => {
+    const aTitle = a.title?.toLowerCase() || "";
+    const bTitle = b.title?.toLowerCase() || "";
+    
+    if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
+    if (!aTitle.includes(query) && bTitle.includes(query)) return 1;
+    
+    return 0;
+  });
+  
+  // Scroll automatique vers les résultats sur desktop
+  if (searchResults.value.length > 0) {
+    setTimeout(() => {
+      const resultsElement = document.querySelector('.search-results');
+      if (resultsElement) {
+        resultsElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'nearest' 
+        });
+      }
+    }, 100);
+  }
 };
 // close modal
 const closeModal = () => {
   modalIsOpen.value = false;
   
+};
+
+// Fonctions pour le pop-up mobile app
+const checkMobileAppPopup = () => {
+  // Vérifier si le pop-up a déjà été affiché
+  const hasSeenPopup = localStorage.getItem('mobileAppPopupShown');
+  
+  
+  // Afficher seulement si pas encore vu et si on est sur mobile
+  if (!hasSeenPopup && isMobile.value) {
+    setTimeout(() => {
+      showMobileAppPopup.value = true;
+    }, 1000);
+  }
+  
+  
+};
+
+const closeMobileAppPopup = () => {
+  showMobileAppPopup.value = false;
+  // Marquer comme vu dans localStorage
+  localStorage.setItem('mobileAppPopupShown', 'true');
+};
+
+// Fonction pour installer la PWA
+const installPWA = async () => {
+  // Détecter iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  
+  if (deferredPrompt) {
+    // Android/Chrome - Installation automatique
+    deferredPrompt.prompt();
+    
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('PWA installée');
+      closeMobileAppPopup();
+    }
+    
+    deferredPrompt = null;
+  } else if (isIOS) {
+    // iOS - Instructions spécifiques
+    alert('Pour installer sur iOS :\n1. Appuyez sur le bouton "Partager" 📤\n2. Sélectionnez "Ajouter à l\'écran d\'accueil" 📱\n3. Confirmez en appuyant sur "Ajouter"');
+  } else {
+    // Autres navigateurs
+    alert('Pour installer l\'application, utilisez le menu de votre navigateur : "Ajouter à l\'écran d\'accueil"');
+  }
 };
 
 const menusByCategory = computed(() => {
