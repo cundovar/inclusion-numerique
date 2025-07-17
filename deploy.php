@@ -35,7 +35,8 @@ host('production')
     ->set('remote_user', 'deployer')
     ->set('deploy_path', '/var/www/coursPoleS')
     ->set('branch', 'main')
-    ->set('http_user', 'www-data');
+    ->set('http_user', 'www-data')
+    ->set('identity_file', '~/.ssh/id_rsa');
 
 // Tasks
 task('frontend:build', function () {
@@ -48,13 +49,16 @@ task('frontend:build', function () {
     // run('npm run build');
 });
 
-task('database:migrate', function () {
-    run('{{bin/console}} doctrine:migrations:migrate --no-interaction');
+task('database:create', function () {
+    run('{{bin/console}} doctrine:database:create --if-not-exists');
 });
+
+before('database:migrate', 'database:create');
 
 task('cache:clear', function () {
     run('{{bin/console}} cache:clear --env=prod --no-debug');
-});
+});    
+
 
 // Hooks
 after('deploy:vendors', 'frontend:build');

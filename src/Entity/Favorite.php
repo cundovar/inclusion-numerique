@@ -19,13 +19,13 @@ class Favorite
     #[Groups(['favorite:read'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'favorites')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[Groups(['favorite:read'])]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: Page::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Page::class, inversedBy: 'favorites')]
+    #[ORM\JoinColumn(name: 'page_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[Groups(['favorite:read'])]
     private ?Page $page = null;
 

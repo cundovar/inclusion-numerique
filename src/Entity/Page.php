@@ -34,9 +34,16 @@ class Page
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'page')]
     private Collection $pageContents;
 
+    /**
+     * @var Collection<int, Favorite>
+     */
+    #[ORM\OneToMany(mappedBy: 'page', targetEntity: Favorite::class, orphanRemoval: true)]
+    private Collection $favorites;
+
     public function __construct()
     {
         $this->pageContents = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -89,7 +96,6 @@ class Page
     public function removePageContent(PageContent $pageContent): static
     {
         if ($this->pageContents->removeElement($pageContent)) {
-            // set the owning side to null (unless already changed)
             if ($pageContent->getPage() === $this) {
                 $pageContent->setPage(null);
             }
@@ -97,6 +103,36 @@ class Page
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites[] = $favorite;
+            $favorite->setPage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): static
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            if ($favorite->getPage() === $this) {
+                $favorite->setPage(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function __toString(): string
     {
         return $this->slug;
