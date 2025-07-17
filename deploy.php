@@ -40,28 +40,14 @@ host('production')
 
 // Tasks
 task('frontend:build', function () {
-    // Option 1: Build local avec Docker
     runLocally('docker-compose run --rm front-build');
-    
-    // Option 2: Build sur le serveur (alternative)
-    // cd('{{release_path}}/front');
-    // run('npm install');
-    // run('npm run build');
 });
-
-task('database:create', function () {
-    run('{{bin/console}} doctrine:database:create --if-not-exists');
-});
-
-before('database:migrate', 'database:create');
 
 task('cache:clear', function () {
     run('{{bin/console}} cache:clear --env=prod --no-debug');
-});    
-
+});
 
 // Hooks
 after('deploy:vendors', 'frontend:build');
-after('deploy:cache:clear', 'database:migrate');
-after('database:migrate', 'cache:clear');
+after('deploy:cache:clear', 'cache:clear');
 after('deploy:failed', 'deploy:unlock');
