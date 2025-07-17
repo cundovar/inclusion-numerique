@@ -4,7 +4,7 @@ namespace Deployer;
 require 'recipe/symfony.php';
 
 // Config
-set('repository', 'https://github.com/cundovar/vue-symfony.git');
+set('repository', 'git@github.com:cundovar/vue-symfony.git');
 set('git_tty', true);
 
 // Shared files and directories
