@@ -28,7 +28,18 @@ services:  # Définition des services (chaque container que tu vas lancer)
     working_dir: /var/www/symfony
     volumes:
       - .:/var/www/symfony
-    command: tail -f /dev/null  
+    command: tail -f /dev/null
+
+  front-build:
+    build:
+      context: ./front
+    working_dir: /app
+    volumes:
+      - ./front:/app
+      - ./public/build:/app/dist
+    command: npm run build
+    networks:
+      - connectPerso  
 
   nginx:  # Service pour Nginx, qui sert Symfony
     image: nginx:stable  # Utilisation de l'image officielle de Nginx (stable version)

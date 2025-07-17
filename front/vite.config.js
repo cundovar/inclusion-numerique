@@ -38,7 +38,6 @@ export default defineConfig({
         background_color: '#ffffff',      // Couleur de fond au lancement
         display: 'standalone',            // Affichage comme une vraie app (sans barre d'adresse)
         lang: 'fr',                       // Langue de l'application
-        includeAssets: ['favicon.svg', 'robots.txt', 'sitemaps.xml'], // Fichiers inclus dans la PWA
         icons: [                          // Icônes de l'application
           {
             src: '/spa/pwa.png',          // Chemin de l'icône 192x192
@@ -56,7 +55,7 @@ export default defineConfig({
       },
       workbox: {                          // Configuration de Workbox pour gérer le cache
         globDirectory: '../public/spa',   // Où chercher les fichiers à mettre en cache (aligné avec outDir)
-        globPatterns: ['**/*.{js,wasm,css,html,png,svg}'], // Quels types de fichiers à inclure
+        globPatterns: ['**/*.{js,css,html,png,svg}'], // Quels types de fichiers à inclure
         globIgnores: ['manifest.webmanifest', 'workbox-*.js', 'sw.js'], // Quels fichiers ignorer
         runtimeCaching: [
           {
@@ -67,22 +66,8 @@ export default defineConfig({
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365 // 1 an
-              },
-              cacheKeyWillBeUsed: async ({ request }) => {
-                return `${request.url}`;
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'gstatic-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 an
-              },
-            },
+              }
+            }
           },
           {
             urlPattern: /\/api\/categories/,
@@ -93,43 +78,11 @@ export default defineConfig({
                 maxEntries: 5,
                 maxAgeSeconds: 60 * 60 // 1 heure
               },
-              networkTimeoutSeconds: 3,
-            },
-          },
-          {
-            urlPattern: /\/api\/page_contents$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-page-contents-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 // 1 heure
-              },
-              networkTimeoutSeconds: 3,
-            },
-          },
-          {
-            urlPattern: /\/api\/page_contents\/\d+/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-individual-pages-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 heures
-              },
-              networkTimeoutSeconds: 3,
-            },
-          },
+              networkTimeoutSeconds: 3
+            }
+          }
         ]
-      },
-      screenshots: [                      // Capture d'écran de l'app (pour le store, par ex)
-        {
-          src: '/spa/screenshot.png',
-          type: 'image/png',
-          sizes: '720x1280',
-          form_factor: 'wide'
-        }
-      ]
+      }
     })
   ],
 
