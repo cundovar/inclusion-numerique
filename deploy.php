@@ -33,7 +33,7 @@ add('writable_dirs', [
 host('production')
     ->set('hostname', '51.83.32.36')
     ->set('remote_user', 'deployer')
-    ->set('deploy_path', '/var/www/cours')
+    ->set('deploy_path', '/var/www/coursPoleS')
     ->set('branch', 'main')
     ->set('http_user', 'www-data');
 
