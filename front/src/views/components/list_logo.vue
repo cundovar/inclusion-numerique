@@ -1,6 +1,6 @@
 <template>
-  <div class="h-auto absolute top-3 max-xl:w-2/3 right-0">
-    <div class="flex flex-wrap p-0 pr-48 gap-3 w-full max-md:hidden justify-end items-end text-amber-200">
+  <div class="h-auto   max-xl:w-full   xl:max-w-[15rem]">
+    <div class="flex flex-wrap  xl:justify-center xl:items-center shadow-xxl  p-0 gap-3 w-full max-md:hidden justify-end items-end ">
       <!-- GitHub -->
       <div class="tech-item">
         <a href="https://github.com/poleS-dev" target="_blank" class="tech-link">
@@ -69,7 +69,7 @@ const resetHoverColor = () => {
 }
 
 .tech-icon-container {
-  width: 50px;
+  width: 45px;
   height: 45px;
   border-radius: 50%;
   display: flex;
@@ -83,13 +83,14 @@ const resetHoverColor = () => {
 
 .tech-icon {
   font-size: 2rem;
-  color: #ffffff;
+
+ 
   transition: all 0.3s ease;
 }
 
 .tech-name {
   text-align: center;
-  color: #ffffff;
+ 
   font-weight: bold;
   font-size: 0.85rem;
   margin: 0;

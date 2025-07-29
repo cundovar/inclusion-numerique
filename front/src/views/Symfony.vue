@@ -1,6 +1,6 @@
 <template>
 
-  <div class="md:rounded-2xl md:mt-48  xl:mt-0 - pb-96 text-blue-500 min-h-screen w-full bg-blue-200">
+  <div class="md:rounded-2xl md:mt-10  xl:mt-0 - pb-96 text-blue-500 min-h-screen w-ful bg-purple-200">
     <div class="">
     <div class="header-section">
       <div class="tech-header">
@@ -21,6 +21,11 @@
     </div>
 
  <div class="  flex flex-wrap  justify-center items-center " >
+      <CourseCard
+        title="Bases de Symfony"
+        :menus="baseMenus"
+        icon-class="fas fa-graduation-cap"
+      />
       <CourseCard
         title="Models"
         :menus="modelMenus"
@@ -98,6 +103,12 @@ const filterMenus = computed(() =>
   menus.value.filter((menu) => menu.menu.label?.toUpperCase() === "SYMFONY")
 );
 
+const baseMenus = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("INTRO")
+  )
+);
+
 const modelMenus = computed(() =>
   filterMenus.value.filter((menu) =>
     menu.title?.toUpperCase().includes("MODEL")
@@ -123,9 +134,10 @@ const apiMenus = computed(() =>
 );
 
 const formMenus = computed(() =>
-  filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("FORM")
-  )
+  filterMenus.value.filter((menu) => {
+    const title = menu.title?.toUpperCase() || "";
+    return title.includes("FORM") && !title.includes("API");
+  })
 );
 
 const securityMenus = computed(() =>
@@ -136,8 +148,8 @@ const securityMenus = computed(() =>
 
 const doctrinMenus = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("DOCTRINE") || 
-    menu.title?.toUpperCase().includes("ORM")
+    menu.title?.toUpperCase().includes("DOCTRINE") 
+  
   )
 );
 

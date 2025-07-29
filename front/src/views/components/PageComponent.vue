@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pb-96 md:mt-48 xl:mt-0 -z-10 shadow-2xl bg-blue-200 md:rounded-2xl"
+    class="pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5 -z-10 shadow-2xl bg-gray-50  md:rounded-2xl"
   >
     <div v-if="pageContent">
       <div

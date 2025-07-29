@@ -1,13 +1,13 @@
 <template>
   
-  <div class="max-w-4xl mx-auto p-6">
+  <div class="max-w-4xl mx-auto p-6 max-md:pb-96">
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
       <!-- Header Profile -->
       <div class="bg-gradient-to-r from-blue-500 px-6 py-8">
         <div class="flex items-center space-x-4">
           <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
             <i class="pi pi-user text-3xl text-blue-500"></i>
-          </div>
+          </div> 
           <div class="text-white">
             <h1 class="text-2xl font-bold">{{ user.username }}</h1>
             <p class="text-blue-100">{{ user.roles.includes('ROLE_ADMIN') ? 'Administrateur' : 'Utilisateur' }}</p>

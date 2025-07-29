@@ -1,12 +1,12 @@
 <template>
 
-<footer class=" min-w-[320px] p-2 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 bg-blue-300 z-[9999] shadow-md flex items-center justify-around md:hidden">
+<footer class=" min-w-[320px] p-2 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 bg-blue-300 z-[9999] shadow-md flex items-center justify-around xl:hidden">
 
   <router-link
     :to="`/${profileLink.name}`"
-    class=" shadow-neutral-600 shadow-lg p-2  rounded-2xl bg-amber-400 w-12  text-white font-bold hover:underline flex flex-col items-center justify-center"
+    class=" shadow-neutral-600 shadow-lg p-2  rounded-2xl bg-blue-400 w-12  text-white font-bold hover:underline flex flex-col items-center justify-center"
   >
-    <i :class="profileLink.icon" class="text-4xl mb-1"></i>
+    <i :class="profileLink.icon" class="text-2xl mb-1"></i>
     <span class="text-xs">{{ profileLink.label }}</span>
   </router-link>
   
@@ -16,7 +16,7 @@
       :to="`/pages/${tech.name}`"
       class=" shadow-neutral-600 shadow-lg p-2 rounded-xl bg-blue-400 w-12  text-white font-bold hover:underline flex flex-col items-center justify-center"
     >
-      <i :class="tech.icon" class="text-4xl mb-1"></i>
+      <i :class="tech.icon" class="text-2xl mb-1"></i>
       <span class="text-xs">{{ tech.label }}</span>
     </router-link>
     
@@ -43,8 +43,8 @@ const techs = [
     icon: 'fab fa-react'
   },
   {
-    name: 'wordpress',
-    label: 'WordPress',
+    name: 'WP',
+    label: 'WP',
     icon: 'fab fa-wordpress'
   }
 ]

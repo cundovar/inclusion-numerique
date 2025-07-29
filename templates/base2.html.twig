@@ -23,15 +23,13 @@
     <!-- Splash screen iOS -->
     <link rel="apple-touch-startup-image" href="/spa/pwa1.png">
 
-    {% block vite %}
-      {% if app.debug %}
+       {% if app.debug %}
         <script type="module" src="/build/@vite/client"></script>
         <script type="module" src="/build/src/main.js"></script>
       {% else %}
-          {{ vite_entry_script_tags('src/main.js') }}
-    {{ vite_entry_link_tags('src/main.js') }}
+        <script type="module" src="/build/assets/main-CHY1xWom.js"></script>
+        <link rel="stylesheet" href="/build/assets/main-CFaeBMhn.css">
       {% endif %}
-    {% endblock %}
   </head>
   <body>
     {% block body %}{% endblock %}

@@ -39,12 +39,12 @@ const routes = [
     props: true
   },
   {
-    path: '/pages/wordpress',
+    path: '/pages/WP',
     name: 'wordpress',
     component: Wordpress 
   },
   {
-    path: '/pages/wordpress/:id',
+    path: '/pages/WP/:id',
     name: 'wordpress-course',
     component: WordPressCourse,
     props: true

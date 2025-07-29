@@ -16,10 +16,13 @@ services:  # Définition des services (chaque container que tu vas lancer)
       context: ./front
     working_dir: /app
     volumes:
-      - ./front:/app
+      - ./front:/app:cached  # Optimisation pour macOS/Windows
     ports:
       - "5173:5173"
     command: npm run dev:dock
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # Force le polling pour le file watcher
+      - CHOKIDAR_INTERVAL=500     # Intervalle de polling
     networks:
       - connectPerso  
 
@@ -36,7 +39,7 @@ services:  # Définition des services (chaque container que tu vas lancer)
     working_dir: /app
     volumes:
       - ./front:/app
-      - ./public/build:/app/dist
+      - ./public/build:/app/../public/build
     command: npm run build
     networks:
       - connectPerso  

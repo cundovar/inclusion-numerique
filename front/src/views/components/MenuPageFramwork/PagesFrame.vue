@@ -1,13 +1,13 @@
 <template>
       <div
-    class=" h-screen max-md:hidden fixed max-xl:p-0 xl:p-12 top-20 max-xl:top-10 right-0 z-50 flex flex-col max-xl:items-end xl:items-center"
+    class=" xl:h-screen max-xl:hidden  xl:items-end xl:w-1/8 xl:pt-0 xl:pr-2  xl:justify-start  max-xl:right-10 max-xl:gap-5 sm:flex-row sm:top-0 sm:m-auto  sm:absolute sm:items-start sm:pt-20 xl:gap-2  xl:fixed xl:top-20 xl:right-0 xl:z-50 xl:flex xl:flex-col max-xl:items-end "
   >
 
     <router-link
       v-for="tech in techs"
       :key="tech"
       :to="`/pages/${tech}`"
-      class="my-2 text-lg shadow-neutral-600 shadow-xl bg-blue-400 p-2 rounded-sm hover:bg-blue-600 text-gray-600 font-bold hover:underline hover:text-blue-900"
+      class=" text-xl xl:w-full max-xl:ml-20 cursor-pointer  shadow-neutral-600  bg-blue-300 p-2 hover:bg-blue-400 text-gray-600 font-bold hover:underline "
     >
       {{ tech }}
     </router-link>

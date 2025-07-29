@@ -102,8 +102,15 @@ export default defineConfig({
     },
     strictPort: true,       // Si le port est déjà pris, ne pas essayer un autre
     watch: {
-      usePolling: true      // Active le polling (utile dans certains environnements, ex : Docker)
-    }
+      usePolling: true,     // Active le polling (utile dans certains environnements, ex : Docker)
+      interval: 500,        // Intervalle très court pour forcer la détection
+      ignored: ['**/node_modules/**', '**/.git/**']
+    },
+    hmr: {
+      port: 5173,
+      host: '0.0.0.0'       // Écoute sur toutes les interfaces
+    },
+    force: true             // Force la reconstruction des dépendances
   },
 
   // Configuration de la build (production)
