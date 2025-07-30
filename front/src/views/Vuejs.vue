@@ -1,5 +1,5 @@
 <template>
-  <div class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 text-blue-500 min-h-screen w-full bg-emerald-100 ">
+  <div class="md:rounded-2xl  md:mt-10 xl:mt-0 pb-96 text-blue-500 min-h-screen w-full bg-emerald-100 ">
     <div class="">
       <div class="header-section">
         <div class="tech-header">

@@ -1,0 +1,17 @@
+webpack_encore:
+    # Configuration minimale pour EasyAdmin uniquement
+    # Vite gère le front-end Vue.js séparément
+    
+    # Répertoire où se trouvent les assets compilés
+    output_path: '%kernel.project_dir%/public/build'
+    
+    # Cette configuration est uniquement pour EasyAdmin
+    # Elle ne doit pas interférer avec la configuration Vite
+    builds:
+        # Le build par défaut pour EasyAdmin
+        app:
+            output_path: '%kernel.project_dir%/public/build'
+            
+    # Désactiver les assets de cache Webpack pour éviter les conflits avec Vite
+    cache_pools:
+        app: 'cache.app'

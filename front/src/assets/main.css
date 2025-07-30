@@ -1,3 +1,6 @@
+@import "./styles/nav.css";
+@import "./styles/content-cours.css";
+
 :root{
     --primary-color: rgb(227, 235, 243);
     --color-text: rgb(88, 89, 90);
@@ -31,9 +34,6 @@ min-width: 350px;
 
 }
 
-nav{
-    min-width: 290px !important;
-}
 
 
 h1{
@@ -63,34 +63,7 @@ pre{
     
 } */
 
-/* css des pages contents */
-.principal{
-    display: flex !important;
-    flex-direction: column !important;
- 
-    border-radius: 20px !important;
-    width: 100% !important;
-  
-   
-}
 
-.principal p{
-
-
-    color: var(--color-text) !important;
-    text-align: start !important;
-}
-
-.principal h2{
-    color: var(--color-text) !important;
-    text-align: start !important;
-    font-size: 1.2rem !important;
-    text-align: center !important;
-   margin-top: 1rem !important;
-    margin-bottom: 1rem !important;
-    text-decoration: underline !important;
-}
-    
 
 
 

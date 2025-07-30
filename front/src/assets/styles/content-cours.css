@@ -1,0 +1,72 @@
+/* css des pages contents */
+.principal{
+    gap: 2rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+ 
+    border-radius: 20px !important;
+    width: 100% !important;
+  
+   
+}
+.red{
+    color: red !important;
+}
+.principal p{
+
+
+    color: var(--color-text) !important;
+    text-align: start !important;
+    text-align: justify !important;
+    
+    font-size: 1.2rem !important;
+}
+
+.principal h1{
+    font-size: 1.8rem !important;
+    margin: 0.5rem;
+    font-weight: bold !important;
+    text-align: center !important;
+    text-decoration: underline !important;
+    text-transform: uppercase !important;
+    
+}
+
+.principal h2{
+    color: var(--color-text) !important;
+    text-align: start !important;
+    text-align: center !important;
+   margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+    text-decoration: underline !important;
+}
+
+.principal table{
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin: 1rem !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    
+
+}
+
+.principal table th{
+    background-color: var(--primary-color) !important;
+    color: var(--color-text) !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    padding: 0.5rem !important;
+}
+
+.principal table td{
+    padding: 0.5rem !important;
+    text-align: center !important;
+}
+
+.principal table tr:hover{
+    background-color: var(--primary-color) !important;
+    color: var(--color-text) !important;    
+}
+

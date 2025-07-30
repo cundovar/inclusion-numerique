@@ -1,5 +1,5 @@
 <template>
-  <div class="h-auto   max-xl:w-full   xl:max-w-[15rem]">
+  <div class="h-auto   max-xl:w-full xl:max-w-[15rem]">
     <div class="flex flex-wrap  xl:justify-center xl:items-center shadow-xxl  p-0 gap-3 w-full max-md:hidden justify-end items-end ">
       <!-- GitHub -->
       <div class="tech-item">
@@ -86,6 +86,9 @@ const resetHoverColor = () => {
 
  
   transition: all 0.3s ease;
+}
+.tech-icon:hover {
+  color: #ffffff;
 }
 
 .tech-name {

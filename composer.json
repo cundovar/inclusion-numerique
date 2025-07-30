@@ -109,6 +109,7 @@
         "symfony/maker-bundle": "^1.63",
         "symfony/phpunit-bridge": "^7.3",
         "symfony/stopwatch": "6.4.*",
-        "symfony/web-profiler-bundle": "6.4.*"
+        "symfony/web-profiler-bundle": "6.4.*",
+        "symfony/webpack-encore-bundle": "^2.2"
     }
 }

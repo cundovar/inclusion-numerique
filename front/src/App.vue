@@ -51,11 +51,12 @@
 
 
   <!-- Header bureau avec logo, recherche et déconnexion sur la même ligne -->
-  <div class="hidden xl:flex xl:w-full xl:fixed xl:top-0 xl:right-0 xl:z-50 xl:justify-between xl:items-center xl:px-8 backdrop-blur-md bg-white/30 py-4">
+  <div class="  hidden xl:flex xl:w-full  xl:fixed  xl:top-0 xl:right-0 xl:z-50 xl:justify-between xl:items-center xl:px-8 backdrop-blur-md bg-white/30 py-4">
     <!-- Logo DevDoc -->
-    <div class="flex items-center gap-2rounded-lg px-4 py-2 ">
-   
+    <div class="flex gap-5  items-center gap-2rounded-lg px-4 py-2 ">
+      <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
       <span class="text-gray-800 font-bold text-xl">DevDoc</span>
+      <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
     </div>
     
     <!-- Recherche au centre -->
@@ -134,9 +135,18 @@
 
     <div class="h-20"></div>
     <div
-      class="border-blue-950 bg-[var(--primary-color)] flex fixed w-full z-50 h-20 shadow-xl justify-between items-center p-5 top-0 xl:hidden"
-    >
-      <div @click="toggleMenu" class="cursor-pointer">
+      class="border-blue-950 bg-[var(--primary-color)] flex fixed w-full z-50 h-20 shadow-xl justify-between items-center  top-0 xl:hidden"
+      >
+      <!-- Logo centré -->
+      <div class="flex-1 max-md:absolute top-0  left-0 flex justify-center">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
+          <span class="text-blue-950 font-bold text-lg">DevDoc</span>
+        </div>
+      </div>
+
+      <!-- Bouton menu burger -->
+      <div @click="toggleMenu" class="cursor-pointer ml-1 md:absolute md:left-5 max-md:mt-5">
         <i
           v-if="!isMenuOpen"
           class="text-blue-950 pi pi-bars cursor-pointer"
@@ -149,16 +159,9 @@
         ></i>
       </div>
       
-      <!-- Logo centré -->
-      <div class="flex-1 max-md:absolute top-0 left-0 flex justify-center">
-        <div class="flex items-center gap-2">
-          <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
-          <span class="text-blue-950 font-bold text-lg">DevDoc</span>
-        </div>
-      </div>
 
       <!-- Boutons à droite -->
-      <div class="flex  items-center gap-2">
+      <div class="flex max-md:mt-5 items-center gap-2">
         <a
           v-if="user.roles.includes('ROLE_ADMIN')"
           target="_blank"
@@ -173,15 +176,10 @@
         placeholder="Rechercher"
         class="flex-1 xl:hidden   "
       />
-        <router-link to="/profile">
-        <button class="p-2 text-2xl text-gray-800 cursor-pointer flex items-center gap-2  transition-all duration-200 hover:shadow-xl">
-          <i class="pi pi-user"></i>
-       
-        </button>
-      </router-link>
+    
         <button 
           @click="logout"
-          class="cursor-pointer text-red-600 hover:text-red-800 flex items-center gap-1 px-2 py-1 rounded hover:bg-red-100 transition-colors"
+          class="cursor-pointer ml-2 text-red-600 hover:text-red-800 flex items-center gap-1 px-2 py-1 rounded hover:bg-red-100 transition-colors"
         >
           <i class="text-2xl pi pi-sign-out"></i>
         
@@ -190,133 +188,145 @@
 
     
     </div>
+<div 
+  :class="[
+    'scroll-gauche xl:top-10 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
+    isXlOuPlus ? '' : isMenuOpen ? 'max-md:w-full md:w-2/3 z-50 top-20 ' : 'w-full -translate-x-full  top-20',
+    hoveredCategory ? 'z-[100000] w-1/2 ' : 'z-0 w-[20rem]'
+  ]"
+>
 
-    <nav
-      @mouseleave="isXlOuPlus && (hoveredCategory = null)"
-      :class="[
-        'md:p-5    h-screen xl:top-16 fixed z-10 max-md:z-50 max-xl:top-20 transition-transform duration-300 ease-in-out',
-        isXlOuPlus
-          ? 'flex w-1/6  flex-col translate-x-0'
-          : isMenuOpen
-          ? 'w-full bg-gray-200 shadow-black pl-2 pr-2 pb-96 shadow-2xl md:top-20 translate-x-0 max-h-[calc(100vh-80px)] max-md:h-[calc(100vh-80px)] max-md:overflow-y-auto flex flex-col max-md:z-50'
-          : 'max-lg:w-full lg:w-1/2  -translate-x-full md:-translate-x-[60rem] lg:-translate-x-[70rem] ',
-      ]"
-    >
-    
-    
-    
-    
-    
+  <nav
+    @mouseleave="isXlOuPlus && (hoveredCategory = null)"
+    :class="[
+      'md:p-5  float-left z-50 h-screen  max-md:z-50 max-xl:top-20 transition-transform duration-300 ease-in-out',
+      isXlOuPlus
+        ? 'flex xl:w-[16rem]  2xl:w-[20rem] flex-col translate-x-0'
+        : isMenuOpen
+        ? 'w-full  pl-2 pr-2 bt  bg-gray-200  md:top-20 translate-x-0 max-h-[calc(100vh-80px)] max-md:h-[calc(100vh-80px)] max-md:overflow-y-auto flex flex-col max-md:z-50'
+        : 'max-lg:w-full lg:w-1/2  -translate-x-full md:-translate-x-[60rem] lg:-translate-x-[70rem] ',
+    ]"
+  >
+  
+  
+  
+  
+  
+
+    <a class="md:hidden border max-xl:border-b-gray-50  bg-gray-500 gap-2 flex items-center justify-start p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
+      <i class="pi pi-github cursor-pointer   text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
+     <p class="text-amber-200  font-bold"> GITHUB </p>
  
-      <a class="md:hidden  bg-gray-500 gap-2 flex items-center justify-start p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
-        <i class="pi pi-github cursor-pointer   text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
-       <p class="text-amber-200  font-bold"> GITHUB </p>
-   
-      </a>
- 
-      <!-- Bouton de test temporaire -->
-     <!--
-      #  <button 
-          @click="showMobileAppPopup = true" 
-          class="bg-red-500 text-white p-2 m-2 rounded"
-        >
-          Test Popup
-        </button> #}
-    
-    
-    -->
+    </a>
+
+    <!-- Bouton de test temporaire -->
+   <!--
+    #  <button 
+        @click="showMobileAppPopup = true" 
+        class="bg-red-500 text-white p-2 m-2 rounded"
+      >
+        Test Popup
+      </button> #}
+  
+  
+  -->
 <!-- list de lien mdn pour mobile dans nav  -->
 
-  <lienMDN/>
-
-  
-      <div
-     @click="!islgOuPlus && (openMenu(cat.name))"
-        class="cursor-pointer  flex  relative flex-col  justify-center"
-        v-for="cat in cats"
-        :key="cat.id"
-        @mouseenter="islgOuPlus && (hoveredCategory = cat.name)"
-
-        >
-        <!-- pour rendre jaune le menu selectionné -->
-        <h1
-                :class="{
-    'bg-yellow-200': (islgOuPlus && hoveredCategory === cat.name) || (!islgOuPlus && clickMenu === cat.name)
-  }"
-
-          class="text-2xl max-md:text-xl max-md:drop-shadow-xl max-md:drop-shadow-gray-400 max-md:border-b max-md:border-gray-400 pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
-        >
-          <button class="cursor-pointer max-md:w-full max-md:h-full  max-md:focus:text-white max-md:bg-blue-200 max-md:text-center  focus:bg-blue-500">{{ cat.name }}</button>
-        </h1>
-          
-        <div class=" xl:absolute xl:top-0 xl:-right-[26rem] max-h-[20rem] xl:pr-10 xl:pl-10 xl:w-[25rem] rounded-xl bg-gray-200 div-scrollbar overflow-y-auto">
+<lienMDN/>
 
 
-          <!-- menu des cours -->
+    <div
+   @click="!isXlOuPlus && (openMenu(cat.name))"
+      class="cursor-pointer  flex  relative flex-col  justify-center"
+      v-for="cat in cats"
+      :key="cat.id"
+      @mouseenter="isXlOuPlus && (hoveredCategory = cat.name)"
+
+      >
+      <!-- pour rendre jaune le menu selectionné -->
+      <h1
+              :class="{
+  'bg-yellow-200': (islgOuPlus && hoveredCategory === cat.name) || (!islgOuPlus && clickMenu === cat.name)
+}"
+
+        class="text-2xl max-md:text-xl max-md:drop-shadow-xl max-md:drop-shadow-gray-400 max-md:border-b max-md:border-gray-400 pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
+      >
+        <button class="cursor-pointer max-md:w-full max-md:h-full  max-md:focus:text-white max-md:bg-blue-200 max-md:text-center  focus:bg-blue-500">{{ cat.name }}</button>
+      </h1>
+        
+      <div class="xl:absolute xl:top-0 xl:-right-[26rem] xl:z-[99999] xl:shadow-lg max-h-[20rem] xl:pr-10 xl:pl-10 xl:w-[25rem] rounded-xl bg-gray-200 div-scrollbar overflow-y-auto">
+
+
+        <!-- menu des cours -->
+        <div
+          class="md:gap-y-1 "
+          v-if="(isXlOuPlus && hoveredCategory === cat.name) || (!isXlOuPlus && clickMenu === cat.name)"
+          v-for="group in menusByCategory[cat.name]"
+          :key="group.label"
+        >   
           <div
-            class="md:gap-y-1 "
-            v-if="(islgOuPlus && hoveredCategory === cat.name) || (!islgOuPlus && clickMenu === cat.name)"
-            v-for="group in menusByCategory[cat.name]"
-            :key="group.label"
-          >   
-            <div
-              class="p-2 md:w-2/3 md:mt-1 md:border-b border-green-950 mb-2  md:text-start md:bg-transparent md:text-black max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
-            > 
-              {{ group.label }} :
-            </div>
+            class="p-2 md:w-2/3 md:mt-1 md:border-b border-green-950 mb-2  md:text-start md:bg-transparent md:text-black max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
+          > 
+            {{ group.label }} :
+          </div>
 
-            <button
-              class=" w-full md:rounded-sm shadow-2xl border border-indigo-800  mb-2 xl:ml-2 flex hover:bg-gray-300 bg-gray-100 flex-col gap-2"
-              v-for="menu in group.items"
-              :key="menu.page.slug"
+          <button
+            class=" w-full md:rounded-sm shadow-2xl border border-indigo-800  mb-2 xl:ml-2 flex hover:bg-gray-300 bg-gray-100 flex-col gap-2"
+            v-for="menu in group.items"
+            :key="menu.page.slug"
+          >
+            <router-link
+              :to="`/pages${menu.page.slug}`"
+              @click="toggleMenu"
+              class="focus:bg-gray-400   focus:text-white z-50 hover:text-blue-600"
             >
-              <router-link
-                :to="`/pages${menu.page.slug}`"
-                @click="toggleMenu"
-                class="focus:bg-gray-400   focus:text-white z-50 hover:text-blue-600"
+              <p
+                class="p-2  md:text-blue-500 hover:text-fuchsia-900 flex justify-around max-md:justify-start items-center max-md:text-start "
               >
-                <p
-                  class="p-2  md:text-blue-500 hover:text-fuchsia-900 flex justify-around max-md:justify-start items-center max-md:text-start "
-                >
+              <div class="flex  justify-center items-center w-1/3">
+                <i
+                  class="pi pi-code max-md:text-blue-600 md:text-yellow-600"
+                ></i>
+                </div>
+                
+                <div class="flex-1 text-center border-blue-300 shadow border flex justify-center items-center">
+                  {{ capitalize(menu.title) }}
+                </div>
                 <div class="flex  justify-center items-center w-1/3">
                   <i
                     class="pi pi-code max-md:text-blue-600 md:text-yellow-600"
                   ></i>
                   </div>
-                  
-                  <div class="flex-1 text-center border-blue-300 shadow border flex justify-center items-center">
-                    {{ capitalize(menu.title) }}
-                  </div>
-                  <div class="flex  justify-center items-center w-1/3">
-                    <i
-                      class="pi pi-code max-md:text-blue-600 md:text-yellow-600"
-                    ></i>
-                    </div>
-                </p>
-              </router-link>
-            </button>
-          </div>
-
-
-
+              </p>
+            </router-link>
+          </button>
         </div>
-      </div>
-      <div
-        class="flex  w-full md:justify-start justify-end items-center max-md:hidden"
-      >
 
-      <div>
 
-        <h3>documentations</h3>
-        <list_logo/>
 
       </div>
+    </div>
+    <div
+      class="flex  w-full md:justify-start justify-end items-center max-md:hidden"
+    >
+
+    <div class=" max-xl:mt-2 mb-96 max-xl:bg-amber-300   max-xl:p-3 gap-y-5 flex flex-col  max-xl:w-full ">
+
+      <h3>documentations : </h3>
+      <list_logo/>
+
+    </div>
+
+    
+  </div>
+ <!-- <vracMain/> --> 
+
+
    
-      </div>
 
-     
+  </nav>
   
-    </nav>
+</div>
 
    
 
@@ -382,7 +392,7 @@
 
 
     <main
-      class=" xl:p-20   max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden"
+      class=" xl:p-20     max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden"
     >
       <router-view />
       <AfertLogin v-if="$route.path === '/'" />
@@ -412,6 +422,7 @@ import {useData} from "./utlis/fetchDataPwa";
 import pagesFrame from "./views/components/MenuPageFramwork/PagesFrame.vue";
 import { APP_CONFIG } from "./config/app.js";
 import AfertLogin from "./views/components/AfertLogin.vue";
+import vracMain from "./views/components/vrac/vracMain.vue";
 
 
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="course-card">
+  <div class="course-card border border-l-pink-500">
     <div class="card-header">
       <div class="card-icon">
         <i :class="iconClass"></i>
@@ -62,6 +62,7 @@ color: black;
   flex-direction: column;
   position: relative;
   overflow: hidden;
+
 }
 
 .course-card::before {
