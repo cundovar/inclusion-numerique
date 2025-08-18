@@ -64,7 +64,7 @@ class QCMController extends AbstractController
                 $question->setPageContentId($questionData['page_content_id'] ?? null);
                 $question->setDifficulty($difficulty);
                 $question->setTopic($questionData['topic'] ?? null);
-                $question->setSession($session);
+                $session->addQuestion($question);
 
                 $this->entityManager->persist($question);
             }
@@ -80,11 +80,7 @@ class QCMController extends AbstractController
                 'total_questions' => $session->getTotalQuestions(),
                 'status' => $session->getStatus(),
                 'created_at' => $session->getCreatedAt()->format('Y-m-d H:i:s'),
-                'questions' => []
-            ];
-
-            foreach ($session->getQuestions() as $question) {
-                $sessionData['questions'][] = [
+                'questions' => array_map(fn (QCMQuestion $question) => [
                     'id' => $question->getId(),
                     'question' => $question->getQuestion(),
                     'options' => $question->getOptions(),
@@ -92,8 +88,8 @@ class QCMController extends AbstractController
                     'explanation' => $question->getExplanation(),
                     'difficulty' => $question->getDifficulty(),
                     'topic' => $question->getTopic()
-                ];
-            }
+                ], $session->getQuestions()->toArray())
+            ];
 
             return new JsonResponse($sessionData, 201);
 
