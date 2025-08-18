@@ -27,3 +27,6 @@ yarn-error.log
 
 # MySQL data directory
 mysql_data/
+
+# Ignore env du microservice
+microservice/ia-service/.env
