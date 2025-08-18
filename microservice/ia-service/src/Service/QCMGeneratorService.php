@@ -233,101 +233,111 @@ class QCMGeneratorService
 
     private function getFallbackQuestions(int $count, string $difficulty, ?int $categoryId): array
     {
-        // Questions de secours en cas d'échec de l'IA
-        $baseQuestions = [
-            [
-                'question' => 'Quel est le principe fondamental du développement web moderne ?',
-                'options' => [
-                    'A' => 'La séparation des préoccupations',
-                    'B' => 'L\'utilisation exclusive de JavaScript',
-                    'C' => 'L\'évitement des frameworks',
-                    'D' => 'La programmation procédurale'
+        $questionsByCategory = [
+            1 => [
+                [
+                    'question' => "Quelle fonction est utilisée pour afficher du texte en PHP ?",
+                    'options' => [
+                        'A' => 'echo',
+                        'B' => 'print_text',
+                        'C' => 'display',
+                        'D' => 'write'
+                    ],
+                    'correct_answer' => 'A',
+                    'explanation' => "La commande echo affiche du texte en PHP.",
+                    'topic' => 'PHP',
+                    'difficulty' => $difficulty
                 ],
-                'correct_answer' => 'A',
-                'explanation' => 'La séparation des préoccupations permet une meilleure organisation et maintenance du code.',
-                'topic' => 'Développement Web',
-                'difficulty' => $difficulty
+                [
+                    'question' => 'Quel est le rôle principal de Symfony ?',
+                    'options' => [
+                        'A' => 'Créer des styles CSS',
+                        'B' => 'Fournir un framework PHP',
+                        'C' => 'Gérer des bases de données',
+                        'D' => 'Compiler du code Java'
+                    ],
+                    'correct_answer' => 'B',
+                    'explanation' => 'Symfony est un framework PHP qui fournit une structure pour les applications.',
+                    'topic' => 'PHP',
+                    'difficulty' => $difficulty
+                ],
             ],
-            [
-                'question' => 'Que signifie API dans le contexte du développement web ?',
-                'options' => [
-                    'A' => 'Application Programming Interface',
-                    'B' => 'Advanced Programming Integration',
-                    'C' => 'Automatic Program Installer',
-                    'D' => 'Application Process Interpreter'
+            2 => [
+                [
+                    'question' => "Quelle méthode JavaScript ajoute un élément à la fin d'un tableau ?",
+                    'options' => [
+                        'A' => 'push()',
+                        'B' => 'pop()',
+                        'C' => 'shift()',
+                        'D' => 'unshift()'
+                    ],
+                    'correct_answer' => 'A',
+                    'explanation' => "push() ajoute un élément à la fin d'un tableau.",
+                    'topic' => 'JavaScript',
+                    'difficulty' => $difficulty
                 ],
-                'correct_answer' => 'A',
-                'explanation' => 'API signifie Application Programming Interface, une interface qui permet aux applications de communiquer.',
-                'topic' => 'Concepts Généraux',
-                'difficulty' => $difficulty
             ],
-            [
-                'question' => 'Quel est l\'avantage principal des frameworks PHP comme Symfony ?',
-                'options' => [
-                    'A' => 'Ils ralentissent le développement',
-                    'B' => 'Ils fournissent une structure et des outils prêts à l\'emploi',
-                    'C' => 'Ils remplacent complètement PHP',
-                    'D' => 'Ils sont uniquement pour les débutants'
+            3 => [
+                [
+                    'question' => 'Quelle balise HTML définit un paragraphe ?',
+                    'options' => [
+                        'A' => '<paragraph>',
+                        'B' => '<p>',
+                        'C' => '<para>',
+                        'D' => '<text>'
+                    ],
+                    'correct_answer' => 'B',
+                    'explanation' => 'La balise <p> définit un paragraphe en HTML.',
+                    'topic' => 'HTML',
+                    'difficulty' => $difficulty
                 ],
-                'correct_answer' => 'B',
-                'explanation' => 'Les frameworks comme Symfony accélèrent le développement en fournissant des composants réutilisables.',
-                'topic' => 'Frameworks PHP',
-                'difficulty' => $difficulty
+                [
+                    'question' => 'Comment applique-t-on du CSS à un élément via une classe ?',
+                    'options' => [
+                        'A' => '#ma-classe { }',
+                        'B' => '.ma-classe { }',
+                        'C' => 'ma-classe { }',
+                        'D' => '*ma-classe { }'
+                    ],
+                    'correct_answer' => 'B',
+                    'explanation' => 'Les sélecteurs de classe en CSS commencent par un point (.)',
+                    'topic' => 'CSS',
+                    'difficulty' => $difficulty
+                ],
             ],
-            [
-                'question' => 'Quelle balise HTML définit un paragraphe ?',
-                'options' => [
-                    'A' => '<paragraph>',
-                    'B' => '<p>',
-                    'C' => '<para>',
-                    'D' => '<text>'
+            'default' => [
+                [
+                    'question' => 'Quel est le principe fondamental du développement web moderne ?',
+                    'options' => [
+                        'A' => 'La séparation des préoccupations',
+                        'B' => "L'utilisation exclusive de JavaScript",
+                        'C' => "L'évitement des frameworks",
+                        'D' => 'La programmation procédurale'
+                    ],
+                    'correct_answer' => 'A',
+                    'explanation' => "La séparation des préoccupations permet une meilleure organisation et maintenance du code.",
+                    'topic' => 'Développement Web',
+                    'difficulty' => $difficulty
                 ],
-                'correct_answer' => 'B',
-                'explanation' => 'La balise <p> définit un paragraphe en HTML.',
-                'topic' => 'HTML',
-                'difficulty' => $difficulty
+                [
+                    'question' => 'Que signifie API dans le contexte du développement web ?',
+                    'options' => [
+                        'A' => 'Application Programming Interface',
+                        'B' => 'Advanced Programming Integration',
+                        'C' => 'Automatic Program Installer',
+                        'D' => 'Application Process Interpreter'
+                    ],
+                    'correct_answer' => 'A',
+                    'explanation' => 'API signifie Application Programming Interface, une interface qui permet aux applications de communiquer.',
+                    'topic' => 'Concepts Généraux',
+                    'difficulty' => $difficulty
+                ],
             ],
-            [
-                'question' => 'Comment applique-t-on du CSS à un élément via une classe ?',
-                'options' => [
-                    'A' => '#ma-classe { }',
-                    'B' => '.ma-classe { }',
-                    'C' => 'ma-classe { }',
-                    'D' => '*ma-classe { }'
-                ],
-                'correct_answer' => 'B',
-                'explanation' => 'Les sélecteurs de classe en CSS commencent par un point (.)',
-                'topic' => 'CSS',
-                'difficulty' => $difficulty
-            ],
-            [
-                'question' => 'Quel est le rôle de JavaScript dans le développement web ?',
-                'options' => [
-                    'A' => 'Styliser les pages web',
-                    'B' => 'Structurer le contenu',
-                    'C' => 'Ajouter de l\'interactivité',
-                    'D' => 'Gérer la base de données'
-                ],
-                'correct_answer' => 'C',
-                'explanation' => 'JavaScript permet d\'ajouter de l\'interactivité aux pages web.',
-                'topic' => 'JavaScript',
-                'difficulty' => $difficulty
-            ]
         ];
 
-        // Dupliquer les questions pour atteindre le nombre demandé si nécessaire
-        $fallbackQuestions = [];
-        $baseCount = count($baseQuestions);
-        
-        for ($i = 0; $i < $count; $i++) {
-            $question = $baseQuestions[$i % $baseCount];
-            // Modifier légèrement les questions dupliquées
-            if ($i >= $baseCount) {
-                $question['question'] = '[Variation] ' . $question['question'];
-            }
-            $fallbackQuestions[] = $question;
-        }
+        $baseQuestions = $questionsByCategory[$categoryId] ?? $questionsByCategory['default'];
+        shuffle($baseQuestions);
 
-        return $fallbackQuestions;
+        return array_slice($baseQuestions, 0, $count);
     }
 }
