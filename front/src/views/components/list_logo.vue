@@ -1,11 +1,11 @@
 <template>
-  <div class="h-auto   max-xl:w-full xl:max-w-[15rem]">
-    <div class="flex flex-wrap  xl:justify-center xl:items-center shadow-xxl  p-0 gap-3 w-full max-md:hidden justify-end items-end ">
+  <div class="h-auto  max-xl:w-full xl:max-w-[15rem]">
+    <div class="flex flex-wrap  xl:justify-center xl:items-center shadow-xxl  p-0 gap-3 w-full justify-end items-end ">
       <!-- GitHub -->
       <div class="tech-item">
         <a href="https://github.com/poleS-dev" target="_blank" class="tech-link">
           <div class="tech-icon-container github-hover">
-            <i class="pi pi-github tech-icon" style="font-size: 2.3rem"></i>
+            <i class="pi pi-github tech-icon"></i>
           </div>
         </a>
         <p class="tech-name">{{ capitalize("github") }}</p>
@@ -82,7 +82,8 @@ const resetHoverColor = () => {
 }
 
 .tech-icon {
-  font-size: 2rem;
+ 
+  font-size: 2.3rem;
 
  
   transition: all 0.3s ease;

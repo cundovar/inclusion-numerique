@@ -9,6 +9,9 @@ import VueCourse from '../views/VueCourse.vue';
 import Wordpress from '../views/Wordpress.vue';
 import WordPressCourse from '../views/WordPressCourse.vue';
 import Profile from '../views/Profile.vue';
+import CategoryPage from '../views/CategoryPage.vue';
+import QCMView from '../views/QCMView.vue';
+import QCMHistoryView from '../views/QCMHistoryView.vue';
 
 const routes = [
   {
@@ -53,6 +56,22 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: Profile
+  },
+  {
+    path: '/category/:category',
+    name: 'category',
+    component: CategoryPage,
+    props: true
+  },
+  {
+    path: '/qcm',
+    name: 'qcm',
+    component: QCMView
+  },
+  {
+    path: '/qcm/history',
+    name: 'qcm-history',
+    component: QCMHistoryView
   },
   {
     path: '/pages/:slug',

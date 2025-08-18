@@ -80,6 +80,7 @@ import CourseCard from "./components/CourseCard.vue";
 
 const { menus } = useData();
 
+
 watch(menus, (newVal) => {
   console.log("Menus mis à jour dans la page WordPress :", newVal);
 });

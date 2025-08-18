@@ -53,11 +53,17 @@
   <!-- Header bureau avec logo, recherche et déconnexion sur la même ligne -->
   <div class="  hidden xl:flex xl:w-full  xl:fixed  xl:top-0 xl:right-0 xl:z-50 xl:justify-between xl:items-center xl:px-8 backdrop-blur-md bg-white/30 py-4">
     <!-- Logo DevDoc -->
-    <div class="flex gap-5  items-center gap-2rounded-lg px-4 py-2 ">
-      <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
-      <span class="text-gray-800 font-bold text-xl">DevDoc</span>
-      <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
-    </div>
+    <Router-link to="/">
+
+
+      <div class="flex gap-5  items-center gap-2rounded-lg px-4 py-2 ">
+        <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
+        
+        <span class="text-gray-800 font-bold text-xl">DevDoc</span>
+        <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
+      </div>
+
+    </Router-link>
     
     <!-- Recherche au centre -->
     <inputSearch
@@ -135,18 +141,20 @@
 
     <div class="h-20"></div>
     <div
-      class="border-blue-950 bg-[var(--primary-color)] flex fixed w-full z-50 h-20 shadow-xl justify-between items-center  top-0 xl:hidden"
+      class="border-blue-950  pb-2 bg-[var(--primary-color)] flex fixed w-full z-50 h-20 shadow-xl justify-between items-center  top-0 xl:hidden"
       >
       <!-- Logo centré -->
-      <div class="flex-1 max-md:absolute top-0  left-0 flex justify-center">
+      <Router-link to="/">
+      <div class="flex-1 max-xl:absolute top-0  left-0 flex justify-center">
         <div class="flex items-center gap-2">
           <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
-          <span class="text-blue-950 font-bold text-lg">DevDoc</span>
+          <span class="text-blue-950 font-bold text-xl">DevDoc</span>
         </div>
       </div>
+      </Router-link>
 
       <!-- Bouton menu burger -->
-      <div @click="toggleMenu" class="cursor-pointer ml-1 md:absolute md:left-5 max-md:mt-5">
+      <div @click="toggleMenu" class="cursor-pointer ml-1 left-3 absolute md:left-5  mt-10">
         <i
           v-if="!isMenuOpen"
           class="text-blue-950 pi pi-bars cursor-pointer"
@@ -161,7 +169,7 @@
       
 
       <!-- Boutons à droite -->
-      <div class="flex max-md:mt-5 items-center gap-2">
+      <div class="  max-xl:w-5/6  flex max-xl:mt-10 items-center gap-2">
         <a
           v-if="user.roles.includes('ROLE_ADMIN')"
           target="_blank"
@@ -191,7 +199,7 @@
 <div 
   :class="[
     'scroll-gauche xl:top-10 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
-    isXlOuPlus ? '' : isMenuOpen ? 'max-md:w-full md:w-2/3 z-50 top-20 ' : 'w-full -translate-x-full  top-20',
+    isXlOuPlus ? '' : isMenuOpen ? 'max-xl:w-full md:w-2/3 z-50 top-20 ' : 'w-full -translate-x-full  top-20',
     hoveredCategory ? 'z-[100000] w-1/2 ' : 'z-0 w-[20rem]'
   ]"
 >
@@ -232,7 +240,7 @@
   -->
 <!-- list de lien mdn pour mobile dans nav  -->
 
-<lienMDN/>
+
 
 
     <div
@@ -307,7 +315,7 @@
       </div>
     </div>
     <div
-      class="flex  w-full md:justify-start justify-end items-center max-md:hidden"
+      class="flex  w-full md:justify-start justify-end items-center "
     >
 
     <div class=" max-xl:mt-2 mb-96 max-xl:bg-amber-300   max-xl:p-3 gap-y-5 flex flex-col  max-xl:w-full ">
@@ -636,6 +644,7 @@ const checkMobileAppPopup = () => {
   
   
 };
+const fltererdmenus=["wordpress","vue","react"]
 
 const closeMobileAppPopup = () => {
   showMobileAppPopup.value = false;
@@ -671,25 +680,30 @@ const installPWA = async () => {
 
 const menusByCategory = computed(() => {
   const result = {};
+  const filteredCategories = ["react", "reactjs", "wordpress","symfony", "docker", "vuejs", "vue"]; // Catégories à exclure de la nav
+  const filteredLabels = ["react", "reactjs", "wordpress","symfony", "docker", "vuejs", "vue"]; // Labels/menus à exclure de la nav
 
-  cats.value.forEach((cat) => {
-    const grouped = {};
+  cats.value
+    .filter((cat) => !filteredCategories.includes(cat.name.toLowerCase().trim()))
+    .forEach((cat) => {
+      const grouped = {};
 
-    menus.value
-      .filter((menu) => menu.category.name === cat.name)
-      .forEach((menu) => {
-        const label = menu.menu.label;
-        if (!grouped[label]) {
-          grouped[label] = {
-            label: label,
-            items: [],
-          };
-        }
-        grouped[label].items.push(menu);
-      });
+      menus.value
+        .filter((menu) => menu.category.name === cat.name)
+        .filter((menu) => !filteredLabels.includes(menu.menu.label?.toLowerCase().trim()))
+        .forEach((menu) => {
+          const label = menu.menu.label;
+          if (!grouped[label]) {
+            grouped[label] = {
+              label: label,
+              items: [],
+            };
+          }
+          grouped[label].items.push(menu);
+        });
 
-    result[cat.name] = Object.values(grouped);
-  });
+      result[cat.name] = Object.values(grouped)
+    });
 
   return result;
 });

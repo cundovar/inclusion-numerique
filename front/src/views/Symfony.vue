@@ -79,6 +79,17 @@
         :menus="repositoryMenus"
         icon-class="fas fa-folder-open"
       />
+
+      <CourseCard
+        title="Bundle"
+        :menus="bundleMenus"
+        icon-class="fas fa-box"
+      />  
+      <CourseCard
+        title="Crud"
+        :menus="crudMenus"
+        icon-class="fas fa-edit"
+      />  
     </div>
   </div>
 
@@ -162,6 +173,18 @@ const commandMenus = computed(() =>
 const repositoryMenus = computed(() =>
   filterMenus.value.filter((menu) =>
     menu.title?.toUpperCase().includes("REPOSITORY")
+  )
+);
+
+const crudMenus = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("CRUD")
+  )
+);
+
+const bundleMenus = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("BUNDLE")
   )
 );
 </script>

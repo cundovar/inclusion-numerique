@@ -22,69 +22,63 @@
 
       <div class="flex flex-wrap justify-center items-center">
         <CourseCard
-          title="Installation"
-          :menus="setupCourses"
-          icon-class="fas fa-download"
+          title="🟩 BASES DE VUE.JS"
+          :menus="baseCourses"
+          icon-class="fas fa-play-circle"
         />
         
         <CourseCard
-          title="Composants"
+          title="🟦 TEMPLATE & LIAISON DE DONNÉES"
+          :menus="templateCourses"
+          icon-class="fas fa-code"
+        />
+        
+        <CourseCard
+          title="🟨 COMPOSANTS"
           :menus="componentCourses"
           icon-class="fas fa-puzzle-piece"
         />
         
         <CourseCard
-          title="Réactivité"
-          :menus="reactivityCourses"
-          icon-class="fas fa-sync-alt"
+          title="🟪 COMPOSITION API"
+          :menus="compositionApiCourses"
+          icon-class="fas fa-layer-group"
         />
         
         <CourseCard
-          title="Directives"
-          :menus="directivesCourses"
-          icon-class="fas fa-code"
-        />
-        
-        <CourseCard
-          title="Routing"
+          title="🟥 ROUTING"
           :menus="routingCourses"
           icon-class="fas fa-route"
         />
         
         <CourseCard
-          title="État Global"
-          :menus="stateCourses"
-          icon-class="fas fa-database"
-        />
-        
-        <CourseCard
-          title="API & HTTP"
-          :menus="apiCourses"
-          icon-class="fas fa-cloud"
-        />
-        
-        <CourseCard
-          title="Formulaires"
+          title="🟫 FORMULAIRES"
           :menus="formsCourses"
           icon-class="fas fa-wpforms"
         />
         
         <CourseCard
-          title="Tests"
-          :menus="testingCourses"
-          icon-class="fas fa-vial"
+          title="🟧 GESTION D'ÉTAT"
+          :menus="stateCourses"
+          icon-class="fas fa-database"
         />
         
         <CourseCard
-          title="Performances"
-          :menus="performanceCourses"
-          icon-class="fas fa-tachometer-alt"
+          title="🌐 APPELS API"
+          :menus="apiCourses"
+          icon-class="fas fa-cloud"
         />
         
         <CourseCard
-          title="Déploiement"
-          :menus="deploymentCourses"
-          icon-class="fas fa-rocket"
+          title="🛠 UTILITAIRES & BONNES PRATIQUES"
+          :menus="utilsCourses"
+          icon-class="fas fa-tools"
+        />
+        
+        <CourseCard
+          title="🧪 PROJETS"
+          :menus="projectCourses"
+          icon-class="fas fa-flask"
         />
       </div>
     </div>
@@ -106,59 +100,94 @@ const filterMenus = computed(() =>
   menus.value.filter((menu) => menu.menu.label?.toUpperCase() === "VUE")
 );
 
-const setupCourses = computed(() =>
+const baseCourses = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("INSTALL") ||
-    menu.title?.toUpperCase().includes("SETUP") ||
-    menu.title?.toUpperCase().includes("CONFIGURATION")
+    menu.title?.toUpperCase().includes("INTRO-VUE") ||
+    menu.title?.toUpperCase().includes("INTRO-INSTALLATION") ||
+    menu.title?.toUpperCase().includes("INTRO-SYNTAXE") ||
+    menu.title?.toUpperCase().includes("INTRO-PROJET") ||
+    menu.title?.toUpperCase().includes("CDN") ||
+    menu.title?.toUpperCase().includes("VITE") ||
+    menu.title?.toUpperCase().includes("VUE CLI")
+  )
+);
+
+const templateCourses = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("TEMPLATE-INTERPOLATION") ||
+    menu.title?.toUpperCase().includes("TEMPLATE-V-BIND") ||
+    menu.title?.toUpperCase().includes("TEMPLATE-V-MODEL") ||
+    menu.title?.toUpperCase().includes("TEMPLATE-V-IF-V-FOR") ||
+    menu.title?.toUpperCase().includes("TEMPLATE-EVENTS") ||
+    menu.title?.toUpperCase().includes("V-ON") ||
+    menu.title?.toUpperCase().includes("@CLICK")
   )
 );
 
 const componentCourses = computed(() =>
   filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("COMPOSANTS-BASES") ||
+    menu.title?.toUpperCase().includes("COMPOSANTS-PROPS") ||
+    menu.title?.toUpperCase().includes("COMPOSANTS-EMITS") ||
+    menu.title?.toUpperCase().includes("COMPOSANTS-V-MODEL-PERSONNALISÉ") ||
+    menu.title?.toUpperCase().includes("COMPOSANTS-SLOTS") ||
     menu.title?.toUpperCase().includes("COMPONENT") ||
     menu.title?.toUpperCase().includes("COMPOSANT")
   )
 );
 
-const reactivityCourses = computed(() =>
+const compositionApiCourses = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("REACTIVITY") ||
-    menu.title?.toUpperCase().includes("RÉACTIVITÉ") ||
-    menu.title?.toUpperCase().includes("REACTIVE") ||
-    menu.title?.toUpperCase().includes("REF")
-  )
-);
-
-const directivesCourses = computed(() =>
-  filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("DIRECTIVE") ||
-    menu.title?.toUpperCase().includes("V-IF") ||
-    menu.title?.toUpperCase().includes("V-FOR") ||
-    menu.title?.toUpperCase().includes("V-MODEL")
+    menu.title?.toUpperCase().includes("COMPOSITION-API-VS-OPTIONS") ||
+    menu.title?.toUpperCase().includes("COMPOSITION-API-SETUP") ||
+    menu.title?.toUpperCase().includes("COMPOSITION-API-REF-REACTIVE") ||
+    menu.title?.toUpperCase().includes("COMPOSITION-API-WATCH") ||
+    menu.title?.toUpperCase().includes("COMPOSITION-API-LIFECYCLE") ||
+    menu.title?.toUpperCase().includes("COMPOSITION API")
   )
 );
 
 const routingCourses = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("ROUTING") ||
-    menu.title?.toUpperCase().includes("ROUTER") ||
-    menu.title?.toUpperCase().includes("NAVIGATION")
+    menu.title?.toUpperCase().includes("ROUTING-INSTALLATION") ||
+    menu.title?.toUpperCase().includes("ROUTING-PAGES") ||
+    menu.title?.toUpperCase().includes("ROUTING-PARAMETRES") ||
+    menu.title?.toUpperCase().includes("ROUTING-NAVIGATION") ||
+    menu.title?.toUpperCase().includes("ROUTING-PROTECTION") ||
+    menu.title?.toUpperCase().includes("GUARD") ||
+    menu.title?.toUpperCase().includes("ROUTER")
+  )
+);
+
+const formsCourses = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("FORMS-V-MODEL") ||
+    menu.title?.toUpperCase().includes("FORMS-VALIDATION") ||
+    menu.title?.toUpperCase().includes("FORMS-CONDITIONNELS") ||
+    menu.title?.toUpperCase().includes("FORMS-CHECKBOX-RADIO-SELECT") ||
+    menu.title?.toUpperCase().includes("FORM") ||
+    menu.title?.toUpperCase().includes("FORMULAIRE")
   )
 );
 
 const stateCourses = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("STATE") ||
-    menu.title?.toUpperCase().includes("VUEX") ||
+    menu.title?.toUpperCase().includes("STATE-REACTIVITÉ") ||
+    menu.title?.toUpperCase().includes("STATE-GLOBAL") ||
+    menu.title?.toUpperCase().includes("STATE-MODULES") ||
+    menu.title?.toUpperCase().includes("STATE-PERSISTÉ") ||
     menu.title?.toUpperCase().includes("PINIA") ||
-    menu.title?.toUpperCase().includes("STORE") ||
-    menu.title?.toUpperCase().includes("ÉTAT")
+    menu.title?.toUpperCase().includes("VUEX") ||
+    menu.title?.toUpperCase().includes("STATE")
   )
 );
 
 const apiCourses = computed(() =>
   filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("API-FETCH") ||
+    menu.title?.toUpperCase().includes("API-AXIOS") ||
+    menu.title?.toUpperCase().includes("API-ASYNC-AWAIT") ||
+    menu.title?.toUpperCase().includes("API-GESTION-ERREUR") ||
     menu.title?.toUpperCase().includes("API") ||
     menu.title?.toUpperCase().includes("HTTP") ||
     menu.title?.toUpperCase().includes("FETCH") ||
@@ -166,35 +195,27 @@ const apiCourses = computed(() =>
   )
 );
 
-const formsCourses = computed(() =>
+const utilsCourses = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("FORM") ||
-    menu.title?.toUpperCase().includes("INPUT") ||
-    menu.title?.toUpperCase().includes("FORMULAIRE")
-  )
-);
-
-const testingCourses = computed(() =>
-  filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("TEST") ||
-    menu.title?.toUpperCase().includes("VITEST") ||
-    menu.title?.toUpperCase().includes("JEST")
-  )
-);
-
-const performanceCourses = computed(() =>
-  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("UTILS-FILTRES") ||
+    menu.title?.toUpperCase().includes("UTILS-DIRECTIVES") ||
+    menu.title?.toUpperCase().includes("UTILS-DOSSIERS-STRUCTURE") ||
+    menu.title?.toUpperCase().includes("UTILS-PERFORMANCE") ||
+    menu.title?.toUpperCase().includes("UTILS-DEBOGAGE") ||
+    menu.title?.toUpperCase().includes("PIPES") ||
     menu.title?.toUpperCase().includes("PERFORMANCE") ||
-    menu.title?.toUpperCase().includes("LAZY") ||
-    menu.title?.toUpperCase().includes("OPTIMISATION")
+    menu.title?.toUpperCase().includes("DEBUG")
   )
 );
 
-const deploymentCourses = computed(() =>
+const projectCourses = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("DEPLOY") ||
-    menu.title?.toUpperCase().includes("BUILD") ||
-    menu.title?.toUpperCase().includes("PRODUCTION")
+    menu.title?.toUpperCase().includes("PROJET-TODO") ||
+    menu.title?.toUpperCase().includes("PROJET-BLOG") ||
+    menu.title?.toUpperCase().includes("PROJET-AUTHENTIFICATION") ||
+    menu.title?.toUpperCase().includes("PROJET-API-TEMPS-RÉEL") ||
+    menu.title?.toUpperCase().includes("PROJECT") ||
+    menu.title?.toUpperCase().includes("PROJET")
   )
 );
 </script>
