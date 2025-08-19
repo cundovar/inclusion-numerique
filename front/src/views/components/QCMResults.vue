@@ -190,6 +190,10 @@ export default {
     session: {
       type: Object,
       required: true
+    },
+    userAnswers: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -264,23 +268,23 @@ export default {
   },
   methods: {
     calculateTotalTime() {
-      // Calculer le temps total basé sur les user_answers
+      // Calculer le temps total basé sur les userAnswers
       let totalTime = 0;
       
       this.session.questions.forEach(question => {
-        const answers = question.user_answers || [];
-        answers.forEach(answer => {
-          totalTime += answer.time_spent || 0;
-        });
+        const userAnswer = this.userAnswers[question.id];
+        if (userAnswer && userAnswer.timeSpent) {
+          totalTime += userAnswer.timeSpent;
+        }
       });
       
       return totalTime;
     },
     
     getUserAnswer(question) {
-      const answers = question.user_answers || [];
-      if (answers.length > 0) {
-        return answers[answers.length - 1].selected_answer; // Dernière réponse
+      const userAnswer = this.userAnswers[question.id];
+      if (userAnswer && userAnswer.answer) {
+        return userAnswer.answer;
       }
       return 'Non répondu';
     },

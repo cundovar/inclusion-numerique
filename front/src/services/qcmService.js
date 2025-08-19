@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8002/api'; // Port du microservice IA
+const BASE_URL = 'https://localhost:8002/api'; // Port du microservice IA
 
 class QCMService {
   async generateQCM(options = {}) {

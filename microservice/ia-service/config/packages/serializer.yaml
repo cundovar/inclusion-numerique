@@ -1,4 +1,0 @@
-framework:
-    serializer:
-        enabled: true
-        enable_attributes: true

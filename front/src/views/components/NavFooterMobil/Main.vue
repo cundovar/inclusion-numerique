@@ -9,6 +9,14 @@
     <i :class="profileLink.icon" class="text-2xl mb-1"></i>
     <span class="text-xs">{{ profileLink.label }}</span>
   </router-link>
+
+  <router-link
+    :to="`/${qcmLink.name}`"
+    class=" shadow-neutral-600 shadow-lg p-2  rounded-2xl bg-violet-400 w-12  text-white font-bold hover:underline flex flex-col items-center justify-center"
+  >
+    <i :class="qcmLink.icon" class="text-2xl mb-1"></i>
+    <span class="text-xs">{{ qcmLink.label }}</span>
+  </router-link>
   
     <router-link
       v-for="tech in techs"
@@ -53,6 +61,12 @@ const profileLink = {
   name: 'profile',
   label: 'Profil',
   icon: 'pi pi-user'
+}
+
+const qcmLink = {
+  name: 'qcm',
+  label: 'QCM',
+  icon: 'fas fa-brain'
 }
 
 </script>

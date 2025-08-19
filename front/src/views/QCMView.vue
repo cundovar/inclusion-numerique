@@ -1,5 +1,5 @@
 <template>
-  <div class="qcm-container">
+  <div class="qcm-container  ">
     <!-- Header -->
     <div class="qcm-header">
       <h1 class="qcm-title">
@@ -55,8 +55,8 @@
             >
               <option value="5">5 questions</option>
               <option value="10">10 questions</option>
-              <option value="15">15 questions</option>
-              <option value="20">20 questions</option>
+         
+            
             </select>
           </div>
 
@@ -108,7 +108,7 @@
       />
 
       <!-- Navigation -->
-      <div class="qcm-navigation">
+      <div class="qcm-navigation ">
         <button 
           v-if="currentQuestionIndex > 0"
           @click="previousQuestion"
@@ -144,6 +144,7 @@
       v-if="showResults && results"
       :results="results"
       :session="session"
+      :userAnswers="userAnswers"
       @restart="restartQCM"
       @viewHistory="goToHistory"
     />
@@ -152,7 +153,7 @@
     <div v-if="error" class="error-container">
       <div class="error-card">
         <i class="fas fa-exclamation-triangle"></i>
-        <h3>Erreur</h3>
+        <h3>Erreur, possible plus de crédits IA</h3>
         <p>{{ error }}</p>
         <button @click="resetQCM" class="btn btn-primary">
           Recommencer
@@ -180,12 +181,7 @@ export default {
         difficulty: 'medium',
         questionsCount: 10
       },
-      categories: [
-        { id: 1, name: 'Symfony' },
-        { id: 2, name: 'Vue.js' },
-        { id: 3, name: 'React' },
-        { id: 4, name: 'WordPress' }
-      ],
+      categories: [],
       session: null,
       currentQuestionIndex: 0,
       userAnswers: {},
@@ -195,7 +191,8 @@ export default {
       error: null,
       showResults: false,
       results: null,
-      startTime: null
+      startTime: null,
+      questionStartTime: null
     };
   },
   computed: {
@@ -221,12 +218,22 @@ export default {
       try {
         const response = await fetch('/api/categories');
         const data = await response.json();
-        if (data['hydra:member']) {
-          this.categories = data['hydra:member'];
+        console.log("data",data)
+        if (data['member']) {
+          // Filtrer les catégories pour correspondre aux catégories de navigation d'App.vue
+         
+          this.categories = data['member']
+          
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des catégories:', error);
-        // Garder les catégories par défaut
+        // Utiliser les catégories par défaut si l'API échoue
+        this.categories = [
+          { id: 1, name: 'HTML' },
+          { id: 2, name: 'CSS' },
+          { id: 3, name: 'JavaScript' },
+          { id: 4, name: 'PHP' }
+        ];
       }
     },
 
@@ -252,6 +259,7 @@ export default {
         this.currentQuestionIndex = 0;
         this.userAnswers = {};
         this.startTime = Date.now();
+        this.questionStartTime = Date.now();
         
       } catch (error) {
         this.error = error.message;
@@ -332,6 +340,8 @@ export default {
       this.results = null;
       this.loading = false;
       this.generatingQCM = false;
+      this.questionStartTime = null;
+      this.startTime = null;
     },
 
     goToHistory() {
@@ -345,7 +355,7 @@ export default {
   },
 
   mounted() {
-    this.questionStartTime = Date.now();
+    // questionStartTime sera initialisé quand une session démarrera
   }
 };
 </script>
@@ -355,6 +365,7 @@ export default {
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
+  
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -536,7 +547,9 @@ export default {
 
 @media (max-width: 768px) {
   .qcm-container {
-    padding: 15px;
+
+    padding-bottom: 20rem;
+    margin-bottom: 20rem;
   }
   
   .qcm-title {
