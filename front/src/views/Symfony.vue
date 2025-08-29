@@ -89,6 +89,24 @@
         title="Crud"
         :menus="crudMenus"
         icon-class="fas fa-edit"
+      />
+
+      <CourseCard
+        title="Astuces Symfony"
+        :menus="tipsMenus"
+        icon-class="fas fa-lightbulb"
+      />
+
+      <CourseCard
+        title="Déploiement"
+        :menus="deploymentMenus"
+        icon-class="fas fa-cloud-upload-alt"
+      />
+
+      <CourseCard
+        title="Exemples de site"
+        :menus="exampleMenus"
+        icon-class="fas fa-globe"
       />  
     </div>
   </div>
@@ -185,6 +203,35 @@ const crudMenus = computed(() =>
 const bundleMenus = computed(() =>
   filterMenus.value.filter((menu) =>
     menu.title?.toUpperCase().includes("BUNDLE")
+  )
+);
+
+const tipsMenus = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("ASTUCE") ||
+    menu.title?.toUpperCase().includes("TIP") ||
+    menu.title?.toUpperCase().includes("CONSEIL")
+  )
+);
+
+const deploymentMenus = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("DEPLOY") ||
+    menu.title?.toUpperCase().includes("DÉPLOIEMENT") ||
+    menu.title?.toUpperCase().includes("DEPLOIEMENT") ||
+    menu.title?.toUpperCase().includes("PRODUCTION") ||
+    menu.title?.toUpperCase().includes("SERVER") ||
+    menu.title?.toUpperCase().includes("SERVEUR")
+  )
+);
+
+const exampleMenus = computed(() =>
+  filterMenus.value.filter((menu) =>
+   
+    menu.title?.toUpperCase().includes("E-COMMERCE") ||
+    menu.title?.toUpperCase().includes("SITE") 
+   
+    
   )
 );
 </script>

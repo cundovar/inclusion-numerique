@@ -1,16 +1,16 @@
 <template>
 
-<div class="bg-amber-200 p-2">
+<div class="bg-amber-200 max-xl:bg-violet-300 max-xl:mt-2 max-xl:mb-2 xl:p-2">
 
 
 
 
-  <div class="w-full max-w-sm min-w-[200px] ">      
+  <div class="w-full max-xl:pt-4  min-w-[200px] ">      
     <p class="font-bold ">vocabulaire par langage ou technologie :</p>
     <div class="relative">
       <select
       @change="navigateToPage($event, 'vocabulaire')"
-          class="w-full bg-amber-100 placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 py-1.5 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer">
+          class="w-full text-xl  max-xl:bg-violet-200 bg-amber-100 placeholder:text-slate-400 text-slate-700 xl:text-sm border border-slate-200 rounded pl-3 pr-8 py-1.5 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer">
           <option value="">choisir un langage</option>
          
   
@@ -24,12 +24,12 @@
     </div>
   </div>
    
-  <div class="w-full max-w-sm min-w-[200px] mt-4">      
-    <p class="font-bold">fonctions utiles par langage :</p>
+  <div class="w-full min-w-[200px] mt-4">      
+    <p class="font-bold ">fonctions utiles par langage :</p>
     <div class="relative">
       <select
       @change="navigateToPage($event, 'functions')"
-          class="w-full bg-amber-100 placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer">
+          class="w-full text-xl max-xl:bg-violet-200 bg-amber-100 placeholder:text-slate-400 text-slate-700 xl:text-sm border border-slate-200 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer">
   
           <option value="">choisir un langage</option>
           <option v-for="func in contentSelect.functions" :key="func" :value="func">{{ func }}</option>
@@ -52,16 +52,19 @@ const router = useRouter();
 
 
 const contentSelect={
-  vocabulaire: ['html', 'css', 'javascript', 'php'],
+  vocabulaire: ['web','html', 'css', 'javascript', 'php','symfony','wordpress','docker','vuejs','reactjs'],
   functions: ['javascript', 'php'],
 }
 
+
+const emit = defineEmits(['closeMenu']);
 
 const navigateToPage = (event, category) => {
   const selectedValue = event.target.value;
   
   if(selectedValue && category){
     router.push(`/pages/${selectedValue}-${category}`)
+    emit('closeMenu'); // Émettre l'événement pour fermer le menu mobile
   } else {
     alert("veuillez choisir un langage")
   }

@@ -20,6 +20,8 @@
         </div>
       </div>
 
+      
+
       <div class="flex flex-wrap justify-center items-center">
         <CourseCard
           title="Installation"
@@ -28,46 +30,41 @@
         />
         
         <CourseCard
-          title="Thèmes"
-          :menus="themesCourses"
+          title="Création de contenu"
+          :menus="contentCourses"
+          icon-class="fas fa-edit"
+        />
+        
+        <CourseCard
+          title="Personnalisation du site"
+          :menus="customizationCourses"
           icon-class="fas fa-palette"
         />
         
         <CourseCard
-          title="Plugins"
-          :menus="pluginsCourses"
-          icon-class="fas fa-plug"
+          title="Fonctionnalités avancées"
+          :menus="advancedCourses"
+          icon-class="fas fa-cogs"
         />
         
         <CourseCard
-          title="Types de contenu"
-          :menus="customTypesCourses"
-          icon-class="fas fa-th-large"
-        />
-        
-        <CourseCard
-          title="API REST"
-          :menus="apiCourses"
-          icon-class="fas fa-code"
-        />
-        
-        <CourseCard
-          title="Sécurité"
-          :menus="securityCourses"
+          title="Maintenance, sécurité et SEO"
+          :menus="maintenanceCourses"
           icon-class="fas fa-shield-alt"
         />
         
         <CourseCard
-          title="Performances"
-          :menus="performanceCourses"
-          icon-class="fas fa-tachometer-alt"
+          title="Plugin"
+          :menus="pluginsCourses"
+          icon-class="fas fa-plug"
+        />
+
+        <CourseCard
+          title="Astuces WordPress"
+          :menus="tipsCourses"
+          icon-class="fas fa-lightbulb"
         />
         
-        <CourseCard
-          title="Gutenberg"
-          :menus="gutenbergCourses"
-          icon-class="fas fa-blocks"
-        />
       </div>
     </div>
   </div>
@@ -97,10 +94,46 @@ const setupCourses = computed(() =>
   )
 );
 
-const themesCourses = computed(() =>
+const contentCourses = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("CONTENU") ||
+    menu.title?.toUpperCase().includes("CONTENT") ||
+    menu.title?.toUpperCase().includes("ARTICLE") ||
+    menu.title?.toUpperCase().includes("PAGE")
+  )
+);
+
+const customizationCourses = computed(() =>
   filterMenus.value.filter((menu) =>
     menu.title?.toUpperCase().includes("THEME") ||
-    menu.title?.toUpperCase().includes("THÈME")
+    menu.title?.toUpperCase().includes("THÈME") ||
+    menu.title?.toUpperCase().includes("PERSONNALISATION") ||
+    menu.title?.toUpperCase().includes("CUSTOMIZATION")
+  )
+);
+
+const advancedCourses = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("CUSTOM") ||
+    menu.title?.toUpperCase().includes("POST TYPE") ||
+    menu.title?.toUpperCase().includes("API") ||
+    menu.title?.toUpperCase().includes("REST") ||
+    menu.title?.toUpperCase().includes("GUTENBERG") ||
+    menu.title?.toUpperCase().includes("BLOCK") ||
+    menu.title?.toUpperCase().includes("AVANCÉ")
+  )
+);
+
+const maintenanceCourses = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("SECURITY") ||
+    menu.title?.toUpperCase().includes("SÉCURITÉ") ||
+    menu.title?.toUpperCase().includes("SECURITE") ||
+    menu.title?.toUpperCase().includes("SEO") ||
+    menu.title?.toUpperCase().includes("MAINTENANCE") ||
+    menu.title?.toUpperCase().includes("PERFORMANCE") ||
+    menu.title?.toUpperCase().includes("CACHE") ||
+    menu.title?.toUpperCase().includes("OPTIMISATION")
   )
 );
 
@@ -111,45 +144,14 @@ const pluginsCourses = computed(() =>
   )
 );
 
-const customTypesCourses = computed(() =>
+const tipsCourses = computed(() =>
   filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("CUSTOM") ||
-    menu.title?.toUpperCase().includes("POST TYPE") ||
-    menu.title?.toUpperCase().includes("PERSONNALISÉ")
+    menu.title?.toUpperCase().includes("ASTUCE") ||
+    menu.title?.toUpperCase().includes("TIP") ||
+    menu.title?.toUpperCase().includes("CONSEIL")
   )
 );
 
-const apiCourses = computed(() =>
-  filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("API") ||
-    menu.title?.toUpperCase().includes("REST") ||
-    menu.title?.toUpperCase().includes("ENDPOINT")
-  )
-);
-
-const securityCourses = computed(() =>
-  filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("SECURITY") ||
-    menu.title?.toUpperCase().includes("SÉCURITÉ") ||
-    menu.title?.toUpperCase().includes("SECURITE")
-  )
-);
-
-const performanceCourses = computed(() =>
-  filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("PERFORMANCE") ||
-    menu.title?.toUpperCase().includes("CACHE") ||
-    menu.title?.toUpperCase().includes("OPTIMISATION")
-  )
-);
-
-const gutenbergCourses = computed(() =>
-  filterMenus.value.filter((menu) =>
-    menu.title?.toUpperCase().includes("GUTENBERG") ||
-    menu.title?.toUpperCase().includes("BLOCK") ||
-    menu.title?.toUpperCase().includes("EDITOR")
-  )
-);
 </script>
 
 <style scoped>
@@ -261,5 +263,92 @@ const gutenbergCourses = computed(() =>
     padding: 16px;
     padding-bottom: 120px;
   }
+  
+  .tips-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .tip-card {
+    padding: 20px;
+  }
+  
+  .tip-header h3 {
+    font-size: 16px;
+  }
+  
+  .tip-card p {
+    font-size: 14px;
+  }
+}
+
+.tips-section {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.tips-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.tips-icon {
+  font-size: 28px;
+  color: #f39c12;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.tip-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 4px solid #21759b;
+}
+
+.tip-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.tip-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.tip-icon {
+  font-size: 20px;
+  color: #21759b;
+}
+
+.tip-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.tip-card p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
 }
 </style>

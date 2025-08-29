@@ -23,6 +23,21 @@
     <!-- Splash screen iOS -->
     <link rel="apple-touch-startup-image" href="/spa/pwa1.png">
 
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RBCFWF684Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-RBCFWF684Q');
+</script>
+
+
+
+
+
        {% if app.debug %}
         <script type="module" src="/build/@vite/client"></script>
         <script type="module" src="/build/src/main.js"></script>

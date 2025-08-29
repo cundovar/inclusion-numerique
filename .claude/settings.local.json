@@ -5,7 +5,10 @@
       "Bash(docker-compose build:*)",
       "Bash(docker exec:*)",
       "Bash(rm:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(php:*)",
+      "Bash(docker-compose exec:*)",
+      "Bash(make:*)"
     ],
     "deny": []
   }

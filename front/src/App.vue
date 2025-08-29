@@ -96,36 +96,79 @@
 
         <div
         v-if="searchResults.length"
-        class="search-results absolute top-24 right-1/2 translate-x-1/2 m-auto p-4 max-h-[40rem] max-w-full max-md:hidden bg-gray-100 w-96 rounded-xl my-4 overflow-y-auto shadow-lg z-50"
+        class="search-results absolute top-24 right-1/2 translate-x-1/2 m-auto p-4 max-h-[40rem] max-w-full max-md:hidden bg-white w-[28rem] rounded-xl my-4 overflow-y-auto shadow-xl z-50 border border-gray-200"
       >
-        <div class="flex justify-between items-center mb-2">
-          <div class="text-sm text-gray-600 font-medium">
-            {{ searchResults.length }} résultat(s) trouvé(s)
+        <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-200">
+          <div class="text-sm font-semibold text-gray-700">
+            <span class="text-blue-600">{{ searchResults.length }}</span> résultat(s) trouvé(s)
+            <span v-if="searchAnalysis" class="text-xs text-gray-500 block mt-1">
+              Recherche IA • {{ searchAnalysis.intent || 'Analyse en cours' }}
+            </span>
           </div>
           <i
               @click="closeSearchResults"
-              class="text-blue-950 hover:bg-red-200 hover:text-red-600 p-2 rounded-full pi pi-times cursor-pointer text-xl transition-colors"
+              class="text-gray-400 hover:bg-red-100 hover:text-red-600 p-2 rounded-full pi pi-times cursor-pointer text-lg transition-colors"
             ></i>
         </div>
-        <ul class="space-y-2">
+
+        <!-- Tags d'analyse IA -->
+        <div v-if="searchAnalysis && (searchAnalysis.keywords || searchAnalysis.technologies)" class="mb-3">
+          <div class="flex flex-wrap gap-1">
+            <span v-for="keyword in searchAnalysis.keywords?.slice(0, 3)" 
+                  :key="keyword"
+                  class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+              {{ keyword }}
+            </span>
+            <span v-for="tech in searchAnalysis.technologies?.slice(0, 2)" 
+                  :key="tech"
+                  class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+              {{ tech }}
+            </span>
+          </div>
+        </div>
+
+        <ul class="space-y-3">
           <li
-            v-for="menu in searchResults"
-            :key="menu.page.slug"
-            class="hover:bg-pink-200 p-3 border-b border-gray-200 rounded-lg transition-colors duration-200"
+            v-for="result in searchResults"
+            :key="result.id || result.page?.slug"
+            class="hover:bg-gray-50 p-3 border border-gray-100 rounded-lg transition-all duration-200 hover:shadow-md"
           >
             <router-link
-              :to="`/pages${menu.page.slug}`"
-              class="block hover:underline"
-              @click="search = ''; searchResults = []"
+              :to="`/pages${result.page?.slug || result.pageSlug}`"
+              class="block"
+              @click="search = ''; searchResults = []; searchAnalysis = null"
             >
-              <div class="font-medium text-gray-800">
-                {{ capitalize(menu.title) }}
+              <div class="flex justify-between items-start mb-2">
+                <div class="font-medium text-gray-800 text-sm leading-tight pr-2">
+                  {{ capitalize(result.title) }}
+                </div>
+                <span :class="`${result.scoreColor || 'bg-gray-500'} text-white text-xs px-2 py-1 rounded-full font-medium flex-shrink-0`">
+                  {{ result.relevanceScore || 0 }}%
+                </span>
               </div>
-              <div class="text-sm text-gray-600 mt-1">
-                {{ menu.category?.name || 'Catégorie non définie' }}
+              
+              <div class="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                <span class="bg-gray-100 px-2 py-1 rounded">
+                  {{ result.category?.name || result.category || 'Non catégorisé' }}
+                </span>
+                <span v-if="result.menu?.label" class="bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                  {{ result.menu.label }}
+                </span>
+                <span v-if="result.hasCode" class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded flex items-center">
+                  <i class="pi pi-code mr-1"></i>Code
+                </span>
               </div>
-              <div v-if="menu.content" class="text-xs text-gray-500 mt-1 truncate">
-                {{ menu.content.substring(0, 100) }}...
+              
+              <!-- Summary avec highlight -->
+              <div v-if="result.displaySummary || result.summary" 
+                   class="text-xs text-gray-600 leading-relaxed bg-gray-50 p-2 rounded border-l-2 border-blue-200">
+                {{ result.displaySummary || result.summary }}
+              </div>
+              
+              <!-- Date si disponible -->
+              <div v-if="result.formattedDate" class="text-xs text-gray-400 mt-2 flex items-center">
+                <i class="pi pi-calendar mr-1"></i>
+                {{ result.formattedDate }}
               </div>
             </router-link>
           </li>
@@ -275,7 +318,7 @@
           <div
             class="p-2 md:w-2/3 md:mt-1 md:border-b border-green-950 mb-2  md:text-start md:bg-transparent md:text-black max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
           > 
-            {{ group.label }} :
+            {{ group.label }} 
           </div>
 
           <button
@@ -288,11 +331,13 @@
               @click="toggleMenu"
               class="focus:bg-gray-400   focus:text-white z-50 hover:text-blue-600"
             >
+          
               <p
                 class="p-2  md:text-blue-500 hover:text-fuchsia-900 flex justify-around max-md:justify-start items-center max-md:text-start "
               >
               <div class="flex  justify-center items-center w-1/3">
                 <i
+                
                   class="pi pi-code max-md:text-blue-600 md:text-yellow-600"
                 ></i>
                 </div>
@@ -314,6 +359,20 @@
 
       </div>
     </div>
+    <div
+        class="text-2xl max-md:text-xl xl:hidden max-md:drop-shadow-xl pb-2 mt-4 pl-1"
+      >
+      <SelectfunctionVocabulaire @closeMenu="closeMobileMenu"/>
+      <router-link
+      to="/qcm"
+      @click="toggleMenu"
+      class="text-xl  h-[3rem] cursor-pointer mt-4 shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <i class="fas fa-brain"></i>
+      QCM IA
+    </router-link>
+     
+      </div>
     <div
       class="flex  w-full md:justify-start justify-end items-center "
     >
@@ -343,38 +402,74 @@
     <!-- resultat de la recherche en mobile -->
     <div
         v-if="modalIsOpen && searchResults.length"
-        class="fixed inset-0 overflow-hidden backdrop-blur-2xl bg-opacity-50 z-50 flex items-center justify-center p-4 md:hidden"
+        class="fixed inset-0 overflow-hidden backdrop-blur-2xl bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 md:hidden"
       >
-      <div class="bg-white rounded-lg w-full max-w-md max-h-96 overflow-hidden shadow-xl">
-        <div class="flex justify-between items-center p-4 border-b">
-          <h2 class="text-lg font-bold">Résultats de recherche</h2>
+      <div class="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-hidden shadow-xl">
+        <div class="flex justify-between items-center p-4 border-b bg-blue-50">
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">Résultats IA</h2>
+            <div class="text-sm text-gray-600">
+              <span class="text-blue-600 font-medium">{{ searchResults.length }}</span> résultat(s)
+            </div>
+          </div>
           <i
             @click="closeModal"
-            class="text-blue-950 pi pi-times cursor-pointer text-xl"
+            class="text-gray-400 hover:text-red-600 pi pi-times cursor-pointer text-xl p-2 hover:bg-red-100 rounded-full transition-colors"
           ></i>
         </div>
-        <div class="p-2 text-sm text-gray-600 border-b">
-          {{ searchResults.length }} résultat(s) trouvé(s)
+
+        <!-- Tags d'analyse IA mobile -->
+        <div v-if="searchAnalysis && (searchAnalysis.keywords || searchAnalysis.technologies)" class="p-3 border-b bg-gray-50">
+          <div class="flex flex-wrap gap-1">
+            <span v-for="keyword in searchAnalysis.keywords?.slice(0, 2)" 
+                  :key="keyword"
+                  class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+              {{ keyword }}
+            </span>
+            <span v-for="tech in searchAnalysis.technologies?.slice(0, 1)" 
+                  :key="tech"
+                  class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+              {{ tech }}
+            </span>
+          </div>
+          <div v-if="searchAnalysis.intent" class="text-xs text-gray-600 mt-1">
+            {{ searchAnalysis.intent }}
+          </div>
         </div>
-        <ul class="overflow-y-auto max-h-80 p-2">
+
+        <ul class="overflow-y-auto max-h-[60vh] p-2">
           <li
-            v-for="menu in searchResults"
-            :key="menu.page.slug"
-            class="hover:bg-pink-200 p-3 border-b border-gray-200 transition-colors duration-200"
+            v-for="result in searchResults"
+            :key="result.id || result.page?.slug"
+            class="hover:bg-gray-50 p-3 border-b border-gray-100 transition-colors duration-200"
           >
             <router-link
-              :to="`/pages${menu.page.slug}`"
-              class="block hover:underline"
-              @click="closeModal(); search = ''; searchResults = []"
+              :to="`/pages${result.page?.slug || result.pageSlug}`"
+              class="block"
+              @click="closeModal(); search = ''; searchResults = []; searchAnalysis = null"
             >
-              <div class="font-medium text-gray-800">
-                {{ capitalize(menu.title) }}
+              <div class="flex justify-between items-start mb-2">
+                <div class="font-medium text-gray-800 text-sm pr-2">
+                  {{ capitalize(result.title) }}
+                </div>
+                <span :class="`${result.scoreColor || 'bg-gray-500'} text-white text-xs px-2 py-1 rounded-full font-medium flex-shrink-0`">
+                  {{ result.relevanceScore || 0 }}%
+                </span>
               </div>
-              <div class="text-sm text-gray-600 mt-1">
-                {{ menu.category?.name || 'Catégorie non définie' }}
+              
+              <div class="flex items-center gap-1 text-xs text-gray-600 mb-2 flex-wrap">
+                <span class="bg-gray-100 px-2 py-1 rounded">
+                  {{ result.category?.name || result.category || 'Non catégorisé' }}
+                </span>
+                <span v-if="result.hasCode" class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
+                  Code
+                </span>
               </div>
-              <div v-if="menu.content" class="text-xs text-gray-500 mt-1 truncate">
-                {{ menu.content.substring(0, 80) }}...
+              
+              <!-- Summary mobile -->
+              <div v-if="result.displaySummary || result.summary" 
+                   class="text-xs text-gray-600 leading-relaxed bg-blue-50 p-2 rounded border-l-2 border-blue-300">
+                {{ (result.displaySummary || result.summary).substring(0, 120) }}{{ (result.displaySummary || result.summary).length > 120 ? '...' : '' }}
               </div>
             </router-link>
           </li>
@@ -431,6 +526,8 @@ import pagesFrame from "./views/components/MenuPageFramwork/PagesFrame.vue";
 import { APP_CONFIG } from "./config/app.js";
 import AfertLogin from "./views/components/AfertLogin.vue";
 import vracMain from "./views/components/vrac/vracMain.vue";
+import IntelligentSearchService from "./services/intelligentSearchService.js";
+import SelectfunctionVocabulaire from './views/components/MenuPageFramwork/SelectfunctionVocabulaire.vue'
 
 
 
@@ -445,6 +542,7 @@ const searchResults = ref([]);
 const modalIsOpen = ref(false);
 const isMobile=ref(window.innerWidth < 768);
 const clickMenu=ref(null);
+const searchAnalysis = ref(null);
 const { menus, user,cats, fetchMenus, fetchUser } = useData()
 
 // Pop-up mobile app
@@ -495,6 +593,7 @@ const closeModal = () => {
 const closeSearchResults = () => {
   search.value = '';
   searchResults.value = [];
+  searchAnalysis.value = null;
 };
 
 // fermeture de modal et menu en mobile
@@ -544,8 +643,8 @@ onUnmounted(() => {
 
 
 
-// Filtrage dynamique
-const launchSearch = () => {
+// Recherche intelligente avec IA
+const launchSearch = async () => {
   if (!search.value.trim()) {
     searchResults.value = [];
     modalIsOpen.value = false;
@@ -559,56 +658,78 @@ const launchSearch = () => {
     return;
   }
 
-  console.log("menus", menus.value);
-
-  const query = search.value.toLowerCase();
-  
-  // Recherche approfondie dans tous les contenus
-  searchResults.value = menus.value.filter((menu) => {
-    const title = menu.title?.toLowerCase() || "";
-    const content = menu.content?.toLowerCase() || "";
-    const label = menu.menu?.label?.toLowerCase() || "";
-    const code = menu.code?.toLowerCase() || "";
-    const slug = menu.page?.slug?.toLowerCase() || "";
-    const category = menu.category?.name?.toLowerCase() || "";
-    const type = menu.type?.toLowerCase() || "";
+  try {
+    // Vérifier si le service de recherche intelligente est disponible
+    const isServiceAvailable = await IntelligentSearchService.checkServiceHealth();
     
-    // Recherche aussi dans les pageBlocks si disponibles
-    let blockContent = "";
-    if (menu.pageBlocks && Array.isArray(menu.pageBlocks)) {
-      blockContent = menu.pageBlocks.map(block => {
-        const blockTitle = block.title?.toLowerCase() || "";
-        const blockContent = block.content?.toLowerCase() || "";
-        const blockCode = block.code?.toLowerCase() || "";
-        return blockTitle + " " + blockContent + " " + blockCode;
-      }).join(" ");
+    if (isServiceAvailable) {
+      // Utiliser la recherche intelligente avec IA
+      console.log("Recherche intelligente activée");
+      const result = await IntelligentSearchService.search(search.value, 15);
+      
+      if (result.success) {
+        searchResults.value = IntelligentSearchService.formatResults(result.results);
+        searchAnalysis.value = result.analysis; // Stocker l'analyse pour affichage
+        console.log("Analyse IA:", result.analysis);
+        console.log(`${result.total} résultats trouvés avec IA`);
+      } else {
+        throw new Error("Service de recherche IA non disponible");
+      }
+    } else {
+      throw new Error("Service de recherche IA non accessible");
     }
+  } catch (error) {
+    console.warn("Recherche IA échouée, utilisation de la recherche classique:", error.message);
     
-    // Recherche dans toutes les propriétés disponibles
-    const searchableText = [
-      title,
-      content,
-      label,
-      code,
-      slug,
-      category,
-      type,
-      blockContent
-    ].join(" ");
+    // Fallback : recherche classique
+    const query = search.value.toLowerCase();
     
-    return searchableText.includes(query);
-  });
-  
-  // Trier les résultats par pertinence (titre en premier, puis contenu)
-  searchResults.value.sort((a, b) => {
-    const aTitle = a.title?.toLowerCase() || "";
-    const bTitle = b.title?.toLowerCase() || "";
+    searchResults.value = menus.value.filter((menu) => {
+      const title = menu.title?.toLowerCase() || "";
+      const content = menu.content?.toLowerCase() || "";
+      const label = menu.menu?.label?.toLowerCase() || "";
+      const code = menu.code?.toLowerCase() || "";
+      const slug = menu.page?.slug?.toLowerCase() || "";
+      const category = menu.category?.name?.toLowerCase() || "";
+      const type = menu.type?.toLowerCase() || "";
+      
+      // Recherche aussi dans les pageBlocks si disponibles
+      let blockContent = "";
+      if (menu.pageBlocks && Array.isArray(menu.pageBlocks)) {
+        blockContent = menu.pageBlocks.map(block => {
+          const blockTitle = block.title?.toLowerCase() || "";
+          const blockContent = block.content?.toLowerCase() || "";
+          const blockCode = block.code?.toLowerCase() || "";
+          return blockTitle + " " + blockContent + " " + blockCode;
+        }).join(" ");
+      }
+      
+      // Recherche dans toutes les propriétés disponibles
+      const searchableText = [
+        title,
+        content,
+        label,
+        code,
+        slug,
+        category,
+        type,
+        blockContent
+      ].join(" ");
+      
+      return searchableText.includes(query);
+    });
     
-    if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
-    if (!aTitle.includes(query) && bTitle.includes(query)) return 1;
-    
-    return 0;
-  });
+    // Trier les résultats par pertinence (titre en premier, puis contenu)
+    searchResults.value.sort((a, b) => {
+      const aTitle = a.title?.toLowerCase() || "";
+      const bTitle = b.title?.toLowerCase() || "";
+      
+      if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
+      if (!aTitle.includes(query) && bTitle.includes(query)) return 1;
+      
+      return 0;
+    });
+  }
   
   // Ouvrir la modal pour mobile ou scroll pour desktop
   if (searchResults.value.length > 0) {

@@ -5,6 +5,10 @@ use App\Entity\Category;
 use App\Entity\Menus;
 use App\Entity\Page;
 use App\Entity\PageContent;
+use App\Entity\CourseAnalysis;
+use App\Entity\ContentRecommendation;
+use App\Entity\LearningPath;
+use App\Entity\UserLearningAnalytics;
 use Symfony\Component\Routing\Attribute\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -43,24 +47,20 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-
-        
-
-
-
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
     
         yield MenuItem::section('📚 Cours');
         yield MenuItem::linkToCrud('PageContents', 'fa fa-bars', PageContent::class);
 
+        yield MenuItem::section('🤖 IA Pédagogique');
+        yield MenuItem::linkToCrud('Analyses de Cours', 'fa fa-brain', CourseAnalysis::class);
+        yield MenuItem::linkToCrud('Recommandations', 'fa fa-lightbulb', ContentRecommendation::class);
+        yield MenuItem::linkToCrud('Parcours d\'Apprentissage', 'fa fa-route', LearningPath::class);
+        yield MenuItem::linkToCrud('Analytics Apprenants', 'fa fa-chart-line', UserLearningAnalytics::class);
     
         yield MenuItem::section('📋 Navigation');
-
         yield MenuItem::linkToCrud('Categories', 'fa fa-bars', Category::class);
         yield MenuItem::linkToCrud('Pages', 'fa fa-bars', Page::class);
         yield MenuItem::linkToCrud('Menus', 'fa fa-bars', Menus::class);
-
-
-
     }
 }
