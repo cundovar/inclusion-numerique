@@ -12,20 +12,18 @@ La plupart des endpoints nécessitent une authentification utilisateur. L'utilis
 
 ---
 
-## ⚠️ IMPORTANT - Routes CRUD manquantes
+## ✅ NOUVEAU - Routes CRUD Admin disponibles
 
-**Actuellement, l'application ne dispose PAS de routes API publiques pour :**
-- Créer/Modifier/Supprimer des pages (CREATE/UPDATE/DELETE pour les pages)
-- Créer/Modifier/Supprimer des cours (CREATE/UPDATE/DELETE pour les contenus de cours)
+**Les contrôleurs CRUD Admin ont été créés et sont maintenant disponibles :**
+- CRUD complet pour les Pages (`/api/admin/pages`)
+- CRUD complet pour les Contenus de cours (`/api/admin/page-contents`) 
+- CRUD complet pour les Catégories (`/api/admin/categories`)
 
-**Routes disponibles seulement :**
-- Interface d'administration EasyAdmin (`/admin`) - interface web uniquement, pas d'API
-- Lecture seule des pages via `/api/`
-
-**Pour n8n, vous devrez créer des contrôleurs API supplémentaires si vous souhaitez :**
-- Automatiser la création de pages/cours
-- Modifier le contenu existant
-- Supprimer des éléments
+**Ces routes permettent maintenant :**
+- ✅ Automatiser la création de pages/cours via n8n
+- ✅ Modifier le contenu existant programmatiquement
+- ✅ Supprimer des éléments via API
+- ✅ Gestion complète des relations entre entités
 
 ---
 
@@ -284,32 +282,121 @@ Retrait des favoris :
 
 ---
 
-## Routes CRUD suggérées à implémenter
+## 4. API Admin - Pages CRUD
 
-Si vous souhaitez une API complète pour n8n, voici les endpoints qu'il faudrait créer :
+### 4.1 Lister toutes les pages
+**Endpoint :** `GET /api/admin/pages`
+**Description :** Récupère la liste complète des pages
+**Authentification :** Requise
 
-### API Pages CRUD
-```
-POST   /api/pages              - Créer une nouvelle page
-PUT    /api/pages/{id}         - Modifier une page existante  
-DELETE /api/pages/{id}         - Supprimer une page
-```
+### 4.2 Afficher une page spécifique
+**Endpoint :** `GET /api/admin/pages/{id}`
+**Description :** Récupère les détails d'une page par son ID
 
-### API Contenus de cours CRUD
-```
-POST   /api/page-contents      - Créer un nouveau contenu de cours
-PUT    /api/page-contents/{id} - Modifier un contenu de cours
-DELETE /api/page-contents/{id} - Supprimer un contenu de cours
-GET    /api/page-contents      - Lister tous les contenus (pas encore implémenté)
-GET    /api/page-contents/{id} - Afficher un contenu spécifique (pas encore implémenté)
-```
-
-### API Catégories CRUD  
-```
-GET    /api/categories         - Lister toutes les catégories
-POST   /api/categories         - Créer une nouvelle catégorie
-PUT    /api/categories/{id}    - Modifier une catégorie
-DELETE /api/categories/{id}    - Supprimer une catégorie
+### 4.3 Créer une nouvelle page
+**Endpoint :** `POST /api/admin/pages`
+**Description :** Crée une nouvelle page
+**Corps de la requête :**
+```json
+{
+    "slug": "ma-nouvelle-page",
+    "menuId": 1
+}
 ```
 
-**Note :** Ces routes n'existent pas encore et devront être implémentées selon vos besoins d'automatisation avec n8n.
+### 4.4 Modifier une page existante
+**Endpoint :** `PUT /api/admin/pages/{id}`
+**Description :** Modifie une page existante
+**Corps de la requête :**
+```json
+{
+    "slug": "page-modifiee",
+    "menuId": 2
+}
+```
+
+### 4.5 Supprimer une page
+**Endpoint :** `DELETE /api/admin/pages/{id}`
+**Description :** Supprime une page (si aucun contenu associé)
+
+---
+
+## 5. API Admin - Contenus de cours CRUD
+
+### 5.1 Lister tous les contenus
+**Endpoint :** `GET /api/admin/page-contents`
+**Description :** Récupère tous les contenus de cours
+
+### 5.2 Afficher un contenu spécifique
+**Endpoint :** `GET /api/admin/page-contents/{id}`
+**Description :** Récupère un contenu par son ID
+
+### 5.3 Créer un nouveau contenu
+**Endpoint :** `POST /api/admin/page-contents`
+**Description :** Crée un nouveau contenu de cours
+**Corps de la requête :**
+```json
+{
+    "title": "Titre du cours",
+    "type": "lesson",
+    "content": "Contenu HTML du cours",
+    "code": "Code d'exemple",
+    "pageId": 1,
+    "categoryId": 2,
+    "menuId": 3
+}
+```
+
+### 5.4 Modifier un contenu existant
+**Endpoint :** `PUT /api/admin/page-contents/{id}`
+**Description :** Modifie un contenu existant
+
+### 5.5 Supprimer un contenu
+**Endpoint :** `DELETE /api/admin/page-contents/{id}`
+**Description :** Supprime un contenu de cours
+
+### 5.6 Contenus par page
+**Endpoint :** `GET /api/admin/page-contents/by-page/{pageId}`
+**Description :** Récupère tous les contenus d'une page spécifique
+
+### 5.7 Contenus par catégorie
+**Endpoint :** `GET /api/admin/page-contents/by-category/{categoryId}`
+**Description :** Récupère tous les contenus d'une catégorie
+
+---
+
+## 6. API Admin - Catégories CRUD
+
+### 6.1 Lister toutes les catégories
+**Endpoint :** `GET /api/admin/categories`
+**Description :** Récupère toutes les catégories
+
+### 6.2 Afficher une catégorie spécifique
+**Endpoint :** `GET /api/admin/categories/{id}`
+**Description :** Récupère une catégorie par son ID
+
+### 6.3 Créer une nouvelle catégorie
+**Endpoint :** `POST /api/admin/categories`
+**Description :** Crée une nouvelle catégorie
+**Corps de la requête :**
+```json
+{
+    "name": "Nom de la catégorie"
+}
+```
+
+### 6.4 Modifier une catégorie existante
+**Endpoint :** `PUT /api/admin/categories/{id}`
+**Description :** Modifie une catégorie existante
+
+### 6.5 Supprimer une catégorie
+**Endpoint :** `DELETE /api/admin/categories/{id}`
+**Description :** Supprime une catégorie (si aucun contenu associé)
+
+### 6.6 Contenus d'une catégorie
+**Endpoint :** `GET /api/admin/categories/{id}/page-contents`
+**Description :** Récupère tous les contenus de la catégorie
+
+### 6.7 Menus d'une catégorie
+**Endpoint :** `GET /api/admin/categories/{id}/menus`
+**Description :** Récupère tous les menus de la catégorie
