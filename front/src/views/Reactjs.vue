@@ -21,7 +21,7 @@
 
       <div class="flex flex-wrap justify-center items-center">
         <CourseCard
-          title="Installation"
+          title="base de React"
           :menus="setupCourses"
           icon-class="fas fa-download"
         />
@@ -38,18 +38,19 @@
           icon-class="fas fa-link"
         />
         
-        <CourseCard
-          title="Formulaires"
-          :menus="formsCourses"
-          icon-class="fas fa-wpforms"
-        />
+   
+        
         
         <CourseCard
           title="Routing"
           :menus="routingCourses"
           icon-class="fas fa-route"
         />
-        
+        <CourseCard
+          title="Gestion des événements et rendu conditionnel"
+          :menus="eventsCourses"
+          icon-class="fas fa-mouse-pointer"
+        />
         <CourseCard
           title="API & HTTP"
           :menus="apiCourses"
@@ -62,16 +63,21 @@
           icon-class="fas fa-database"
         />
         
+        
+        <CourseCard
+        title="Styling"
+        :menus="stylingCourses"
+        icon-class="fas fa-paint-brush"
+        />
         <CourseCard
           title="Tests"
           :menus="testingCourses"
           icon-class="fas fa-vial"
         />
-        
         <CourseCard
-          title="Styling"
-          :menus="stylingCourses"
-          icon-class="fas fa-paint-brush"
+          title="Formulaires"
+          :menus="formsCourses"
+          icon-class="fas fa-wpforms"
         />
       </div>
     </div>
@@ -97,7 +103,8 @@ const setupCourses = computed(() =>
   filterMenus.value.filter((menu) =>
     menu.title?.toUpperCase().includes("INSTALL") ||
     menu.title?.toUpperCase().includes("SETUP") ||
-    menu.title?.toUpperCase().includes("CONFIGURATION")
+    menu.title?.toUpperCase().includes("CONFIGURATION") ||
+    menu.title?.toUpperCase().includes("BASE")
   )
 );
 
@@ -155,6 +162,18 @@ const testingCourses = computed(() =>
     menu.title?.toUpperCase().includes("TEST") ||
     menu.title?.toUpperCase().includes("JEST") ||
     menu.title?.toUpperCase().includes("ENZYME")
+  )
+);
+
+const eventsCourses = computed(() =>
+  filterMenus.value.filter((menu) =>
+    menu.title?.toUpperCase().includes("EVENT") ||
+    menu.title?.toUpperCase().includes("ÉVÉNEMENT") ||
+    menu.title?.toUpperCase().includes("ONCLICK") ||
+    menu.title?.toUpperCase().includes("CONDITIONNEL") ||
+    menu.title?.toUpperCase().includes("CONDITIONAL") ||
+    menu.title?.toUpperCase().includes("RENDU") ||
+    menu.title?.toUpperCase().includes("RENDER")
   )
 );
 

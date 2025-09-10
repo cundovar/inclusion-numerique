@@ -52,11 +52,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('📚 Cours');
         yield MenuItem::linkToCrud('PageContents', 'fa fa-bars', PageContent::class);
 
-        yield MenuItem::section('🤖 IA Pédagogique');
-        yield MenuItem::linkToCrud('Analyses de Cours', 'fa fa-brain', CourseAnalysis::class);
-        yield MenuItem::linkToCrud('Recommandations', 'fa fa-lightbulb', ContentRecommendation::class);
-        yield MenuItem::linkToCrud('Parcours d\'Apprentissage', 'fa fa-route', LearningPath::class);
-        yield MenuItem::linkToCrud('Analytics Apprenants', 'fa fa-chart-line', UserLearningAnalytics::class);
+
+
+        
     
         yield MenuItem::section('📋 Navigation');
         yield MenuItem::linkToCrud('Categories', 'fa fa-bars', Category::class);

@@ -1,8 +1,7 @@
 
 // On importe la fonction qui permet de définir la config de Vite
 import { defineConfig } from 'vite'
-
-// On importe le plugin Vite pour Vue.js
+import vueDevTools from 'vite-plugin-vue-devtools'// On importe le plugin Vite pour Vue.js
 import vue from '@vitejs/plugin-vue'
 
 // On importe un plugin qui facilite l'intégration avec Symfony
@@ -21,6 +20,7 @@ export default defineConfig({
 
   // Liste des plugins utilisés par Vite
   plugins: [
+    vueDevTools(),
     vue(),        // Active le support de Vue.js dans Vite
     symfony(),    // Active l'intégration spéciale avec Symfony
     VitePWA({     // Configure le plugin PWA
