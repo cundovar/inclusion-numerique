@@ -9,6 +9,9 @@ use App\Entity\CourseAnalysis;
 use App\Entity\ContentRecommendation;
 use App\Entity\LearningPath;
 use App\Entity\UserLearningAnalytics;
+use App\Entity\Exo;
+use App\Entity\ExoMenu;
+use App\Entity\ExoContent;
 use Symfony\Component\Routing\Attribute\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -52,10 +55,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('📚 Cours');
         yield MenuItem::linkToCrud('PageContents', 'fa fa-bars', PageContent::class);
 
+        yield MenuItem::section('📝 Exercices');
+        yield MenuItem::linkToCrud('ExoContents', 'fa fa-book', ExoContent::class);
+        yield MenuItem::linkToCrud('Exos', 'fa fa-list', Exo::class);
+        yield MenuItem::linkToCrud('ExoMenus', 'fa fa-bars', ExoMenu::class);
 
-
-        
-    
         yield MenuItem::section('📋 Navigation');
         yield MenuItem::linkToCrud('Categories', 'fa fa-bars', Category::class);
         yield MenuItem::linkToCrud('Pages', 'fa fa-bars', Page::class);

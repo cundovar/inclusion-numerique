@@ -21,6 +21,9 @@
 </template>
   
 <script setup>
+import { ref } from 'vue';
+import { onMounted } from 'vue';
+import axios from 'axios';
 defineProps({
   modelValue: String,
   placeholder: {
@@ -28,4 +31,18 @@ defineProps({
     default: 'Rechercher'
   }
 });
+const fetchUser = async () => {
+  try {
+    const response = await axios.get('/user-api/me');
+    user.value = response.data;
+    console.log('User:', user.value);
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'utilisateur', error);
+  }
+};
+
+onMounted(() => {
+  fetchUser();
+});
+
 </script>

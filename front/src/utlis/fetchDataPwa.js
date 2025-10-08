@@ -7,12 +7,14 @@ import { useRouter } from 'vue-router'
 const menus = ref([])
 const cats = ref([])
 const user = ref({ username: "", roles: [] })
+const exoMenus = ref([])
+const exoContents = ref([])
 
 // Router (utile si besoin de redirection depuis le composable)
 const router = useRouter()
 
 // Création/connexion à la base IndexedDB
-const dbPromise = openDB('spa-db', 2, {
+const dbPromise = openDB('spa-db', 3, {
   upgrade(db, oldVersion) {
     if (oldVersion < 1) {
       db.createObjectStore('menus', { keyPath: 'id' })
@@ -22,6 +24,10 @@ const dbPromise = openDB('spa-db', 2, {
     if (oldVersion < 2) {
       db.createObjectStore('pages', { keyPath: 'id' })
       db.createObjectStore('api_cache', { keyPath: 'url' })
+    }
+    if (oldVersion < 3) {
+      db.createObjectStore('exoMenus', { keyPath: 'id' })
+      db.createObjectStore('exoContents', { keyPath: 'id' })
     }
   }
 })
@@ -49,6 +55,13 @@ async function saveUserToDB(userData) {
   tx.store.put(JSON.parse(JSON.stringify(userData)))
   await tx.done
 }
+
+
+
+
+
+
+    
 
 // Charger l'utilisateur depuis IndexedDB
 async function loadUserFromDB() {
@@ -126,6 +139,52 @@ async function fetchMenus() {
   }
 }
 
+// ExoMenus (vrais menus d'exercices)
+async function fetchExoMenus() {
+  try {
+    const [resCats, resExoMenus] = await Promise.all([
+      axios.get("/api/categories"),
+      axios.get("/api/exo_menus")
+    ])
+
+    cats.value = resCats.data.member
+    exoMenus.value = resExoMenus.data.member
+
+    await saveToDB('categories', cats.value)
+    await saveToDB('exoMenus', exoMenus.value)
+
+    console.log("ExoMenus (en ligne):", exoMenus.value)
+  } catch (error) {
+    console.warn("Connexion échouée. Chargement hors ligne.")
+    cats.value = await loadFromDB('categories')
+    exoMenus.value = await loadFromDB('exoMenus')
+    console.log("ExoMenus (hors ligne):", exoMenus.value)
+  }
+}
+
+// ExoContents (tous les contenus d'exercices)
+async function fetchExoContents() {
+  try {
+    const [resCats, resExoContents] = await Promise.all([
+      axios.get("/api/categories"),
+      axios.get("/api/exo_contents")
+    ])
+
+    cats.value = resCats.data.member
+    exoContents.value = resExoContents.data.member
+
+    await saveToDB('categories', cats.value)
+    await saveToDB('exoContents', exoContents.value)
+
+    console.log("ExoContents (en ligne):", exoContents.value)
+  } catch (error) {
+    console.warn("Connexion échouée. Chargement hors ligne.")
+    cats.value = await loadFromDB('categories')
+    exoContents.value = await loadFromDB('exoContents')
+    console.log("ExoContents (hors ligne):", exoContents.value)
+  }
+}
+
 // Utilisateur connecté
 async function fetchUser() {
   try {
@@ -146,7 +205,40 @@ async function fetchUser() {
     }
   }
 }
+// fonction pour récuperer une page exo individuelle avec cache
+async function fetchPageContentExo(pageId) {
+  const url = `/api/exo_contents/${pageId}`
 
+  try {
+    // Vérifier le cache d'abord
+    const cachedData = await getCachedApiResponse(url)
+    if (cachedData) {
+      console.log(`ExoPage ${pageId} (cache):`, cachedData)
+      return cachedData
+    }
+
+    // Sinon, récupérer depuis l'API
+    const response = await axios.get(url)
+    const pageData = response.data
+
+    // Sauvegarder dans le cache
+    await cacheApiResponse(url, pageData)
+
+    console.log(`ExoPage ${pageId} (en ligne):`, pageData)
+    return pageData
+  } catch (error) {
+    console.warn(`Connexion échouée pour l'exercice ${pageId}. Chargement hors ligne.`)
+
+    // Fallback vers le cache API
+    const cachedData = await getCachedApiResponse(url)
+    if (cachedData) {
+      console.log(`ExoPage ${pageId} (hors ligne):`, cachedData)
+      return cachedData
+    }
+
+    throw new Error(`Exercice ${pageId} non disponible hors ligne`)
+  }
+}
 // Fonction pour récupérer une page individuelle avec cache
 async function fetchPageContent(pageId) {
   const url = `/api/page_contents/${pageId}`
@@ -187,11 +279,41 @@ async function fetchPageContent(pageId) {
 
 export function useData() {
   return {
+    // ----------- États réactifs -----------
+
+    // Contient tous les contenus de pages (page_contents) avec pagination
     menus,
+
+    // Liste des catégories disponibles (symfony, vuejs, reactjs, etc.)
     cats,
+
+    // Informations de l'utilisateur connecté (username, roles)
     user,
+
+    // Liste des menus d'exercices (structure de navigation des exercices)
+    exoMenus,
+
+    // Tous les contenus d'exercices disponibles (exo_contents)
+    exoContents,
+
+    // ----------- Fonctions de récupération -----------
+
+    // Récupère les pages de cours (page_contents) + catégories avec cache offline
     fetchMenus,
+
+    // Récupère les infos de l'utilisateur connecté avec cache offline
     fetchUser,
-    fetchPageContent
+
+    // Récupère une page de cours individuelle par son ID avec cache (1h)
+    fetchPageContent,
+
+    // Récupère un exercice individuel par son ID avec cache (1h)
+    fetchPageContentExo,
+
+    // Récupère les menus d'exercices (exo_menus) + catégories avec cache offline
+    fetchExoMenus,
+
+    // Récupère tous les contenus d'exercices (exo_contents) + catégories avec cache offline
+    fetchExoContents
   }
 }

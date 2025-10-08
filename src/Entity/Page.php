@@ -135,6 +135,6 @@ class Page
 
     public function __toString(): string
     {
-        return $this->slug;
+        return $this->slug ?? '';
     }
 }

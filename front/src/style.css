@@ -3,3 +3,114 @@
 @import "./assets/main.css";
 
 
+/* pages cours et exo  */
+.react-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #61dafb 0%, #21232a 100%);
+    padding: 20px;
+    padding-bottom: 120px;
+  }
+  
+  .header-section {
+    text-align: center;
+    padding: 40px 0;
+    margin-bottom: 40px;
+  }
+  
+  .tech-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+  
+  /* .tech-icon {
+    font-size: 60px;
+    color: #61dafb;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    animation: spin 10s linear infinite;
+  } */
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .tech-title {
+    font-size: 48px;
+    font-weight: 500;
+    color: #d4c1c1;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin: 0;
+  }
+  
+  .tech-description {
+    font-size: 18px;
+    color: rgba(102, 102, 102, 0.9);
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .framework-presentation {
+    max-width: 800px;
+    margin: 30px auto 0;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #61dafb;
+  }
+  
+  .framework-presentation p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #444;
+    margin: 0;
+    text-align: justify;
+    font-weight: 400;
+  }
+  
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .tech-header {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .tech-icon {
+      font-size: 40px;
+    }
+    
+    .tech-title {
+      font-size: 32px;
+    }
+    
+    .tech-description {
+      font-size: 16px;
+    }
+    
+    .framework-presentation {
+      margin: 20px 10px 0;
+      padding: 20px;
+    }
+    
+    .framework-presentation p {
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+    }
+    
+    .react-container {
+      padding: 16px;
+      padding-bottom: 120px;
+    }
+  }

@@ -12,6 +12,8 @@ import Profile from '../views/Profile.vue';
 import CategoryPage from '../views/CategoryPage.vue';
 import QCMView from '../views/QCMView.vue';
 import QCMHistoryView from '../views/QCMHistoryView.vue';
+import Exercices from '../views/exercices.vue';
+import ExoComponent from '../views/components/ExoComponent.vue';
 
 const routes = [
   {
@@ -78,7 +80,18 @@ const routes = [
     name: 'pages',
     component: PageComponent,
     props: true
-  }
+  },
+  {
+    path: '/exercices',
+    name: 'exercices',
+    component: Exercices
+  },
+  {
+    path: '/exercices/:slug',
+    name: 'exercices-id',
+    component: ExoComponent,
+    
+  },
 ];
 
 const router = createRouter({

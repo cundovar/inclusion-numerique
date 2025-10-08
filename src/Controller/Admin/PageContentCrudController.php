@@ -31,7 +31,7 @@ class PageContentCrudController extends AbstractCrudController
             AssociationField::new('menu'),
            
             TextField::new('title'),
-            TextEditorField::new('content'),
+            
             CodeEditorField::new('code'),
 
            CollectionField::new('pageBlocks')

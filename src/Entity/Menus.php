@@ -137,6 +137,6 @@ class Menus
     }
     public function __toString(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 }

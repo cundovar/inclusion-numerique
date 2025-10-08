@@ -8,7 +8,34 @@ http://votre-domaine.com
 ```
 
 ## Authentification
-La plupart des endpoints nécessitent une authentification utilisateur. L'utilisateur doit être connecté via les sessions Symfony.
+
+### Routes publiques (lecture seule)
+Les endpoints sous `/api/` (pages, menus, favoris) utilisent l'authentification par session Symfony.
+
+### Routes Admin API (CRUD)
+**Les routes sous `/api/admin/` nécessitent une authentification par API Key.**
+
+**Configuration requise :**
+1. Copiez `.env.local.example` vers `.env.local`
+2. Définissez votre clé API :
+```bash
+# Dans .env.local
+N8N_API_KEY=your_secure_64_character_api_key_here
+API_ADMIN_USER_EMAIL=admin@yourdomain.com
+```
+
+**Utilisation dans n8n :**
+Ajoutez le header suivant à toutes vos requêtes vers `/api/admin/` :
+```
+X-API-KEY: your_secure_64_character_api_key_here
+```
+
+**Exemple de requête curl :**
+```bash
+curl -X GET "http://votre-domaine.com/api/admin/pages" \
+  -H "X-API-KEY: your_secure_64_character_api_key_here" \
+  -H "Content-Type: application/json"
+```
 
 ---
 
@@ -400,3 +427,29 @@ Retrait des favoris :
 ### 6.7 Menus d'une catégorie
 **Endpoint :** `GET /api/admin/categories/{id}/menus`
 **Description :** Récupère tous les menus de la catégorie
+
+---
+
+## 🔐 Sécurité et bonnes pratiques
+
+### Génération d'API Key sécurisée
+```bash
+# Générer une clé API sécurisée de 64 caractères
+openssl rand -hex 32
+```
+
+### Configuration n8n
+1. **Dans n8n**, configurez le header `X-API-KEY` dans vos requêtes HTTP
+2. **Stockez la clé** dans les credentials n8n pour plus de sécurité
+3. **Vérifiez** que l'utilisateur `API_ADMIN_USER_EMAIL` existe et a le rôle `ROLE_ADMIN`
+
+### Restrictions de sécurité
+- ✅ API Keys uniquement pour les routes `/api/admin/`
+- ✅ Rôle `ROLE_ADMIN` requis pour l'utilisateur associé
+- ✅ Authentification stateless (pas de session)
+- ✅ Validation des relations entre entités avant suppression
+
+### Codes d'erreur API Key
+- **401 Unauthorized** : API key manquante ou invalide
+- **403 Forbidden** : Utilisateur sans privilèges admin
+- **404 Not Found** : Utilisateur associé à l'API key introuvable

@@ -1,0 +1,293 @@
+{
+  "name": "Agent IA - Prompt → JSON → Propositions",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "ia-prompts",
+        "responseMode": "onReceived"
+      },
+      "id": "webhook",
+      "name": "Webhook (Backoffice → n8n)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{`Bearer ${$env.OPENAI_API_KEY}`}}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"model\": \"gpt-4o-mini\",\n  \"messages\": [\n    { \"role\": \"system\", \"content\": \"Convertis l'instruction utilisateur en JSON strict suivant le schéma: {\\n  type: 'create_course'|'check_course'|'review_all',\\n  instruction: string,\\n  target: { category: string|null, pageId: number|null }\\n}. Réponds UNIQUEMENT en JSON valide sans texte autour.\" },\n    { \"role\": \"user\", \"content\": $json.instruction }\n  ],\n  \"temperature\": 0\n}"
+      },
+      "id": "ai_struct",
+      "name": "AI → JSON structuré",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const raw = $json.choices?.[0]?.message?.content || '';\nlet obj;\ntry {\n  obj = JSON.parse(raw);\n} catch (e) {\n  throw new Error('Réponse IA non-JSON: ' + raw);\n}\nreturn [{ json: obj }];"
+      },
+      "id": "parse",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "propertyName": "type"
+      },
+      "id": "switch",
+      "name": "Switch type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [980, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{`Bearer ${$env.OPENAI_API_KEY}`}}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"model\": \"gpt-4o-mini\",\n  \"messages\": [\n    { \"role\": \"system\", \"content\": \"Tu es un éditeur pédagogique francophone. Garde un HTML propre, titres clairs, exemples de code JS formatés, résumé (5 puces) et 5 QCM (4 choix, 1 bonne réponse) + corrigé.\" },\n    { \"role\": \"user\", \"content\": \"Crée un cours complet selon l'instruction suivante (thème, section): \\nInstruction: {{$json.instruction}}\\nCategory: {{$json.target && $json.target.category ? $json.target.category : 'JavaScript'}}\\nPageId: {{$json.target && $json.target.pageId ? $json.target.pageId : 'null'}}\" }\n  ],\n  \"max_tokens\": 2000,\n  \"temperature\": 0.2\n}"
+      },
+      "id": "ai_create",
+      "name": "AI → Générer cours",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1240, 110]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            { "name": "action", "value": "create_course" },
+            { "name": "status", "value": "pending" },
+            { "name": "title", "value": "={{$json.instruction || 'Cours proposé'}}" },
+            { "name": "content", "value": "={{$json[\"choices\"][0][\"message\"][\"content\"]}}" },
+            { "name": "category", "value": "={{$item(0).$node[\"Parse JSON\"].json.target.category || 'JavaScript'}}" },
+            { "name": "pageId", "value": "={{$item(0).$node[\"Parse JSON\"].json.target.pageId || ''}}" }
+          ]
+        }
+      },
+      "id": "set_create_payload",
+      "name": "Set → payload (create)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1460, 110]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8080/api/admin/ai-proposals",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-API-KEY", "value": "={{$env.SYMFONY_API_KEY}}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Accept", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"action\": \"create_course\",\n  \"status\": \"pending\",\n  \"payload\": {\n    \"title\": $json.title,\n    \"type\": \"lesson\",\n    \"content\": $json.content,\n    \"code\": null,\n    \"category\": $json.category,\n    \"pageId\": $json.pageId\n  }\n}"
+      },
+      "id": "post_create",
+      "name": "POST → ai-proposals (create)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1680, 110]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{`http://host.docker.internal:8080/api/admin/page-contents/${$json.target.pageId}`}}",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-API-KEY", "value": "={{$env.SYMFONY_API_KEY}}" },
+            { "name": "Accept", "value": "application/json" }
+          ]
+        }
+      },
+      "id": "get_single",
+      "name": "GET cours (id)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{`Bearer ${$env.OPENAI_API_KEY}`}}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"model\": \"gpt-4o-mini\",\n  \"messages\": [\n    { \"role\": \"system\", \"content\": \"Tu évalues la pertinence et la mise à jour d'un cours. Réponds toujours en JSON: {isRelevant:boolean, comments:string}\" },\n    { \"role\": \"user\", \"content\": \"Cours à analyser (JSON): {{JSON.stringify($json)}}\" }\n  ],\n  \"temperature\": 0\n}"
+      },
+      "id": "ai_check",
+      "name": "AI → Vérifier pertinence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1460, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const analysis = $json.choices?.[0]?.message?.content || '{}';\nlet obj = {};\ntry { obj = JSON.parse(analysis); } catch(e) {}\nreturn [{ json: {\n  action: 'check_course',\n  status: 'pending',\n  payload: {\n    courseId: $item(0).$node['Parse JSON'].json.target.pageId,\n    isRelevant: !!obj.isRelevant,\n    comments: obj.comments || ''\n  }\n}}];"
+      },
+      "id": "set_check_payload",
+      "name": "Set → payload (check)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8080/api/admin/ai-proposals",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-API-KEY", "value": "={{$env.SYMFONY_API_KEY}}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Accept", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"action\": $json.action,\n  \"status\": $json.status,\n  \"payload\": $json.payload\n}"
+      },
+      "id": "post_check",
+      "name": "POST → ai-proposals (check)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1900, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:8080/api/admin/page-contents",
+        "responseFormat": "json",
+        "options": { "splitIntoItems": true },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-API-KEY", "value": "={{$env.SYMFONY_API_KEY}}" },
+            { "name": "Accept", "value": "application/json" }
+          ]
+        }
+      },
+      "id": "get_all",
+      "name": "GET tous les cours",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1240, 490]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{`Bearer ${$env.OPENAI_API_KEY}`}}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"model\": \"gpt-4o-mini\",\n  \"messages\": [\n    { \"role\": \"system\", \"content\": \"Analyse un cours et retourne JSON: {courseId:number, isRelevant:boolean, comments:string}\" },\n    { \"role\": \"user\", \"content\": \"Cours: {{JSON.stringify($json)}}\" }\n  ],\n  \"temperature\": 0\n}"
+      },
+      "id": "ai_review_one",
+      "name": "AI → Revue (par item)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1460, 490]
+    },
+    {
+      "parameters": {
+        "functionCode": "const analysis = $json.choices?.[0]?.message?.content || '{}';\nlet obj={};\ntry{ obj = JSON.parse(analysis);}catch(e){}\nreturn [{ json: {\n  action: 'review_all',\n  status: 'pending',\n  payload: {\n    courseId: obj.courseId ?? $json.id ?? null,\n    isRelevant: !!obj.isRelevant,\n    comments: obj.comments || ''\n  }\n}}];"
+      },
+      "id": "set_review_payload",
+      "name": "Set → payload (review item)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1680, 490]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8080/api/admin/ai-proposals",
+        "responseFormat": "json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-API-KEY", "value": "={{$env.SYMFONY_API_KEY}}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Accept", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"action\": $json.action,\n  \"status\": $json.status,\n  \"payload\": $json.payload\n}"
+      },
+      "id": "post_review_item",
+      "name": "POST → ai-proposals (review item)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1900, 490]
+    }
+  ],
+  "connections": {
+    "Webhook (Backoffice → n8n)": { "main": [[{ "node": "AI → JSON structuré", "type": "main", "index": 0 }]] },
+    "AI → JSON structuré": { "main": [[{ "node": "Parse JSON", "type": "main", "index": 0 }]] },
+    "Parse JSON": { "main": [[{ "node": "Switch type", "type": "main", "index": 0 }]] },
+    "Switch type": {
+      "main": [
+        [{ "node": "AI → Générer cours", "type": "main", "index": 0 }],
+        [{ "node": "GET cours (id)", "type": "main", "index": 0 }],
+        [{ "node": "GET tous les cours", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI → Générer cours": { "main": [[{ "node": "Set → payload (create)", "type": "main", "index": 0 }]] },
+    "Set → payload (create)": { "main": [[{ "node": "POST → ai-proposals (create)", "type": "main", "index": 0 }]] },
+    "GET cours (id)": { "main": [[{ "node": "AI → Vérifier pertinence", "type": "main", "index": 0 }]] },
+    "AI → Vérifier pertinence": { "main": [[{ "node": "Set → payload (check)", "type": "main", "index": 0 }]] },
+    "Set → payload (check)": { "main": [[{ "node": "POST → ai-proposals (check)", "type": "main", "index": 0 }]] },
+    "GET tous les cours": { "main": [[{ "node": "AI → Revue (par item)", "type": "main", "index": 0 }]] },
+    "AI → Revue (par item)": { "main": [[{ "node": "Set → payload (review item)", "type": "main", "index": 0 }]] },
+    "Set → payload (review item)": { "main": [[{ "node": "POST → ai-proposals (review item)", "type": "main", "index": 0 }]] }
+  },
+  "meta": { "templateCredsSetupCompleted": true }
+}

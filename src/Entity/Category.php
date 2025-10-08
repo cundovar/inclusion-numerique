@@ -18,11 +18,11 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['page_content:read'])]
+    #[Groups(['page_content:read', 'exo_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['page_content:read'])]
+    #[Groups(['page_content:read', 'exo_content:read'])]
     private ?string $name = null;
 
     /**
@@ -37,10 +37,24 @@ class Category
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'category')]
     private Collection $pageContents;
 
+    /**
+     * @var Collection<int, ExoMenu>
+     */
+    #[ORM\OneToMany(targetEntity: ExoMenu::class, mappedBy: 'category')]
+    private Collection $exoMenus;
+
+    /**
+     * @var Collection<int, ExoContent>
+     */
+    #[ORM\OneToMany(targetEntity: ExoContent::class, mappedBy: 'category')]
+    private Collection $exoContents;
+
     public function __construct()
     {
         $this->menus = new ArrayCollection();
         $this->pageContents = new ArrayCollection();
+        $this->exoMenus = new ArrayCollection();
+        $this->exoContents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -119,8 +133,67 @@ class Category
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, ExoMenu>
+     */
+    public function getExoMenus(): Collection
+    {
+        return $this->exoMenus;
+    }
+
+    public function addExoMenu(ExoMenu $exoMenu): static
+    {
+        if (!$this->exoMenus->contains($exoMenu)) {
+            $this->exoMenus->add($exoMenu);
+            $exoMenu->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExoMenu(ExoMenu $exoMenu): static
+    {
+        if ($this->exoMenus->removeElement($exoMenu)) {
+            if ($exoMenu->getCategory() === $this) {
+                $exoMenu->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ExoContent>
+     */
+    public function getExoContents(): Collection
+    {
+        return $this->exoContents;
+    }
+
+    public function addExoContent(ExoContent $exoContent): static
+    {
+        if (!$this->exoContents->contains($exoContent)) {
+            $this->exoContents->add($exoContent);
+            $exoContent->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExoContent(ExoContent $exoContent): static
+    {
+        if ($this->exoContents->removeElement($exoContent)) {
+            if ($exoContent->getCategory() === $this) {
+                $exoContent->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function __toString(): string
     {
-        return $this->name;
+        return $this->name ?? '';
     }
 }

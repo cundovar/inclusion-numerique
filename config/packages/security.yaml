@@ -21,6 +21,13 @@ security:
             context: main
         
             
+        api_admin:
+            pattern: ^/api/admin
+            stateless: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
+            
         api_public:
             pattern: ^/api
             security: false
@@ -42,8 +49,9 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/api/admin, roles: ROLE_ADMIN }
          - { path: ^/api/me-favorites, roles: ROLE_USER }
-         - { path: ^/spa, roles: ROLE_USER }
+        #  - { path: ^/spa, roles: ROLE_USER }
 
 when@test:
     security:

@@ -67,6 +67,7 @@
     
     <!-- Recherche au centre -->
     <inputSearch
+    v-if="user.roles.includes('ROLE_USER')"
       v-model="search"
       @search="launchSearch"
       placeholder="Rechercher"
@@ -74,27 +75,10 @@
     />
     
     <!-- Boutons profil et déconnexion à droite -->
-    <div class="flex items-center gap-2">
-      <!-- Bouton profil -->
-      <router-link to="/profile">
-        <button class="p-2 bg-amber-200 hover:bg-amber-300 text-gray-800 cursor-pointer flex items-center gap-2 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl">
-          <i class="pi pi-user"></i>
-          <span class="font-medium">{{ user.username }}</span>
-        </button>
-      </router-link>
-      
-      <!-- Bouton déconnexion -->
-      <button 
-        @click="logout"
-        class="p-2 bg-pink-400 hover:bg-pink-500 text-white cursor-pointer flex items-center gap-2 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
-      >
-        <i class="pi pi-sign-out"></i>
-        <span class="font-medium">Déco</span>
-      </button>
-    </div>
+  <btnconnexioEtImgProfile/>
   </div>
 
-        <div
+        <div  
         v-if="searchResults.length"
         class="search-results absolute top-24 right-1/2 translate-x-1/2 m-auto p-4 max-h-[40rem] max-w-full max-md:hidden bg-white w-[28rem] rounded-xl my-4 overflow-y-auto shadow-xl z-50 border border-gray-200"
       >
@@ -212,30 +196,10 @@
       
 
       <!-- Boutons à droite -->
-      <div class="  max-xl:w-5/6  flex max-xl:mt-10 items-center gap-2">
-        <a
-          v-if="user.roles.includes('ROLE_ADMIN')"
-          target="_blank"
-          :href="APP_CONFIG.ADMIN_URL"
-          class="cursor-pointer text-amber-900 px-2 py-1 rounded text-sm"
-        >
-          <i class=" text-2xl pi pi-cog"></i>
-        </a>
-        <inputSearch
-        v-model="search"
-        @search="launchSearch"
-        placeholder="Rechercher"
-        class="flex-1 xl:hidden   "
-      />
-    
-        <button 
-          @click="logout"
-          class="cursor-pointer ml-2 text-red-600 hover:text-red-800 flex items-center gap-1 px-2 py-1 rounded hover:bg-red-100 transition-colors"
-        >
-          <i class="text-2xl pi pi-sign-out"></i>
-        
-        </button>
-      </div>
+     <btnconnexioEtImgProfileMOBIL 
+     :search="search"
+     @search="launchSearch"
+     />
 
     
     </div>
@@ -370,6 +334,15 @@
     >
       <i class="fas fa-brain"></i>
       QCM IA
+    </router-link>
+    
+      <router-link
+      to="/exercices"
+      @click="toggleMenu"
+      class="text-xl  h-[3rem] cursor-pointer mt-4 shadow-neutral-600 bg-green-300 p-2 hover:bg-green-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <i class="pi pi-book"></i>
+      EXERCICES
     </router-link>
      
       </div>
@@ -528,8 +501,8 @@ import AfertLogin from "./views/components/AfertLogin.vue";
 import vracMain from "./views/components/vrac/vracMain.vue";
 import IntelligentSearchService from "./services/intelligentSearchService.js";
 import SelectfunctionVocabulaire from './views/components/MenuPageFramwork/SelectfunctionVocabulaire.vue'
-
-
+import btnconnexioEtImgProfile from "./views/components/btnconnexioEtImgProfile.vue";
+import btnconnexioEtImgProfileMOBIL from "./views/components/btnconnexioEtImgProfileMOBIL.vue";
 
 const hoveredCategory = ref(null);
 const isMenuOpen = ref(false);
@@ -558,12 +531,6 @@ const currentOrigin = ref(window.location.origin);
 
 
 
-//deconnexion
-const logout = () => {
-  axios.post("/logout").then(() => {
-    window.location.href = "/login";
-  });
-};
 //menu
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -828,6 +795,7 @@ const menusByCategory = computed(() => {
 
   return result;
 });
+
 </script>
 
 <style scoped>

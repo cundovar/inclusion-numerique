@@ -62,7 +62,7 @@ services:  # Définition des services (chaque container que tu vas lancer)
       MYSQL_ROOT_PASSWORD: root  # Mot de passe pour le compte root
       MYSQL_DATABASE: courTotal  # Base de données à créer automatiquement
     ports:
-      - "3307:3306"  # Mapping du port 3307 de ta machine vers 3306 dans le container (évite conflits)
+      - "3308:3306"  # Mapping du port 3308 de ta machine vers 3306 dans le container (évite conflits)
     networks:
       - connectPerso  # Connexion au même réseau Docker
     volumes:

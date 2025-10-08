@@ -6,7 +6,7 @@ use App\Entity\PageContent;
 use App\Repository\PageContentRepository;
 use App\Repository\PageRepository;
 use App\Repository\CategoryRepository;
-use App\Repository\MenuRepository;
+use App\Repository\MenusRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +23,7 @@ final class ApiPageContentController extends AbstractController
         private PageContentRepository $pageContentRepository,
         private PageRepository $pageRepository,
         private CategoryRepository $categoryRepository,
-        private MenuRepository $menuRepository,
+        private MenusRepository $menuRepository,
         private EntityManagerInterface $entityManager,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator
