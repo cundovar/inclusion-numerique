@@ -31,18 +31,18 @@ defineProps({
     default: 'Rechercher'
   }
 });
-const fetchUser = async () => {
-  try {
-    const response = await axios.get('/user-api/me');
-    user.value = response.data;
-    console.log('User:', user.value);
-  } catch (error) {
-    console.error('Erreur lors de la récupération de l\'utilisateur', error);
-  }
-};
+// const fetchUser = async () => {
+//   try {
+//     const response = await axios.get('/user-api/me');
+//     user.value = response.data;
+//     console.log('User:', user.value);
+//   } catch (error) {
+//     console.error('Erreur lors de la récupération de l\'utilisateur', error);
+//   }
+// };
 
-onMounted(() => {
-  fetchUser();
-});
+// onMounted(() => {
+//   fetchUser();
+// });
 
 </script>

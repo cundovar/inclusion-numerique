@@ -18,7 +18,7 @@
       class="text-xl xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
     >
       <i class="fas fa-brain"></i>
-      QCM IA
+    QCM
     </router-link>
     
     <router-link

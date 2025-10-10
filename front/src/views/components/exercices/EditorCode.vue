@@ -7,13 +7,13 @@
       <div class="cols">
 
         <button v-if="sectionSize"
-          class="absolute top-2 right-2 w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded flex items-center justify-center z-10 cursor-pointer"
+          class="absolute top-2 right-2 w-8 h-8 bg-red-400 hover:bg-red-600 text-white rounded flex items-center justify-center z-10 cursor-pointer"
           @click="toggleSectionSize"
         >
           ✕
         </button>
         <button v-else
-          class="absolute top-2 right-2 p-2 bg-red-600 hover:bg-red-700 text-white rounded flex items-center justify-center z-10 cursor-pointer"
+          class="absolute top-2 right-2 transition-colors duration-500 p-2 bg-red-400 hover:bg-red-600 text-white rounded flex items-center justify-center z-10 cursor-pointer"
           @click="toggleSectionSize"
         >
           agrandire
@@ -36,16 +36,12 @@
   
           <div class="editor-block">
             <header class="hdr">
-              <h2>JavaScript</h2><small>javascript</small>
+              <h2>JavaScript</h2><small>ascript</small>
             </header>
             <div ref="jsEl" class="editor-host"></div>
           </div>
   
-          <div class="toolbar">
-            <button type="button" @click="rebuild">Exécuter ▶</button>
-            <label><input type="checkbox" v-model="autorun"> Auto</label>
-            <button type="button" @click="resetAll">Tout réinitialiser</button>
-          </div>
+       
         </div>
   
         <!-- Colonne preview + console -->
@@ -62,6 +58,11 @@
               <span :class="['tag', line.type]">[{{ line.type.toUpperCase() }}]</span>
               <span class="msg">{{ line.msg }}</span>
             </div>
+          </div>
+          <div class="flex gap-5 justify-center mt-5">
+            <button  type="button" @click="rebuild">Exécuter ▶</button>
+            <label><input type="checkbox" v-model="autorun"> Auto</label>
+            <button type="button" @click="resetAll">Tout réinitialiser</button>
           </div>
         </div>
       </div>

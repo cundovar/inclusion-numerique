@@ -333,7 +333,7 @@
       class="text-xl  h-[3rem] cursor-pointer mt-4 shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
     >
       <i class="fas fa-brain"></i>
-      QCM IA
+      QCM 
     </router-link>
     
       <router-link
@@ -503,6 +503,7 @@ import IntelligentSearchService from "./services/intelligentSearchService.js";
 import SelectfunctionVocabulaire from './views/components/MenuPageFramwork/SelectfunctionVocabulaire.vue'
 import btnconnexioEtImgProfile from "./views/components/btnconnexioEtImgProfile.vue";
 import btnconnexioEtImgProfileMOBIL from "./views/components/btnconnexioEtImgProfileMOBIL.vue";
+import { usePageTracking } from "./composables/usePageTracking.js";
 
 const hoveredCategory = ref(null);
 const isMenuOpen = ref(false);
@@ -517,6 +518,9 @@ const isMobile=ref(window.innerWidth < 768);
 const clickMenu=ref(null);
 const searchAnalysis = ref(null);
 const { menus, user,cats, fetchMenus, fetchUser } = useData()
+
+// Initialiser le tracking des visites de pages
+usePageTracking();
 
 // Pop-up mobile app
 const showMobileAppPopup = ref(false);

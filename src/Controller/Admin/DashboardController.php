@@ -12,6 +12,12 @@ use App\Entity\UserLearningAnalytics;
 use App\Entity\Exo;
 use App\Entity\ExoMenu;
 use App\Entity\ExoContent;
+use App\Entity\QCM;
+use App\Entity\LanguageQCM;
+use App\Entity\NiveauQCM;
+use App\Entity\ChoicesQCM;
+use App\Entity\User;
+use App\Entity\UserPageVisit;
 use Symfony\Component\Routing\Attribute\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -60,9 +66,20 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Exos', 'fa fa-list', Exo::class);
         yield MenuItem::linkToCrud('ExoMenus', 'fa fa-bars', ExoMenu::class);
 
+        yield MenuItem::section('🧠 QCM');
+        yield MenuItem::linkToCrud('QCM', 'fa fa-question-circle', QCM::class);
+        yield MenuItem::linkToCrud('Langages', 'fa fa-code', LanguageQCM::class);
+        yield MenuItem::linkToCrud('Niveaux', 'fa fa-layer-group', NiveauQCM::class);
+        yield MenuItem::linkToCrud('Choix', 'fa fa-check-square', ChoicesQCM::class);
+
         yield MenuItem::section('📋 Navigation');
         yield MenuItem::linkToCrud('Categories', 'fa fa-bars', Category::class);
         yield MenuItem::linkToCrud('Pages', 'fa fa-bars', Page::class);
         yield MenuItem::linkToCrud('Menus', 'fa fa-bars', Menus::class);
+
+        yield MenuItem::section('👥 Utilisateurs');
+        yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);
+        yield MenuItem::linkToCrud('Visites', 'fa fa-chart-line', UserPageVisit::class);
+        yield MenuItem::linkToRoute('Statistiques des visites', 'fa fa-chart-bar', 'admin_stats_page_visits');
     }
 }

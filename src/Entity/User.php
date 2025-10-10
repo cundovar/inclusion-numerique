@@ -35,9 +35,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserPageVisit::class, orphanRemoval: true)]
+    private Collection $pageVisits;
+
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
+        $this->pageVisits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,6 +117,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->favorites->removeElement($favorite)) {
             if ($favorite->getUser() === $this) {
                 $favorite->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserPageVisit>
+     */
+    public function getPageVisits(): Collection
+    {
+        return $this->pageVisits;
+    }
+
+    public function addPageVisit(UserPageVisit $pageVisit): static
+    {
+        if (!$this->pageVisits->contains($pageVisit)) {
+            $this->pageVisits->add($pageVisit);
+            $pageVisit->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePageVisit(UserPageVisit $pageVisit): static
+    {
+        if ($this->pageVisits->removeElement($pageVisit)) {
+            if ($pageVisit->getUser() === $this) {
+                $pageVisit->setUser(null);
             }
         }
 

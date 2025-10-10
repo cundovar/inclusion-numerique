@@ -1,142 +1,162 @@
 <template>
-  <div
-    class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 text-blue-500 min-h-screen w-full bg-cyan-100"
-  >
-    <div class="w-full">
-      <div class="tech-header">
-        <h1 class="tech-title">Exercices</h1>
-      </div>
-      <p class="tech-description"></p>
-
+    <div class=" page-exo-list md:rounded-2xl md:mt-10 xl:mt-0 pb-96 min-h-screen w-full ">
       <div class="w-full">
-        <p>exercices text</p>
+        <div class="tech-header">
+          <h1 class="tech-title">Exercices</h1>
+        </div>
+        <p class="tech-description"></p>
+  
+        <div class="w-full">
+      
+  
+          <div class="flex flex-wrap gap-10 justify-center items-start">
+            <!-- ===== CSS ===== -->
+            <section class="section-exo p-10 w-full">
+              <div class="summary-header" @click="toggleSection('css')">
+                <h2 class="titre-exo text-2xl font-bold mb-4 flex items-center gap-3">
+                  <i class="fab fa-css3-alt text-blue-600"></i>
+                  CSS
+                  <i class="ml-auto transition-transform" :class="openSections.css ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
+                </h2>
+              </div>
 
-        <div class="flex flex-wrap gap-10 justify-center items-center">
-          <details class="border">
-            <summary>javascript</summary>
+              <Transition name="slide-fade">
+                <article v-show="openSections.css" class="article-exo flex max-md:flex-wrap gap-10 justify-center p-4">
+                  <Exocard
+                    routerName="exercices-id"
+                    :items="getItems('css','base')"
+                    sectionTitle="Base"
+                  />
+                  <Exocard
+                    routerName="exercices-id"
+                    :items="getItems('css','intermédiaire')"
+                    sectionTitle="Intermédiaire"
+                  />
+                  <Exocard
+                    routerName="exercices-id"
+                    :items="getItems('css','avancé')"
+                    sectionTitle="Avancé"
+                  />
+                </article>
+              </Transition>
+            </section>
+                
+            <!-- ===== JavaScript ===== -->
+            <section class="section-exo p-10 w-full">
+              <div class="summary-header" @click="toggleSection('javascript')">
+                <h2 class="titre-exo text-2xl font-bold mb-4 flex items-center gap-3">
+                  <i class="fab fa-js-square text-yellow-500"></i>
+                  JavaScript
+                  <i class="ml-auto transition-transform" :class="openSections.javascript ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
+                </h2>
+              </div>
 
-            <h2 class="text-xl font-bold border-p border-2">base</h2>
-            <div
-              v-for="filter in filterMenuContentsJSBase('base')"
-              :key="filter.id"
-            >
-              <router-link
-                :to="{
-                  name: 'exercices-id',
-                  params: { slug: filter.exo?.slug || '' },
-                }"
-              >
-                <Exocard :titre="filter.title" :text="filter.code" />
-              </router-link>
-            </div>
-
-            <h2 class="text-xl font-bold border-p border-2">intermédiaire</h2>
-            <div
-              v-for="filter in filterMenuContentsJSBase('intermédiaire')"
-              :key="filter.id"
-            >
-              <router-link
-                :to="{
-                  name: 'exercices-id',
-                  params: { slug: filter.exo?.slug || '' },
-                }"
-              >
-                <Exocard :titre="filter.title" />
-              </router-link>
-            </div>
-
-            <h2 class="text-xl font-bold border-p border-2">Avancé</h2>
-            <div
-              v-for="filter in filterMenuContentsJSBase('avancé')"
-              :key="filter.id"
-            >
-              <router-link
-                :to="{
-                  name: 'exercices-id',
-                  params: { slug: filter.exo?.slug || '' },
-                }"
-              >
-                <Exocard :titre="filter.title" />
-              </router-link>
-            </div>
-          </details>
-
-          <div class="border p-10 w-full">
-            <h1>css</h1>
-
-            <article class="flex border max-md:flex-wrap gap-10 justify-center">
-              <Exocard
-                :titre="filter.title"
-                :text="filter.code"
-                :routerName="exercices-id"
-                :routerParams="{ slug: filter.exo?.slug || '' }"
-                :filterFunction="filterMenuContentsCSSBase('base')"
-                :keyBoucle="filter.id"
-                :filter="filter"
-              />
-
-              <Exocard
-                :titre="filter.title"
-                :text="filter.code"
-                :routerName="exercices-id"
-                :routerParams="{ slug: filter.exo?.slug || '' }"
-                :filterFunction="filterMenuContentsCSSBase('intermédiaire')"
-                :keyBoucle="filter.id"
-                :filter="filter"
-
-              />
-
-              <Exocard
-                :titre="filter.title"
-                :text="filter.code"
-                :routerName="exercices-id"
-                :routerParams="{ slug: filter.exo?.slug || '' }"
-                :filterFunction="filterMenuContentsCSSBase('avancé')"
-                :keyBoucle="filter.id"
-                :filter="filter"
-              />
-            </article>
+              <Transition name="slide-fade">
+                <article v-show="openSections.javascript" class="article-exo flex max-md:flex-wrap gap-10 justify-center p-4">
+                  <Exocard
+                    routerName="exercices-id"
+                    :items="getItems('javascript','base')"
+                    sectionTitle="Base"
+                  />
+                  <Exocard
+                    routerName="exercices-id"
+                    :items="getItems('javascript','intermédiaire')"
+                    sectionTitle="Intermédiaire"
+                  />
+                  <Exocard
+                    routerName="exercices-id"
+                    :items="getItems('javascript','avancé')"
+                    sectionTitle="Avancé"
+                  />
+                </article>
+              </Transition>
+            </section>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</template>
+  </template>
+  
+  <script setup>
+  import Exocard from "./components/exercices/Exocard.vue"
+  import { useData } from "../utlis/fetchDataPwa"
+  import { onMounted, ref, reactive } from "vue"
 
-<script setup>
-import Exocard from "./components/exercices/Exocard.vue";
-import { useData } from "../utlis/fetchDataPwa";
-import { onMounted, computed } from "vue";
-const { exoMenus, fetchExoMenus } = useData();
-const { exoContents, fetchExoContents } = useData();
+  const { exoMenus, fetchExoMenus } = useData()
+  const { exoContents, fetchExoContents } = useData()
 
-onMounted(async () => {
-  await fetchExoMenus();
-  await fetchExoContents();
+  // État d'ouverture des sections
+  const openSections = reactive({
+    css: false,
+    javascript: false
+  })
 
-  console.log("exoMenus", exoMenus.value);
-  console.log("exoContents", exoContents.value);
-});
+  // Toggle une section
+  const toggleSection = (section) => {
+    openSections[section] = !openSections[section]
+  }
 
-const filterMenuContentsJS = computed(() => {
-  return exoContents.value.filter((exo) => exo.category.name === "javascript");
-});
+  onMounted(async () => {
+    await fetchExoMenus()
+    await fetchExoContents()
+  })
+  
+  /**
+   * Normalise un exo -> item pour Exocard
+   */
+  const toItem = (exo) => ({
+    id: exo.id,
+    title: exo.title || exo.name || "Sans titre",
+    code: exo.code || exo.content || "",
+    routerParams: { slug: exo.exo?.slug || "" },
+  })
+  
+  /**
+   * Renvoie les items pour une catégorie et un niveau donné
+   * cat: "css" | "javascript"
+   * lvl: "base" | "intermédiaire" | "avancé"
+   */
+  const getItems = (cat, lvl) =>
+    (exoContents.value || [])
+      .filter(e => e?.category?.name?.toLowerCase() === cat.toLowerCase())
+      .filter(e => e?.exoMenu?.label?.toLowerCase() === lvl.toLowerCase())
+      .map(toItem)
+  </script>
+  
 
-const filterMenuContentsJSBase = (niveau) => {
-  return filterMenuContentsJS.value.filter(
-    (exo) => exo.exoMenu.label === niveau
-  );
-};
+  <style scoped>
 
-const filterMenuContentsCSS = computed(() => {
-  return exoContents.value.filter((exo) => exo.category.name === "css");
-});
-const filterMenuContentsCSSBase = (niveau) => {
-  return filterMenuContentsCSS.value.filter(
-    (exo) => exo.exoMenu.label === niveau
-  );
-};
-console.log("filterMenuContentsJS", filterMenuContentsJS.value);
-console.log("filterMenuContentsCSS", filterMenuContentsCSS.value);
-console.log("filterMenuContentsJSBase", filterMenuContentsJSBase("base"));
-</script>
+  .summary-header {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .titre-exo {
+    text-align: center;
+    display: block;
+  }
+
+  .article-exo {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+
+  /* Transitions Vue */
+  .slide-fade-enter-active {
+    transition: all 0.4s ease-out;
+  }
+
+  .slide-fade-leave-active {
+    transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  .slide-fade-enter-from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  .slide-fade-leave-to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+</style>

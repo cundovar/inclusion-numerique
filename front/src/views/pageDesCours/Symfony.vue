@@ -118,9 +118,9 @@
 
 
 <script setup>
-import { useData } from "../utlis/fetchDataPwa";
+import { useData } from "../../utlis/fetchDataPwa";
 import { computed, watch } from "vue";
-import CourseCard from "./components/CourseCard.vue";
+import CourseCard from "../components/CourseCard.vue";
 
 const { menus } = useData();
 

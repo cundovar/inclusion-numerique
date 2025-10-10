@@ -4,33 +4,30 @@
       <p>Chargement...</p>
     </div>
 
-    <div v-else-if="exo" class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold mb-4">{{ exo.title }}</h1>
-
-      
-
-
-      
-      <div v-if="exo.exoMenu" class="  flex align-center justify-end mb-4">
-        <div v-if="exo.category" class="mb-2">
-        <div class="px-3 py-1 bg-blue-500 text-white rounded">
-          {{ exo.category.name }}
+    <div v-else-if="exo" class="max-w-4xl mx-auto ">
+        <div v-if="exo.exoMenu" class="  pb-10 flex align-center justify-between mb-4">
+          <h1 class="text-3xl  font-bold mb-4">{{ exo.title }}</h1>
+        <div v-if="exo.category" class="">
         </div>
+        <span class="px-2 py-1   text-gray-700 rounded text-md font-bold ">
+            <span class=" py-1">
+              {{ exo.category.name }} 
+            </span>
+            <span >  ->  </span>
+          Niveau :  <span :class="exo.category.name==='css'?'text-blue-500':'text-yellow-500 p-2'" > {{ exo.exoMenu.label }} </span>  
+        </span>
       </div>
-        <div class="px-2 py-1  text-gray-700 rounded text-md font-bold align-center">
-          Niveau : {{ exo.exoMenu.label }}
-        </div>
-      </div>
+      <h3 class="font-semibold pb-2 text-xl ">Énoncé de l'exercice : </h3>
 
+      <h3
+        :class="exo.category.name==='css'?'bg-blue-50':'bg-yellow-50'" 
+        class=" ml-3 font-semibold pb-2 text-xl shadow p-3 rounded-md    mb-10" v-html="exo.code">
+      </h3>
 
-      <div v-if="exo.content" class="prose mb-6 border " v-html="exo.content"></div>
-      <h3 class=" font-semibold p-2 text-xl border rounded-2xl border-blue-600 mb-10" v-html="exo.code"></h3>
       <EditorCode
         v-if="exo.exo?.slug"
-        
-      
-        :initialCss="'/* Ton CSS ici */'"
-        :initialJs="'// Ton JavaScript ici'"
+        :initialCss="exo.category.name"
+        :initialJs="exo.js"
       />
 
     </div>

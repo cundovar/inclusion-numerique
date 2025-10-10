@@ -1,0 +1,240 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}📊 Statistiques des visites de pages{% endblock %}
+
+{% block main %}
+<div class="content-panel">
+    {# Statistiques générales #}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">📈 Total des visites</h5>
+                    <h2 class="display-4">{{ totalVisits }}</h2>
+                    <p class="card-text">Nombre total de pages visitées</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">👥 Utilisateurs actifs</h5>
+                    <h2 class="display-4">{{ totalUsers }}</h2>
+                    <p class="card-text">Nombre d'utilisateurs ayant visité au moins une page</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Visites par jour (7 derniers jours) #}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>📅 Visites des 7 derniers jours</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Nombre de visites</th>
+                        <th>Graphique</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set maxVisits = 0 %}
+                    {% for stat in visitsPerDay %}
+                        {% if stat.visitCount > maxVisits %}
+                            {% set maxVisits = stat.visitCount %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% for stat in visitsPerDay %}
+                    <tr>
+                        <td>{{ stat.date|date('d/m/Y') }}</td>
+                        <td><strong>{{ stat.visitCount }}</strong></td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-info" role="progressbar"
+                                     style="width: {{ (stat.visitCount / maxVisits * 100)|round }}%">
+                                    {{ stat.visitCount }}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        {# Pages les plus visitées #}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>🏆 Top 20 - Pages les plus visitées</h4>
+                </div>
+                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    <table class="table table-sm table-hover">
+                        <thead class="sticky-top bg-white">
+                            <tr>
+                                <th>#</th>
+                                <th>Page</th>
+                                <th class="text-center">Visites</th>
+                                <th class="text-center">Temps moy.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, page in mostVisitedPages %}
+                            <tr>
+                                <td>{{ index + 1 }}</td>
+                                <td>
+                                    <strong>{{ page.pageTitle|default('Sans titre') }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ page.pageUrl }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary">{{ page.visitCount }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if page.avgTimeSpent %}
+                                        {% set minutes = (page.avgTimeSpent / 60)|round %}
+                                        {% set seconds = page.avgTimeSpent % 60 %}
+                                        {% if minutes > 0 %}
+                                            {{ minutes }}m {{ seconds }}s
+                                        {% else %}
+                                            {{ seconds }}s
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# Pages avec le plus de temps passé #}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4>⏱️ Top 20 - Pages avec le plus de temps total</h4>
+                </div>
+                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    <table class="table table-sm table-hover">
+                        <thead class="sticky-top bg-white">
+                            <tr>
+                                <th>#</th>
+                                <th>Page</th>
+                                <th class="text-center">Temps total</th>
+                                <th class="text-center">Visites</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, page in pagesWithMostTime %}
+                            <tr>
+                                <td>{{ index + 1 }}</td>
+                                <td>
+                                    <strong>{{ page.pageTitle|default('Sans titre') }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ page.pageUrl }}</small>
+                                </td>
+                                <td class="text-center">
+                                    {% set totalHours = (page.totalTimeSpent / 3600)|round %}
+                                    {% set totalMinutes = ((page.totalTimeSpent % 3600) / 60)|round %}
+                                    {% if totalHours > 0 %}
+                                        <span class="badge bg-warning">{{ totalHours }}h {{ totalMinutes }}m</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ totalMinutes }}m</span>
+                                    {% endif %}
+                                    <br>
+                                    <small class="text-muted">Moy:
+                                        {% set avgMin = (page.avgTimeSpent / 60)|round %}
+                                        {% set avgSec = page.avgTimeSpent % 60 %}
+                                        {% if avgMin > 0 %}{{ avgMin }}m {% endif %}{{ avgSec }}s
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ page.visitCount }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Utilisateurs les plus actifs #}
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h4>👥 Top 10 - Utilisateurs les plus actifs</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Utilisateur</th>
+                        <th class="text-center">Visites</th>
+                        <th class="text-center">Temps total</th>
+                        <th>Activité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set maxUserVisits = mostActiveUsers[0].visitCount|default(1) %}
+                    {% for index, user in mostActiveUsers %}
+                    <tr>
+                        <td>{{ index + 1 }}</td>
+                        <td>
+                            <strong>{{ user.username }}</strong>
+                            <br>
+                            <small class="text-muted">ID: {{ user.userId }}</small>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-success">{{ user.visitCount }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if user.totalTime %}
+                                {% set hours = (user.totalTime / 3600)|round %}
+                                {% set minutes = ((user.totalTime % 3600) / 60)|round %}
+                                {% if hours > 0 %}
+                                    {{ hours }}h {{ minutes }}m
+                                {% else %}
+                                    {{ minutes }}m
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar"
+                                     style="width: {{ (user.visitCount / maxUserVisits * 100)|round }}%">
+                                    {{ ((user.visitCount / maxUserVisits * 100)|round) }}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# Légende et informations #}
+    <div class="alert alert-info">
+        <h5>ℹ️ Informations</h5>
+        <ul>
+            <li><strong>Temps moyen :</strong> Durée moyenne passée sur une page</li>
+            <li><strong>Temps total :</strong> Somme de toutes les durées sur une page</li>
+            <li><strong>Les données sont limitées aux 200 visites les plus récentes</strong> (nettoyage automatique)</li>
+            <li>Les pages admin et API ne sont pas trackées</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

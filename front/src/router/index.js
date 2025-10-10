@@ -1,17 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import PageComponent from '../views/components/PageComponent.vue';
-import Symfony from '../views/Symfony.vue';
-import Vuejs from '../views/Vuejs.vue';
-import Reactjs from '../views/Reactjs.vue';
-import ReactCourse from '../views/ReactCourse.vue';
-import VueCourse from '../views/VueCourse.vue';
-import Wordpress from '../views/Wordpress.vue';
-import WordPressCourse from '../views/WordPressCourse.vue';
+import Symfony from '../views/pageDesCours/Symfony.vue';
+import Vuejs from '../views/pageDesCours/Vuejs.vue';
+import Reactjs from '../views/pageDesCours/Reactjs.vue';
+import Wordpress from '../views/pageDesCours/Wordpress.vue';
 import Profile from '../views/Profile.vue';
 import CategoryPage from '../views/CategoryPage.vue';
-import QCMView from '../views/QCMView.vue';
-import QCMHistoryView from '../views/QCMHistoryView.vue';
+import PageQCM from '../views/QCM/PageQCM.vue';
 import Exercices from '../views/exercices.vue';
 import ExoComponent from '../views/components/ExoComponent.vue';
 
@@ -32,27 +28,9 @@ const routes = [
     component: Reactjs
   },
   {
-    path: '/pages/react/:id',
-    name: 'react-course',
-    component: ReactCourse,
-    props: true
-  },
-  {
-    path: '/pages/vue/:id',
-    name: 'vue-course',
-    component: VueCourse,
-    props: true
-  },
-  {
-    path: '/pages/WP',
+    path: '/pages/wp',
     name: 'wordpress',
-    component: Wordpress 
-  },
-  {
-    path: '/pages/WP/:id',
-    name: 'wordpress-course',
-    component: WordPressCourse,
-    props: true
+    component: Wordpress
   },
   {
     path: '/profile',
@@ -65,16 +43,8 @@ const routes = [
     component: CategoryPage,
     props: true
   },
-  {
-    path: '/qcm',
-    name: 'qcm',
-    component: QCMView
-  },
-  {
-    path: '/qcm/history',
-    name: 'qcm-history',
-    component: QCMHistoryView
-  },
+
+
   {
     path: '/pages/:slug',
     name: 'pages',
@@ -92,6 +62,12 @@ const routes = [
     component: ExoComponent,
     
   },
+
+  {
+    path:'/qcm',
+    name:'PageQCM',
+    component:PageQCM
+  }
 ];
 
 const router = createRouter({

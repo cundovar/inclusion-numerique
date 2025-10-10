@@ -15,9 +15,9 @@ self.addEventListener('install', event => {
       for (const url of urlsToCache) {
         try {
           await cache.add(url);
-          console.log(`✅ ${url} a été ajouté au cache`);
+          console.log(`${url} a été ajouté au cache`);
         } catch (e) {
-          console.warn(`⚠️ Impossible de cacher ${url}`, e);
+          console.warn(`Impossible de cacher ${url}`, e);
         }
       }
     })
@@ -38,7 +38,7 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       caches.match(event.request).then(response => {
         return response || fetch(event.request).catch(() => {
-          console.warn(`⚠️ Échec de fetch pour ${event.request.url}, fallback offline`);
+          console.warn(`Échec de fetch pour ${event.request.url}, fallback offline`);
           return caches.match('/offline.html');
         });
       })

@@ -15,3 +15,8 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Doctrine/'
+
+    # Listener pour nettoyer automatiquement les anciennes visites
+    App\EventListener\UserPageVisitListener:
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
