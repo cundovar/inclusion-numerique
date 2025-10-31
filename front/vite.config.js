@@ -13,7 +13,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 // On importe la fonction pour gérer des chemins (path) facilement
 import { resolve } from 'path'
 
-// On exporte la configuration principale de Vite
+// On exporte la configuration principale de Vizte
 export default defineConfig({
   // Définit le chemin de base pour les fichiers générés (ici, /build/)
   base: '/build/',

@@ -10,6 +10,8 @@ import CategoryPage from '../views/CategoryPage.vue';
 import PageQCM from '../views/QCM/PageQCM.vue';
 import Exercices from '../views/exercices.vue';
 import ExoComponent from '../views/components/ExoComponent.vue';
+import questionQCM from '../views/QCM/questionQCM.vue';
+import resultQCM from '../views/QCM/resultQCM.vue';
 
 const routes = [
   {
@@ -67,7 +69,19 @@ const routes = [
     path:'/qcm',
     name:'PageQCM',
     component:PageQCM
-  }
+  },
+  {
+  path:'/qcm/:index',
+  name:'questionQCM',
+  component:questionQCM,
+  props:true
+},
+{
+  path:'/qcm/result',
+  name:'resultQCM',
+  component:resultQCM,
+  props:true
+},
 ];
 
 const router = createRouter({

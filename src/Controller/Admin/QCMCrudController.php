@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 
 class QCMCrudController extends AbstractCrudController
 {
@@ -23,7 +24,7 @@ class QCMCrudController extends AbstractCrudController
             TextField::new('titre', 'Question'),
             AssociationField::new('languageQCM', 'Langage'),
             AssociationField::new('niveauQCM', 'Niveau'),
-            TextareaField::new('solution', 'Explication de la solution')
+            CodeEditorField::new('solution', 'Explication de la solution')
                 ->setHelp('Explication détaillée de la bonne réponse'),
             CollectionField::new('choicesQCMs', 'Choix de réponses')
                 ->setEntryType(ChoicesQCMTypeForm::class)

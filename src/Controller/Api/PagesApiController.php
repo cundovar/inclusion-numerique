@@ -24,6 +24,8 @@ final class PagesApiController extends AbstractController
         $this->serializer = $serializer;
     }
 
+
+    
     #[Route('/', name: 'list',methods: ['GET'])]
     public function list(): JsonResponse
     {

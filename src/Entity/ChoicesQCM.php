@@ -15,6 +15,7 @@ class ChoicesQCM
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['qcm:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -25,7 +26,7 @@ class ChoicesQCM
     #[Groups(['qcm:read'])]
     private ?bool $isCorrect = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['qcm:read'])]
     private ?string $explication = null;
 
@@ -50,10 +51,7 @@ class ChoicesQCM
         return $this;
     }
 
-    public function isCorrect(): ?bool
-    {
-        return $this->isCorrect;
-    }
+    public function getIsCorrect(): ?bool { return $this->isCorrect; }
 
     public function setIsCorrect(bool $isCorrect): static
     {

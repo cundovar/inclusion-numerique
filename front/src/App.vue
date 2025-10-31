@@ -1,32 +1,33 @@
 <template>
-   <pagesFrame/>
+  <pagesFrame/>
   
   <!-- Pop-up de téléchargement d'app mobile -->
   <div 
-    v-if="showMobileAppPopup" 
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  v-if="showMobileAppPopup" 
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
-    <div class="bg-white rounded-lg p-6 mx-4 max-w-sm w-full shadow-xl">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-800">Télécharger l'app</h3>
-        <button 
-          @click="closeMobileAppPopup"
-          class="text-gray-400 hover:text-gray-600 text-xl"
-        >
-          ×
-        </button>
-      </div>
+  <div class="bg-white rounded-lg p-6 mx-4 max-w-sm w-full shadow-xl">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Télécharger l'app</h3>
+      <button 
+      @click="closeMobileAppPopup"
+      class="text-gray-400 hover:text-gray-600 text-xl"
+      >
+      ×
+    </button>
+  </div>
+  
+  <div class="text-center ">
+    <p class="text-gray-600 mb-4">
+      Téléchargez notre application mobile pour une meilleure expérience !
+    </p>
+    
+    <div class="flex flex-col gap-3">
+      <button 
+      @click="installPWA"
+      class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
+      >
       
-      <div class="text-center">
-        <p class="text-gray-600 mb-4">
-          Téléchargez notre application mobile pour une meilleure expérience !
-        </p>
-        
-        <div class="flex flex-col gap-3">
-          <button 
-            @click="installPWA"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
-          >
             <i class="pi pi-download"></i>
             Installer l'application
           </button>
@@ -46,13 +47,15 @@
   <div
     
     id="app2"
-    class="relative w-full xl:w-full m-auto"
+    class="relative  w-full xl:w-full m-auto"
   >
 
 
   <!-- Header bureau avec logo, recherche et déconnexion sur la même ligne -->
-  <div class="  hidden xl:flex xl:w-full  xl:fixed  xl:top-0 xl:right-0 xl:z-50 xl:justify-between xl:items-center xl:px-8 backdrop-blur-md bg-white/30 py-4">
+  <div class="   index-99 hidden xl:flex xl:w-full  xl:fixed  xl:top-0 xl:right-0 xl:z-50 xl:justify-between xl:items-center xl:px-8 backdrop-blur-md bg-white/30 py-4">
     <!-- Logo DevDoc -->
+
+
     <Router-link to="/">
 
 
@@ -67,7 +70,6 @@
     
     <!-- Recherche au centre -->
     <inputSearch
-    v-if="user.roles.includes('ROLE_USER')"
       v-model="search"
       @search="launchSearch"
       placeholder="Rechercher"
@@ -122,13 +124,10 @@
               class="block"
               @click="search = ''; searchResults = []; searchAnalysis = null"
             >
-              <div class="flex justify-between items-start mb-2">
-                <div class="font-medium text-gray-800 text-sm leading-tight pr-2">
+              <div class="mb-2">
+                <div class="font-medium text-gray-800 text-sm leading-tight">
                   {{ capitalize(result.title) }}
                 </div>
-                <span :class="`${result.scoreColor || 'bg-gray-500'} text-white text-xs px-2 py-1 rounded-full font-medium flex-shrink-0`">
-                  {{ result.relevanceScore || 0 }}%
-                </span>
               </div>
               
               <div class="flex items-center gap-2 text-xs text-gray-600 mb-2">
@@ -166,112 +165,134 @@
 
 
 
-    <div class="h-20"></div>
+    <div class="h-28"></div>
     <div
-      class="border-blue-950  pb-2 bg-[var(--primary-color)] flex fixed w-full z-50 h-20 shadow-xl justify-between items-center  top-0 xl:hidden"
+      class="border-blue-950  z-[999999999] py-2 bg-[var(--primary-color)] fixed w-full shadow-xl top-0 xl:hidden"
       >
-      <!-- Logo centré -->
-      <Router-link to="/">
-      <div class="flex-1 max-xl:absolute top-0  left-0 flex justify-center">
-        <div class="flex items-center gap-2">
-          <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
-          <span class="text-blue-950 font-bold text-xl">DevDoc</span>
+
+      <!-- Ligne du haut: Menu burger, Logo, Bouton auth -->
+      <div class="flex justify-between items-center px-3 py-1">
+        <!-- Bouton menu burger -->
+        <div @click="toggleMenu" class="cursor-pointer">
+          <i
+            v-if="!isMenuOpen"
+            class="text-blue-950 pi pi-bars cursor-pointer"
+            style="font-size: 1.5rem"
+          ></i>
+          <i
+            v-else
+            class="pi pi-times cursor-pointer"
+            style="font-size: 1.5rem"
+          ></i>
         </div>
+
+        <!-- Logo centré -->
+        <Router-link to="/">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-code text-blue-950" style="font-size: 1.8rem"></i>
+            <span class="text-blue-950 font-bold text-xl">DevDoc</span>
+          </div>
+        </Router-link>
+
+        <!-- Bouton connexion/déconnexion -->
+        <AuthButtonMobile />
       </div>
-      </Router-link>
 
-      <!-- Bouton menu burger -->
-      <div @click="toggleMenu" class="cursor-pointer ml-1 left-3 absolute md:left-5  mt-10">
-        <i
-          v-if="!isMenuOpen"
-          class="text-blue-950 pi pi-bars cursor-pointer"
-          style="font-size: 1.5rem"
-        ></i>
-        <i
-          v-else
-          class="pi pi-times cursor-pointer"
-          style="font-size: 1.5rem"
-        ></i>
+      <!-- Ligne du bas: Barre de recherche -->
+      <div class="px-3 pt-1 pb-2">
+        <btnconnexioEtImgProfileMOBIL
+          v-model:search="search"
+          :launchSearch="launchSearch"
+        />
       </div>
-      
-
-      <!-- Boutons à droite -->
-     <btnconnexioEtImgProfileMOBIL 
-     :search="search"
-     @search="launchSearch"
-     />
-
-    
     </div>
-<div 
-  :class="[
-    'scroll-gauche xl:top-10 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
-    isXlOuPlus ? '' : isMenuOpen ? 'max-xl:w-full md:w-2/3 z-50 top-20 ' : 'w-full -translate-x-full  top-20',
-    hoveredCategory ? 'z-[100000] w-1/2 ' : 'z-0 w-[20rem]'
-  ]"
->
-
-  <nav
-    @mouseleave="isXlOuPlus && (hoveredCategory = null)"
+    <div 
+    
     :class="[
-      'md:p-5  float-left z-50 h-screen  max-md:z-50 max-xl:top-20 transition-transform duration-300 ease-in-out',
-      isXlOuPlus
-        ? 'flex xl:w-[16rem]  2xl:w-[20rem] flex-col translate-x-0'
-        : isMenuOpen
-        ? 'w-full  pl-2 pr-2 bt  bg-gray-200  md:top-20 translate-x-0 max-h-[calc(100vh-80px)] max-md:h-[calc(100vh-80px)] max-md:overflow-y-auto flex flex-col max-md:z-50'
-        : 'max-lg:w-full lg:w-1/2  -translate-x-full md:-translate-x-[60rem] lg:-translate-x-[70rem] ',
+      '  xl:z-[99999] scroll-gauche  xl:top-10 min-h-screen fixed border-blue-950 overflow-y-scroll  div-scrollbar transition-all duration-500 ease-in-out',
+      isXlOuPlus ? '' : isMenuOpen ? 'max-xl:w-full md:w-2/3 z-50 top-28 ' : 'w-full -translate-x-full  top-28',
+      hoveredCategory ? 'z-[100000] w-1/2 ' : 'z-0 w-[20rem]',
+      isOpenMenuGauche ? '-translate-x-[9rem]  ' : 'translate-x-0',
     ]"
-  >
-  
-  
-  
-  
-  
+>
+<nav
+@mouseleave="isXlOuPlus && (hoveredCategory = null)"
 
-    <a class="md:hidden border max-xl:border-b-gray-50  bg-gray-500 gap-2 flex items-center justify-start p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
-      <i class="pi pi-github cursor-pointer   text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
-     <p class="text-amber-200  font-bold"> GITHUB </p>
+:class="[
  
-    </a>
+  'md:p-5 relative 2xl:top-1  float-left z-50 h-screen  max-md:z-50 transition-transform duration-300 ease-in-out',
+  isXlOuPlus
+  ? 'flex xl:w-[16rem]   2xl:w-[20rem] flex-col translate-x-0'
+  : isMenuOpen
+  ? 'w-full  pl-2 pr-2   bg-gray-200   translate-x-0 max-h-[calc(100vh-112px)] max-md:h-[calc(100vh-112px)] max-md:overflow-y-auto flex flex-col max-md:z-50'
+  : 'max-lg:w-full lg:w-1/2  -translate-x-full md:-translate-x-[60rem] lg:-translate-x-[70rem] ',
+]"
+  >
+  <div class="max-xl:hidden">
 
-    <!-- Bouton de test temporaire -->
-   <!--
+    <div  class="h-5"></div>
+      
+      <ButtonArrowMenu 
+      :fonction="toggleMenuGauche" 
+
+      :isOpen="isOpenMenuGauche"
+      ajoutClass="absolute right-3 top-6"
+      />
+
+
+  </div>
+ 
+  
+  
+  
+  <a class="md:hidden border max-xl:border-b-gray-50  bg-gray-500 gap-2 flex items-center justify-start p-1 hover:bg-gray-600" href="https://github.com/poleS-dev" target="_blank">
+    <i class="pi pi-github cursor-pointer   text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
+    <p class="text-amber-200  font-bold"> GITHUB </p>
+    
+  </a>
+  
+  <!-- Bouton de test temporaire -->
+  <!--
     #  <button 
-        @click="showMobileAppPopup = true" 
-        class="bg-red-500 text-white p-2 m-2 rounded"
-      >
+    @click="showMobileAppPopup = true" 
+    class="bg-red-500 text-white p-2 m-2 rounded"
+    >
         Test Popup
       </button> #}
   
   
-  -->
+    -->
 <!-- list de lien mdn pour mobile dans nav  -->
 
 
 
 
-    <div
-   @click="!isXlOuPlus && (openMenu(cat.name))"
-      class="cursor-pointer  flex  relative flex-col  justify-center"
-      v-for="cat in cats"
-      :key="cat.id"
-      @mouseenter="isXlOuPlus && (hoveredCategory = cat.name)"
+<div
+@click="!isXlOuPlus && (openMenu(cat.name))"
+class="cursor-pointer  flex  relative flex-col  justify-center"
+v-for="cat in cats"
+:key="cat.id"
+@mouseenter="isXlOuPlus && (hoveredCategory = cat.name)"
 
-      >
-      <!-- pour rendre jaune le menu selectionné -->
-      <h1
-              :class="{
-  'bg-yellow-200': (islgOuPlus && hoveredCategory === cat.name) || (!islgOuPlus && clickMenu === cat.name)
-}"
-
-        class="text-2xl max-md:text-xl max-md:drop-shadow-xl max-md:drop-shadow-gray-400 max-md:border-b max-md:border-gray-400 pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
-      >
-        <button class="cursor-pointer max-md:w-full max-md:h-full  max-md:focus:text-white max-md:bg-blue-200 max-md:text-center  focus:bg-blue-500">{{ cat.name }}</button>
+>
+<!-- pour rendre jaune le menu selectionné -->
+<h1
+:class="[{
+  'bg-yellow-200': (islgOuPlus && hoveredCategory === cat.name) || (!islgOuPlus && clickMenu === cat.name),
+ 
+}, isOpenMenuGauche ? 'flex items-end justify-end ' : '']"
+class="text-2xl max-md:text-xl max-md:drop-shadow-xl max-md:drop-shadow-gray-400 max-md:border-b max-md:border-gray-400 pt-2 hover:bg-blue-400 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 bg-blue-300 pb-2 pl-1"
+>
+        <button 
+       
+        class="cursor-pointer max-md:w-full max-md:h-full  max-md:focus:text-white max-md:bg-blue-200 max-md:text-center  focus:bg-blue-500">
+          {{ cat.name }}
+      </button>
       </h1>
-        
+      
       <div class="xl:absolute xl:top-0 xl:-right-[26rem] xl:z-[99999] xl:shadow-lg max-h-[20rem] xl:pr-10 xl:pl-10 xl:w-[25rem] rounded-xl bg-gray-200 div-scrollbar overflow-y-auto">
-
-
+        
+        
         <!-- menu des cours -->
         <div
           class="md:gap-y-1 "
@@ -280,7 +301,7 @@
           :key="group.label"
         >   
           <div
-            class="p-2 md:w-2/3 md:mt-1 md:border-b border-green-950 mb-2  md:text-start md:bg-transparent md:text-black max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
+          class="p-2 md:w-2/3 md:mt-1 md:border-b border-green-950 mb-2  md:text-start md:bg-transparent md:text-black max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t"
           > 
             {{ group.label }} 
           </div>
@@ -296,7 +317,7 @@
               class="focus:bg-gray-400   focus:text-white z-50 hover:text-blue-600"
             >
           
-              <p
+            <p
                 class="p-2  md:text-blue-500 hover:text-fuchsia-900 flex justify-around max-md:justify-start items-center max-md:text-start "
               >
               <div class="flex  justify-center items-center w-1/3">
@@ -318,13 +339,13 @@
             </router-link>
           </button>
         </div>
-
+        
 
 
       </div>
     </div>
     <div
-        class="text-2xl max-md:text-xl xl:hidden max-md:drop-shadow-xl pb-2 mt-4 pl-1"
+    class="text-2xl max-md:text-xl xl:hidden max-md:drop-shadow-xl pb-2 mt-4 pl-1"
       >
       <SelectfunctionVocabulaire @closeMenu="closeMobileMenu"/>
       <router-link
@@ -336,9 +357,9 @@
       QCM 
     </router-link>
     
-      <router-link
-      to="/exercices"
-      @click="toggleMenu"
+    <router-link
+    to="/exercices"
+    @click="toggleMenu"
       class="text-xl  h-[3rem] cursor-pointer mt-4 shadow-neutral-600 bg-green-300 p-2 hover:bg-green-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
     >
       <i class="pi pi-book"></i>
@@ -360,8 +381,7 @@
     
   </div>
  <!-- <vracMain/> --> 
-
-
+ 
    
 
   </nav>
@@ -371,38 +391,38 @@
    
 
    <!-- {# <list_logo/> #} -->
-    
+   
     <!-- resultat de la recherche en mobile -->
     <div
         v-if="modalIsOpen && searchResults.length"
         class="fixed inset-0 overflow-hidden backdrop-blur-2xl bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 md:hidden"
-      >
-      <div class="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-hidden shadow-xl">
-        <div class="flex justify-between items-center p-4 border-b bg-blue-50">
-          <div>
+        >
+        <div class="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-hidden shadow-xl">
+          <div class="flex justify-between items-center p-4 border-b bg-blue-50">
+            <div>
             <h2 class="text-lg font-bold text-gray-800">Résultats IA</h2>
             <div class="text-sm text-gray-600">
               <span class="text-blue-600 font-medium">{{ searchResults.length }}</span> résultat(s)
             </div>
           </div>
           <i
-            @click="closeModal"
-            class="text-gray-400 hover:text-red-600 pi pi-times cursor-pointer text-xl p-2 hover:bg-red-100 rounded-full transition-colors"
+          @click="closeModal"
+          class="text-gray-400 hover:text-red-600 pi pi-times cursor-pointer text-xl p-2 hover:bg-red-100 rounded-full transition-colors"
           ></i>
         </div>
-
+        
         <!-- Tags d'analyse IA mobile -->
         <div v-if="searchAnalysis && (searchAnalysis.keywords || searchAnalysis.technologies)" class="p-3 border-b bg-gray-50">
           <div class="flex flex-wrap gap-1">
             <span v-for="keyword in searchAnalysis.keywords?.slice(0, 2)" 
-                  :key="keyword"
-                  class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+            :key="keyword"
+            class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
               {{ keyword }}
             </span>
             <span v-for="tech in searchAnalysis.technologies?.slice(0, 1)" 
-                  :key="tech"
+            :key="tech"
                   class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
-              {{ tech }}
+                  {{ tech }}
             </span>
           </div>
           <div v-if="searchAnalysis.intent" class="text-xs text-gray-600 mt-1">
@@ -412,22 +432,19 @@
 
         <ul class="overflow-y-auto max-h-[60vh] p-2">
           <li
-            v-for="result in searchResults"
-            :key="result.id || result.page?.slug"
-            class="hover:bg-gray-50 p-3 border-b border-gray-100 transition-colors duration-200"
+          v-for="result in searchResults"
+          :key="result.id || result.page?.slug"
+          class="hover:bg-gray-50 p-3 border-b border-gray-100 transition-colors duration-200"
           >
             <router-link
               :to="`/pages${result.page?.slug || result.pageSlug}`"
               class="block"
               @click="closeModal(); search = ''; searchResults = []; searchAnalysis = null"
             >
-              <div class="flex justify-between items-start mb-2">
-                <div class="font-medium text-gray-800 text-sm pr-2">
+              <div class="mb-2">
+                <div class="font-medium text-gray-800 text-sm">
                   {{ capitalize(result.title) }}
                 </div>
-                <span :class="`${result.scoreColor || 'bg-gray-500'} text-white text-xs px-2 py-1 rounded-full font-medium flex-shrink-0`">
-                  {{ result.relevanceScore || 0 }}%
-                </span>
               </div>
               
               <div class="flex items-center gap-1 text-xs text-gray-600 mb-2 flex-wrap">
@@ -449,7 +466,7 @@
         </ul>
       </div>
     </div>
-
+    
     <div v-else-if="modalIsOpen && search && search.trim()" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 md:hidden">
       <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-xl">
         <div class="flex justify-between items-center mb-4">
@@ -470,9 +487,11 @@
     <main
       class=" xl:p-20     max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden"
     >
-      <router-view />
-      <AfertLogin v-if="$route.path === '/'" />
-    </main>
+ 
+    
+    <router-view />
+    <AfertLogin v-if="$route.path === '/'" />
+  </main>
 
     <navFooterMobil @click="closed"  />
 
@@ -503,7 +522,9 @@ import IntelligentSearchService from "./services/intelligentSearchService.js";
 import SelectfunctionVocabulaire from './views/components/MenuPageFramwork/SelectfunctionVocabulaire.vue'
 import btnconnexioEtImgProfile from "./views/components/btnconnexioEtImgProfile.vue";
 import btnconnexioEtImgProfileMOBIL from "./views/components/btnconnexioEtImgProfileMOBIL.vue";
+import AuthButtonMobile from "./views/components/AuthButtonMobile.vue";
 import { usePageTracking } from "./composables/usePageTracking.js";
+import ButtonArrowMenu from "./views/components/commun/button/ButtonArrowMenu.vue";
 
 const hoveredCategory = ref(null);
 const isMenuOpen = ref(false);
@@ -513,6 +534,7 @@ const isXlOuPlus = ref(window.innerWidth >= 1280); // xl = 1280px en Tailwind
 const search = ref("");
 const searchResults = ref([]);
 
+const isOpenMenuGauche = ref(false);
 const modalIsOpen = ref(false);
 const isMobile=ref(window.innerWidth < 768);
 const clickMenu=ref(null);
@@ -530,6 +552,11 @@ const currentOrigin = ref(window.location.origin);
 
 
 
+
+//menu fermer/ouvrit gauche 
+const toggleMenuGauche = () => {
+  isOpenMenuGauche.value = !isOpenMenuGauche.value;
+}
 
 
 
@@ -629,32 +656,50 @@ const launchSearch = async () => {
     return;
   }
 
+  // Vérifier si l'utilisateur est connecté pour utiliser la recherche IA
+  const isUserConnected = user.value && user.value.roles && user.value.roles.includes('ROLE_USER');
+
   try {
-    // Vérifier si le service de recherche intelligente est disponible
-    const isServiceAvailable = await IntelligentSearchService.checkServiceHealth();
-    
-    if (isServiceAvailable) {
-      // Utiliser la recherche intelligente avec IA
-      console.log("Recherche intelligente activée");
-      const result = await IntelligentSearchService.search(search.value, 15);
-      
-      if (result.success) {
-        searchResults.value = IntelligentSearchService.formatResults(result.results);
-        searchAnalysis.value = result.analysis; // Stocker l'analyse pour affichage
-        console.log("Analyse IA:", result.analysis);
-        console.log(`${result.total} résultats trouvés avec IA`);
+    if (isUserConnected) {
+      // Vérifier si le service de recherche intelligente est disponible
+      const isServiceAvailable = await IntelligentSearchService.checkServiceHealth();
+
+      if (isServiceAvailable) {
+        // Utiliser la recherche intelligente avec IA
+        console.log("Recherche intelligente activée (utilisateur connecté)");
+        const result = await IntelligentSearchService.search(search.value, 15);
+
+        if (result.success) {
+          searchResults.value = IntelligentSearchService.formatResults(result.results);
+          searchAnalysis.value = result.analysis; // Stocker l'analyse pour affichage
+          console.log("Analyse IA:", result.analysis);
+          console.log(`${result.total} résultats trouvés avec IA`);
+        } else {
+          throw new Error("Service de recherche IA non disponible");
+        }
       } else {
-        throw new Error("Service de recherche IA non disponible");
+        throw new Error("Service de recherche IA non accessible");
       }
     } else {
-      throw new Error("Service de recherche IA non accessible");
+      // Utilisateur non connecté : utiliser directement la recherche classique
+      console.log("Utilisateur non connecté : recherche classique uniquement");
+      throw new Error("Recherche IA non disponible pour les utilisateurs non connectés");
     }
   } catch (error) {
     console.warn("Recherche IA échouée, utilisation de la recherche classique:", error.message);
-    
-    // Fallback : recherche classique
+
+    // Fallback : recherche classique améliorée
     const query = search.value.toLowerCase();
-    
+
+    // Extraire les mots-clés en retirant les mots vides (stop words)
+    const stopWords = ['comment', 'faire', 'une', 'un', 'le', 'la', 'les', 'de', 'du', 'des', 'pour', 'avec', 'dans', 'sur', 'en', 'et', 'ou', 'que', 'qui', 'quoi', 'où', 'quand'];
+    const keywords = query
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !stopWords.includes(word))
+      .map(word => word.replace(/[?!.,;:]/g, '')); // Retirer la ponctuation
+
+    console.log("🔍 Mots-clés extraits:", keywords);
+
     searchResults.value = menus.value.filter((menu) => {
       const title = menu.title?.toLowerCase() || "";
       const content = menu.content?.toLowerCase() || "";
@@ -663,7 +708,7 @@ const launchSearch = async () => {
       const slug = menu.page?.slug?.toLowerCase() || "";
       const category = menu.category?.name?.toLowerCase() || "";
       const type = menu.type?.toLowerCase() || "";
-      
+
       // Recherche aussi dans les pageBlocks si disponibles
       let blockContent = "";
       if (menu.pageBlocks && Array.isArray(menu.pageBlocks)) {
@@ -674,7 +719,7 @@ const launchSearch = async () => {
           return blockTitle + " " + blockContent + " " + blockCode;
         }).join(" ");
       }
-      
+
       // Recherche dans toutes les propriétés disponibles
       const searchableText = [
         title,
@@ -686,19 +731,52 @@ const launchSearch = async () => {
         type,
         blockContent
       ].join(" ");
-      
+
+      // Vérifier si AU MOINS UN mot-clé est présent
+      if (keywords.length > 0) {
+        return keywords.some(keyword => searchableText.includes(keyword));
+      }
+
+      // Si pas de mots-clés, recherche classique
       return searchableText.includes(query);
     });
     
-    // Trier les résultats par pertinence (titre en premier, puis contenu)
+    // Trier les résultats par pertinence améliorée
     searchResults.value.sort((a, b) => {
       const aTitle = a.title?.toLowerCase() || "";
       const bTitle = b.title?.toLowerCase() || "";
-      
-      if (aTitle.includes(query) && !bTitle.includes(query)) return -1;
-      if (!aTitle.includes(query) && bTitle.includes(query)) return 1;
-      
-      return 0;
+      const aContent = a.content?.toLowerCase() || "";
+      const bContent = b.content?.toLowerCase() || "";
+      const aCategory = a.category?.name?.toLowerCase() || "";
+      const bCategory = b.category?.name?.toLowerCase() || "";
+
+      // Calculer le score de pertinence
+      let scoreA = 0;
+      let scoreB = 0;
+
+      if (keywords.length > 0) {
+        // Compter combien de mots-clés sont dans le titre (poids x3)
+        keywords.forEach(keyword => {
+          if (aTitle.includes(keyword)) scoreA += 3;
+          if (bTitle.includes(keyword)) scoreB += 3;
+
+          // Compter dans la catégorie (poids x2)
+          if (aCategory.includes(keyword)) scoreA += 2;
+          if (bCategory.includes(keyword)) scoreB += 2;
+
+          // Compter dans le contenu (poids x1)
+          if (aContent.includes(keyword)) scoreA += 1;
+          if (bContent.includes(keyword)) scoreB += 1;
+        });
+      } else {
+        // Recherche classique : priorité au titre
+        if (aTitle.includes(query)) scoreA += 3;
+        if (bTitle.includes(query)) scoreB += 3;
+        if (aContent.includes(query)) scoreA += 1;
+        if (bContent.includes(query)) scoreB += 1;
+      }
+
+      return scoreB - scoreA; // Tri décroissant
     });
   }
   
@@ -809,7 +887,9 @@ const menusByCategory = computed(() => {
   border: 1px solid red;
 } */
 
-
+.index-99 {
+  z-index: 99999999999;
+}
 nav {
   margin-top: 10px;
   scroll-behavior: smooth;

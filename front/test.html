@@ -1,0 +1,262 @@
+<style>
+    .intro-section {
+        background: #f9f9f9;
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 50px;
+        text-align: center;
+        border: 3px dashed #e85d75;
+    }
+
+    .intro-section p {
+        font-size: 1.1em;
+        color: #333;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+
+    .intro-section strong {
+        color: #e85d75;
+    }
+
+    .intro-section a {
+        color: #6b7db5;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .mnu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 40px;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+
+    .mnu-card {
+        background: white;
+        border-radius: 30px;
+        padding: 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .mnu-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .mnu-card.entrees {
+        border-top: 8px solid #8bc34a;
+    }
+
+    .mnu-card.plats {
+        border-top: 8px solid #e85d75;
+    }
+
+    .mnu-card.desserts {
+        border-top: 8px solid #ffd54f;
+    }
+
+    .mnu-header {
+        padding: 30px 30px 20px;
+        text-align: center;
+    }
+
+    .mnu-header h2 {
+        font-size: 2em;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .mnu-card.entrees h2 {
+        color: #8bc34a;
+    }
+
+    .mnu-card.plats h2 {
+        color: #e85d75;
+    }
+
+    .mnu-card.desserts h2 {
+        color: #f9a825;
+    }
+
+    .mnu-icon {
+        font-size: 3em;
+        margin-bottom: 10px;
+    }
+
+    .mnu-body {
+        padding: 0 30px 30px;
+    }
+
+    .mnu-item {
+        padding: 15px 0;
+        border-bottom: 2px dotted #eee;
+    }
+
+    .mnu-item:last-child {
+        border-bottom: none;
+    }
+
+    .mnu-item h3 {
+        font-size: 1.1em;
+        color: #333;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .mnu-item p {
+        font-size: 0.9em;
+        color: #777;
+        font-style: italic;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .mnu-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+
+<div class="mnu-grid">
+    <div class="mnu-card entrees">
+        <div class="mnu-header">
+            <div class="mnu-icon">🥗</div>
+            <h2>Entrées</h2>
+        </div>
+        <div class="mnu-body" id="entrees-list"></div>
+    </div>
+</div>
+
+<div class="mnu-grid">
+    <div class="mnu-card plats">
+        <div class="mnu-header">
+            <div class="mnu-icon">🍽️</div>
+            <h2>Plats</h2>
+        </div>
+        <div class="mnu-body" id="plats-list"></div>
+    </div>
+</div>
+
+<div class="mnu-grid">
+    <div class="mnu-card desserts">
+        <div class="mnu-header">
+            <div class="mnu-icon">🍰</div>
+            <h2>Desserts</h2>
+        </div>
+        <div class="mnu-body" id="desserts-list"></div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        function chargerMnu(sourceId, targetId) {
+            const source = document.getElementById(sourceId);
+            const target = document.getElementById(targetId);
+
+            if (source && target) {
+                target.innerHTML = source.innerHTML;
+            }
+        }
+
+        function init() {
+            setTimeout(function () {
+                chargerMnu('contenu-entrees', 'entrees-list');
+                chargerMnu('contenu-plats', 'plats-list');
+                chargerMnu('contenu-desserts', 'desserts-list');
+            }, 500);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+</script>
+
+<style>
+    .titre-mode-emploi {
+        text-align: center;
+        padding: 60px 20px;
+        margin-bottom: 40px;
+    }
+
+    .titre-mode-emploi h1 {
+        font-size: 3em;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+
+    .titre-mode-emploi p {
+        font-size: 1.2em;
+        margin: 15px 0 0 0;
+        opacity: 0.9;
+    }
+</style>
+<div class="titre-mode-emploi">
+    <h1>Mode d'emploi</h1>
+    <p>Commander c'est simple et rapide !</p>
+</div>
+<style>
+    .etape-container {
+        display: flex;
+        align-items: flex-start;
+        margin: 30px 0;
+        padding: 20px;
+    }
+
+    .rond-numero {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #6b7db5 0%, #9370b0 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 24px;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+
+    .etape-texte h3 {
+        color: #6b7db5;
+        margin: 0 0 8px 0;
+        font-size: 18px;
+    }
+
+    .etape-texte p {
+        margin: 0;
+        color: #666;
+        font-size: 16px;
+    }
+</style>
+<div class="etape-container">
+    <div class="rond-numero">1</div>
+    <div class="etape-texte">
+        <h3>Commandez en ligne</h3>
+        <p>Passez votre commande sur ce site à partir de 10h</p>
+    </div>
+</div>
+<div class="etape-container">
+    <div class="rond-numero">2</div>
+    <div class="etape-texte">
+        <h3>Venez retirer votre repas</h3>
+        <p>Récupérez votre commande de 13h à 20h à la Butinerie</p>
+    </div>
+</div>
+<div class="etape-container">
+    <div class="rond-numero">3</div>
+    <div class="etape-texte">
+        <h3>Régalez-vous !</h3>
+        <p>Savourez un délicieux repas bio, végé et de saison</p>
+    </div>
+</div>

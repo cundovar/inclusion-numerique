@@ -28,10 +28,56 @@
         </p>
       </div>
     </div>
-    
 
+    <div class="w-1/2 max-2xl:w-full">
+      <!-- Section EXERCICES -->
+      <!-- <div class=" w-full  max-2xl:w-full mt-10 mb-10">
+        <h2 class="text-3xl font-bold mb-6 text-start ml-10">
+           Exercices
+        </h2>
+       Exercices Grid 
+         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 gap-6 2xl:grid-cols-4">
+          <router-link
+            v-for="(groups, category) in exoByCategory"
+            :key="`exo-${category}`"
+            :to="`/exercices`"
+            class="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-105"
+          >
+            Exercice Card 
+            <div class="aspect-square p-6 flex flex-col items-center justify-center text-center">
+               Category Icon 
+              <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                   :class="getExoCategoryBgClass(category)">
+                <i :class="getCategoryIconClass(category) + ' text-2xl text-white'"></i>
+              </div>
+  
+               Category Name 
+              <h3 class="font-bold text-gray-800 text-lg capitalize mb-2 group-hover:text-green-600 transition-colors duration-300">
+                {{ getCategoryDisplayName(category) }}
+              </h3>
+  
+              Exercice Count
+              <p class="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300">
+                {{ groups.length }} exercice{{ groups.length > 1 ? 's' : '' }}
+              </p>
+  
+              Hover Arrow
+              <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                <i class="fas fa-arrow-right text-green-500"></i>
+              </div>
+            </div> 
+  
+            Gradient Overlay on Hover
+            <div class="absolute inset-0 bg-gradient-to-t from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </router-link>
+        </div> 
+      </div>-->
+          <!-- Section COURS -->
+          <h2 class="text-3xl font-bold mb-6 text-start ml-10 max-2xl:mt-10">
+             Cours
+          </h2>
         <!-- Categories Grid -->
-        <div class=" w-1/2 max-2xl:w-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 gap-6 2xl:grid-cols-4   ">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 gap-6 2xl:grid-cols-4">
           <router-link 
             v-for="(groups, category) in menusByCategory" 
             :key="category"
@@ -67,8 +113,18 @@
           </router-link>
         </div>
 
+
+
+
+
+
+
+
+        </div>
+
+
         <!-- Call to Action -->
-        
+
       </div>
 
 </template>
@@ -81,9 +137,10 @@ import { onMounted, ref, computed } from "vue";
 import { useData } from "../../utlis/fetchDataPwa";
 
 const filteredCategories = ["wordpress", "vue", "react"]; // noms de catégories à exclure
-const { fetchMenus, cats, menus } = useData();
+const { fetchMenus, cats, menus, fetchExoContents, exoContents } = useData();
 onMounted(() => {
   fetchMenus();
+  fetchExoContents();
 });
 const menusByCategory = computed(() => {
   const result = {};
@@ -117,6 +174,46 @@ const menusByCategory = computed(() => {
         }
 
         grouped[label].items.push(menu);
+      });
+
+    result[categoryName] = Object.values(grouped);
+  });
+
+  return result;
+});
+
+// Exercices groupés par catégorie
+const exoByCategory = computed(() => {
+  const result = {};
+  const uniqueCategories = new Set();
+
+  exoContents.value.forEach((exo) => {
+    if (exo.category && exo.category.name) {
+      uniqueCategories.add(exo.category.name);
+    }
+  });
+
+  uniqueCategories.forEach((categoryName) => {
+    if (filteredCategories.includes(categoryName.toLowerCase())) {
+      return;
+    }
+
+    const grouped = {};
+
+    exoContents.value
+      .filter((exo) => exo.category.name === categoryName)
+      .forEach((exo) => {
+        const label = exo.exoMenu?.label || 'Autre';
+
+        if (!grouped[label]) {
+          grouped[label] = {
+            label: label,
+            slug: label.toLowerCase().replace(/\s+/g, "-"),
+            items: [],
+          };
+        }
+
+        grouped[label].items.push(exo);
       });
 
     result[categoryName] = Object.values(grouped);
@@ -622,6 +719,53 @@ const getCategoryBgClass = (category) => {
     'vr': 'bg-gradient-to-br from-blue-500 to-purple-600'
   };
   return bgClasses[category] || 'bg-gradient-to-br from-gray-400 to-gray-600';
+};
+
+// Couleurs spécifiques pour les exercices (tons verts/émeraude)
+const getExoCategoryBgClass = (category) => {
+  const exoBgClasses = {
+    // Langages de programmation - tons verts
+    'javascript': 'bg-gradient-to-br from-emerald-400 to-green-600',
+    'php': 'bg-gradient-to-br from-teal-500 to-emerald-700',
+    'python': 'bg-gradient-to-br from-green-500 to-emerald-600',
+    'java': 'bg-gradient-to-br from-lime-500 to-green-600',
+    'csharp': 'bg-gradient-to-br from-teal-600 to-green-500',
+    'cpp': 'bg-gradient-to-br from-emerald-600 to-teal-600',
+    'c': 'bg-gradient-to-br from-green-600 to-emerald-500',
+    'ruby': 'bg-gradient-to-br from-lime-500 to-green-700',
+    'go': 'bg-gradient-to-br from-cyan-400 to-green-500',
+    'rust': 'bg-gradient-to-br from-lime-500 to-emerald-600',
+    'swift': 'bg-gradient-to-br from-emerald-400 to-green-500',
+    'kotlin': 'bg-gradient-to-br from-teal-500 to-green-500',
+    'typescript': 'bg-gradient-to-br from-teal-600 to-emerald-800',
+
+    // Technologies web - tons verts
+    'html': 'bg-gradient-to-br from-lime-400 to-green-600',
+    'css': 'bg-gradient-to-br from-teal-400 to-emerald-600',
+    'sass': 'bg-gradient-to-br from-green-500 to-emerald-700',
+    'tailwind': 'bg-gradient-to-br from-cyan-400 to-teal-500',
+    'bootstrap': 'bg-gradient-to-br from-teal-600 to-green-700',
+
+    // Frameworks - tons verts
+    'react': 'bg-gradient-to-br from-emerald-400 to-green-500',
+    'vue': 'bg-gradient-to-br from-green-400 to-emerald-600',
+    'angular': 'bg-gradient-to-br from-lime-500 to-green-700',
+    'symfony': 'bg-gradient-to-br from-gray-700 to-emerald-900',
+    'laravel': 'bg-gradient-to-br from-lime-500 to-green-600',
+    'django': 'bg-gradient-to-br from-green-600 to-emerald-800',
+
+    // Bases de données - tons verts
+    'sql': 'bg-gradient-to-br from-green-400 to-emerald-600',
+    'mysql': 'bg-gradient-to-br from-lime-500 to-green-700',
+    'postgresql': 'bg-gradient-to-br from-teal-600 to-green-700',
+    'mongodb': 'bg-gradient-to-br from-green-600 to-emerald-800',
+
+    // Outils - tons verts
+    'git': 'bg-gradient-to-br from-lime-600 to-green-600',
+    'docker': 'bg-gradient-to-br from-teal-500 to-emerald-700',
+    'kubernetes': 'bg-gradient-to-br from-emerald-600 to-teal-600',
+  };
+  return exoBgClasses[category] || 'bg-gradient-to-br from-green-400 to-emerald-600';
 };
 
 

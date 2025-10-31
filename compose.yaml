@@ -1,38 +1,33 @@
-version: '3.8'  # Version de la syntaxe Docker Compose (3.8 = stable, compatible avec Docker 20+)
+version: "3.8"
 
-services:  # Définition des services (chaque container que tu vas lancer)
+name: my_project
 
-  php:  # Service pour ton backend Symfony (PHP-FPM)
-    build:  # On va construire une image Docker personnalisée
-      context: .  # Le contexte de build (le dossier courant où est le Dockerfile)
-      dockerfile: Dockerfile  # Le fichier Dockerfile à utiliser
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - .:/var/www/symfony  # Montage du code local dans le container (le dossier Symfony)
-    networks:
-      - connectPerso  # Connexion au réseau Docker nommé 'connectPerso'
+      - .:/var/www/symfony
+    expose:
+      - "9000"
+    networks: [connectPerso]
 
   front:
     build:
       context: ./front
     working_dir: /app
     volumes:
-      - ./front:/app:cached  # Optimisation pour macOS/Windows
+      - ./front:/app:cached
     ports:
       - "5173:5173"
     command: npm run dev:dock
     environment:
-      - CHOKIDAR_USEPOLLING=true  # Force le polling pour le file watcher
-      - CHOKIDAR_INTERVAL=500     # Intervalle de polling
-    networks:
-      - connectPerso  
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=500
+    networks: [connectPerso]
 
-  node:
-    image: node:20
-    working_dir: /var/www/symfony
-    volumes:
-      - .:/var/www/symfony
-    command: tail -f /dev/null
-
+  # (optionnel) front-build pour produire /public/build
   front-build:
     build:
       context: ./front
@@ -41,33 +36,31 @@ services:  # Définition des services (chaque container que tu vas lancer)
       - ./front:/app
       - ./public/build:/app/../public/build
     command: npm run build
-    networks:
-      - connectPerso  
+    networks: [connectPerso]
 
-  nginx:  # Service pour Nginx, qui sert Symfony
-    image: nginx:stable  # Utilisation de l'image officielle de Nginx (stable version)
+  nginx:
+    image: nginx:stable
     ports:
-      - "8080:80"  # Mapping du port 8080 de ta machine vers le port 80 dans le container
-    volumes:
-      - .:/var/www/symfony  # On donne accès à Nginx aux fichiers Symfony
-      - ./nginx.conf:/etc/nginx/nginx.conf  # On remplace la conf Nginx par la tienne (local -> container)
+      - "8080:80"
     depends_on:
-      - php  # Nginx doit attendre que PHP-FPM (php) soit prêt
-    networks:
-      - connectPerso  # Connexion au même réseau Docker
+      - php
+      - front    # <— important si Nginx proxifie Vite
+    volumes:
+      - .:/var/www/symfony
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # <— configuration nginx
+    networks: [connectPerso]
 
-  db:  # Service pour la base de données MySQL
-    image: mysql:8.0  # Utilisation de l'image officielle MySQL 8.0
-    environment:  # Variables d'environnement pour configurer MySQL
-      MYSQL_ROOT_PASSWORD: root  # Mot de passe pour le compte root
-      MYSQL_DATABASE: courTotal  # Base de données à créer automatiquement
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: courTotal
     ports:
-      - "3308:3306"  # Mapping du port 3308 de ta machine vers 3306 dans le container (évite conflits)
-    networks:
-      - connectPerso  # Connexion au même réseau Docker
+      - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-  
+    networks: [connectPerso]
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     restart: always
@@ -76,12 +69,11 @@ services:  # Définition des services (chaque container que tu vas lancer)
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
-    networks:
-      - connectPerso
+    networks: [connectPerso]
 
-networks:  # Déclaration des réseaux Docker
-  connectPerso:  # Nom du réseau personnalisé
-    driver: bridge  # Type de réseau 'bridge' (isolé entre containers, mais accessible entre eux)
+networks:
+  connectPerso:
+    driver: bridge
 
 volumes:
   mysql_data:

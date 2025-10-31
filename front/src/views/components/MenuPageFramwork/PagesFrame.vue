@@ -1,8 +1,21 @@
 <template>
-      <div
-    class=" hidden xl:block xl:h-screen pb-96 max-xl:hidden overflow-y-auto  xl:items-end xl:w-[16rem] xl:pt-0 xl:pr-2  xl:justify-start  max-xl:right-10 max-xl:gap-5 sm:flex-row sm:top-0 sm:m-auto  sm:absolute sm:items-start sm:pt-20 xl:gap-2  xl:fixed xl:top-20 xl:right-0 xl:z-50 xl:flex xl:flex-col max-xl:items-end "
+  <div
+  :class="isOpenMenuDroit ? 'translate-x-[45%]' : '-translate-x-0'"
+  class=" transition-all duration-500 ease-in-out  xl:block xl:h-screen pb-96 max-xl:hidden overflow-y-auto  xl:items-end xl:w-[16rem] xl:pt-0 xl:pr-2  xl:justify-start  max-xl:right-10 max-xl:gap-5 sm:flex-row sm:top-0 sm:m-auto  sm:absolute sm:items-start sm:pt-20 xl:gap-2  xl:fixed xl:top-20 xl:right-0 xl:z-50 xl:flex xl:flex-col max-xl:items-end "
   >
 
+  <div>
+
+    <ButtonArrowMenu 
+    :fonction="toggleMenuDroit" 
+  
+    :isOpen="!isOpenMenuDroit"
+    ajoutClass="absolute left-0 top-0"
+    />
+    <div  class="h-5"></div>
+
+
+  </div>
     <router-link
       v-for="tech in techs"
       :key="tech"
@@ -36,7 +49,14 @@
 
 <script setup>
 import SelectfunctionVocabulaire from './SelectfunctionVocabulaire.vue'
+import ButtonArrowMenu from '../commun/button/ButtonArrowMenu.vue'
+import { ref } from 'vue'
 const techs = ['symfony', 'vuejs', 'reactjs', 'wp']
+const isOpenMenuDroit = ref(false)
+
+function toggleMenuDroit() {
+  isOpenMenuDroit.value = !isOpenMenuDroit.value
+}
 
 </script>
 

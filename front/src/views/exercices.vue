@@ -1,8 +1,8 @@
 <template>
-    <div class=" page-exo-list md:rounded-2xl md:mt-10 xl:mt-0 pb-96 min-h-screen w-full ">
+    <div class=" page-exo-list md:rounded-2xl mt-10 xl:mt-0 pb-96 min-h-screen w-full ">
       <div class="w-full">
         <div class="tech-header">
-          <h1 class="tech-title">Exercices</h1>
+          <h1 class="tech-title  ">Exercices</h1>
         </div>
         <p class="tech-description"></p>
   
@@ -136,9 +136,11 @@
     display: block;
   }
 
-  .article-exo {
-    padding-left: 5rem;
-    padding-right: 5rem;
+  @media (min-width: 1024px) {
+    .article-exo {
+      padding-left: 5rem;
+      padding-right: 5rem;
+    }
   }
 
   /* Transitions Vue */

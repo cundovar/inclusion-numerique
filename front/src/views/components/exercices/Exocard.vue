@@ -1,5 +1,5 @@
 <template>
-    <div class="md:w-1/2 max-md:w-full">
+    <div class="md:w-1/2 w-full ">
       <h2 v-if="sectionTitle" class="text-xl text-center font-bold border-2 border-blue-600 rounded px-3 py-1 mb-2">
         {{ sectionTitle }}
       </h2>

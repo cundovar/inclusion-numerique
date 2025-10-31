@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\QCMRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,7 +13,20 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: QCMRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['qcm:read']],
+    denormalizationContext: ['groups' => ['qcm:write']],
+    paginationItemsPerPage: 200,
+    paginationMaximumItemsPerPage: 300,
+)]
+#[ApiFilter(SearchFilter::class,properties:[
+// filtre avec relation IRI 
+//✅ Avec language et niveau en exact, tu peux filtrer par IRI (recommandé) :
+// GET /api/qcms?language=/api/language_q_c_ms/12&niveau=/api/niveau_q_c_ms/3
+'languageQCM.name' => 'iexact',
+'niveauQCM.titre' => 'iexact',
+
+])]
 class QCM
 {
     #[ORM\Id]

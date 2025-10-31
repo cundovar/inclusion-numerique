@@ -2,7 +2,7 @@
 <template>
     <section
     class="transition-all duration-500"
-    :class="sectionSize ? 'playground-fullscreen' : 'playground'">
+    :class="sectionSize ? 'playground-fullscreen z-[9999999999999] ' : 'playground'">
 
       <div class="cols">
 
@@ -282,7 +282,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 9999;
+
     background: #fff;
     padding: 16px;
     margin: 0;
