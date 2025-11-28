@@ -12,11 +12,19 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // On importe la fonction pour gérer des chemins (path) facilement
 import { resolve } from 'path'
+import { fileURLToPath, URL } from 'node:url'
 
 // On exporte la configuration principale de Vizte
 export default defineConfig({
   // Définit le chemin de base pour les fichiers générés (ici, /build/)
   base: '/build/',
+
+  // Configuration des alias de chemins
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
 
   // Liste des plugins utilisés par Vite
   plugins: [
@@ -50,6 +58,15 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
+          }
+        ],
+        screenshots: [                    // Screenshots pour l'installation PWA
+          {
+            src: '/spa/screenshot.png',   // Screenshot de l'application
+            sizes: '1280x720',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Application principale'
           }
         ]
       },
@@ -88,11 +105,12 @@ export default defineConfig({
 
   // Configuration du serveur de développement Vite
   // Le proxy /api redirige vers http://nginx
-  // ⚠ Ça c’est seulement utilisé par Vite Dev Server pendant le développement → ça n’a aucun effet en production
-  // ⚠ En prod, ton NGINX ne voit pas ce proxy config, c’est ton serveur web qui sert Symfony et tes assets directement.
+  // ⚠ Ça c'est seulement utilisé par Vite Dev Server pendant le développement → ça n'a aucun effet en production
+  // ⚠ En prod, ton NGINX ne voit pas ce proxy config, c'est ton serveur web qui sert Symfony et tes assets directement.
   server: {
     host: true,            // Rend le serveur accessible depuis le réseau local
     port: 5173,            // Port utilisé par le serveur
+    cors: true,            // Active CORS pour permettre les requêtes depuis Nginx
     proxy: {               // Déclare un proxy pour rediriger les appels API
       '/api': {
         target: 'http://nginx', // Redirige les requêtes /api vers nginx
@@ -108,7 +126,8 @@ export default defineConfig({
     },
     hmr: {
       port: 5173,
-      host: '0.0.0.0'       // Écoute sur toutes les interfaces
+      host: '0.0.0.0',      // Écoute sur toutes les interfaces
+      clientPort: 5173      // Port pour le client HMR
     },
     force: true             // Force la reconstruction des dépendances
   },

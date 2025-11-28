@@ -1,12 +1,15 @@
 <template>
   <div
-    class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 text-gray-500 min-h-screen w-full bg-gray-200 p-6"
+    class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 min-h-screen w-full bg-gray-200 p-6 relative z-20"
   >
 
 
-  <div class="flex qcm flex-col justify-center items-center border">
+  <div class="flex qcm flex-col justify-center items-center max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
 
-    <h1 class="text-3xl h-20 font-bold m">fomulaire qcm</h1>
+    <h1 class="text-4xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+      <i class="fas fa-brain text-purple-600"></i>
+      Formulaire QCM
+    </h1>
 
   <el-cascader
     v-model="selected_niveau"
@@ -17,10 +20,11 @@
     }"
     clearable
     placeholder="Select Niveau"
+    class="w-full md:w-2/3 mb-4"
   />
 
   <el-cascader
-  class="mt-4 w-1/2 mx-auto border border-gray-300 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition"
+    class="w-full md:w-2/3 mb-6"
     v-model="selected_language"
     :options="language_qcms"
     :props="{
@@ -34,7 +38,7 @@
 
 
 
-    <form @submit.prevent="submitForm" action="" class="flex flex-col gap-2">
+    <form @submit.prevent="submitForm" action="" class="w-full">
       <!-- <label for="">Niveau</label>
 
       <select v-model="selected_niveau" name="" id="">
@@ -60,41 +64,48 @@
 
       <div
         v-if="selected_niveau || selected_language"
-        class="flex border flex-wrap items-center gap-10"
+        class="bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col jusrounded-xl p-6 border border-blue-200 shadow-sm"
       >
-        <p>vous avez selectionné :</p>
+        <p class="text-gray-700 font-semibold mb-4 flex items-center gap-2">
+       
+          Vous avez sélectionné :
+        </p>
 
-        <ul class="flex justify-center items-center gap-2">
+        <ul class="flex justify-center flex-col items-center gap-3 flex-wrap mb-6">
           <li
-            class="px-2 py-1 rounded border flex justify-center bg-black text-white items-center w-32"
+            class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md flex items-center gap-2 min-w-[140px] justify-center transition-transform hover:scale-105"
             v-if="selected_niveau"
           >
+            <i class="fas fa-layer-group"></i>
             {{ selected_niveau }}
           </li>
-          <span class="text-xl text-gray-600"><i class="fas fa-plus-circle"></i></span>
+          <span class="text-2xl text-gray-400"><i class="fas fa-plus-circle"></i></span>
           <li
-            class="px-2 py-1 rounded border flex justify-center bg-black text-white items-center w-32"
+            class="px-4 py-2 rounded-lg bg-gradient-to-r  from-blue-600 to-blue-500 text-white font-semibold shadow-md flex items-center gap-2 min-w-[140px] justify-center transition-transform hover:scale-105"
             v-if="selected_language"
           >
+            <i class="fas fa-code"></i>
             {{ selected_language }}
           </li>
           <li
-            class="px-2 py-1 rounded border flex justify-center items-center w-32"
+            class="px-4 py-2 rounded-lg bg-gray-200 text-gray-400 font-semibold flex items-center gap-2 min-w-[140px] justify-center border-2 border-dashed border-gray-300"
             v-else
           >
+            <i class="fas fa-question-circle"></i>
             ?
           </li>
         </ul>
 
-     
           <button
           v-if="selected_niveau && selected_language"
           type="submit"
-          class="bg-blue-500 text-white flex justify-center items-center w-20 px-3 py-1 rounded hover:bg-blue-600"
+          class="bg-gradient-to-r border-black border  font-bold text-lg px-8 py-3 rounded-lg shadow-lg cursor-pointer hover:shadow-xl  hover:w-32 transition-all duration-300 flex items-center justify-center gap-2 mx-auto transform hover:scale-105"
         >
+          <i class="fas fa-play-circle"></i>
           GO
+          <i class="fas fa-arrow-right"></i>
         </button>
-        
+
       </div>
     </form>
   </div>

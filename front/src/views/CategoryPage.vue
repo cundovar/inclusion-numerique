@@ -1,4 +1,7 @@
 <template>
+  <!-- Composant SEO pour gérer les balises meta (seulement après le chargement des données) -->
+  <SeoHead v-if="cats.length > 0" :seo-data="seoData" />
+
   <div class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 text-blue-500 min-h-screen w-full" :class="categoryBgClass">
     <div class="">
       <div class="header-section">
@@ -6,10 +9,10 @@
           <i :class="categoryIconClass + ' tech-icon'"></i>
           <h1 class="tech-title">{{ categoryDisplayName }}</h1>
         </div>
-        <p class="tech-description">{{ categoryDescription }}</p>
-        
-        <div class="framework-presentation">
-          <p>{{ categoryPresentation }}</p>
+
+
+        <div class="framework-presentation" v-html="categoryPresentation">
+
         </div>
       </div>
 
@@ -37,12 +40,41 @@
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useData } from '../utlis/fetchDataPwa'
-import CourseCard from './components/CourseCard.vue'
+import CourseCard from '../components/CourseCard.vue'
+import SeoHead from '../components/SeoHead.vue'
 
 const route = useRoute()
-const { fetchMenus, menus } = useData()
+const { fetchMenus, menus, cats } = useData()
 
 const categoryName = computed(() => route.params.category)
+
+// Récupérer les données SEO directement depuis la catégorie
+const seoData = computed(() => {
+  const currentCategory = cats.value?.find(
+    cat => cat.name.toLowerCase() === categoryName.value.toLowerCase()
+  )
+
+  // Si la catégorie a un SEO défini, l'utiliser
+  if (currentCategory?.seo) {
+    return currentCategory.seo
+  }
+
+  // Sinon, générer un SEO par défaut depuis les données de la catégorie
+  if (currentCategory) {
+    return {
+      title: `${categoryDisplayName.value} - Cours et Tutoriels`,
+      metaDescription: currentCategory.description ?
+        currentCategory.description.replace(/<[^>]*>/g, '').substring(0, 160) :
+        `Découvrez nos cours et tutoriels sur ${categoryDisplayName.value}`,
+      ogTitle: `${categoryDisplayName.value} - Formation`,
+      ogDescription: currentCategory.description ?
+        currentCategory.description.replace(/<[^>]*>/g, '').substring(0, 200) :
+        `Apprenez ${categoryDisplayName.value} avec nos cours complets`
+    }
+  }
+
+  return null
+})
 
 const categoryDisplayName = computed(() => {
   const name = categoryName.value
@@ -53,7 +85,7 @@ const categoryDisplayName = computed(() => {
     'python': 'Python',
     'java': 'Java',
     'csharp': 'C#',
-    'cpp': 'C++',
+    'BDD': 'Base de données',
     'c': 'C',
     'ruby': 'Ruby',
     'go': 'Go',
@@ -212,169 +244,13 @@ const categoryDisplayName = computed(() => {
 })
 
 const categoryBgClass = computed(() => {
-  const bgClasses = {
-    // Langages de programmation
-    'javascript': 'bg-yellow-200',
-    'php': 'bg-purple-200',
-    'python': 'bg-blue-200',
-    'java': 'bg-red-200',
-    'csharp': 'bg-purple-200',
-    'cpp': 'bg-blue-200',
-    'c': 'bg-gray-200',
-    'ruby': 'bg-red-200',
-    'go': 'bg-cyan-200',
-    'rust': 'bg-orange-200',
-    'swift': 'bg-orange-200',
-    'kotlin': 'bg-purple-200',
-    'scala': 'bg-red-200',
-    'perl': 'bg-blue-200',
-    'lua': 'bg-blue-200',
-    'dart': 'bg-blue-200',
-    'typescript': 'bg-blue-200',
-    'r': 'bg-blue-200',
-    'matlab': 'bg-orange-200',
-    'julia': 'bg-purple-200',
-    'elixir': 'bg-purple-200',
-    'erlang': 'bg-red-200',
-    'haskell': 'bg-purple-200',
-    'clojure': 'bg-green-200',
-    'fsharp': 'bg-blue-200',
-    
-    // Technologies web
-    'html': 'bg-orange-200',
-    'css': 'bg-blue-200',
-    'sass': 'bg-pink-200',
-    'scss': 'bg-pink-200',
-    'less': 'bg-blue-200',
-    'tailwind': 'bg-cyan-200',
-    'bootstrap': 'bg-purple-200',
-    
-    // Frameworks JavaScript
-    'react': 'bg-cyan-200',
-    'vue': 'bg-green-200',
-    'angular': 'bg-red-200',
-    'svelte': 'bg-orange-200',
-    'nextjs': 'bg-gray-200',
-    'nuxtjs': 'bg-green-200',
-    'gatsby': 'bg-purple-200',
-    'ember': 'bg-orange-200',
-    'backbone': 'bg-blue-200',
-    'jquery': 'bg-blue-200',
-    'express': 'bg-gray-200',
-    'nestjs': 'bg-red-200',
-    'fastify': 'bg-gray-200',
-    
-    // Frameworks backend
-    'symfony': 'bg-gray-200',
-    'laravel': 'bg-red-200',
-    'codeigniter': 'bg-orange-200',
-    'cakephp': 'bg-red-200',
-    'zend': 'bg-green-200',
-    'django': 'bg-green-200',
-    'flask': 'bg-gray-200',
-    'fastapi': 'bg-teal-200',
-    'spring': 'bg-green-200',
-    'springboot': 'bg-green-200',
-    'dotnet': 'bg-blue-200',
-    'aspnet': 'bg-blue-200',
-    'rails': 'bg-red-200',
-    'sinatra': 'bg-red-200',
-    'gin': 'bg-cyan-200',
-    'fiber': 'bg-blue-200',
-    'echo': 'bg-blue-200',
-    
-    // Bases de données
-    'sql': 'bg-green-200',
-    'mysql': 'bg-orange-200',
-    'postgresql': 'bg-blue-200',
-    'sqlite': 'bg-blue-200',
-    'mongodb': 'bg-green-200',
-    'redis': 'bg-red-200',
-    'elasticsearch': 'bg-yellow-200',
-    'cassandra': 'bg-blue-200',
-    'neo4j': 'bg-blue-200',
-    'mariadb': 'bg-blue-200',
-    'oracle': 'bg-red-200',
-    'sqlserver': 'bg-blue-200',
-    
-    // Outils et technologies
-    'git': 'bg-orange-200',
-    'docker': 'bg-blue-200',
-    'kubernetes': 'bg-blue-200',
-    'jenkins': 'bg-blue-200',
-    'gitlab': 'bg-orange-200',
-    'github': 'bg-gray-200',
-    'bitbucket': 'bg-blue-200',
-    'terraform': 'bg-purple-200',
-    'ansible': 'bg-red-200',
-    'vagrant': 'bg-blue-200',
-    'webpack': 'bg-blue-200',
-    'vite': 'bg-purple-200',
-    'rollup': 'bg-red-200',
-    'gulp': 'bg-red-200',
-    'grunt': 'bg-orange-200',
-    'npm': 'bg-red-200',
-    'yarn': 'bg-blue-200',
-    'pnpm': 'bg-orange-200',
-    'composer': 'bg-brown-200',
-    'pip': 'bg-blue-200',
-    
-    // Cloud et services
-    'aws': 'bg-orange-200',
-    'azure': 'bg-blue-200',
-    'gcp': 'bg-blue-200',
-    'firebase': 'bg-orange-200',
-    'netlify': 'bg-teal-200',
-    'vercel': 'bg-gray-200',
-    'heroku': 'bg-purple-200',
-    'digitalocean': 'bg-blue-200',
-    
-    // Mobile
-    'android': 'bg-green-200',
-    'ios': 'bg-gray-200',
-    'reactnative': 'bg-cyan-200',
-    'flutter': 'bg-blue-200',
-    'ionic': 'bg-blue-200',
-    'xamarin': 'bg-blue-200',
-    'cordova': 'bg-gray-200',
-    
-    // Testing
-    'jest': 'bg-red-200',
-    'mocha': 'bg-brown-200',
-    'chai': 'bg-red-200',
-    'jasmine': 'bg-purple-200',
-    'cypress': 'bg-gray-200',
-    'selenium': 'bg-green-200',
-    'puppeteer': 'bg-blue-200',
-    'playwright': 'bg-green-200',
-    
-    // CMS
-    'wordpress': 'bg-blue-200',
-    'drupal': 'bg-blue-200',
-    'joomla': 'bg-red-200',
-    'strapi': 'bg-purple-200',
-    'contentful': 'bg-blue-200',
-    'sanity': 'bg-red-200',
-    
-    // Autres technologies
-    'graphql': 'bg-pink-200',
-    'rest': 'bg-blue-200',
-    'websockets': 'bg-green-200',
-    'grpc': 'bg-blue-200',
-    'microservices': 'bg-purple-200',
-    'serverless': 'bg-orange-200',
-    'jamstack': 'bg-pink-200',
-    'pwa': 'bg-purple-200',
-    'webassembly': 'bg-purple-200',
-    'blockchain': 'bg-yellow-200',
-    'ai': 'bg-indigo-200',
-    'ml': 'bg-green-200',
-    'dl': 'bg-blue-200',
-    'iot': 'bg-green-200',
-    'ar': 'bg-purple-200',
-    'vr': 'bg-blue-200'
-  }
-  return bgClasses[categoryName.value] || 'bg-gray-200'
+  // Chercher la catégorie dans l'API par son nom
+  const currentCategory = cats.value?.find(
+    cat => cat.name.toLowerCase() === categoryName.value.toLowerCase()
+  )
+
+  // Retourner la couleur de l'API ou une couleur par défaut
+  return currentCategory?.couleur || 'bg-gray-200'
 })
 
 const categoryIconClass = computed(() => {
@@ -385,7 +261,7 @@ const categoryIconClass = computed(() => {
     'python': 'fab fa-python',
     'java': 'fab fa-java',
     'csharp': 'fas fa-code',
-    'cpp': 'fas fa-code',
+    'bdd': 'fas fa-code',
     'c': 'fas fa-code',
     'ruby': 'fas fa-gem',
     'go': 'fas fa-bolt',
@@ -544,109 +420,76 @@ const categoryIconClass = computed(() => {
 })
 
 const categoryDescription = computed(() => {
-  const descriptions = {
-    // Langages de programmation
-    'javascript': 'Langage de programmation moderne et polyvalent',
-    'php': 'Langage de script côté serveur pour le développement web',
-    'python': 'Langage polyvalent et facile à apprendre',
-    'java': 'Langage orienté objet pour applications d\'entreprise',
-    'csharp': 'Langage Microsoft pour développement .NET',
-    'cpp': 'Extension orientée objet du langage C',
-    'c': 'Langage de programmation système de bas niveau',
-    'ruby': 'Langage élégant et expressif',
-    'go': 'Langage Google pour systèmes distribués',
-    'rust': 'Langage système sûr et performant',
-    'swift': 'Langage Apple pour iOS et macOS',
-    'kotlin': 'Langage moderne pour Android et JVM',
-    'scala': 'Langage fonctionnel pour la JVM',
-    'typescript': 'JavaScript avec typage statique',
-    'r': 'Langage pour analyse statistique et data science',
-    
-    // Technologies web
-    'html': 'Langage de balisage pour la structure des pages web',
-    'css': 'Langage de style pour la présentation des pages web',
-    'sass': 'Préprocesseur CSS avec fonctionnalités avancées',
-    'tailwind': 'Framework CSS utility-first',
-    'bootstrap': 'Framework CSS responsive et mobile-first',
-    
-    // Frameworks JavaScript
-    'react': 'Bibliothèque JavaScript pour interfaces utilisateur',
-    'vue': 'Framework progressif pour applications web',
-    'angular': 'Plateforme complète pour applications web',
-    'svelte': 'Framework compilé pour applications rapides',
-    'nextjs': 'Framework React pour production',
-    'nuxtjs': 'Framework Vue.js universel',
-    
-    // Frameworks backend
-    'symfony': 'Framework PHP moderne et puissant',
-    'laravel': 'Framework PHP élégant et expressif',
-    'django': 'Framework Python de haut niveau',
-    'flask': 'Microframework Python flexible',
-    'spring': 'Framework Java complet pour applications d\'entreprise',
-    'rails': 'Framework Ruby pour développement web rapide',
-    
-    // Bases de données
-    'sql': 'Langage de requête pour bases de données relationnelles',
-    'mysql': 'Système de gestion de base de données relationnelle',
-    'postgresql': 'Base de données relationnelle-objet avancée',
-    'mongodb': 'Base de données NoSQL orientée document',
-    'redis': 'Structure de données en mémoire',
-    
-    // Outils et technologies
-    'git': 'Système de contrôle de version distribué',
-    'docker': 'Plateforme de conteneurisation',
-    'kubernetes': 'Orchestrateur de conteneurs',
-    
-    // Cloud et services
-    'aws': 'Plateforme cloud Amazon',
-    'azure': 'Plateforme cloud Microsoft',
-    'firebase': 'Plateforme de développement Google',
-    
-    // Mobile et autres
-    'android': 'Système d\'exploitation mobile Google',
-    'ios': 'Système d\'exploitation mobile Apple',
-    'reactnative': 'Framework mobile basé sur React',
-    'flutter': 'Framework mobile Google'
+  // Chercher la catégorie dans l'API par son nom
+  const currentCategory = cats.value?.find(
+    cat => cat.name.toLowerCase() === categoryName.value.toLowerCase()
+  )
+
+  // Retourner la description de l'API ou une description par défaut
+  // On enlève les balises HTML pour une description courte
+  if (currentCategory?.description) {
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = currentCategory.description
+    return tempDiv.textContent || tempDiv.innerText || 'Ressources de programmation'
   }
-  return descriptions[categoryName.value] || 'Ressources de programmation'
+
+  return 'Ressources de programmation'
 })
 
 const categoryPresentation = computed(() => {
-  const presentations = {
-    'javascript': 'JavaScript est un langage de programmation de haut niveau, dynamique et interprété. Il est principalement utilisé pour développer des applications web interactives côté client, mais aussi côté serveur avec Node.js. JavaScript supporte la programmation orientée objet, fonctionnelle et procédurale, ce qui en fait un langage très polyvalent pour créer des interfaces utilisateur riches et des applications web modernes.',
-    'php': 'PHP est un langage de script open source spécialement conçu pour le développement web. Il peut être intégré dans du HTML et est particulièrement adapté au développement web côté serveur. PHP offre une grande flexibilité avec de nombreuses fonctionnalités pour la gestion des bases de données, la manipulation de fichiers et la création d\'applications web dynamiques.',
-    'css': 'CSS (Cascading Style Sheets) est un langage de feuille de style utilisé pour décrire la présentation d\'un document écrit en HTML ou XML. CSS permet de séparer le contenu de la présentation, offrant un contrôle précis sur la mise en page, les couleurs, les polices et les animations des pages web.',
-    'html': 'HTML (HyperText Markup Language) est le langage de balisage standard pour créer des pages web. Il décrit la structure et le contenu d\'une page web à l\'aide d\'éléments et de balises. HTML est la fondation de toutes les pages web et travaille en synergie avec CSS et JavaScript.',
-    'sql': 'SQL (Structured Query Language) est un langage de programmation conçu pour gérer et manipuler des bases de données relationnelles. Il permet de créer, modifier, interroger et administrer des bases de données de manière efficace et standardisée.',
-    'git': 'Git est un système de contrôle de version distribué gratuit et open source, conçu pour gérer tout type de projet avec rapidité et efficacité. Il permet de suivre les modifications du code source, de collaborer en équipe et de maintenir un historique complet des versions.'
+  // Chercher la catégorie dans l'API par son nom
+  const currentCategory = cats.value?.find(
+    cat => cat.name.toLowerCase() === categoryName.value.toLowerCase()
+  )
+
+  // Retourner la description HTML de l'API
+  if (currentCategory?.description) {
+    return currentCategory.description
   }
-  return presentations[categoryName.value] || 'Découvrez les ressources disponibles pour cette technologie.'
+
+  return '<div>Découvrez les ressources disponibles pour cette technologie.</div>'
 })
 
 const categoryMenus = computed(() => {
   if (!menus.value.length) return []
-  
+
+  console.log('🔍 Debug CategoryPage:')
+  console.log('  - categoryName from URL:', categoryName.value)
+  console.log('  - Total menus:', menus.value.length)
+
+  // Afficher toutes les catégories disponibles
+  const uniqueCategories = [...new Set(menus.value.map(m => m.category?.name).filter(Boolean))]
+  console.log('  - Available categories in API:', uniqueCategories)
+
   const grouped = {}
-  
-  menus.value
-    .filter((menu) => menu.category && menu.category.name === categoryName.value)
-    .forEach((menu) => {
-      const label = menu.menu.label
-      
-      if (!grouped[label]) {
-        grouped[label] = {
-          label: label,
-          slug: label.toLowerCase().replace(/\s+/g, '-'),
-          items: [],
-        }
+
+  const filteredMenus = menus.value.filter((menu) => {
+    if (!menu.category) return false
+    const matches = menu.category.name.toLowerCase() === categoryName.value.toLowerCase()
+    if (matches) {
+      console.log('  ✅ Match found:', menu.title, '- Category:', menu.category.name)
+    }
+    return matches
+  })
+
+  console.log('  - Filtered menus count:', filteredMenus.length)
+
+  filteredMenus.forEach((menu) => {
+    const label = menu.menu.label
+
+    if (!grouped[label]) {
+      grouped[label] = {
+        label: label,
+        slug: label.toLowerCase().replace(/\s+/g, '-'),
+        items: [],
       }
-      
-      grouped[label].items.push(menu)
-    })
-  
+    }
+
+    grouped[label].items.push(menu)
+  })
+
   return Object.values(grouped)
 })
-
 const getGroupIconClass = (groupLabel) => {
   const label = groupLabel.toLowerCase()
   
@@ -654,7 +497,7 @@ const getGroupIconClass = (groupLabel) => {
   if (label.includes('api')) return 'fas fa-plug'
   if (label.includes('form')) return 'fas fa-wpforms'
   if (label.includes('security')) return 'fas fa-shield-alt'
-  if (label.includes('database') || label.includes('bdd')) return 'fas fa-database'
+  if (label.includes('bdd') || label.includes('bdd')) return 'fas fa-database'
   if (label.includes('controller')) return 'fas fa-cogs'
   if (label.includes('view') || label.includes('template')) return 'fas fa-eye'
   if (label.includes('model')) return 'fas fa-layer-group'

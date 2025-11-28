@@ -1,5 +1,5 @@
 <template>
-    <div class=" page-exo-list md:rounded-2xl mt-10 xl:mt-0 pb-96 min-h-screen w-full ">
+    <div class=" page-exo-list md:rounded-2xl mt-10 xl:mt-0 pb-96 min-h-screen w-full relative z-20">
       <div class="w-full">
         <div class="tech-header">
           <h1 class="tech-title  ">Exercices</h1>
@@ -19,7 +19,7 @@
                   <i class="ml-auto transition-transform" :class="openSections.css ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
                 </h2>
               </div>
-
+                
               <Transition name="slide-fade">
                 <article v-show="openSections.css" class="article-exo flex max-md:flex-wrap gap-10 justify-center p-4">
                   <Exocard
@@ -78,7 +78,7 @@
   </template>
   
   <script setup>
-  import Exocard from "./components/exercices/Exocard.vue"
+  import Exocard from "../components/exercices/Exocard.vue"
   import { useData } from "../utlis/fetchDataPwa"
   import { onMounted, ref, reactive } from "vue"
 

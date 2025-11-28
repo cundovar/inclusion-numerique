@@ -40,6 +40,11 @@ class Page
     #[ORM\OneToMany(mappedBy: 'page', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\OneToOne(targetEntity: Seo::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[Groups(['page_content:read'])]
+    private ?Seo $seo = null;
+
     public function __construct()
     {
         $this->pageContents = new ArrayCollection();
@@ -130,6 +135,17 @@ class Page
             }
         }
 
+        return $this;
+    }
+
+    public function getSeo(): ?Seo
+    {
+        return $this->seo;
+    }
+
+    public function setSeo(?Seo $seo): static
+    {
+        $this->seo = $seo;
         return $this;
     }
 

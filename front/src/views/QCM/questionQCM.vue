@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-100 p-6">
+  <div class="min-h-screen bg-gray-100 xl:p-6 max-xl:pb-32 relative z-20">
     <div v-if="loading" class="text-center text-xl">Chargement...</div>
     <div v-else-if="error" class="text-red-500 text-center">Erreur: {{ error.message }}</div>
     <div v-else-if="currentQcm" class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
-      <h1 class="text-3xl font-bold text-blue-600 mb-6">{{ currentQcm.titre }}</h1>
+      <h1 class="xl:text-3xl max-xl:text-2xl font-bold text-blue-600 mb-6" v-html="currentQcm.titre"></h1>
 
-      <div class="text-gray-500 mb-6">
+      <div class="text-gray-500  mb-6">
         Question {{ currentIndex + 1 }} / {{ qcmStore.qcms.length }}
       </div>
 
@@ -21,7 +21,7 @@
             @click="selectAnswer(choice.id)"
           >
             <el-radio v-model="selectedChoice" :label="choice.id">
-              {{ choice.question }}
+              <span v-html="choice.question"></span>
             </el-radio>
           </div>
         </transition-group>
@@ -55,25 +55,25 @@
               <span v-for="(CorrectChoice ,index) in currentQcm.choicesQCMs">
                 <div v-if="CorrectChoice.isCorrect" :key="index">
                   la bonne reponse est :
-                  <p class="text-green-500 font-bold">{{ CorrectChoice.question }}</p>
+                  <p class="text-green-500 font-bold" v-html="CorrectChoice.question"></p>
                   <div class="border mr-2 ml-2 mt-2 mb-2 rounded-xl p-5">
-                    
-                    <p>{{ CorrectChoice.explication }}</p>
-                  
+
+                    <p v-html="CorrectChoice.explication"></p>
+
                   </div>
 
-                </div> 
+                </div>
 
               </span>
               <div v-for="(choice ,index) in currentQcm.choicesQCMs" :key="index">
 
                 <div class="" v-if="choice.isCorrect==false" >
-                 
+
                   <div class="flex flex-wrap m-2 justify-center align-center">
-                    <p class="text-red-500 font-bold">{{ choice.question }} : </p>
-                    <p>{{ choice.explication }}</p>
+                    <p class="text-red-500 font-bold"><span v-html="choice.question"></span> : </p>
+                    <p v-html="choice.explication"></p>
                   </div>
-                </div> 
+                </div>
               </div>
             </div>
           </div>
@@ -116,8 +116,11 @@
       </div>
 
     </div>
-    <div v-else class="text-center text-gray-500">
+    <div v-else class="text-center pt-16 text-2xl font-bold text-gray-500">
      EN COUR DE CONSTRUCTION, IL ME FAUT AJOUTER DES QUESTIONS !!! 
+<div>
+  <router-link to="/qcm" class="text-blue-500 hover:underline"> <i class="fas fa-arrow-left"></i>  Retour </router-link>
+</div>
     </div>
  
   </div>
@@ -408,4 +411,6 @@ qcmStore.AleatoireChoices() // melanger les choix
     transform: scale(1.05);
   }
 }
+
+
 </style>

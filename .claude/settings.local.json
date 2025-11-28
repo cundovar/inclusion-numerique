@@ -8,7 +8,13 @@
       "Bash(mkdir:*)",
       "Bash(php:*)",
       "Bash(docker-compose exec:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(docker compose exec:*)",
+      "Bash(npm run dev:*)",
+      "Bash(pkill:*)",
+      "Bash(curl:*)",
+      "Bash(docker compose logs:*)",
+      "Bash(docker compose:*)"
     ],
     "deny": []
   }

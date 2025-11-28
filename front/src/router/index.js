@@ -1,38 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import PageComponent from '../views/components/PageComponent.vue';
-import Symfony from '../views/pageDesCours/Symfony.vue';
-import Vuejs from '../views/pageDesCours/Vuejs.vue';
-import Reactjs from '../views/pageDesCours/Reactjs.vue';
-import Wordpress from '../views/pageDesCours/Wordpress.vue';
+import PageComponent from '../components/PageComponent.vue';
 import Profile from '../views/Profile.vue';
 import CategoryPage from '../views/CategoryPage.vue';
 import PageQCM from '../views/QCM/PageQCM.vue';
 import Exercices from '../views/exercices.vue';
-import ExoComponent from '../views/components/ExoComponent.vue';
+import ExoComponent from '../components/ExoComponent.vue';
 import questionQCM from '../views/QCM/questionQCM.vue';
 import resultQCM from '../views/QCM/resultQCM.vue';
 
 const routes = [
+  // Redirection des anciennes routes vers CategoryPage
   {
     path: '/pages/symfony',
-    name: 'symfony',
-    component: Symfony
+    redirect: '/category/symfony'
   },
   {
     path: '/pages/vuejs',
-    name: 'vuejs',
-    component: Vuejs
+    redirect: '/category/vue'
   },
   {
     path: '/pages/reactjs',
-    name: 'reactjs',
-    component: Reactjs
+    redirect: '/category/react'
   },
   {
     path: '/pages/wp',
-    name: 'wordpress',
-    component: Wordpress
+    redirect: '/category/wordpress'
   },
   {
     path: '/profile',
@@ -86,6 +79,26 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory('/spa'),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    // Si on utilise les boutons précédent/suivant du navigateur
+    if (savedPosition) {
+      return savedPosition;
+    }
+    // Si on a un hash (#) dans l'URL (pour les ancres)
+    else if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+      };
+    }
+    // Sinon, toujours scroller en haut
+    else {
+      return {
+        top: 0,
+        behavior: 'smooth'
+      };
+    }
+  }
 });
 export default router;

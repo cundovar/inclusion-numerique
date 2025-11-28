@@ -1,4 +1,5 @@
 parameters:
+    app.url: 'http://localhost:8080'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:

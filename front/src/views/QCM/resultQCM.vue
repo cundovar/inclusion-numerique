@@ -1,62 +1,119 @@
 <template>
   <div
-    class="md:rounded-2xl md:mt-10 p-10 xl:mt-0 pb-96 text-blue-500 min-h-screen w-ful bg-cyan-100"
+    class="md:rounded-2xl md:mt-10 xl:mt-0 pb-32 max-xl:mb-32 min-h-screen w-full bg-gray-200 p-4 md:p-6 lg:p-10 relative z-20"
   >
-    <h1 class="text-3xl font-bold text-blue-600 mb-6 text-center">
-      Résultats du QCM
-    </h1>
+    <!-- Header avec titre et score -->
+    <div class="max-w-6xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 border border-gray-200">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 text-center flex items-center justify-center gap-3">
+    
+          Résultats du QCM
+        </h1>
 
-    <!-- Score global -->
-    <div class="flex flex-wrap justify-center items-center">
-      <h2>Score : {{ score }} / {{ totalQuestions }}</h2>
-      <p>Pourcentage : {{ pourcentage }}%</p>
-    </div>
+        <!-- Score global avec design moderne -->
+        <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200 shadow-sm">
+          <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12">
+            <div class="text-center">
+              <p class="text-gray-600 text-sm mb-2">Votre score</p>
+              <h2 class="text-4xl md:text-5xl font-bold text-blue-600">
+                {{ score }} <span class="text-2xl text-gray-400">/ {{ totalQuestions }}</span>
+              </h2>
+            </div>
 
-    <!-- Détails des questions -->
-    <div v-for="(qcm, index) in qcmStore.qcms" :key="qcm.id">
-      <h3>Question {{ index + 1 }} : {{ qcm.titre }}</h3>
+            <div class="hidden md:block w-px h-16 bg-gray-300"></div>
 
-      <div class="border">
-        <div class="border flex flex-wrap">
-          <div>
-            <p><strong>Votre réponse :</strong></p>
-            <div class="border">
-              {{ getAnswerText(qcm, index) }}
-              <span v-if="isCorrect(qcm, index)">✅ Correct</span>
-              <span v-else>❌ Incorrect</span>
+            <div class="text-center">
+              <p class="text-gray-600 text-sm mb-2">Pourcentage</p>
+              <h2 class="text-4xl md:text-5xl font-bold text-purple-600">{{ pourcentage }}%</h2>
             </div>
           </div>
 
-          <div>
-            <!-- Afficher la bonne réponse si erreur -->
-            <div v-if="!isCorrect(qcm, index) || isCorrect(qcm, index)">
-              <p><strong>Bonne réponse :</strong></p>
-              <div>{{ getCorrectAnswerText(qcm) }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Explication (si disponible) -->
-        <div class="flex flex-wrap">
-
-          <div class="lareponse border w-1/3" v-if="getExplication(qcm)">
-            <p><strong>Explication :</strong></p>
-            <h1>solution</h1>
-            <p>{{ getExplication(qcm) }}</p>
-          </div>
-          <div class="solution border w-2/3" v-html="getSolution(qcm)"></div>
-
-
+          <!-- Barre de progression -->
+         
         </div>
       </div>
 
-      <hr />
-    </div>
+      <!-- Détails des questions -->
+      <div
+        v-for="(qcm, index) in qcmStore.qcms"
+        :key="qcm.id"
+        class="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6 border border-gray-200"
+      >
+        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <span class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
+            {{ index + 1 }}
+          </span>
+          <span v-html="qcm.titre"></span>
+        </h3>
 
-    <!-- Bouton recommencer -->
-    <div>
-      <button @click="recommencer">Recommencer le QCM</button>
-      <button @click="retourAccueil">Retour à l'accueil</button>
+        <div class="space-y-4">
+          <!-- Réponses section -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Votre réponse -->
+            <div
+              class="rounded-lg p-4 border-2"
+              :class="isCorrect(qcm, index) ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'"
+            >
+              <p class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <i class="fas fa-user text-blue-500"></i>
+                Votre réponse :
+              </p>
+              <div class="text-gray-800 flex items-center gap-2">
+                <span v-html="getAnswerText(qcm, index)"></span>
+                <span v-if="isCorrect(qcm, index)" class="text-2xl">✅</span>
+                <span v-else class="text-2xl">❌</span>
+              </div>
+            </div>
+
+            <!-- Bonne réponse -->
+            <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+              <p class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <i class="fas fa-check-circle text-green-500"></i>
+                Bonne réponse :
+              </p>
+              <div class="text-gray-800" v-html="getCorrectAnswerText(qcm)"></div>
+            </div>
+          </div>
+
+          <!-- Explication et Solution -->
+          <div class="grid grid-cols-1 gap-4">
+            <!-- Explication -->
+            <div
+              v-if="getExplication(qcm)"
+              class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4"
+            >
+              <p class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <i class="fas fa-lightbulb text-yellow-500"></i>
+                Explication :
+              </p>
+              <p class="text-gray-800 leading-relaxed" v-html="getExplication(qcm)"></p>
+            </div>
+
+            <!-- Solution code -->
+            <div v-if="getSolution(qcm)" class="solution-container">
+              <p class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <i class="fas fa-code text-purple-500"></i>
+                Solution détaillée :
+              </p>
+              <div class="solution rounded-lg" v-html="getSolution(qcm)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons actions -->
+      <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+       
+          <button
+            @click="retourAccueil"
+            class="bg-gradient-to-r from-purple-500 to-purple-300 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-purple-600 transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105"
+          >
+         
+            Recommencer
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

@@ -1,0 +1,42 @@
+.voc{
+
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+
+}
+
+.voc h1{
+    font-size:2rem !important;
+    align-self: self-start;
+    margin: 1rem;
+}
+
+.voc h2{
+    font-size:2rem !important;
+    align-self: self-start;
+    border-bottom:1px solid rgb(24, 177, 216);
+    width: 100%;
+    text-align: start;
+    border-bottom-width: 0.5rem;
+    margin: 1rem;
+}
+
+.voc p:first-child{
+    align-self: self-start;
+    width: 100%;
+    border: none !important;
+    margin: 1rem;
+}
+
+.voc p{
+    width: 80%;
+    justify-self: end;
+    border: 1px solid rgb(24, 177, 216);
+    padding: 1rem;
+    margin-top: 1rem;  
+    align-self: self-end;
+    font-size: 1.3rem;
+
+}

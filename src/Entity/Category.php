@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -48,6 +49,25 @@ class Category
      */
     #[ORM\OneToMany(targetEntity: ExoContent::class, mappedBy: 'category')]
     private Collection $exoContents;
+
+    #[ORM\ManyToOne(inversedBy: 'categorie')]
+    #[Groups(['page_content:read', 'exo_content:read'])]
+    private ?PositionMenus $positionMenus = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['page_content:read', 'exo_content:read'])]
+    private ?string $couleur = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['page_content:read', 'exo_content:read'])]
+    private ?string $description = null;
+
+    #[ORM\OneToOne(mappedBy: 'category', cascade: ['persist', 'remove'])]
+    private ?Logo $logo = null;
+
+    #[ORM\OneToOne(mappedBy: 'category', cascade: ['persist', 'remove'])]
+    #[Groups(['page_content:read'])]
+    private ?Seo $seo = null;
 
     public function __construct()
     {
@@ -195,5 +215,85 @@ class Category
     public function __toString(): string
     {
         return $this->name ?? '';
+    }
+
+    public function getPositionMenus(): ?PositionMenus
+    {
+        return $this->positionMenus;
+    }
+
+    public function setPositionMenus(?PositionMenus $positionMenus): static
+    {
+        $this->positionMenus = $positionMenus;
+
+        return $this;
+    }
+
+    public function getCouleur(): ?string
+    {
+        return $this->couleur;
+    }
+
+    public function setCouleur(?string $couleur): static
+    {
+        $this->couleur = $couleur;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getLogo(): ?Logo
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?Logo $logo): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($logo === null && $this->logo !== null) {
+            $this->logo->setCategory(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($logo !== null && $logo->getCategory() !== $this) {
+            $logo->setCategory($this);
+        }
+
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getSeo(): ?Seo
+    {
+        return $this->seo;
+    }
+
+    public function setSeo(?Seo $seo): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($seo === null && $this->seo !== null) {
+            $this->seo->setCategory(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($seo !== null && $seo->getCategory() !== $this) {
+            $seo->setCategory($this);
+        }
+
+        $this->seo = $seo;
+
+        return $this;
     }
 }

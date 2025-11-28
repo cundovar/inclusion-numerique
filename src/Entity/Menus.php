@@ -41,6 +41,11 @@ class Menus
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'menu')]
     private Collection $pageContents;
 
+
+
+    #[ORM\ManyToOne(inversedBy: 'menus')]
+    private ?PositionMenus $positionMenus = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -138,5 +143,17 @@ class Menus
     public function __toString(): string
     {
         return $this->label ?? '';
+    }
+
+    public function getPositionMenus(): ?PositionMenus
+    {
+        return $this->positionMenus;
+    }
+
+    public function setPositionMenus(?PositionMenus $positionMenus): static
+    {
+        $this->positionMenus = $positionMenus;
+
+        return $this;
     }
 }

@@ -26,6 +26,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\Admin\PageContentCrudController;
+use App\Entity\DocDeCode;
+use App\Entity\Logo;
+use App\Entity\PositionMenus;
+use App\Entity\Seo;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 
 #[Route('/admin')]
@@ -76,10 +80,20 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Categories', 'fa fa-bars', Category::class);
         yield MenuItem::linkToCrud('Pages', 'fa fa-bars', Page::class);
         yield MenuItem::linkToCrud('Menus', 'fa fa-bars', Menus::class);
+        yield MenuItem::linkToCrud('Positions', 'fa fa-bars', PositionMenus::class);
 
         yield MenuItem::section('👥 Utilisateurs');
         yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);
         yield MenuItem::linkToCrud('Visites', 'fa fa-chart-line', UserPageVisit::class);
         yield MenuItem::linkToRoute('Statistiques des visites', 'fa fa-chart-bar', 'admin_stats_page_visits');
+
+        yield MenuItem::section('🔗 ajout des doc dans menu');
+        yield MenuItem::linkToCrud('Doc de code', 'fa fa-code', DocDeCode::class);
+
+        yield MenuItem::section('🔗 Logos');
+        yield MenuItem::linkToCrud('Logos', 'fa fa-bars', Logo::class);
+
+        yield MenuItem::section('🔍 SEO');
+        yield MenuItem::linkToCrud('SEO', 'fa fa-search', Seo::class);
     }
 }
