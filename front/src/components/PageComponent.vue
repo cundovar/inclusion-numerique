@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5  shadow-2xl bg-gray-50  md:rounded-2xl"
+    class="pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5 shadow-2xl bg-gray-50 md:rounded-2xl relative z-20"
   >
     <div v-if="pageContent" class="page-layout">
       <!-- Sommaire flottant (position fixed) -->
@@ -8,7 +8,10 @@
         v-if="toc.length > 0"
         :toc="toc"
         :activeId="activeId"
+        :pageId="getPageId(pageContent.page)"
         @scroll-to="scrollToHeading"
+        :bgCategorie="pageContent.category?.couleur"
+        :bgHover="pageContent.category?.couleur"
       />
 
       <!-- Breadcrumb -->
@@ -42,22 +45,31 @@
             <router-link
               v-if="previousPage"
               :to="`/pages/${previousPage.slug.replace('/', '')}`"
-              class="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
-              <i class="pi pi-arrow-left"></i>
-              <span class="max-md:hidden">{{ previousPage.title }}</span>
-              <span class="md:hidden">Précédent</span>
+              <AppButton
+                variant="primary"
+                icon="pi pi-arrow-left"
+                size="md"
+              >
+                <span class="max-md:hidden">{{ previousPage.title }}</span>
+                <span class="md:hidden">Précédent</span>
+              </AppButton>
             </router-link>
             <div v-else></div>
 
             <router-link
               v-if="nextPage"
               :to="`/pages/${nextPage.slug.replace('/', '')}`"
-              class="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
-              <span class="max-md:hidden">{{ nextPage.title }}</span>
-              <span class="md:hidden">Suivant</span>
-              <i class="pi pi-arrow-right"></i>
+              <AppButton
+                variant="primary"
+                icon="pi pi-arrow-right"
+                icon-position="right"
+                size="md"
+              >
+                <span class="max-md:hidden">{{ nextPage.title }}</span>
+                <span class="md:hidden">Suivant</span>
+              </AppButton>
             </router-link>
             <div v-else></div>
           </div>
@@ -81,12 +93,15 @@ import axios from "axios";
 import { ref } from 'vue';
 import FavoriteButton from "./FavoriteButton.vue";
 import TableOfContents from "./TableOfContents.vue";
+import AppButton from "./commun/button/AppButton.vue";
 import { useToc } from "@/composables/useToc";
+import { useVisibilityFilter } from "@/composables/useVisibilityFilter";
 
 export default {
   components: {
     FavoriteButton,
     TableOfContents,
+    AppButton,
   },
   props: ["slug"],
   setup() {
@@ -95,6 +110,7 @@ export default {
       includeH3: false,
       offsetTop: 120
     });
+    const { filterByVisibility } = useVisibilityFilter();
 
     return {
       contentRef,
@@ -102,6 +118,7 @@ export default {
       activeId,
       scrollToHeading,
       generateToc,
+      filterByVisibility,
     };
   },
   data() {
@@ -127,6 +144,12 @@ export default {
   mounted() {
     this.fetchPageContent();
   },
+  updated() {
+    // Enregistrer la visite après le chargement du contenu
+    if (this.pageContent && this.pageContent.page) {
+      this.trackPageVisit();
+    }
+  },
   methods: {
     async fetchPageContent() {
       try {
@@ -138,6 +161,7 @@ export default {
           console.log("pageContent complet:", this.pageContent);
           console.log("pageContent.page:", this.pageContent.page);
           console.log("page ID:", this.pageContent.page?.id);
+           console.log("pageContent.category:",this.pageContent.category.couleur)
 
           this.$nextTick(() => {
             document.querySelectorAll("pre code").forEach((el) => {
@@ -170,6 +194,7 @@ export default {
       }
     },
 
+
     async fetchNavigationPages() {
       try {
         // Récupérer le menu ID de la page actuelle
@@ -189,7 +214,8 @@ export default {
         const res = await axios.get(`/api/page_contents?menu.id=${menuApiId}&order[position]=asc`);
 
         if (res.data.totalItems > 0) {
-          this.allPages = res.data.member;
+          // Filtrer uniquement les pages visibles
+          this.allPages = this.filterByVisibility(res.data.member);
 
           // Trouver l'index de la page actuelle
           const currentIndex = this.allPages.findIndex(
@@ -262,8 +288,33 @@ export default {
       console.log("No valid ID found");
       return null;
     },
+
+    async trackPageVisit() {
+      try {
+        if (!this.pageContent || !this.pageContent.page) {
+          console.log("Cannot track visit: no page content");
+          return;
+        }
+
+        const trackData = {
+          pageUrl: this.pageContent.page.slug || `/${this.slug}`,
+          pageTitle: this.pageContent.title || 'Page sans titre'
+          
+        };
+
+        console.log('Tracking page visit:', trackData);
+
+        await axios.post('/api/page-visits/track', trackData);
+      } catch (error) {
+        // Ignorer silencieusement les erreurs (ex: utilisateur non connecté)
+        console.log('Page visit tracking skipped:', error.response?.status);
+      }
+    },
   },
 };
+
+
+   
 </script>
 
 <style scoped>

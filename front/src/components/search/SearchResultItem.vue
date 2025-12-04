@@ -12,15 +12,15 @@
       </div>
 
       <div class="flex items-center gap-2 text-xs text-gray-600 mb-2">
-        <span class="bg-gray-100 px-2 py-1 rounded">
+        <AppBadge variant="default" size="xs" rounded="sm">
           {{ result.category?.name || result.category || 'Non catégorisé' }}
-        </span>
-        <span v-if="result.menu?.label" class="bg-blue-100 text-blue-700 px-2 py-1 rounded">
+        </AppBadge>
+        <AppBadge v-if="result.menu?.label" variant="primary" size="xs" rounded="sm">
           {{ result.menu.label }}
-        </span>
-        <span v-if="result.hasCode" class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded flex items-center">
-          <i class="pi pi-code mr-1"></i>Code
-        </span>
+        </AppBadge>
+        <AppBadge v-if="result.hasCode" variant="warning" size="xs" rounded="sm" icon="pi pi-code">
+          Code
+        </AppBadge>
       </div>
 
       <!-- Summary avec highlight -->
@@ -40,6 +40,7 @@
 
 <script setup>
 import { capitalize } from '../../utlis/stringsUtlis';
+import AppBadge from '../commun/badge/AppBadge.vue';
 
 defineProps({
   result: {

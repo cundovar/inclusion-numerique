@@ -10,10 +10,13 @@ class UserApiController extends AbstractController
     public function me(): JsonResponse
     {
         $user = $this->getUser();
+    // dd(method_exists($user,'getId'));
 
         return $this->json([
             'username' => $user->getUserIdentifier(),
             'roles' => $user->getRoles(),
+           
+            'id' => $user instanceof \App\Entity\User ? $user->getId() : null,
         ]);
     }
 }

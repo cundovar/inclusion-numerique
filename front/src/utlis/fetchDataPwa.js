@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { openDB } from 'idb'
 import { useRouter } from 'vue-router'
+import { useVisibilityFilter } from '../composables/useVisibilityFilter'
 
 // Références globales pour réactivité partagée
 const menus = ref([])
@@ -14,6 +15,9 @@ const docDeCodes = ref([])
 
 // Router (utile si besoin de redirection depuis le composable)
 const router = useRouter()
+
+// Filtre de visibilité
+const { filterByVisibility } = useVisibilityFilter()
 
 // Création/connexion à la base IndexedDB
 const dbPromise = openDB('spa-db', 5, {
@@ -132,8 +136,9 @@ async function fetchMenus() {
       axios.get("/api/page_contents")
     ])
 
-    cats.value = resCats.data.member
-    menus.value = resMenus.data.member
+    // Filtrer les catégories et menus visibles
+    cats.value = filterByVisibility(resCats.data.member)
+    menus.value = filterByVisibility(resMenus.data.member)
 
     await saveToDB('categories', cats.value)
     await saveToDB('menus', menus.value)
@@ -155,8 +160,9 @@ async function fetchExoMenus() {
       axios.get("/api/exo_menus")
     ])
 
-    cats.value = resCats.data.member
-    exoMenus.value = resExoMenus.data.member
+    // Filtrer les catégories et menus visibles
+    cats.value = filterByVisibility(resCats.data.member)
+    exoMenus.value = filterByVisibility(resExoMenus.data.member)
 
     await saveToDB('categories', cats.value)
     await saveToDB('exoMenus', exoMenus.value)
@@ -178,8 +184,9 @@ async function fetchExoContents() {
       axios.get("/api/exo_contents")
     ])
 
-    cats.value = resCats.data.member
-    exoContents.value = resExoContents.data.member
+    // Filtrer les catégories et contenus visibles
+    cats.value = filterByVisibility(resCats.data.member)
+    exoContents.value = filterByVisibility(resExoContents.data.member)
 
     await saveToDB('categories', cats.value)
     await saveToDB('exoContents', exoContents.value)

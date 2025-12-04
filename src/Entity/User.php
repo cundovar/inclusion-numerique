@@ -38,6 +38,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserPageVisit::class, orphanRemoval: true)]
     private Collection $pageVisits;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $trackPageVisits = true;
+
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?UserCustomization $customization = null;
+
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
@@ -148,6 +154,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $pageVisit->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isTrackPageVisits(): bool
+    {
+        return $this->trackPageVisits;
+    }
+
+    public function setTrackPageVisits(bool $trackPageVisits): static
+    {
+        $this->trackPageVisits = $trackPageVisits;
+        return $this;
+    }
+
+    public function getCustomization(): ?UserCustomization
+    {
+        return $this->customization;
+    }
+
+    public function setCustomization(?UserCustomization $customization): static
+    {
+        // Unset the owning side of the relation if necessary
+        if ($customization === null && $this->customization !== null) {
+            $this->customization->setUser(null);
+        }
+
+        // Set the owning side of the relation if necessary
+        if ($customization !== null && $customization->getUser() !== $this) {
+            $customization->setUser($this);
+        }
+
+        $this->customization = $customization;
 
         return $this;
     }

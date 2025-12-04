@@ -13,6 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 
 
 class PageContentCrudController extends AbstractCrudController
@@ -29,9 +30,12 @@ class PageContentCrudController extends AbstractCrudController
             AssociationField::new('page'),
             AssociationField::new('category'),
             AssociationField::new('menu'),
-           
+
             TextField::new('title'),
-            
+
+            BooleanField::new('visible', 'Visible')
+                ->setHelp('Si décoché, le contenu ne sera pas affiché sur le site'),
+
             CodeEditorField::new('code'),
 
            CollectionField::new('pageBlocks')
@@ -40,7 +44,7 @@ class PageContentCrudController extends AbstractCrudController
               ->allowAdd()
               ->allowDelete()
         ];
-   
+
     }
     
 }

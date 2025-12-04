@@ -9,7 +9,14 @@
     @install="installPWA"
   />
 
-  <div id="app2" class="relative w-full xl:w-full m-auto">
+  <div
+    id="app2"
+    :class="[
+      body.bgColor,
+      body.textColor,
+      'relative w-full xl:w-full m-auto'
+    ]"
+  >
     <!-- Header desktop -->
     <AppHeader
       v-model:search="search"
@@ -60,7 +67,13 @@
     />
 
     <!-- Contenu principal -->
-    <main class="xl:p-20 max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden">
+    <main :class="sectionSize ? 'w-full min-h-screen z-[60] mt-0 pt-0 absolute ' : ' relative xl:p-20 max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden'">
+      <div v-if="!$route.path.includes('/exercices') && !$route.path.includes('/profile') " class="max-xl:hidden absolute top-15 z-70 right-50" >
+
+        <AppButton v-if="sectionSize " variant="danger" text-content="fermer" type="button" @click="toggleSectionSize" />
+        <AppButton v-else variant="danger" text-content="agrandir" type="button" @click="toggleSectionSize" />
+
+      </div>
       <router-view />
       <AfertLogin v-if="$route.path === '/'" />
     </main>
@@ -70,7 +83,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted,ref } from "vue";
 import pagesFrame from "./components/MenuPageFramwork/PagesFrame.vue";
 import AfertLogin from "./components/AfertLogin.vue";
 import navFooterMobil from "./components/NavFooterMobil/Main.vue";
@@ -90,6 +103,9 @@ import { useResponsive } from "./composables/useResponsive.js";
 import { useNavigation } from "./composables/useNavigation.js";
 import { useSearch } from "./composables/useSearch.js";
 import { usePWA } from "./composables/usePWA.js";
+import { useVisibilityFilter } from "./composables/useVisibilityFilter.js";
+import { useCustomization } from "./composables/useCustomization.js";
+import AppButton from "./components/commun/button/AppButton.vue";
 
 // Données globales
 const { menus, user, cats, fetchMenus, fetchUser } = useData();
@@ -115,11 +131,22 @@ const {
 
 const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile);
 const { showMobileAppPopup, currentOrigin, checkMobileAppPopup, closeMobileAppPopup, installPWA } = usePWA();
-const catsMenuGauche = computed(() =>
-  (cats.value || []).filter(
+const { filterByVisibility } = useVisibilityFilter();
+const { body, initCustomization } = useCustomization();
+
+const sectionSize= ref(false)
+const toggleSectionSize = () => {
+  sectionSize.value = !sectionSize.value
+}
+// Filtrer les catégories visibles du menu gauche
+const catsMenuGauche = computed(() => {
+  const menuGaucheCategories = (cats.value || []).filter(
     (cat) => cat.positionMenus?.position === "menu-gauche"
-  )
-);
+  );
+
+  // Appliquer le filtre de visibilité
+  return filterByVisibility(menuGaucheCategories);
+});
 // Computed pour les menus par catégorie
 // filtrage des categorie, je veux juste les categorie qui seront positionner en menu-gauche
 const menusByCategory = computed(() => {
@@ -163,6 +190,9 @@ onMounted(() => {
   fetchMenus();
   fetchUser();
   updateScreenSizes();
+
+  // Initialiser la personnalisation utilisateur
+  initCustomization();
 
   // Vérifier si le pop-up mobile app doit être affiché avec un délai
   setTimeout(() => {

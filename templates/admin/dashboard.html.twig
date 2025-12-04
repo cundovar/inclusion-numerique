@@ -1,0 +1,213 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}
+    <h1 class="title">
+        <i class="fa fa-dashboard"></i> Tableau de bord
+    </h1>
+{% endblock %}
+
+{% block main %}
+    <style>
+        .dashboard-container {
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.users { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.pages { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-card.categories { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-card.qcm { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .stat-card.exercices { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .stat-card.visits { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .stat-card .icon {
+            float: right;
+            font-size: 48px;
+            opacity: 0.3;
+        }
+
+        .recent-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .recent-section h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .recent-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .recent-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .recent-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recent-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+
+    <div class="dashboard-container">
+        {# Cartes de statistiques #}
+        <div class="stats-grid">
+            <div class="stat-card users">
+                <i class="fa fa-users icon"></i>
+                <h3>Utilisateurs</h3>
+                <p class="number">{{ stats.users }}</p>
+            </div>
+
+            <div class="stat-card pages">
+                <i class="fa fa-file-text icon"></i>
+                <h3>Pages de cours</h3>
+                <p class="number">{{ stats.pages }}</p>
+            </div>
+
+            <div class="stat-card categories">
+                <i class="fa fa-folder icon"></i>
+                <h3>Catégories</h3>
+                <p class="number">{{ stats.categories }}</p>
+            </div>
+
+            <div class="stat-card qcm">
+                <i class="fa fa-question-circle icon"></i>
+                <h3>QCM</h3>
+                <p class="number">{{ stats.qcm }}</p>
+            </div>
+
+            <div class="stat-card exercices">
+                <i class="fa fa-code icon"></i>
+                <h3>Exercices</h3>
+                <p class="number">{{ stats.exercices }}</p>
+            </div>
+
+            <div class="stat-card visits">
+                <i class="fa fa-chart-line icon"></i>
+                <h3>Visites totales</h3>
+                <p class="number">{{ stats.visits }}</p>
+            </div>
+        </div>
+
+        {# Derniers utilisateurs #}
+        <div class="recent-section">
+            <h2><i class="fa fa-users"></i> Derniers utilisateurs inscrits</h2>
+            {% if recentUsers|length > 0 %}
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom d'utilisateur</th>
+                            <th>Rôles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recentUsers %}
+                            <tr>
+                                <td>#{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>
+                                    {% for role in user.roles %}
+                                        <span class="badge badge-success">{{ role }}</span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Aucun utilisateur pour le moment.</p>
+            {% endif %}
+        </div>
+
+        {# Dernières visites #}
+        <div class="recent-section">
+            <h2><i class="fa fa-chart-bar"></i> Dernières visites de pages</h2>
+            {% if recentVisits|length > 0 %}
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Page visitée</th>
+                            <th>URL</th>
+                            <th>Date de visite</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit in recentVisits %}
+                            <tr>
+                                <td>{{ visit.user ? visit.user.username : 'Anonyme' }}</td>
+                                <td>{{ visit.pageTitle ?? 'Sans titre' }}</td>
+                                <td><small>{{ visit.pageUrl }}</small></td>
+                                <td>{{ visit.visitedAt|date('d/m/Y H:i') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Aucune visite enregistrée.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

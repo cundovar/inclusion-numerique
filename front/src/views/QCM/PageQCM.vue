@@ -11,28 +11,30 @@
       Formulaire QCM
     </h1>
 
-  <el-cascader
+  <AppSelect
     v-model="selected_niveau"
+    cascader
     :options="niveau_qcms"
-    :props="{
+    :cascader-props="{
       value: 'titre',
       label: 'titre',
     }"
     clearable
-    placeholder="Select Niveau"
+    placeholder="Sélectionnez un niveau"
     class="w-full md:w-2/3 mb-4"
   />
 
-  <el-cascader
-    class="w-full md:w-2/3 mb-6"
+  <AppSelect
     v-model="selected_language"
+    cascader
     :options="language_qcms"
-    :props="{
+    :cascader-props="{
       value: 'name',
       label: 'name',
     }"
     clearable
-    placeholder="Select Language"
+    placeholder="Sélectionnez une langue"
+    class="w-full md:w-2/3 mb-6"
   />
 
 
@@ -96,15 +98,18 @@
           </li>
         </ul>
 
-          <button
+          <AppButton
           v-if="selected_niveau && selected_language"
           type="submit"
-          class="bg-gradient-to-r border-black border  font-bold text-lg px-8 py-3 rounded-lg shadow-lg cursor-pointer hover:shadow-xl  hover:w-32 transition-all duration-300 flex items-center justify-center gap-2 mx-auto transform hover:scale-105"
+          variant="primary"
+          size="lg"
+          rounded="lg"
+          class="mx-auto"
         >
-          <i class="fas fa-play-circle"></i>
+          <i class="fas fa-play-circle mr-2"></i>
           GO
-          <i class="fas fa-arrow-right"></i>
-        </button>
+          <i class="fas fa-arrow-right ml-2"></i>
+        </AppButton>
 
       </div>
     </form>
@@ -117,6 +122,9 @@ import { ref, onMounted, reactive, watch } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import {useQCMStore} from '../../store/QCM'
+import AppButton from '../../components/commun/button/AppButton.vue'
+import AppSelect from '../../components/commun/select/AppSelect.vue'
+
 const router = useRouter();
 const qcmStore = useQCMStore();
 

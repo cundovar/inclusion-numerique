@@ -104,14 +104,14 @@
       <!-- Boutons actions -->
       <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-       
-          <button
+          <AppButton
             @click="retourAccueil"
-            class="bg-gradient-to-r from-purple-500 to-purple-300 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-purple-600 transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105"
-          >
-         
-            Recommencer
-          </button>
+            variant="primary"
+            size="lg"
+            rounded="lg"
+            icon="pi-refresh"
+            text-content="Recommencer"
+          />
         </div>
       </div>
     </div>
@@ -123,6 +123,7 @@ import { computed, onMounted, onUpdated, nextTick, watch } from "vue";
 import { useQCMStore } from "../../store/QCM";
 import { useRouter } from "vue-router";
 import Prism from "prismjs";
+import AppButton from "../../components/commun/button/AppButton.vue";
 // N'importer QUE les langages (le thème est déjà dans main.js)
 // IMPORTANT: L'ordre d'import est crucial pour les dépendances
 import "prismjs/components/prism-markup"; // HTML (doit être avant markup-templating)

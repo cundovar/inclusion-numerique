@@ -20,7 +20,13 @@
       v-for="tech in catsMenuDroite"
       :key="tech.slug"
       :to="`/category/${tech.name}`"
-      class=" text-xl xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer   shadow-neutral-600  bg-blue-300 p-2 hover:bg-blue-400 text-gray-600 font-bold hover:underline "
+      :class="[
+        menuDroit.categoryBgColor,
+        menuDroit.categoryTextColor,
+        menuDroit.categoryTextSize,
+        menuDroit.categoryHoverColor,
+        'xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 p-2 font-bold hover:underline'
+      ]"
     >
       {{ tech.name }}
     </router-link>
@@ -51,22 +57,30 @@
 import SelectfunctionVocabulaire from './SelectfunctionVocabulaire.vue'
 import ButtonArrowMenu from '../commun/button/ButtonArrowMenu.vue'
 import { ref, computed } from 'vue'
-import { useData } from '../../utlis/fetchDataPwa' 
+import { useData } from '../../utlis/fetchDataPwa'
+import { useVisibilityFilter } from '../../composables/useVisibilityFilter.js'
+import { useCustomization } from '../../composables/useCustomization'
 
 const { cats, menus } = useData()
-
-
+const { filterByVisibility } = useVisibilityFilter()
+const { menuDroit } = useCustomization()
 
 const isOpenMenuDroit = ref(false)
 
 function toggleMenuDroit() {
   isOpenMenuDroit.value = !isOpenMenuDroit.value
 }
-const catsMenuDroite = computed(() =>
-  (cats.value || []).filter(
+
+// Filtrer les catégories visibles du menu droit
+const catsMenuDroite = computed(() => {
+  const menuDroiteCategories = (cats.value || []).filter(
     (cat) => cat.positionMenus?.position === "menu-droite"
   )
-);
+
+  // Appliquer le filtre de visibilité
+  return filterByVisibility(menuDroiteCategories)
+})
+
 console.log("catsMenuDroite", catsMenuDroite.value)
 
 

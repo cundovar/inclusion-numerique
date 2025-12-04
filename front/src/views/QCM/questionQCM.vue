@@ -88,26 +88,29 @@
       </div> -->
 
       <div class="flex justify-between items-center">
-        <button
-        @click="response()"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          reponse
-        </button>
-        <button
-        @click="nextQuestion()"
-        v-if="soumissionBouton && pageSuivante"
-              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          question suivante
-        </button>
-        <button
-        @click="nextQuestion()"
-        v-if="soumissionBouton && !pageSuivante"
-              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          fin
-        </button>
+        <AppButton
+          @click="response()"
+          variant="primary"
+          icon="pi-check"
+          text-content="Réponse"
+        />
+
+        <AppButton
+          @click="nextQuestion()"
+          v-if="soumissionBouton && pageSuivante"
+          variant="primary"
+          icon="pi-arrow-right"
+          icon-position="right"
+          text-content="Question suivante"
+        />
+
+        <AppButton
+          @click="nextQuestion()"
+          v-if="soumissionBouton && !pageSuivante"
+          variant="success"
+          icon="pi-check-circle"
+          text-content="Fin"
+        />
 
 
 
@@ -131,6 +134,7 @@ import { computed, onMounted, ref } from 'vue'
 import axios from 'axios'
 import { useQCMStore } from '../../store/QCM'
 import { useRouter, useRoute } from 'vue-router'
+import AppButton from '../../components/commun/button/AppButton.vue'
 
 
 const qcmStore = useQCMStore()

@@ -8,6 +8,7 @@ import Exercices from '../views/exercices.vue';
 import ExoComponent from '../components/ExoComponent.vue';
 import questionQCM from '../views/QCM/questionQCM.vue';
 import resultQCM from '../views/QCM/resultQCM.vue';
+import ComponentsDemo from '../views/ComponentsDemo.vue';
 
 const routes = [
   // Redirection des anciennes routes vers CategoryPage
@@ -31,6 +32,11 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: Profile
+  },
+  {
+    path: '/components-demo',
+    name: 'components-demo',
+    component: ComponentsDemo
   },
   {
     path: '/category/:category',

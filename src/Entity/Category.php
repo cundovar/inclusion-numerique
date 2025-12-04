@@ -63,11 +63,16 @@ class Category
     private ?string $description = null;
 
     #[ORM\OneToOne(mappedBy: 'category', cascade: ['persist', 'remove'])]
+    #[Groups(['page_content:read', 'exo_content:read'])]
     private ?Logo $logo = null;
 
     #[ORM\OneToOne(mappedBy: 'category', cascade: ['persist', 'remove'])]
     #[Groups(['page_content:read'])]
     private ?Seo $seo = null;
+
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['default' => true])]
+    #[Groups(['page_content:read', 'exo_content:read'])]
+    private ?bool $visible = true;
 
     public function __construct()
     {
@@ -75,6 +80,7 @@ class Category
         $this->pageContents = new ArrayCollection();
         $this->exoMenus = new ArrayCollection();
         $this->exoContents = new ArrayCollection();
+        $this->visible = true;
     }
 
     public function getId(): ?int
@@ -293,6 +299,18 @@ class Category
         }
 
         $this->seo = $seo;
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->visible ?? true;
+    }
+
+    public function setVisible(?bool $visible): static
+    {
+        $this->visible = $visible;
 
         return $this;
     }

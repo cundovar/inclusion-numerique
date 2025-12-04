@@ -59,14 +59,16 @@ class UserPageVisitController extends AbstractController
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $limit = $request->query->getInt('limit', 20);
+        $limit = $request->query->getInt('limit', 1000); // Par défaut 1000 visites
         $visits = $this->visitRepository->findRecentVisitsByUser($user, $limit);
 
         $data = array_map(function($visit) {
             return [
                 'id' => $visit->getId(),
-                'pageUrl' => $visit->getPageUrl(),
-                'pageTitle' => $visit->getPageTitle(),
+                'page' => [
+                    'slug' => $visit->getPageUrl(),
+                    'title' => $visit->getPageTitle() ?? 'Sans titre'
+                ],
                 'visitedAt' => $visit->getVisitedAt()->format('Y-m-d H:i:s'),
                 'timeSpent' => $visit->getTimeSpent()
             ];

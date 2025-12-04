@@ -3,7 +3,7 @@
 
     <button
     :class="ajoutClass"
-    class="flex items-center max-xl:hidden justify-center z-[100000] cursor-pointer shadow-2xl p-2 rounded-md bg-red-300 hover:bg-red-400 transition-colors"
+    class="flex items-center max-xl:hidden justify-center z-40 cursor-pointer shadow-2xl p-2 rounded-md bg-red-300 hover:bg-red-400 transition-colors"
     @click="fonction">
         <i :class="isOpen ? 'pi pi-chevron-right' : 'pi pi-chevron-left'" class="text-white "></i>
     </button>

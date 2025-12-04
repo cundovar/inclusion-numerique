@@ -2,22 +2,17 @@
 <template>
     <section
     class="transition-all duration-500"
-    :class="sectionSize ? 'playground-fullscreen z-[9999999999999] ' : 'playground'">
+    :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'playground'">
 
       <div class="cols">
 
-        <button v-if="sectionSize"
-          class="absolute top-2 right-2 w-8 h-8 bg-red-400 hover:bg-red-600 text-white rounded flex items-center justify-center z-10 cursor-pointer"
-          @click="toggleSectionSize"
-        >
-          ✕
-        </button>
-        <button v-else
-          class="absolute top-2 right-2 transition-colors duration-500 p-2 bg-red-400 hover:bg-red-600 text-white rounded flex items-center justify-center z-10 cursor-pointer"
-          @click="toggleSectionSize"
-        >
-          agrandire
-        </button>
+       
+
+        <AppButton class="absolute top-2 right-2" v-if="sectionSize" @click="toggleSectionSize" variant="danger" text-content="X" />
+        <AppButton class="absolute top-2 right-2" v-else @click="toggleSectionSize" variant="danger" text-content="agrandire" />
+      
+        
+     
             <!-- Colonne éditeurs -->
             <div class="left">
           <div class="editor-block">
@@ -60,9 +55,9 @@
             </div>
           </div>
           <div class="flex gap-5 justify-center mt-5">
-            <button  type="button" @click="rebuild">Exécuter ▶</button>
+            <AppButton variant="success" size="md" text-content="Exécuter" type="button" @click="rebuild" />
             <label><input type="checkbox" v-model="autorun"> Auto</label>
-            <button type="button" @click="resetAll">Tout réinitialiser</button>
+            <AppButton variant="danger" size="md" text-content="Tout réinitialiser" type="button" @click="resetAll" />
           </div>
         </div>
       </div>
@@ -72,6 +67,7 @@
   <script setup>
   import { ref, onMounted, onBeforeUnmount } from 'vue'
   import loader from '@monaco-editor/loader'
+  import AppButton from '../commun/button/AppButton.vue'
   
   /**
    * Props optionnelles pour personnaliser les valeurs de départ et la persistance.

@@ -21,3 +21,8 @@ services:
     App\EventListener\UserPageVisitListener:
         tags:
             - { name: doctrine.event_listener, event: postPersist }
+
+    # Service de chiffrement des notes
+    App\Service\NoteEncryptionService:
+        arguments:
+            $appSecret: '%kernel.secret%'

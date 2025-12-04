@@ -1,9 +1,9 @@
 <template>
   <div
     :class="[
-      'xl:z-[99999] scroll-gauche xl:top-10 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
-      isXlOuPlus ? '' : isMenuOpen ? 'max-xl:w-full md:w-2/3 z-50 top-28 ' : 'w-full -translate-x-full top-28',
-      hoveredCategory ? 'z-[100000] w-1/2 ' : 'z-0 w-[20rem]',
+      'xl:z-30 scroll-gauche xl:top-20 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
+      isXlOuPlus ? '' : isMenuOpen ? 'max-xl:w-full md:w-2/3 z-40 top-28 ' : 'w-full -translate-x-full top-28',
+      hoveredCategory ? 'z-40 w-1/2 ' : 'z-0 w-[20rem]',
       isOpenMenuGauche ? '-translate-x-[9rem]' : 'translate-x-0',
     ]"
   >
@@ -19,12 +19,10 @@
       ]"
     >
       <div class="max-xl:hidden">
-        <div class="h-5"></div>
-
         <ButtonArrowMenu
           :fonction="() => $emit('toggleMenuGauche')"
           :isOpen="isOpenMenuGauche"
-          ajoutClass="absolute right-3 top-6"
+          ajoutClass="absolute right-3 top-0"
         />
       </div>
 

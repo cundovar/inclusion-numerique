@@ -1,11 +1,12 @@
 <template>
-  <nav
-    v-if="toc.length > 0"
-    ref="tocElement"
-    class="table-of-contents"
-    :class="{ 'is-dragging': isDragging }"
-    :style="draggableStyle"
-  >
+  <Teleport to="body">
+    <nav
+      v-if="toc.length > 0"
+      ref="tocElement"
+      class="table-of-contents z-[100000]"
+      :class="{ 'is-dragging': isDragging }"
+      :style="draggableStyle"
+    >
     <!-- Hint déplaçable -->
     <transition name="fade">
       <div v-if="showHint" class="drag-hint">
@@ -13,65 +14,69 @@
       </div>
     </transition>
 
-    <!-- Header avec toggle pour mobile (poignée de drag) -->
+    <!-- Zone de drag en haut -->
     <div
-      class="toc-header drag-handle"
+      class="drag-handle"
       ref="dragHandle"
       title="Cliquez et glissez pour déplacer le sommaire"
     >
       <i class="pi pi-arrows-alt drag-indicator"></i>
-      <h3 class="toc-title"> Sommaire</h3>
-      <button
-        class="toc-toggle"
+      <span class="drag-text">Déplacer</span>
+    </div>
+
+    <!-- Header avec titre et bouton notes -->
+    <div class="toc-header">
+      <h3
+        class="toc-title"
         @click="toggleToc"
         :aria-label="isOpen ? 'Fermer le sommaire' : 'Ouvrir le sommaire'"
+        title="Cliquez pour ouvrir/fermer le sommaire"
       >
-        <span v-if="isOpen">fermer</span>
-        <span v-else>ouvrir</span>
+        Sommaire
+      </h3>
+      <button
+        class="note-button"
+        @click.stop="toggleNoteEditor"
+        :aria-label="showNoteEditor ? 'Fermer les notes' : 'Ouvrir les notes'"
+        title="Notes"
+      >
+        Notes
       </button>
     </div>
 
-    <!-- Liste des titres -->
-    <transition name="slide">
-      <ul v-show="isOpen" class="toc-list">
-        <li
-          v-for="item in toc"
-          :key="item.id"
-          :class="[
-            'toc-item',
-            `toc-level-${item.level}`,
-            { 'active': item.id === activeId }
-          ]"
-        >
-          <a
-            @click.prevent="handleClick(item.id)"
-            :href="`#${item.id}`"
-            class="toc-link"
-            :title="item.text"
-          >
-            <span class="toc-bullet">•</span>
-            <span class="toc-text">{{ item.text }}</span>
-          </a>
-        </li>
-      </ul>
-    </transition>
+    <!-- Composant Liste du sommaire -->
+    <TocList
+      :toc="toc"
+      :activeId="activeId"
+      :showProgress="showProgress"
+      :isOpen="isOpen"
+      :isMobile="isMobile()"
+      :collapsedOnMobile="collapsedOnMobile"
+      @scroll-to="handleScrollTo"
+      @close-mobile="closeMobileToc"
+    />
 
-    <!-- Indicateur de progression de lecture (optionnel) -->
-    <div v-if="showProgress && isOpen" class="reading-progress">
-      <div class="progress-text">Progression</div>
-      <div class="progress-bar-container">
-        <div
-          class="progress-bar"
-          :style="{ width: readingProgress + '%' }"
-        ></div>
-      </div>
-    </div>
-  </nav>
+    <!-- Composant Éditeur de notes -->
+    <transition name="slide">
+      <NoteEditor
+        v-if="showNoteEditor"
+        :pageId="pageId"
+        :initialContent="noteContent"
+        @save="handleNoteSave"
+        :bgCategorie="bgCategorie"
+        :bgHover="bgHover"
+      />
+    </transition>
+    </nav>
+  </Teleport>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useDraggable } from '@vueuse/core'
+import axios from 'axios'
+import TocList from './table-of-contents/TocList.vue'
+import NoteEditor from './table-of-contents/notes/NoteEditor.vue'
 
 const props = defineProps({
   toc: {
@@ -89,33 +94,76 @@ const props = defineProps({
   collapsedOnMobile: {
     type: Boolean,
     default: true
+  },
+  pageId: {
+    type: Number,
+    default: null
+  },
+  bgCategorie: {
+    type: String,
+    default: ''
+  },
+  bgHover: {
+    type: String,
+    default: ''
   }
 })
 
 const emit = defineEmits(['scroll-to'])
 
-const isOpen = ref(true)
-const readingProgress = ref(0)
+const isOpen = ref(false)
 const showHint = ref(false)
+
+// Note editor
+const showNoteEditor = ref(false)
+const noteContent = ref('')
+axios.defaults.withCredentials = true
 
 // Drag and drop avec VueUse
 const tocElement = ref(null)
 const dragHandle = ref(null)
 
-// Calculer la position initiale en pixels
+// Calculer la position initiale en pixels selon la largeur d'écran
 const getInitialPosition = () => {
   const windowWidth = window.innerWidth
   const windowHeight = window.innerHeight
+
+  // Adapter la position selon la taille d'écran (Tailwind breakpoints)
+  let xPercent, yPercent
+
+  if (windowWidth >= 1600) {
+    // 2XL screens (≥1536px) - plus à droite pour laisser place au contenu
+    xPercent = 0.17
+    yPercent = 0.28
+  } else if (windowWidth >= 1200) {
+    // XL screens (≥1280px)
+    xPercent = 0.05
+    yPercent = 0.25
+  } else if (windowWidth >= 1024) {
+    // LG screens (≥1024px)
+    xPercent = 0.05
+    yPercent = 0.14
+  } else if (windowWidth >= 768) {
+    // MD screens (≥768px) - plus à gauche pour ne pas gêner le contenu
+    xPercent = 0.00
+    yPercent = 0.15
+  } else {
+    // Mobile - position par défaut (non utilisée car drag désactivé)
+    xPercent = 0.05
+    yPercent = 0.10
+  }
+
   return {
-    x: windowWidth * 0.17, // 17% de la largeur
-    y: windowHeight * 0.30  // 30% du haut
+    x: windowWidth * xPercent,
+    y: windowHeight * yPercent
   }
 }
 
-// Activer le drag and drop
-const { x, y, isDragging, style } = useDraggable(tocElement, {
+// Activer le drag and drop uniquement via la poignée
+const { x, y, isDragging } = useDraggable(tocElement, {
   initialValue: getInitialPosition(),
-  preventDefault: false
+  preventDefault: false,
+  handle: dragHandle
 })
 
 console.log('🔧 VueUse useDraggable initialized:', { x: x.value, y: y.value, isDragging: isDragging.value })
@@ -147,10 +195,6 @@ onMounted(() => {
     isOpen.value = false
   }
 
-  // Calculer la progression de lecture
-  window.addEventListener('scroll', calculateReadingProgress)
-  calculateReadingProgress()
-
   // Afficher le hint après 2 secondes, puis le cacher après 5 secondes
   if (!isMobile()) {
     setTimeout(() => {
@@ -162,32 +206,52 @@ onMounted(() => {
   }
 })
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', calculateReadingProgress)
-})
-
 const toggleToc = () => {
   isOpen.value = !isOpen.value
 }
 
-const handleClick = (id) => {
-  emit('scroll-to', id)
+const closeMobileToc = () => {
+  isOpen.value = false
+}
 
-  // Sur mobile, fermer le sommaire après un clic
-  if (isMobile() && props.collapsedOnMobile) {
-    setTimeout(() => {
-      isOpen.value = false
-    }, 300)
+const handleScrollTo = (id) => {
+  emit('scroll-to', id)
+}
+
+// Note editor methods
+const toggleNoteEditor = () => {
+  showNoteEditor.value = !showNoteEditor.value
+  if (showNoteEditor.value && props.pageId) {
+    loadNote()
   }
 }
 
-const calculateReadingProgress = () => {
-  const windowHeight = window.innerHeight
-  const documentHeight = document.documentElement.scrollHeight - windowHeight
-  const scrolled = window.scrollY
+const loadNote = async () => {
+  if (!props.pageId) return
 
-  readingProgress.value = Math.round((scrolled / documentHeight) * 100)
+  try {
+    const response = await axios.get(`/api/notes/page/${props.pageId}`)
+    if (response.data && response.data.content) {
+      noteContent.value = response.data.content
+    }
+  } catch (error) {
+    if (error.response?.status !== 204) {
+      console.error('Erreur lors du chargement de la note:', error)
+    }
+  }
 }
+
+const handleNoteSave = (content) => {
+  noteContent.value = content
+  console.log('Note sauvegardée:', content)
+}
+
+// Charger la note si le pageId change
+watch(() => props.pageId, (newPageId) => {
+  if (newPageId && showNoteEditor.value) {
+    loadNote()
+  }
+})
 </script>
 
 <style scoped>
@@ -196,11 +260,13 @@ const calculateReadingProgress = () => {
   background-color: #fff;
   padding: 1.5rem;
   border-radius: 12px;
-  width: 280px;
+  width: fit-content;
+  min-width: 280px;
+  max-width: 90vw;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 1000;
+
   user-select: none;
   /* VueUse gère : position, top, left et transform automatiquement */
 }
@@ -230,7 +296,7 @@ const calculateReadingProgress = () => {
   font-weight: 500;
   box-shadow: 0 4px 12px rgba(66, 185, 131, 0.3);
   white-space: nowrap;
-  z-index: 1001;
+  z-index: 100001;
   animation: bounce 2s infinite;
 }
 
@@ -289,26 +355,57 @@ const calculateReadingProgress = () => {
   padding-bottom: 0.75rem;
   border-bottom: 2px solid #dee2e6;
   position: relative;
+  gap: 0.5rem;
 }
 
-/* Header comme poignée de drag */
+/* Zone de drag en haut */
 .drag-handle {
   cursor: grab;
   touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px 12px 0 0;
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  border-bottom: 2px solid #dee2e6;
+  transition: all 0.2s;
+}
+
+.drag-handle:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  background: linear-gradient(135deg, #dee2e6 0%, #ced4da 100%);
 }
 
 .drag-indicator {
-  font-size: 1rem;
-  color: #999;
-  margin-right: 0.5rem;
+  font-size: 1.1rem;
+  color: #666;
   cursor: grab;
   user-select: none;
   transition: color 0.2s, transform 0.2s;
 }
 
-.drag-indicator:hover {
+.drag-handle:hover .drag-indicator {
   color: #42b983;
-  transform: scale(1.2);
+  transform: scale(1.1);
+}
+
+.drag-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.drag-handle:hover .drag-text {
+  color: #42b983;
 }
 
 .toc-title {
@@ -317,122 +414,29 @@ const calculateReadingProgress = () => {
   font-weight: 600;
   color: #333;
   flex: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  user-select: none;
 }
 
-.toc-toggle {
+.toc-title:hover {
+  color: #42b983;
+}
 
+.note-button {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 0.85rem;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  transition: background 0.2s;
-  color: #c51414;
+  transition: all 0.2s;
+  color: #42b983;
+  font-weight: 500;
 }
 
-.toc-toggle:hover {
+.note-button:hover {
   background-color: #f0f0f0;
-}
-
-.toc-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.toc-item {
-  margin-bottom: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-/* Indentation selon le niveau */
-.toc-level-2 {
-  padding-left: 0;
-}
-
-.toc-level-3 {
-  padding-left: 1.25rem;
-}
-
-/* Bordure gauche */
-.toc-item {
-  border-left: 3px solid transparent;
-  padding-left: 0.75rem;
-}
-
-.toc-item.active {
-  border-left-color: #42b983;
-}
-
-.toc-link {
-  color: #555;
-  text-decoration: none;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
-  cursor: pointer;
-  transition: all 0.2s;
-  line-height: 1.4;
-}
-
-.toc-bullet {
-  color: #999;
-  font-size: 1.2rem;
-  line-height: 1;
-  margin-top: 2px;
-  transition: all 0.2s;
-}
-
-.toc-text {
-  flex: 1;
-}
-
-.toc-link:hover {
-  color: #42b983;
-}
-
-.toc-link:hover .toc-bullet {
-  color: #42b983;
-  transform: translateX(3px);
-}
-
-.toc-item.active .toc-link {
-  color: #42b983;
-  font-weight: 600;
-}
-
-.toc-item.active .toc-bullet {
-  color: #42b983;
-}
-
-/* Progression de lecture */
-.reading-progress {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #dee2e6;
-}
-
-.progress-text {
-  font-size: 0.8rem;
-  color: #666;
-  margin-bottom: 0.5rem;
-}
-
-.progress-bar-container {
-  height: 6px;
-  background: #e9ecef;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #42b983 0%, #35a372 100%);
-  transition: width 0.3s ease;
-  border-radius: 3px;
 }
 
 /* Animations */
@@ -446,6 +450,7 @@ const calculateReadingProgress = () => {
   opacity: 0;
   transform: translateY(-10px);
 }
+
 /* Responsive Mobile */
 @media (max-width: 768px) {
   .table-of-contents {
@@ -457,15 +462,11 @@ const calculateReadingProgress = () => {
   }
 
   .drag-handle {
-    cursor: default;
-  }
-
-  .drag-indicator {
     display: none;
   }
 
-  .toc-toggle {
-    display: block;
+  .toc-header {
+    margin-top: 0;
   }
 
   .toc-collapsed {
@@ -477,21 +478,7 @@ const calculateReadingProgress = () => {
     margin-bottom: 0;
     padding-bottom: 0;
     border-bottom: none;
-   
-  }
 
-  .toc-list {
-    margin-top: 1rem;
-  }
-
-  .reading-progress {
-    margin-top: 1rem;
   }
 }
-
-
-
-
-
-
 </style>

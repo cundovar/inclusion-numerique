@@ -70,9 +70,14 @@ class PageContent
     #[Groups(['page_content:read', 'page_content:write'])]
     private Collection $pageBlocks;
 
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['default' => true])]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?bool $visible = true;
+
     public function __construct()
     {
         $this->pageBlocks = new ArrayCollection();
+        $this->visible = true;
     }
 
     public function getId(): ?int { return $this->id; }
@@ -162,6 +167,17 @@ class PageContent
                 $pageBlock->setPageContent(null);
             }
         }
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->visible ?? true;
+    }
+
+    public function setVisible(?bool $visible): static
+    {
+        $this->visible = $visible;
         return $this;
     }
 }

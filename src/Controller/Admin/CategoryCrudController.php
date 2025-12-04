@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use App\Controller\Admin\PositionMenusCrudController;
 
 class CategoryCrudController extends AbstractCrudController
@@ -26,6 +27,8 @@ class CategoryCrudController extends AbstractCrudController
             TextField::new('name', 'Nom de la catégorie'),
             TextField::new('couleur', 'Couleur bg de la catégorie'),
             TextEditorField::new('description', 'Description '),
+            BooleanField::new('visible', 'Visible')
+                ->setHelp('Si décoché, la catégorie ne sera pas affichée dans les menus'),
 
             AssociationField::new('positionMenus', 'Position du menu')
                 ->setCrudController(PositionMenusCrudController::class)
@@ -33,7 +36,7 @@ class CategoryCrudController extends AbstractCrudController
 
             AssociationField::new('logo', 'Logo')
                 ->setCrudController(LogoCrudController::class)
-                ->autocomplete(),    
+                ->autocomplete(),
         ];
     }
     

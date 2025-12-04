@@ -26,6 +26,18 @@ security:
             provider: app_user_provider
             context: main
 
+        api_notes:
+            pattern: ^/api/notes
+            stateless: false
+            provider: app_user_provider
+            context: main
+
+        api_customization:
+            pattern: ^/api/customization
+            stateless: false
+            provider: app_user_provider
+            context: main
+
         api_admin:
             pattern: ^/api/admin
             stateless: true
@@ -57,6 +69,8 @@ security:
          - { path: ^/api/admin, roles: ROLE_ADMIN }
          - { path: ^/api/me-favorites, roles: ROLE_USER }
          - { path: ^/api/page-visits, roles: ROLE_USER }
+         - { path: ^/api/notes, roles: ROLE_USER }
+         - { path: ^/api/customization, roles: ROLE_USER }
         #  - { path: ^/spa, roles: ROLE_USER }
 
 when@test:

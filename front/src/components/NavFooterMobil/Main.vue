@@ -1,5 +1,5 @@
 <template>
-  <footer class="min-w-[320px] p-3 md:p-4 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-blue-300 z-[9999] shadow-2xl flex items-center justify-around xl:hidden gap-2 md:gap-4">
+  <footer class="min-w-[320px] p-3 md:p-4 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-blue-300 z-50 shadow-2xl flex items-center justify-around xl:hidden gap-2 md:gap-4">
 
     <!-- Bouton Profil -->
     <router-link
