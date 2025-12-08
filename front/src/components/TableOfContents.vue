@@ -72,7 +72,7 @@
 
       <!-- Onglet Notes -->
       <NoteEditor
-        v-if="activeTab === 'notes'"
+        v-if="activeTab === 'notes' && isUserAuthenticated"
         :pageId="pageId"
         :initialContent="noteContent"
         @save="handleNoteSave"
@@ -140,6 +140,20 @@ const closed = ref(false)
 const toggleClosed = () => {
   closed.value = !closed.value
 }
+
+// Vérifier si l'utilisateur est authentifié
+const isUserAuthenticated = computed(() => {
+  return user.value && user.value.username && user.value.username.trim() !== ''
+})
+
+// Observer les changements d'authentification
+watch(isUserAuthenticated, (isAuth) => {
+  // Si l'utilisateur se déconnecte alors qu'il est sur l'onglet Notes,
+  // le ramener à l'onglet Sommaire
+  if (!isAuth && activeTab.value === 'notes') {
+    activeTab.value = 'sommaire'
+  }
+})
 
 // Note editor
 const noteContent = ref('')

@@ -55,15 +55,15 @@ class Category
     private ?PositionMenus $positionMenus = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['page_content:read', 'exo_content:read'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read', 'exo_content:write'])]
     private ?string $couleur = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['page_content:read', 'exo_content:read'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read', 'exo_content:write'])]
     private ?string $description = null;
 
     #[ORM\OneToOne(mappedBy: 'category', cascade: ['persist', 'remove'])]
-    #[Groups(['page_content:read', 'exo_content:read'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read', 'exo_content:write'])]
     private ?Logo $logo = null;
 
     #[ORM\OneToOne(mappedBy: 'category', cascade: ['persist', 'remove'])]
@@ -71,7 +71,7 @@ class Category
     private ?Seo $seo = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['default' => true])]
-    #[Groups(['page_content:read', 'exo_content:read'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read', 'exo_content:write'])]
     private ?bool $visible = true;
 
     public function __construct()

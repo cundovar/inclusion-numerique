@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PositionMenusRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,15 +10,20 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PositionMenusRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['position_menus:read']],
+    denormalizationContext: ['groups' => ['position_menus:write']]
+)]
 class PositionMenus
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['position_menus:read', 'page_content:read', 'exo_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['page_content:read', 'exo_content:read'])]
+    #[Groups(['position_menus:read', 'position_menus:write', 'page_content:read', 'exo_content:read'])]
     private ?string $position = null;
 
     public function __toString(): string
