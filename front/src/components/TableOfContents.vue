@@ -7,6 +7,7 @@
       :class="{ 'is-dragging': isDragging }"
       :style="draggableStyle"
     >
+
     <!-- Hint déplaçable -->
     <transition name="fade">
       <div v-if="showHint" class="drag-hint">
@@ -14,69 +15,89 @@
       </div>
     </transition>
 
+    
+
     <!-- Zone de drag en haut -->
     <div
       class="drag-handle"
+      :class="bgCategorie"
       ref="dragHandle"
       title="Cliquez et glissez pour déplacer le sommaire"
     >
-      <i class="pi pi-arrows-alt drag-indicator"></i>
-      <span class="drag-text">Déplacer</span>
+      <AppButton
+      variant="danger"
+      :textContent="closed ? '+ ' : 'X'"
+      @click="toggleClosed"
+      class="absolute top-1 left-1"
+      size="sm"
+    />
+      <i class="pi pi-arrows-alt "></i>
+      <span class="drag-text"></span>
     </div>
-
-    <!-- Header avec titre et bouton notes -->
-    <div class="toc-header">
-      <h3
-        class="toc-title"
-        @click="toggleToc"
-        :aria-label="isOpen ? 'Fermer le sommaire' : 'Ouvrir le sommaire'"
-        title="Cliquez pour ouvrir/fermer le sommaire"
+<div class="transition-all duration-300 ease-in-out" :class="closed ? 'hidden' : 'transition-all duration-300 ease-in-out'">
+    <!-- Header avec onglets Sommaire et Notes -->
+    <div class="toc-tabs">
+      <button
+        class="toc-tab"
+        :class="{ active: activeTab === 'sommaire' }"
+        @click="switchTab('sommaire')"
       >
         Sommaire
-      </h3>
+      </button>
       <button
-        class="note-button"
-        @click.stop="toggleNoteEditor"
-        :aria-label="showNoteEditor ? 'Fermer les notes' : 'Ouvrir les notes'"
-        title="Notes"
+        v-if="isUserAuthenticated"
+        class="toc-tab"
+        :class="{ active: activeTab === 'notes' }"
+        @click="switchTab('notes')"
       >
         Notes
       </button>
     </div>
 
-    <!-- Composant Liste du sommaire -->
-    <TocList
-      :toc="toc"
-      :activeId="activeId"
-      :showProgress="showProgress"
-      :isOpen="isOpen"
-      :isMobile="isMobile()"
-      :collapsedOnMobile="collapsedOnMobile"
-      @scroll-to="handleScrollTo"
-      @close-mobile="closeMobileToc"
-    />
+    <!-- Contenu des onglets -->
+    <div class="tab-content">
+      <!-- Onglet Sommaire -->
+      <TocList
+        v-if="activeTab === 'sommaire'"
+        :toc="toc"
+        :activeId="activeId"
+        :showProgress="showProgress"
+        :isOpen="true"
+        :isMobile="isMobile()"
+        :collapsedOnMobile="collapsedOnMobile"
+        :bgCategorie="bgCategorie"
+        @scroll-to="handleScrollTo"
+        @close-mobile="toggleClosed"
+      />
 
-    <!-- Composant Éditeur de notes -->
-    <transition name="slide">
+      <!-- Onglet Notes -->
       <NoteEditor
-        v-if="showNoteEditor"
+        v-if="activeTab === 'notes'"
         :pageId="pageId"
         :initialContent="noteContent"
         @save="handleNoteSave"
         :bgCategorie="bgCategorie"
         :bgHover="bgHover"
       />
-    </transition>
+    </div>
+</div>
+
+
     </nav>
   </Teleport>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useDraggable } from '@vueuse/core'
 import axios from 'axios'
 import TocList from './table-of-contents/TocList.vue'
 import NoteEditor from './table-of-contents/notes/NoteEditor.vue'
+import AppButton from './commun/button/AppButton.vue'
+import { useData } from '../utlis/fetchDataPwa'
+
+// Récupérer l'état de l'utilisateur
+const { user } = useData()
 
 const props = defineProps({
   toc: {
@@ -111,11 +132,16 @@ const props = defineProps({
 
 const emit = defineEmits(['scroll-to'])
 
-const isOpen = ref(false)
+// Onglet actif : 'sommaire' ou 'notes'
+const activeTab = ref('sommaire')
 const showHint = ref(false)
 
+const closed = ref(false)
+const toggleClosed = () => {
+  closed.value = !closed.value
+}
+
 // Note editor
-const showNoteEditor = ref(false)
 const noteContent = ref('')
 axios.defaults.withCredentials = true
 
@@ -189,13 +215,8 @@ const draggableStyle = computed(() => {
 // Détecter si mobile
 const isMobile = () => window.innerWidth < 768
 
-// Initialiser l'état ouvert/fermé selon la taille d'écran
+// Afficher le hint après 2 secondes sur desktop
 onMounted(() => {
-  if (props.collapsedOnMobile && isMobile()) {
-    isOpen.value = false
-  }
-
-  // Afficher le hint après 2 secondes, puis le cacher après 5 secondes
   if (!isMobile()) {
     setTimeout(() => {
       showHint.value = true
@@ -206,24 +227,20 @@ onMounted(() => {
   }
 })
 
-const toggleToc = () => {
-  isOpen.value = !isOpen.value
+// Changer d'onglet
+const switchTab = (tab) => {
+  activeTab.value = tab
+  if (tab === 'notes' && props.pageId) {
+    loadNote()
+  }
 }
 
 const closeMobileToc = () => {
-  isOpen.value = false
+  // Fermer sur mobile
 }
 
 const handleScrollTo = (id) => {
   emit('scroll-to', id)
-}
-
-// Note editor methods
-const toggleNoteEditor = () => {
-  showNoteEditor.value = !showNoteEditor.value
-  if (showNoteEditor.value && props.pageId) {
-    loadNote()
-  }
 }
 
 const loadNote = async () => {
@@ -248,7 +265,7 @@ const handleNoteSave = (content) => {
 
 // Charger la note si le pageId change
 watch(() => props.pageId, (newPageId) => {
-  if (newPageId && showNoteEditor.value) {
+  if (newPageId && activeTab.value === 'notes') {
     loadNote()
   }
 })
@@ -279,7 +296,7 @@ watch(() => props.pageId, (newPageId) => {
 }
 
 .table-of-contents.is-dragging .drag-indicator {
-  color: #42b983;
+  color: #555;
 }
 
 /* Hint déplaçable */
@@ -288,13 +305,13 @@ watch(() => props.pageId, (newPageId) => {
   top: -40px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #42b983 0%, #35a372 100%);
+  background: linear-gradient(135deg, #555 0%, #333 100%);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 500;
-  box-shadow: 0 4px 12px rgba(66, 185, 131, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
   z-index: 100001;
   animation: bounce 2s infinite;
@@ -310,7 +327,7 @@ watch(() => props.pageId, (newPageId) => {
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-top: 6px solid #35a372;
+  border-top: 6px solid #333;
 }
 
 /* Animation bounce */
@@ -347,15 +364,11 @@ watch(() => props.pageId, (newPageId) => {
   border-radius: 3px;
 }
 
-.toc-header {
+.toc-tabs {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
   border-bottom: 2px solid #dee2e6;
   position: relative;
-  gap: 0.5rem;
 }
 
 /* Zone de drag en haut */
@@ -367,7 +380,7 @@ watch(() => props.pageId, (newPageId) => {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
   border-radius: 12px 12px 0 0;
   margin: -1.5rem -1.5rem 1rem -1.5rem;
   border-bottom: 2px solid #dee2e6;
@@ -392,7 +405,7 @@ watch(() => props.pageId, (newPageId) => {
 }
 
 .drag-handle:hover .drag-indicator {
-  color: #42b983;
+  color: #333;
   transform: scale(1.1);
 }
 
@@ -405,38 +418,48 @@ watch(() => props.pageId, (newPageId) => {
 }
 
 .drag-handle:hover .drag-text {
-  color: #42b983;
-}
-
-.toc-title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
   color: #333;
+}
+
+.toc-tab {
   flex: 1;
-  cursor: pointer;
-  transition: color 0.2s;
-  user-select: none;
-}
-
-.toc-title:hover {
-  color: #42b983;
-}
-
-.note-button {
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #999;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.75rem 1rem;
   transition: all 0.2s;
-  color: #42b983;
-  font-weight: 500;
+  user-select: none;
+  position: relative;
 }
 
-.note-button:hover {
-  background-color: #f0f0f0;
+.toc-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.toc-tab:hover {
+  color: #555;
+}
+
+.toc-tab.active {
+  color: #333;
+}
+
+.toc-tab.active::after {
+  background: #333;
+}
+
+.tab-content {
+  min-height: 100px;
 }
 
 /* Animations */

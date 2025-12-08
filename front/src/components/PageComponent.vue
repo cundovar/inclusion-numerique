@@ -41,15 +41,21 @@
           </div>
 
           <!-- Navigation Précédent / Suivant -->
-          <div class="flex justify-between items-center p-5 mt-10 border-t border-gray-300">
-            <router-link
+          <div class="flex  justify-center  items-center p-5 mt-10 border-t border-gray-300">
+
+            <div class="">
+
+              <div class="mr-20">
+
+ <router-link
               v-if="previousPage"
               :to="`/pages/${previousPage.slug.replace('/', '')}`"
             >
               <AppButton
-                variant="primary"
+                variant="ghost"
                 icon="pi pi-arrow-left"
                 size="md"
+                
               >
                 <span class="max-md:hidden">{{ previousPage.title }}</span>
                 <span class="md:hidden">Précédent</span>
@@ -57,12 +63,16 @@
             </router-link>
             <div v-else></div>
 
+              </div>
+
+            <div class="ml-20">
+
             <router-link
               v-if="nextPage"
               :to="`/pages/${nextPage.slug.replace('/', '')}`"
             >
               <AppButton
-                variant="primary"
+                variant="ghost"
                 icon="pi pi-arrow-right"
                 icon-position="right"
                 size="md"
@@ -72,7 +82,16 @@
               </AppButton>
             </router-link>
             <div v-else></div>
+
+
+            </div>
+           
           </div>
+          </div>
+
+
+
+
         </main>
       </div>
     </div>

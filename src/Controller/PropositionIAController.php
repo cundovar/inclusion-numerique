@@ -41,45 +41,61 @@ final class PropositionIAController extends AbstractController
 
     }
     #[Route('api/proposition-ia/accept/{id}', name: 'ia_accept', methods: ['POST'])]
-    public function accept(PropositionIA $propoIA,EntityManagerInterface $em,PageContentRepository $pageContentRepository) : JsonResponse
+    public function accept(PropositionIA $propoIA, EntityManagerInterface $em): JsonResponse
     {
-        $payload=$propoIA->getPayload();
-        $action=$propoIA->getAction();
-        $statut=$propoIA->getStatut();
+        $payload = $propoIA->getPayload();
+        $action = $propoIA->getAction();
 
-        if($action==='creation_cours')
-        {
-            $pageContent=new PageContent();
-            $pageContent->setTitle($payload['title']);
-            $pageContent->setContent($payload['content']);
-            $pageContent->setCode($payload['code']);
-            $pageContent->setPage($payload['page']);
-            $pageContent->setCategory($payload['category']);
-            $pageContent->setMenu($payload['menu']);
+        if ($action === 'creation_cours' || $action === 'analyse_cours') {
+
+            // Récupérer les entités depuis la base de données
+            $page = isset($payload['pageId'])
+                ? $this->pageRepository->find($payload['pageId'])
+                : null;
+
+            $category = isset($payload['categoryId'])
+                ? $this->categoryRepository->find($payload['categoryId'])
+                : null;
+
+            $menu = isset($payload['menuId'])
+                ? $this->menuRepository->find($payload['menuId'])
+                : null;
+
+            // Créer ou mettre à jour PageContent
+            if ($action === 'creation_cours') {
+                $pageContent = new PageContent();
+            } else {
+                $pageContent = $this->pageContentRepository->find($payload['id']);
+                if (!$pageContent) {
+                    return new JsonResponse(['error' => 'PageContent not found'], Response::HTTP_NOT_FOUND);
+                }
+            }
+
+            // Assigner les champs texte
+            $pageContent->setTitle($payload['title'] ?? '');
+            $pageContent->setContent($payload['content'] ?? null);
+            $pageContent->setCode($payload['code'] ?? null);
+            $pageContent->setType($payload['type'] ?? null);
+
+            // Assigner les relations (objets Entity)
+            if ($page) $pageContent->setPage($page);
+            if ($category) $pageContent->setCategory($category);
+            if ($menu) $pageContent->setMenu($menu);
+
             $em->persist($pageContent);
             $em->flush();
+
             $propoIA->setStatut('accepted');
             $em->persist($propoIA);
             $em->flush();
-            return new JsonResponse(['message' => 'Proposition acceptée'], Response::HTTP_OK);
+
+            return new JsonResponse([
+                'message' => 'Proposition acceptée',
+                'pageContentId' => $pageContent->getId()
+            ], Response::HTTP_OK);
         }
-        if($action==='analyse_cours')
-        {
-            $pageContent=$pageContentRepository->find($payload['id']);
-            $pageContent->setTitle($payload['title']);
-            $pageContent->setContent($payload['content']);
-            $pageContent->setCode($payload['code']);
-            $pageContent->setPage($payload['page']);
-            $pageContent->setCategory($payload['category']);
-            $pageContent->setMenu($payload['menu']);
-            $em->persist($pageContent);
-            $em->flush();
-            $propoIA->setStatut('accepted');
-            $em->persist($propoIA);
-            $em->flush();
-            return new JsonResponse(['message' => 'Proposition acceptée'], Response::HTTP_OK);
-        }
-        return new JsonResponse(['message' => 'Proposition refusée'], Response::HTTP_OK);
+
+        return new JsonResponse(['error' => 'Action non supportée'], Response::HTTP_BAD_REQUEST);
     }
     #[Route('api/proposition-ia/reject/{id}', name: 'ia_reject', methods: ['POST'])]
     public function reject(PropositionIA $propoIA,EntityManagerInterface $em) : JsonResponse
@@ -119,14 +135,27 @@ final class PropositionIAController extends AbstractController
         return new JsonResponse($jsonProposition, Response::HTTP_OK, [], true);
     }
     #[Route('api/proposition-ia/create', name: 'ia_create', methods: ['POST'])]
-    public function create(Request $request,EntityManagerInterface $em) : JsonResponse
+    public function create(Request $request, EntityManagerInterface $em): JsonResponse
     {
+        // Récupérer correctement les données JSON
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
+        }
+
         $propoIA = new PropositionIA();
-        $propoIA->setAction($request->get('action'));
-        $propoIA->setStatut($request->get('statut'));
-        $propoIA->setPayload($request->get('payload'));
+        $propoIA->setAction($data['action'] ?? null);
+        $propoIA->setStatut($data['statut'] ?? 'pending');
+        $propoIA->setPayload($data['payload'] ?? []);
+        $propoIA->setCreatedAt(new \DateTimeImmutable());
+
         $em->persist($propoIA);
         $em->flush();
-        return new JsonResponse(['message' => 'Proposition créée'], Response::HTTP_OK);
+
+        return new JsonResponse([
+            'message' => 'Proposition créée',
+            'id' => $propoIA->getId()
+        ], Response::HTTP_CREATED);
     }
 }

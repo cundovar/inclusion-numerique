@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   toc: {
@@ -65,12 +65,22 @@ const props = defineProps({
   collapsedOnMobile: {
     type: Boolean,
     default: true
+  },
+  bgCategorie: {
+    type: String,
+    default: '#f97316'
   }
 })
 
 const emit = defineEmits(['scroll-to', 'close-mobile'])
 
 const readingProgress = ref(0)
+
+// Style dynamique pour la barre de progression
+const progressBarStyle = computed(() => ({
+  width: readingProgress.value + '%',
+  background: props.bgCategorie || '#f97316'
+}))
 
 const handleClick = (id) => {
   emit('scroll-to', id)
@@ -129,7 +139,7 @@ onUnmounted(() => {
 }
 
 .toc-item.active {
-  border-left-color: #42b983;
+  border-left-color: #333;
 }
 
 .toc-link {
@@ -158,21 +168,21 @@ onUnmounted(() => {
 }
 
 .toc-link:hover {
-  color: #42b983;
+  color: #333;
 }
 
 .toc-link:hover .toc-bullet {
-  color: #42b983;
+  color: #333;
   transform: translateX(3px);
 }
 
 .toc-item.active .toc-link {
-  color: #42b983;
+  color: #333;
   font-weight: 600;
 }
 
 .toc-item.active .toc-bullet {
-  color: #42b983;
+  color: #333;
 }
 
 /* Progression de lecture */
@@ -197,7 +207,7 @@ onUnmounted(() => {
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #42b983 0%, #35a372 100%);
+  background: #f97316;
   transition: width 0.3s ease;
   border-radius: 3px;
 }

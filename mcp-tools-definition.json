@@ -1,0 +1,333 @@
+{
+  "name": "cours-manager",
+  "version": "1.0.0",
+  "description": "MCP pour gérer les cours, catégories, menus et QCM",
+  "tools": [
+    {
+      "name": "manage_pages",
+      "description": "Gérer les pages de cours. Une Page est un conteneur avec un slug unique, lié à un menu. Chaque page peut avoir plusieurs PageContents.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "read", "create", "update", "delete"],
+            "description": "Action à effectuer"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID de la page (requis pour read/update/delete)"
+          },
+          "data": {
+            "type": "object",
+            "description": "Données pour create/update",
+            "properties": {
+              "slug": {
+                "type": "string",
+                "description": "Identifiant URL unique de la page (ex: 'introduction-javascript')"
+              },
+              "menusId": {
+                "type": "integer",
+                "description": "ID du menu parent"
+              }
+            }
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "manage_page_contents",
+      "description": "Gérer le contenu des pages. Un PageContent est une section de cours avec titre, type, contenu texte et code. Peut contenir plusieurs PageBlocks.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "read", "create", "update", "delete"],
+            "description": "Action à effectuer"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID du contenu (requis pour read/update/delete)"
+          },
+          "data": {
+            "type": "object",
+            "description": "Données pour create/update",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Titre de la section"
+              },
+              "type": {
+                "type": "string",
+                "description": "Type de contenu (ex: 'lesson', 'example', 'exercise')"
+              },
+              "content": {
+                "type": "string",
+                "description": "Contenu textuel/HTML de la section"
+              },
+              "code": {
+                "type": "string",
+                "description": "Code source à afficher"
+              },
+              "visible": {
+                "type": "boolean",
+                "description": "Si le contenu est visible (défaut: true)"
+              },
+              "pageId": {
+                "type": "integer",
+                "description": "ID de la page parente"
+              },
+              "categoryId": {
+                "type": "integer",
+                "description": "ID de la catégorie"
+              },
+              "menuId": {
+                "type": "integer",
+                "description": "ID du menu"
+              },
+              "pageBlocks": {
+                "type": "array",
+                "description": "Liste des blocs de contenu",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": { "type": "string", "description": "Contenu du bloc" },
+                    "code": { "type": "string", "description": "Code du bloc" },
+                    "type": { "type": "string", "description": "Type de bloc" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "manage_categories",
+      "description": "Gérer les catégories de cours. Une catégorie regroupe des menus et contenus par thème (ex: 'JavaScript', 'PHP', 'CSS').",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "read", "create", "update", "delete"],
+            "description": "Action à effectuer"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID de la catégorie (requis pour read/update/delete)"
+          },
+          "data": {
+            "type": "object",
+            "description": "Données pour create/update",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Nom de la catégorie"
+              },
+              "couleur": {
+                "type": "string",
+                "description": "Couleur en hexadécimal (ex: '#3498db')"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description de la catégorie"
+              },
+              "visible": {
+                "type": "boolean",
+                "description": "Si la catégorie est visible (défaut: true)"
+              },
+              "positionMenusId": {
+                "type": "integer",
+                "description": "ID de la position dans le menu"
+              }
+            }
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "manage_menus",
+      "description": "Gérer les menus de navigation. Un menu est un élément de navigation lié à une catégorie, contenant des pages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "read", "create", "update", "delete"],
+            "description": "Action à effectuer"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID du menu (requis pour read/update/delete)"
+          },
+          "data": {
+            "type": "object",
+            "description": "Données pour create/update",
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "Libellé affiché du menu"
+              },
+              "categoryId": {
+                "type": "integer",
+                "description": "ID de la catégorie parente"
+              },
+              "positionMenusId": {
+                "type": "integer",
+                "description": "ID de la position du menu"
+              }
+            }
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "manage_qcm",
+      "description": "Gérer les QCM (questionnaires à choix multiples). Un QCM a un titre, une solution, un niveau de difficulté, une langue, et plusieurs choix de réponses.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "read", "create", "update", "delete"],
+            "description": "Action à effectuer"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID du QCM (requis pour read/update/delete)"
+          },
+          "filters": {
+            "type": "object",
+            "description": "Filtres pour l'action list",
+            "properties": {
+              "language": {
+                "type": "string",
+                "description": "Filtrer par langue (ex: 'javascript', 'php')"
+              },
+              "difficulty": {
+                "type": "string",
+                "description": "Filtrer par niveau (ex: 'débutant', 'intermédiaire', 'avancé')"
+              }
+            }
+          },
+          "data": {
+            "type": "object",
+            "description": "Données pour create/update",
+            "properties": {
+              "titre": {
+                "type": "string",
+                "description": "Question/titre du QCM"
+              },
+              "solution": {
+                "type": "string",
+                "description": "Explication de la solution"
+              },
+              "languageQCMId": {
+                "type": "integer",
+                "description": "ID de la langue"
+              },
+              "niveauQCMId": {
+                "type": "integer",
+                "description": "ID du niveau de difficulté"
+              },
+              "choices": {
+                "type": "array",
+                "description": "Liste des choix de réponse",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "description": "Texte du choix de réponse"
+                    },
+                    "isCorrect": {
+                      "type": "boolean",
+                      "description": "Si c'est la bonne réponse"
+                    },
+                    "explication": {
+                      "type": "string",
+                      "description": "Explication pour ce choix"
+                    }
+                  },
+                  "required": ["question", "isCorrect"]
+                }
+              }
+            }
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "search_content",
+      "description": "Rechercher dans tout le contenu des cours. Permet de trouver des pages, contenus ou QCM par mot-clé.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Terme de recherche"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["all", "pages", "contents", "qcm", "categories"],
+            "description": "Type de contenu à rechercher (défaut: 'all')"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Nombre max de résultats (défaut: 20)"
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  ],
+  "api_endpoints": {
+    "base_url": "http://localhost:8000",
+    "endpoints": {
+      "pages": {
+        "list": "GET /api/admin/pages",
+        "read": "GET /api/admin/pages/{id}",
+        "create": "POST /api/admin/pages",
+        "update": "PUT /api/admin/pages/{id}",
+        "delete": "DELETE /api/admin/pages/{id}"
+      },
+      "page_contents": {
+        "list": "GET /api/admin/page-contents",
+        "read": "GET /api/admin/page-contents/{id}",
+        "create": "POST /api/admin/page-contents",
+        "update": "PUT /api/admin/page-contents/{id}",
+        "delete": "DELETE /api/admin/page-contents/{id}"
+      },
+      "categories": {
+        "list": "GET /api/admin/categories",
+        "read": "GET /api/admin/categories/{id}",
+        "create": "POST /api/admin/categories",
+        "update": "PUT /api/admin/categories/{id}",
+        "delete": "DELETE /api/admin/categories/{id}"
+      },
+      "menus": {
+        "list": "GET /api/menus",
+        "read": "GET /api/menus/{id}",
+        "create": "POST /api/admin/menus",
+        "update": "PUT /api/admin/menus/{id}",
+        "delete": "DELETE /api/admin/menus/{id}"
+      },
+      "qcm": {
+        "list": "GET /api/qcm",
+        "list_by_language": "GET /api/qcm/language/{language}",
+        "list_by_difficulty": "GET /api/qcm/difficulty/{difficulty}",
+        "read": "GET /api/qcm/{id}",
+        "create": "POST /api/admin/qcm",
+        "update": "PUT /api/admin/qcm/{id}",
+        "delete": "DELETE /api/admin/qcm/{id}"
+      }
+    }
+  }
+}

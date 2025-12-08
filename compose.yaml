@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/var/www/symfony
+    env_file:
+      - .env
     expose:
       - "9000"
     networks: [connectPerso]
@@ -35,6 +37,22 @@ services:
       - ./public/build:/app/../public/build
     command: npm run build
     networks: [connectPerso]
+
+
+  # mcp-node: (désactivé - MCP tourne en local via Claude Code)
+  #   build:
+  #     context: ../microservice/mcp-node
+  #     dockerfile: Dockerfile
+  #   working_dir: /app
+  #   volumes:
+  #     - ../microservice/mcp-node:/app
+  #   env_file:
+  #     - ../microservice/mcp-node/.env
+  #   depends_on:
+  #     - nginx
+  #   ports:
+  #     - "4100:4100"
+  #   networks: [connectPerso]
 
   nginx:
     image: nginx:stable

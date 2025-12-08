@@ -1,19 +1,9 @@
 <template>
-  <div class="note-editor-section" :class="bgCategorie" >
-    <div class="note-header">
-      <h4 class="note-title">Mes notes</h4>
-      <button
-        v-if="editor"
-        @click="saveNote"
-        class="save-note-btn"
-        :disabled="isSavingNote || !hasContent"
-      >
-        {{ isSavingNote ? 'Enregistrement...' : 'Enregistrer' }}
-      </button>
-    </div>
+  <div class="note-editor-section"  >
+  
 
     <!-- Barre d'outils Tiptap -->
-    <div v-if="editor" class="editor-toolbar">
+    <div :class="bgCategorie" v-if="editor" class="flex flex-wrap max-w-64 m-auto p-5 gap-1 ">
       <template v-for="(button, index) in tableButton" :key="button.key">
         <AppButton
           @click="toggleFormat(button.key)"
@@ -40,6 +30,19 @@
       </div>
     </transition>
   </div>
+    <div class="r">
+
+
+      <AppButton
+        v-if="editor"
+        @click="saveNote"
+       variant="ghost"
+       textContent="Enregistrer"
+        :disabled="isSavingNote || !hasContent"
+      >
+        
+      </AppButton>
+    </div>
 </template>
 
 <script setup>
@@ -232,9 +235,8 @@ onBeforeUnmount(() => {
 <style scoped>
 /* Note Editor Section */
 .note-editor-section {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid #dee2e6;
+
+
   width: fit-content;
   /* min-width: 100%; */
 }
@@ -257,7 +259,7 @@ width: 100%;
 }
 
 .save-note-btn {
-  background: #42b983;
+  background: #333;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -272,9 +274,9 @@ width: 100%;
 }
 
 .save-note-btn:hover:not(:disabled) {
-  background: #35a372;
+  background: #555;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(66, 185, 131, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .save-note-btn:disabled {
@@ -289,11 +291,10 @@ width: 100%;
   gap: 0.25rem;
   padding: 0.5rem;
   background: #f8f9fa;
-  border: 2px solid #dee2e6;
-  border-bottom: none;
-  border-radius: 8px 8px 0 0;
+ 
+
   width: fit-content;
-  border: #35a372 2px solid;
+
   max-width: 23rem;
   min-width: 15rem;
   margin: 0 auto;
@@ -327,9 +328,9 @@ width: 100%;
 }
 
 .toolbar-btn.is-active {
-  background: #42b983;
+  background: #333;
   color: white;
-  border-color: #42b983;
+  border-color: #333;
 }
 
 .toolbar-divider {
@@ -447,7 +448,7 @@ width: 100%;
 }
 
 :deep(.tiptap-editor blockquote) {
-  border-left: 4px solid #42b983;
+  border-left: 4px solid #999;
   padding-left: 1rem;
   margin-left: 0;
   color: #666;
