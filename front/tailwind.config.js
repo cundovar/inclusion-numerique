@@ -9,6 +9,11 @@ export default {
     safelist: [
       // Background colors
       { pattern: /^bg-(blue|green|red|yellow|purple|pink|indigo|gray|orange|teal|cyan)-(100|200|300|400|500|600|700|800|900)$/ },
+      // Gradient directions
+      { pattern: /^bg-gradient-to-(t|tr|r|br|b|bl|l|tl)$/ },
+      // Gradient from/to colors (catégories dynamiques)
+      { pattern: /^from-(blue|green|red|yellow|purple|pink|indigo|gray|orange|teal|cyan)-(100|200|300|400|500|600|700|800|900)$/ },
+      { pattern: /^to-(blue|green|red|yellow|purple|pink|indigo|gray|orange|teal|cyan)-(100|200|300|400|500|600|700|800|900)$/ },
       // Text colors
       { pattern: /^text-(white|black|blue|green|red|yellow|purple|pink|indigo|gray|orange|teal|cyan)-(100|200|300|400|500|600|700|800|900)?$/ },
       // Text sizes

@@ -1,0 +1,19 @@
+{
+  "base": "/build/",
+  "entryPoints": {
+    "main": {
+      "js": [
+        "http://front:5173/build/src/main.js"
+      ]
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "8.1.1",
+    8,
+    1,
+    1
+  ],
+  "viteServer": "http://front:5173"
+}

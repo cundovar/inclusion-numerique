@@ -1,5 +1,6 @@
 parameters:
     app.url: 'http://localhost:8080'
+    app.user_page_visit.enabled: '%env(bool:USER_PAGE_VISIT_ENABLED)%'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:

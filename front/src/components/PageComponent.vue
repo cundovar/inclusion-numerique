@@ -115,6 +115,7 @@ import TableOfContents from "./TableOfContents.vue";
 import AppButton from "./commun/button/AppButton.vue";
 import { useToc } from "@/composables/useToc";
 import { useVisibilityFilter } from "@/composables/useVisibilityFilter";
+const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
 
 export default {
   components: {
@@ -165,7 +166,7 @@ export default {
   },
   updated() {
     // Enregistrer la visite après le chargement du contenu
-    if (this.pageContent && this.pageContent.page) {
+    if (pageTrackingEnabled && this.pageContent && this.pageContent.page) {
       this.trackPageVisit();
     }
   },
@@ -309,6 +310,10 @@ export default {
     },
 
     async trackPageVisit() {
+      if (!pageTrackingEnabled) {
+        return;
+      }
+
       try {
         if (!this.pageContent || !this.pageContent.page) {
           console.log("Cannot track visit: no page content");

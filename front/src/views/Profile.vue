@@ -69,6 +69,7 @@
             Mes Notes ({{ notes.length }})
           </button>
           <button
+            v-if="pageTrackingEnabled"
             @click="activeTab = 'stats'"
             :class="[
               'px-6 py-3 border-b-2 font-medium text-sm',
@@ -197,7 +198,7 @@
         </div>
 
         <!-- Onglet Statistiques -->
-        <div v-if="activeTab === 'stats'">
+        <div v-if="activeTab === 'stats' && pageTrackingEnabled">
           <!-- Contrôles de l'historique -->
           <div class="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
             <!-- Paramètre de tracking -->
@@ -570,6 +571,7 @@ import AppSelect from '../components/commun/select/AppSelect.vue'
 import axios from 'axios'
 import AppModal from '../components/commun/modal/AppModal.vue'
 
+const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true'
 
 const { user } = useData()
 console.log("data",useData())
@@ -579,7 +581,7 @@ const favorites = ref([])
 const loading = ref(true)
 const pageVisits = ref([])
 const loadingHistory = ref(true)
-const trackingEnabled = ref(true)
+const trackingEnabled = ref(pageTrackingEnabled)
 const notes = ref([])
 const loadingNotes = ref(true)
 axios.defaults.withCredentials = true;
@@ -684,6 +686,10 @@ const removeFavorite = async (favoriteId) => {
 
 // Récupérer l'historique des pages visitées
 const fetchPageVisits = async () => {
+  if (!pageTrackingEnabled) {
+    return
+  }
+
   try {
     const response = await axios.get('/api/page-visits/my-history')
     pageVisits.value = response.data
@@ -713,6 +719,11 @@ const fetchPageVisits = async () => {
 
 // Récupérer le statut du tracking
 const fetchTrackingStatus = async () => {
+  if (!pageTrackingEnabled) {
+    trackingEnabled.value = false
+    return
+  }
+
   try {
     const response = await axios.get('/api/page-visits/tracking-status')
     trackingEnabled.value = response.data.trackingEnabled
@@ -723,6 +734,10 @@ const fetchTrackingStatus = async () => {
 
 // Supprimer une visite
 const removeVisit = async (visitId) => {
+  if (!pageTrackingEnabled) {
+    return
+  }
+
   try {
     await axios.delete(`/api/page-visits/${visitId}`)
     pageVisits.value = pageVisits.value.filter(v => v.id !== visitId)
@@ -733,6 +748,10 @@ const removeVisit = async (visitId) => {
 
 // Effacer tout l'historique
 const clearAllHistory = async () => {
+  if (!pageTrackingEnabled) {
+    return
+  }
+
   if (!confirm('Êtes-vous sûr de vouloir effacer tout votre historique ?')) {
     return
   }
@@ -747,6 +766,10 @@ const clearAllHistory = async () => {
 
 // Activer/désactiver le tracking
 const toggleTracking = async () => {
+  if (!pageTrackingEnabled) {
+    return
+  }
+
   try {
     const response = await axios.post('/api/page-visits/toggle-tracking', {
       enabled: !trackingEnabled.value
@@ -917,8 +940,13 @@ const resetAppearance = async () => {
 
 onMounted(async () => {
   fetchFavorites()
-  fetchPageVisits()
-  fetchTrackingStatus()
+  if (pageTrackingEnabled) {
+    fetchPageVisits()
+    fetchTrackingStatus()
+  } else {
+    loadingHistory.value = false
+    trackingEnabled.value = false
+  }
   fetchNotes()
 
   // Charger la personnalisation

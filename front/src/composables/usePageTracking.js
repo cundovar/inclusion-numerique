@@ -2,7 +2,17 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
+const trackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
+
 export function usePageTracking() {
+  if (!trackingEnabled) {
+    // Retourner des no-ops quand le suivi est coupé
+    return {
+      startTracking: () => {},
+      stopTracking: () => {}
+    };
+  }
+
   const router = useRouter();
   const startTime = ref(null);
   const currentPageUrl = ref('');

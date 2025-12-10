@@ -6,6 +6,7 @@ use App\Entity\UserPageVisit;
 use App\Repository\UserPageVisitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,12 +17,21 @@ class UserPageVisitController extends AbstractController
 {
     public function __construct(
         private UserPageVisitRepository $visitRepository,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled
     ) {}
 
     #[Route('', name: 'api_page_visit_track', methods: ['POST'])]
     public function track(Request $request): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return new JsonResponse([
+                'success' => false,
+                'trackingEnabled' => false,
+                'message' => 'Le suivi des visites est désactivé par configuration'
+            ], Response::HTTP_OK);
+        }
+
         $user = $this->getUser();
 
         if (!$user) {
@@ -53,6 +63,10 @@ class UserPageVisitController extends AbstractController
     #[Route('/my-history', name: 'api_page_visit_history', methods: ['GET'])]
     public function getHistory(Request $request): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return new JsonResponse([], Response::HTTP_OK);
+        }
+
         $user = $this->getUser();
 
         if (!$user) {
@@ -80,6 +94,14 @@ class UserPageVisitController extends AbstractController
     #[Route('/my-stats', name: 'api_page_visit_stats', methods: ['GET'])]
     public function getStats(): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return new JsonResponse([
+                'mostVisitedPages' => [],
+                'totalVisits' => 0,
+                'trackingEnabled' => false,
+            ]);
+        }
+
         $user = $this->getUser();
 
         if (!$user) {

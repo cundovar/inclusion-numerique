@@ -1,5 +1,6 @@
 when@dev:
     _pentatrion_vite:
+        # Nginx gère le proxy vers Vite, on ne proxifie que /build
         prefix: /build
         resource: "@PentatrionViteBundle/Resources/config/routing.yaml"
 

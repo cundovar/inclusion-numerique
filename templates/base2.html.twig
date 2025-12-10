@@ -47,7 +47,10 @@
     </script>
     {% endif %}
 
-    <link rel="manifest" href="/spa/manifest.webmanifest" />
+{# En dev, Vite ne génère pas le manifest : on l'inclut seulement en prod pour éviter les 404 #}
+{% if app.environment == 'prod' %}
+<link rel="manifest" href="/build/manifest.webmanifest" />
+{% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
     <meta name="theme-color" content="#42b983" />
@@ -79,6 +82,7 @@
 </script>
 
 
+<script src="https://kit.fontawesome.com/c84dd1bc80.js" crossorigin="anonymous"></script>
 
 
 

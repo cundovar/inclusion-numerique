@@ -19,6 +19,7 @@ services:
     working_dir: /app
     volumes:
       - ./front:/app:cached
+      - ./public/build/.vite:/app/public/build/.vite
     ports:
       - "5173:5173"
     command: npm run dev:dock
@@ -29,12 +30,14 @@ services:
 
   # (optionnel) front-build pour produire /public/build
   front-build:
+    user: "${UID:-1000}:${GID:-1000}"
     build:
       context: ./front
     working_dir: /app
     volumes:
       - ./front:/app
-      - ./public/build:/app/../public/build
+      - ./public/build:/app/public/build
+      - ./public/spa:/app/public/spa
     command: npm run build
     networks: [connectPerso]
 

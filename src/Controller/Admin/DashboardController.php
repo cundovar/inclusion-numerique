@@ -24,12 +24,14 @@ use App\Entity\Logo;
 use App\Entity\PositionMenus;
 use App\Entity\Seo;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[Route('/admin')]
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled,
     ) {}
 
     #[Route('/', name: 'dashboard')]
@@ -42,12 +44,16 @@ class DashboardController extends AbstractDashboardController
             'categories' => $this->entityManager->getRepository(Category::class)->count([]),
             'qcm' => $this->entityManager->getRepository(QCM::class)->count([]),
             'exercices' => $this->entityManager->getRepository(ExoContent::class)->count([]),
-            'visits' => $this->entityManager->getRepository(UserPageVisit::class)->count([]),
+            'visits' => $this->trackingEnabled
+                ? $this->entityManager->getRepository(UserPageVisit::class)->count([])
+                : 0,
         ];
 
         // Récupérer les dernières visites
-        $recentVisits = $this->entityManager->getRepository(UserPageVisit::class)
-            ->findBy([], ['visitedAt' => 'DESC'], 10);
+        $recentVisits = $this->trackingEnabled
+            ? $this->entityManager->getRepository(UserPageVisit::class)
+                ->findBy([], ['visitedAt' => 'DESC'], 10)
+            : [];
 
         // Récupérer les derniers utilisateurs
         $recentUsers = $this->entityManager->getRepository(User::class)
@@ -57,6 +63,7 @@ class DashboardController extends AbstractDashboardController
             'stats' => $stats,
             'recentVisits' => $recentVisits,
             'recentUsers' => $recentUsers,
+            'trackingEnabled' => $this->trackingEnabled,
         ]);
     }
 
@@ -94,8 +101,10 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('👥 Utilisateurs');
         yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);
-        yield MenuItem::linkToCrud('Visites', 'fa fa-chart-line', UserPageVisit::class);
-        yield MenuItem::linkToRoute('Statistiques des visites', 'fa fa-chart-bar', 'admin_stats_page_visits');
+        if ($this->trackingEnabled) {
+            yield MenuItem::linkToCrud('Visites', 'fa fa-chart-line', UserPageVisit::class);
+            yield MenuItem::linkToRoute('Statistiques des visites', 'fa fa-chart-bar', 'admin_stats_page_visits');
+        }
 
         yield MenuItem::section('🔗 ajout des doc dans menu');
         yield MenuItem::linkToCrud('Doc de code', 'fa fa-code', DocDeCode::class);

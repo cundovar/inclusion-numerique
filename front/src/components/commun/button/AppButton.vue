@@ -2,8 +2,8 @@
   <button
     :type="type"
     :disabled="disabled || loading"
-    :class="[buttonClasses, bgHover]"
-    :style="hoverBgColor ? `--hover-bg: ${hoverBgColor}` : ''"
+    :class="[buttonClasses, bgHover, { 'has-custom-hover': Boolean(hoverBgColor) }]"
+    :style="hoverBgColor ? { '--hover-bg': hoverBgColor } : null"
     @click="$emit('click', $event)"
   >
     <!-- Icône de chargement -->
@@ -111,7 +111,7 @@ const baseClasses = 'inline-flex items-center justify-center font-medium transit
 const variantClasses = {
   primary: 'bg-blue-400 hover:bg-blue-600 text-white focus:ring-blue-500 disabled:bg-blue-300',
   secondary: 'bg-gray-500 hover:bg-gray-600 text-white focus:ring-gray-500 disabled:bg-gray-300',
-  danger: 'bg-red-400 hover:bg-red-600 text-white focus:ring-red-500 disabled:bg-red-300',
+  danger: 'bg-red-400 hover:bg-red-500 text-white focus:ring-red-500 disabled:bg-red-300',
   success: 'bg-green-200 hover:bg-green-600 text-white focus:ring-green-500 disabled:bg-green-300',
   warning: 'bg-yellow-300 hover:bg-yellow-600 text-white focus:ring-yellow-500 disabled:bg-yellow-300',
   ghost: 'bg-transparent hover:bg-gray-100 text-gray-700 focus:ring-gray-300 disabled:text-gray-400',
@@ -158,7 +158,7 @@ const buttonClasses = computed(() => {
 </script>
 
 <style scoped>
-button:hover {
+.has-custom-hover:hover {
   background-color: var(--hover-bg) !important;
 }
 </style>

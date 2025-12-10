@@ -6,6 +6,7 @@ use App\Entity\UserPageVisit;
 use App\Repository\UserPageVisitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,7 +17,8 @@ class PageVisitController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private UserPageVisitRepository $visitRepository
+        private UserPageVisitRepository $visitRepository,
+        #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled
     ) {}
 
     /**
@@ -26,6 +28,13 @@ class PageVisitController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function trackVisit(Request $request): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return $this->json([
+                'message' => 'Tracking désactivé par configuration',
+                'trackingEnabled' => false
+            ], 200);
+        }
+
         $user = $this->getUser();
 
         // Vérifier si l'utilisateur a activé le tracking
@@ -62,6 +71,10 @@ class PageVisitController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function getMyHistory(): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return $this->json([], 200);
+        }
+
         $user = $this->getUser();
 
         // Récupérer toutes les visites individuelles
@@ -92,6 +105,13 @@ class PageVisitController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function deleteVisit(int $id): JsonResponse
     { 
+        if (!$this->trackingEnabled) {
+            return $this->json([
+                'message' => 'Tracking désactivé par configuration',
+                'trackingEnabled' => false
+            ], 200);
+        }
+
         $user = $this->getUser();
 
         $visit = $this->visitRepository->find($id);
@@ -118,6 +138,13 @@ class PageVisitController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function clearAllHistory(): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return $this->json([
+                'message' => 'Tracking désactivé par configuration',
+                'trackingEnabled' => false
+            ], 200);
+        }
+
         $user = $this->getUser();
 
         // Utiliser DQL pour supprimer directement en base de données
@@ -140,6 +167,13 @@ class PageVisitController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function toggleTracking(Request $request): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return $this->json([
+                'message' => 'Tracking désactivé par configuration',
+                'trackingEnabled' => false
+            ], 200);
+        }
+
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
         $enabled = $data['enabled'] ?? null;
@@ -164,6 +198,13 @@ class PageVisitController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function getTrackingStatus(): JsonResponse
     {
+        if (!$this->trackingEnabled) {
+            return $this->json([
+                'trackingEnabled' => false,
+                'message' => 'Tracking désactivé par configuration'
+            ]);
+        }
+
         $user = $this->getUser();
 
         return $this->json([

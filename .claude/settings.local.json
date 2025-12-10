@@ -16,7 +16,14 @@
       "Bash(docker compose logs:*)",
       "Bash(docker compose:*)",
       "Bash(chmod:*)",
-      "Bash(sudo chown:*)"
+      "Bash(sudo chown:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(sudo rm:*)",
+      "Bash(lsof:*)",
+      "Bash(ss -tlnp:*)",
+      "Bash(sudo lsof:*)",
+      "Bash(docker stop:*)"
     ],
     "deny": []
   }

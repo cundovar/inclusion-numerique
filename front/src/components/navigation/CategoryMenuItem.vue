@@ -84,7 +84,7 @@
               'focus:bg-gray-400 focus:text-white z-50 hover:text-fuchsia-900'
             ]"
           >
-            <p class="p-2 flex justify-around max-md:justify-start items-center max-md:text-start">
+            <div class="p-2 flex justify-around max-md:justify-start items-center max-md:text-start">
               <div class="flex justify-center items-center w-1/3">
                 <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600"></i>
               </div>
@@ -96,7 +96,7 @@
               <div class="flex justify-center items-center w-1/3">
                 <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600"></i>
               </div>
-            </p>
+            </div>
           </router-link>
         </button>
       </div>

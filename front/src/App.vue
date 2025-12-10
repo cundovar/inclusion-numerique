@@ -9,6 +9,12 @@
     @install="installPWA"
   />
 
+  <!-- Pop-up de notification -->
+  <NotifModal
+    v-if="showNotifModal"
+    @close="closeNotifModal"
+  />
+
   <div
     id="app2"
     :class="[
@@ -89,12 +95,14 @@ import AfertLogin from "./components/AfertLogin.vue";
 import navFooterMobil from "./components/NavFooterMobil/Main.vue";
 import { useData } from "./utlis/fetchDataPwa";
 import { usePageTracking } from "./composables/usePageTracking.js";
+const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
 
 // Composants importés
 import AppHeader from "./components/layout/AppHeader.vue";
 import AppHeaderMobile from "./components/layout/AppHeaderMobile.vue";
 import AppNavigation from "./components/layout/AppNavigation.vue";
 import MobileAppPopup from "./components/layout/MobileAppPopup.vue";
+import NotifModal from "./components/layout/NotifModal.vue";
 import SearchResults from "./components/search/SearchResults.vue";
 import SearchResultsMobile from "./components/search/SearchResultsMobile.vue";
 
@@ -103,6 +111,7 @@ import { useResponsive } from "./composables/useResponsive.js";
 import { useNavigation } from "./composables/useNavigation.js";
 import { useSearch } from "./composables/useSearch.js";
 import { usePWA } from "./composables/usePWA.js";
+import { useNotifModal } from "./composables/useNotifModal.js";
 import { useVisibilityFilter } from "./composables/useVisibilityFilter.js";
 import { useCustomization } from "./composables/useCustomization.js";
 import AppButton from "./components/commun/button/AppButton.vue";
@@ -111,7 +120,9 @@ import AppButton from "./components/commun/button/AppButton.vue";
 const { menus, user, cats, fetchMenus, fetchUser } = useData();
 
 // Initialiser le tracking des visites de pages
-usePageTracking();
+if (pageTrackingEnabled) {
+  usePageTracking();
+}
 
 // Composables
 const { isMobile, isMdOuPlus, islgOuPlus, isXlOuPlus, updateScreenSizes } = useResponsive();
@@ -131,6 +142,7 @@ const {
 
 const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile);
 const { showMobileAppPopup, currentOrigin, checkMobileAppPopup, closeMobileAppPopup, installPWA } = usePWA();
+const { showNotifModal, closeNotifModal } = useNotifModal();
 const { filterByVisibility } = useVisibilityFilter();
 const { body, initCustomization } = useCustomization();
 
