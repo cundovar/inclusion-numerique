@@ -30,3 +30,8 @@ mysql_data/
 
 # Ignore env du microservice
 microservice/ia-service/.env
+
+
+# Ignore les fichiers de build
+backoffice/
+front/build-output
