@@ -161,7 +161,7 @@ const menusByCategory = computed(() => {
     const grouped = {};
 
     menus.value
-      .filter((menu) => menu.category.name === categoryName)
+      .filter((menu) => menu.category?.name === categoryName)
       .forEach((menu) => {
         const label = menu.menu.label;
 
@@ -201,7 +201,7 @@ const exoByCategory = computed(() => {
     const grouped = {};
 
     exoContents.value
-      .filter((exo) => exo.category.name === categoryName)
+      .filter((exo) => exo.category?.name === categoryName)
       .forEach((exo) => {
         const label = exo.exoMenu?.label || 'Autre';
 

@@ -50,3 +50,15 @@ migrate:
 	@echo "🗄️ Migration base de données..."
 	docker compose exec php php bin/console doctrine:migrations:migrate --no-interaction
 
+start:
+	@echo "▶️  Démarrage des conteneurs..."
+	docker compose start
+
+stop:
+	@echo "⏹️  Arrêt des conteneurs..."
+	docker compose stop
+
+dev:
+	@echo "🔥 Démarrage en mode dev..."
+	docker compose up -d && docker compose restart nginx
+

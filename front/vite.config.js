@@ -43,8 +43,8 @@ export default defineConfig(({ mode }) => {
       vue(),
       // Active le support de Vue.js dans Vite
       !isStorybook && symfony({
-        // Hostname pour le viteServer dans entrypoints.json (Docker network)
-        originOverride: 'http://front:5173'
+        // Hostname pour le navigateur (pas Docker internal)
+        originOverride: 'http://localhost:5173'
       }),
       // Active l'intégration spéciale avec Symfony
       !isStorybook && VitePWA({
@@ -95,11 +95,17 @@ export default defineConfig(({ mode }) => {
           // Screenshots pour l'installation PWA
           {
             src: '/spa/screenshot.png',
-            // Screenshot de l'application
             sizes: '1280x720',
             type: 'image/png',
             form_factor: 'wide',
             label: 'Application principale'
+          },
+          {
+            src: '/spa/screenshot.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Application mobile'
           }]
         },
         workbox: {
@@ -167,9 +173,9 @@ export default defineConfig(({ mode }) => {
       },
       hmr: {
         port: 5173,
-        host: '0.0.0.0',
-        // Écoute sur toutes les interfaces
-        clientPort: 5173 // Port pour le client HMR
+        host: 'localhost',
+        // Le navigateur se connecte à localhost, pas au hostname Docker
+        clientPort: 5173
       },
       force: true, // Force la reconstruction des dépendances
       // Désactiver les protections pour Docker
@@ -186,7 +192,7 @@ export default defineConfig(({ mode }) => {
       manifest: true,
       manifestDir: '.',
       outDir: 'public/build',
-      emptyOutDir: true,
+      emptyOutDir: false,
       rollupOptions: {
         // Options supplémentaires pour le bundler Rollup
         input: {

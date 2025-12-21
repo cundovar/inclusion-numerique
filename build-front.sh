@@ -1,17 +1,12 @@
 #!/bin/bash
 
-# Script pour builder le frontend Vue.js avec Docker
+echo "Arret des conteneurs front et storybook..."
+docker compose stop front storybook
 
-echo "🚀 Building Vue.js frontend with Docker..."
+echo "Build en cours..."
+docker compose run --rm front-build
 
-# Arrêter et supprimer le container s'il existe
-docker-compose down front-build 2>/dev/null || true
-docker-compose rm -f front-build 2>/dev/null || true
+echo "Redemarrage de nginx..."
+docker compose up -d nginx
 
-# Créer le dossier de build s'il n'existe pas
-mkdir -p public/build
-
-# Lancer le build
-docker-compose run --rm front-build
-
-echo "✅ Build terminé ! Les fichiers sont dans public/build/"
+echo "Build termine !"

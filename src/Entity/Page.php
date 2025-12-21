@@ -22,7 +22,7 @@ class Page
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['page_content:read'])]
+    #[Groups(['page_content:read', 'page_content:write'])]  
     private ?string $slug = null;
 
     #[ORM\ManyToOne(inversedBy: 'pages')]
@@ -42,7 +42,7 @@ class Page
 
     #[ORM\OneToOne(targetEntity: Seo::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
-    #[Groups(['page_content:read'])]
+    #[Groups(['page_content:read', 'page_content:write'])]
     private ?Seo $seo = null;
 
     public function __construct()

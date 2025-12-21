@@ -23,7 +23,9 @@
       "Bash(lsof:*)",
       "Bash(ss -tlnp:*)",
       "Bash(sudo lsof:*)",
-      "Bash(docker stop:*)"
+      "Bash(docker stop:*)",
+      "Bash(ls:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

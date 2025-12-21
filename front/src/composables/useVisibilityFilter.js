@@ -52,6 +52,11 @@ export function useVisibilityFilter() {
     }
 
     return items.filter(item => {
+      // Vérifier que l'item existe
+      if (!item) {
+        return false
+      }
+
       // Récupérer la valeur de la propriété de visibilité
       const visibilityValue = item[visibilityProp]
 

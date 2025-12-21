@@ -18,7 +18,7 @@ const routes = [
   },
   {
     path: '/pages/vuejs',
-    redirect: '/category/vue'
+    redirect: '/category/vuejs'
   },
   {
     path: '/pages/reactjs',

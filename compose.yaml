@@ -63,7 +63,6 @@ services:
       - "8080:80"
     depends_on:
       - php
-      - front    # <— important si Nginx proxifie Vite
     volumes:
       - .:/var/www/symfony
       - ./nginx.conf:/etc/nginx/nginx.conf:ro  # <— configuration nginx

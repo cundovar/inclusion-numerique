@@ -49,7 +49,7 @@
 
 {# En dev, Vite ne génère pas le manifest : on l'inclut seulement en prod pour éviter les 404 #}
 {% if app.environment == 'prod' %}
-<link rel="manifest" href="/build/manifest.webmanifest" />
+<link rel="manifest" href="/spa/manifest.webmanifest" />
 {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
@@ -86,13 +86,13 @@
 
 
 
-       {% if app.debug %}
+       {# {% if app.debug %} #}
         <script type="module" src="/build/@vite/client"></script>
         <script type="module" src="/build/src/main.js"></script>
-      {% else %}
-        <script type="module" src="/build/assets/main-CHY1xWom.js"></script>
-        <link rel="stylesheet" href="/build/assets/main-CFaeBMhn.css">
-      {% endif %}
+      {# {% else %}
+        <script type="module" src="/build/assets/main-Q0JPWhJr.js"></script>
+        <link rel="stylesheet" href="/build/assets/main-DWw_ZoiH.css">
+      {% endif %} #}
   </head>
   <body>
     {% block body %}{% endblock %}

@@ -22,7 +22,7 @@
     <router-link
       v-for="tech in techs"
       :key="tech.name"
-      :to="`/pages/${tech.name}`"
+      :to="tech.name === 'qcm' ? '/qcm' : `/pages/${tech.name}`"
       :class="[
         'shadow-neutral-600 shadow-lg p-2 md:p-3 rounded-xl w-14 md:w-20 h-14 md:h-16 text-white font-bold hover:underline flex flex-col items-center justify-center transition-colors duration-200',
         tech.color === 'purple' ? 'nav-btn nav-btn--purple' : 'nav-btn'
