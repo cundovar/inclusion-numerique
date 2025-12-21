@@ -1,0 +1,80 @@
+
+<div class="col-12">
+    <label>Localisations</label>
+    <ul class="pepperLocations" data-index="{{ form.pepperLocations|length > 0 ? form.pepperLocations|last.vars.name + 1 : 0 }}" data-prototype="{{ form_widget(form.pepperLocations.vars.prototype)|e('html_attr') }}">
+      {% for locForm in form.pepperLocations %}
+        <li>
+          {{ form_row(locForm) }}
+        </li>
+      {% endfor %}
+    </ul>
+    <button type="button" class="add_item_link btn btn-sm btn-custom" data-collection-holder-class="pepperLocations">
+      + Ajouter une localisation
+    </button>
+  </div>
+
+  <div class="col-12">
+    <label>Pays</label>
+    <ul class="pepperCountries" data-index="{{ form.pepperCountries|length > 0 ? form.pepperCountries|last.vars.name + 1 : 0 }}" data-prototype="{{ form_widget(form.pepperCountries.vars.prototype)|e('html_attr') }}">
+      {% for countryForm in form.pepperCountries %}
+        <li>
+          {{ form_row(countryForm) }}
+        </li>
+      {% endfor %}
+    </ul>
+    <button type="button" class="add_item_link btn btn-sm btn-custom" data-collection-holder-class="pepperCountries">
+      + Ajouter un pays
+    </button>
+  </div>
+
+Js : 
+
+ <script>
+
+// Quand la page a fini de charger
+document.addEventListener('DOMContentLoaded', function () { // Récupère tout bouton "Ajouter" du formulaire
+let boutonsAjouter = document.querySelectorAll('.add_item_link');
+
+// Pour chaque bouton "Ajouter"
+boutonsAjouter.forEach(function (bouton) {
+bouton.addEventListener('click', function () { // Cible la bonne liste de blocs
+let liste = document.querySelector('.' + bouton.dataset.collectionHolderClass);
+
+// Crée un nouvel élément de la liste
+let nouvelBloc = document.createElement('li');
+// Utilise le prototype pour générer le HTML
+nouvelBloc.innerHTML = liste.dataset.prototype.replace(/__name__/g, liste.dataset.index);
+
+// Ajoute le bouton supprimer
+ajouterSupprimer(nouvelBloc);
+
+// Mets le bloc dans la liste
+liste.appendChild(nouvelBloc);
+
+// Incrémente l’index du formulaire
+liste.dataset.index ++;
+  });
+});
+
+// Pour chaque bloc déjà présent, ajoute aussi le bouton supprimer
+document.querySelectorAll('.pepperLocations li, .pepperCountries li').forEach(function (item) {
+ajouterSupprimer(item);
+});
+
+// Fonction pour créer le bouton supprimer
+function ajouterSupprimer(item) {
+let boutonSupprimer = document.createElement('button');
+boutonSupprimer.type = 'button';
+boutonSupprimer.className = 'btn btn-sm btn-danger ms-2';
+boutonSupprimer.innerText = 'Supprimer';
+
+boutonSupprimer.addEventListener('click', function () {
+item.remove(); // Supprime le bloc du formulaire
+});
+
+item.appendChild(boutonSupprimer);
+}
+});
+
+</script>
+ 

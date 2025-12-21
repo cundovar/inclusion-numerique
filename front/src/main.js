@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import './style.css';
-
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue';
 import router from './router';
 import { registerSW } from 'virtual:pwa-register'
@@ -8,6 +9,10 @@ import axios from 'axios'
 
 // Font Awesome
 import '@fortawesome/fontawesome-free/css/all.css'
+
+// Element Plus
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 // primsjs Charge les langages dont tu as besoin
 import Prism from 'prismjs';
@@ -20,7 +25,11 @@ import 'prismjs/components/prism-markup';
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-createApp(App).use(router).mount('#app');
+const app = createApp(App)
+app.use(router)
+app.use(createPinia().use(piniaPluginPersistedstate))
+app.use(ElementPlus)
+app.mount('#app')
 registerSW({
     onNeedRefresh() {
       console.log("Une nouvelle version est dispo, recharger la page !");

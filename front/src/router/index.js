@@ -1,56 +1,32 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import PageComponent from '../views/components/PageComponent.vue';
-import Symfony from '../views/Symfony.vue';
-import Vuejs from '../views/Vuejs.vue';
-import Reactjs from '../views/Reactjs.vue';
-import ReactCourse from '../views/ReactCourse.vue';
-import VueCourse from '../views/VueCourse.vue';
-import Wordpress from '../views/Wordpress.vue';
-import WordPressCourse from '../views/WordPressCourse.vue';
+import PageComponent from '../components/PageComponent.vue';
 import Profile from '../views/Profile.vue';
 import CategoryPage from '../views/CategoryPage.vue';
-import QCMView from '../views/QCMView.vue';
-import QCMHistoryView from '../views/QCMHistoryView.vue';
+import PageQCM from '../views/QCM/PageQCM.vue';
+import Exercices from '../views/exercices.vue';
+import ExoComponent from '../components/ExoComponent.vue';
+import questionQCM from '../views/QCM/questionQCM.vue';
+import resultQCM from '../views/QCM/resultQCM.vue';
+import ComponentsDemo from '../views/ComponentsDemo.vue';
 
 const routes = [
+  // Redirection des anciennes routes vers CategoryPage
   {
     path: '/pages/symfony',
-    name: 'symfony',
-    component: Symfony
+    redirect: '/category/symfony'
   },
   {
     path: '/pages/vuejs',
-    name: 'vuejs',
-    component: Vuejs
+    redirect: '/category/vuejs'
   },
   {
     path: '/pages/reactjs',
-    name: 'reactjs',
-    component: Reactjs
+    redirect: '/category/react'
   },
   {
-    path: '/pages/react/:id',
-    name: 'react-course',
-    component: ReactCourse,
-    props: true
-  },
-  {
-    path: '/pages/vue/:id',
-    name: 'vue-course',
-    component: VueCourse,
-    props: true
-  },
-  {
-    path: '/pages/WP',
-    name: 'wordpress',
-    component: Wordpress 
-  },
-  {
-    path: '/pages/WP/:id',
-    name: 'wordpress-course',
-    component: WordPressCourse,
-    props: true
+    path: '/pages/wp',
+    redirect: '/category/wordpress'
   },
   {
     path: '/profile',
@@ -58,31 +34,77 @@ const routes = [
     component: Profile
   },
   {
+    path: '/components-demo',
+    name: 'components-demo',
+    component: ComponentsDemo
+  },
+  {
     path: '/category/:category',
     name: 'category',
     component: CategoryPage,
     props: true
   },
-  {
-    path: '/qcm',
-    name: 'qcm',
-    component: QCMView
-  },
-  {
-    path: '/qcm/history',
-    name: 'qcm-history',
-    component: QCMHistoryView
-  },
+
+
   {
     path: '/pages/:slug',
     name: 'pages',
     component: PageComponent,
     props: true
-  }
+  },
+  {
+    path: '/exercices',
+    name: 'exercices',
+    component: Exercices
+  },
+  {
+    path: '/exercices/:slug',
+    name: 'exercices-id',
+    component: ExoComponent,
+    
+  },
+
+  {
+    path:'/qcm',
+    name:'PageQCM',
+    component:PageQCM
+  },
+  {
+  path:'/qcm/:index',
+  name:'questionQCM',
+  component:questionQCM,
+  props:true
+},
+{
+  path:'/qcm/result',
+  name:'resultQCM',
+  component:resultQCM,
+  props:true
+},
 ];
 
 const router = createRouter({
   history: createWebHistory('/spa'),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    // Si on utilise les boutons précédent/suivant du navigateur
+    if (savedPosition) {
+      return savedPosition;
+    }
+    // Si on a un hash (#) dans l'URL (pour les ancres)
+    else if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+      };
+    }
+    // Sinon, toujours scroller en haut
+    else {
+      return {
+        top: 0,
+        behavior: 'smooth'
+      };
+    }
+  }
 });
 export default router;

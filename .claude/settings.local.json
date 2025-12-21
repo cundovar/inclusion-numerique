@@ -5,7 +5,27 @@
       "Bash(docker-compose build:*)",
       "Bash(docker exec:*)",
       "Bash(rm:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(php:*)",
+      "Bash(docker-compose exec:*)",
+      "Bash(make:*)",
+      "Bash(docker compose exec:*)",
+      "Bash(npm run dev:*)",
+      "Bash(pkill:*)",
+      "Bash(curl:*)",
+      "Bash(docker compose logs:*)",
+      "Bash(docker compose:*)",
+      "Bash(chmod:*)",
+      "Bash(sudo chown:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(sudo rm:*)",
+      "Bash(lsof:*)",
+      "Bash(ss -tlnp:*)",
+      "Bash(sudo lsof:*)",
+      "Bash(docker stop:*)",
+      "Bash(ls:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

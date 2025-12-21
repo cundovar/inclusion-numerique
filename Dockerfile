@@ -26,6 +26,9 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash && \
 # Set working directory
 WORKDIR /var/www/symfony
 
+# Copy custom PHP-FPM configuration
+COPY php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # 📦 Étape 1 : copier uniquement les fichiers nécessaires pour composer
 COPY composer.json composer.lock ./
 

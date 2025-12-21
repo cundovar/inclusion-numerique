@@ -35,9 +35,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserPageVisit::class, orphanRemoval: true)]
+    private Collection $pageVisits;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $trackPageVisits = true;
+
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?UserCustomization $customization = null;
+
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
+        $this->pageVisits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -117,5 +127,72 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, UserPageVisit>
+     */
+    public function getPageVisits(): Collection
+    {
+        return $this->pageVisits;
+    }
+
+    public function addPageVisit(UserPageVisit $pageVisit): static
+    {
+        if (!$this->pageVisits->contains($pageVisit)) {
+            $this->pageVisits->add($pageVisit);
+            $pageVisit->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePageVisit(UserPageVisit $pageVisit): static
+    {
+        if ($this->pageVisits->removeElement($pageVisit)) {
+            if ($pageVisit->getUser() === $this) {
+                $pageVisit->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isTrackPageVisits(): bool
+    {
+        return $this->trackPageVisits;
+    }
+
+    public function setTrackPageVisits(bool $trackPageVisits): static
+    {
+        $this->trackPageVisits = $trackPageVisits;
+        return $this;
+    }
+
+    public function getCustomization(): ?UserCustomization
+    {
+        return $this->customization;
+    }
+
+    public function setCustomization(?UserCustomization $customization): static
+    {
+        // Unset the owning side of the relation if necessary
+        if ($customization === null && $this->customization !== null) {
+            $this->customization->setUser(null);
+        }
+
+        // Set the owning side of the relation if necessary
+        if ($customization !== null && $customization->getUser() !== $this) {
+            $customization->setUser($this);
+        }
+
+        $this->customization = $customization;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->username ?? 'User #' . $this->id;
     }
 }

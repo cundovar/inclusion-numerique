@@ -19,8 +19,32 @@ security:
             stateless: false
             provider: app_user_provider
             context: main
-        
-            
+
+        api_page_visits:
+            pattern: ^/api/page-visits
+            stateless: false
+            provider: app_user_provider
+            context: main
+
+        api_notes:
+            pattern: ^/api/notes
+            stateless: false
+            provider: app_user_provider
+            context: main
+
+        api_customization:
+            pattern: ^/api/customization
+            stateless: false
+            provider: app_user_provider
+            context: main
+
+        api_admin:
+            pattern: ^/api/admin
+            stateless: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
+
         api_public:
             pattern: ^/api
             security: false
@@ -42,8 +66,12 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/api/admin, roles: ROLE_ADMIN }
          - { path: ^/api/me-favorites, roles: ROLE_USER }
-         - { path: ^/spa, roles: ROLE_USER }
+         - { path: ^/api/page-visits, roles: ROLE_USER }
+         - { path: ^/api/notes, roles: ROLE_USER }
+         - { path: ^/api/customization, roles: ROLE_USER }
+        #  - { path: ^/spa, roles: ROLE_USER }
 
 when@test:
     security:

@@ -1,31 +1,20 @@
 <template>
-  <button
+  <AppButton
     v-if="isAuthenticated"
     @click="toggleFavorite"
     :disabled="loading"
-    :class="[
-      'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium',
-      isFavorite 
-        ? 'bg-red-500 hover:bg-red-600 text-white' 
-        : 'bg-gray-200 hover:bg-gray-300 text-gray-700',
-      loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-    ]"
-  >
-    <i 
-      :class="[
-        'text-sm',
-        loading ? 'pi pi-spin pi-spinner' : (isFavorite ? 'pi pi-heart-fill' : 'pi pi-heart')
-      ]"
-    ></i>
-    <span class="text-sm">
-      {{ loading ? 'Chargement...' : (isFavorite ? 'Supprimer des favoris' : 'Ajouter aux favoris') }}
-    </span>
-  </button>
+    :loading="loading"
+    :variant="isFavorite ? 'favorite' : 'unfavorite'"
+    :icon="loading ? '' : (isFavorite ? 'pi pi-heart-fill' : 'pi pi-heart')"
+    size="sm"
+    :text-content="loading ? 'Chargement...' : (isFavorite ? 'Supprimer des favoris' : 'Ajouter aux favoris')"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import AppButton from './commun/button/AppButton.vue'
 
 const props = defineProps({
   pageId: {

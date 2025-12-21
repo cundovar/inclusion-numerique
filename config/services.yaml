@@ -1,4 +1,6 @@
 parameters:
+    app.url: 'http://localhost:8080'
+    app.user_page_visit.enabled: '%env(bool:USER_PAGE_VISIT_ENABLED)%'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:
@@ -15,3 +17,13 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Doctrine/'
+
+    # Listener pour nettoyer automatiquement les anciennes visites
+    App\EventListener\UserPageVisitListener:
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
+
+    # Service de chiffrement des notes
+    App\Service\NoteEncryptionService:
+        arguments:
+            $appSecret: '%kernel.secret%'
