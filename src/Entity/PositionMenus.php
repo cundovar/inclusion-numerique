@@ -19,11 +19,11 @@ class PositionMenus
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['position_menus:read', 'page_content:read', 'exo_content:read'])]
+    #[Groups(['position_menus:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['position_menus:read', 'position_menus:write', 'page_content:read', 'exo_content:read'])]
+    #[Groups(['position_menus:read', 'position_menus:write'])]
     private ?string $position = null;
 
     public function __toString(): string

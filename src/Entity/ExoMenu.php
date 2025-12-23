@@ -23,7 +23,7 @@ class ExoMenu
     private ?int $id = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Groups(['exo_content:read'])]
+    #[Groups(['exo_content:read', 'exo_content:write'])]
     private ?string $label = null;
 
     /**

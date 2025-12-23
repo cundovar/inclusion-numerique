@@ -19,7 +19,7 @@ class NiveauQCM
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['qcm:read'])]
+    
     private ?string $titre = null;
 
     /**

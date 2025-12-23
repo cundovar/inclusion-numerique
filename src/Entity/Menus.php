@@ -8,9 +8,24 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+  use ApiPlatform\Metadata\GetCollection;
+  use ApiPlatform\Metadata\Post;
+  use ApiPlatform\Metadata\Get;
+  use ApiPlatform\Metadata\Put;
+  use ApiPlatform\Metadata\Patch;
+  use ApiPlatform\Metadata\Delete;
+
 
 #[ORM\Entity(repositoryClass: MenusRepository::class)]
 #[ApiResource(
+  operations: [
+          new GetCollection(),
+          new Post(),
+          new Get(),
+          new Put(),    // ← Ajouter
+          new Patch(),  // ← Ajouter
+          new Delete(),
+      ],
     normalizationContext: ['groups' => ['page_content:read']],
     denormalizationContext: ['groups' => ['page_content:write']]
 )]
@@ -23,27 +38,31 @@ class Menus
     private ?int $id = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Groups(['page_content:read'])]
+    #[Groups(['page_content:read', 'page_content:write'])] 
     private ?string $label = null;
 
     /**
      * @var Collection<int, Page>
      */
     #[ORM\OneToMany(targetEntity: Page::class, mappedBy: 'menus')]
+   
     private Collection $pages;
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
+    #[Groups(['page_content:read', 'page_content:write'])] 
     private ?Category $category = null;
 
     /**
      * @var Collection<int, PageContent>
      */
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'menu')]
+   
     private Collection $pageContents;
 
 
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
+    #[Groups(['page_content:read', 'page_content:write'])] 
     private ?PositionMenus $positionMenus = null;
 
     public function __construct()

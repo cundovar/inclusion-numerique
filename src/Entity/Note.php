@@ -5,8 +5,13 @@ namespace App\Entity;
 use App\Repository\NoteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['note:read']],
+    denormalizationContext: ['groups' => ['note:write']]
+)]
 class Note
 {
     #[ORM\Id]
@@ -25,15 +30,15 @@ class Note
     private ?Page $page = null;
 
     #[ORM\Column(type: 'text')]
-    #[Groups(['note:read'])]
+    #[Groups(['note:read', 'note:write'])]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Groups(['note:read'])]
+    #[Groups(['note:read', 'note:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    #[Groups(['note:read'])]
+    #[Groups(['note:read', 'note:write'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()

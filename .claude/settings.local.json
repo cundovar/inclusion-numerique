@@ -25,7 +25,8 @@
       "Bash(sudo lsof:*)",
       "Bash(docker stop:*)",
       "Bash(ls:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(docker-compose logs:*)"
     ],
     "deny": []
   }

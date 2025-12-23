@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new GetCollection()
     ],
     normalizationContext: ['groups' => ['logo:read']],
+    denormalizationContext: ['groups' => ['logo:write']],
     paginationEnabled: false
 )]
 class Logo
@@ -23,15 +24,15 @@ class Logo
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['logo:read', 'doc_de_code:read', 'page_content:read'])]
+    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['logo:read', 'doc_de_code:read', 'page_content:read'])]
+    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write'])]
     private ?string $logo = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['logo:read', 'doc_de_code:read', 'page_content:read'])]
+    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write'])]
     private ?string $titre = null;
 
 

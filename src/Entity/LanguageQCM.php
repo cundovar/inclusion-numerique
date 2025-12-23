@@ -10,7 +10,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: LanguageQCMRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['qcm:read']],
+    denormalizationContext: ['groups' => ['qcm:write']]
+)]
 class LanguageQCM
 {
     #[ORM\Id]
@@ -19,7 +22,7 @@ class LanguageQCM
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['qcm:read'])]
+    #[Groups(['qcm:read', 'qcm:write'])]
     private ?string $name = null;
 
     /**

@@ -35,11 +35,11 @@ class QCM
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['qcm:read'])]
+    #[Groups(['qcm:read', 'qcm:write'])]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['qcm:read'])]
+    #[Groups(['qcm:read', 'qcm:write'])]
     private ?string $solution = null;
 
     #[ORM\ManyToOne(inversedBy: 'qcm')]
