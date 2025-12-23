@@ -86,13 +86,13 @@
 
 
 
-       {# {% if app.debug %} #}
+       {% if app.debug %}
         <script type="module" src="/build/@vite/client"></script>
         <script type="module" src="/build/src/main.js"></script>
-      {# {% else %}
-        <script type="module" src="/build/assets/main-Q0JPWhJr.js"></script>
-        <link rel="stylesheet" href="/build/assets/main-DWw_ZoiH.css">
-      {% endif %} #}
+       {% else %}
+        <link rel="stylesheet" href="/build/assets/main-BxxFVQoQ.css">
+        <script type="module" src="/build/assets/main-BUO5GToO.js"></script>
+       {% endif %}
   </head>
   <body>
     {% block body %}{% endblock %}
