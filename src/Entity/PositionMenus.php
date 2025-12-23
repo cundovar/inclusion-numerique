@@ -23,7 +23,7 @@ class PositionMenus
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['position_menus:read', 'position_menus:write'])]
+    #[Groups(['position_menus:read', 'position_menus:write', 'page_content:read'])]
     private ?string $position = null;
 
     public function __toString(): string
