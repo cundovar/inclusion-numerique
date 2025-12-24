@@ -1,5 +1,5 @@
 <template>
-  <pagesFrame/>
+  <!-- <pagesFrame/> -->
 
   <!-- Pop-up de téléchargement d'app mobile -->
   <MobileAppPopup
@@ -153,7 +153,7 @@ const toggleSectionSize = () => {
 // Filtrer les catégories visibles du menu gauche
 const catsMenuGauche = computed(() => {
   const menuGaucheCategories = (cats.value || []).filter(
-    (cat) => cat.positionMenus?.position === "menu-gauche"
+    (cat) => cat.positionMenus?.position === "menu-gauche" || cat.positionMenus?.position === "menu-droite"
   );
 
   // Appliquer le filtre de visibilité

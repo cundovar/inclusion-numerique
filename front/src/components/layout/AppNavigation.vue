@@ -48,6 +48,23 @@
         @hoverCategory="$emit('hoverCategory', $event)"
         @closeMenu="$emit('closeMenu')"
       />
+        <router-link
+      to="/qcm"
+      class="text-xl xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <i class="fas fa-brain"></i>
+    QCM
+    </router-link>
+    
+    <router-link
+      to="/exercices"
+      class="text-xl xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-green-300 p-2 hover:bg-green-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <i class="pi pi-book"></i>
+      EXERCICES
+    </router-link>
+    
+    <SelectfunctionVocabulaire/>
 
       <!-- Liens QCM, Exercices, Documentation -->
       <MenuLinks @closeMenu="$emit('closeMenu')" />
@@ -59,7 +76,7 @@
 import ButtonArrowMenu from '../commun/button/ButtonArrowMenu.vue';
 import CategoryMenu from '../navigation/CategoryMenu.vue';
 import MenuLinks from '../navigation/MenuLinks.vue';
-
+import SelectfunctionVocabulaire from '../MenuPageFramwork/SelectfunctionVocabulaire.vue';
 defineProps({
   cats: {
     type: Array,
