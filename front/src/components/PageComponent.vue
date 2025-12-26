@@ -1,14 +1,14 @@
 <template>
   <div
-    class=" flex pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5   shadow-2xl bg-gray-50 md:rounded-2xl relative z-20"
+    class="flex pb-96 md:mt-16 xl:mt-0 p-2 md:p-10 lg:p-5 shadow-2xl bg-gray-50 md:rounded-2xl relative z-20 w-full overflow-x-hidden"
   >
 
-    <div v-if="pageContent" class="page-layout">
+    <div v-if="pageContent" class="page-layout w-full">
      
 
       <!-- Breadcrumb -->
       <div
-        class="md:ml-20 p-5"
+        class="md:ml-10 lg:ml-20 p-3 md:p-5"
         v-html="'accueil/' + pageContent.menu.label"
       ></div>
 
@@ -46,13 +46,9 @@
           </div>
 
           <!-- Navigation Précédent / Suivant -->
-          <div class="flex  justify-center  items-center p-5 mt-10 border-t border-gray-300">
+          <div class="flex justify-center items-center p-3 md:p-5 mt-10 border-t border-gray-300 gap-4 md:gap-10">
 
-            <div class="">
-
-              <div class="mr-20">
-
- <router-link
+            <router-link
               v-if="previousPage"
               :to="`/pages/${previousPage.slug.replace('/', '')}`"
             >
@@ -60,17 +56,12 @@
                 variant="ghost"
                 icon="pi pi-arrow-left"
                 size="md"
-                
               >
                 <span class="max-md:hidden">{{ previousPage.title }}</span>
                 <span class="md:hidden">Précédent</span>
               </AppButton>
             </router-link>
             <div v-else></div>
-
-              </div>
-
-            <div class="ml-20">
 
             <router-link
               v-if="nextPage"
@@ -88,14 +79,7 @@
             </router-link>
             <div v-else></div>
 
-
-            </div>
-           
           </div>
-          </div>
-
-
-
 
         </main>
       </div>
@@ -355,18 +339,41 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .main-content {
   min-width: 0;
   width: 100%;
+  overflow-x: hidden;
 }
 
 /* Responsive Mobile */
+@media (max-width: 768px) {
+  .content-container {
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+}
+
 @media (max-width: 1024px) {
   .content-container {
     max-width: 100%;
   }
+}
+
+/* Empêcher le débordement du contenu HTML */
+.main-content :deep(pre),
+.main-content :deep(code),
+.main-content :deep(table) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.main-content :deep(img) {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Amélioration de la lisibilité du contenu */
