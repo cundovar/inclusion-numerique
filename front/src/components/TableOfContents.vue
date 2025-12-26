@@ -173,20 +173,20 @@ const getInitialPosition = () => {
 
   if (windowWidth >= 1600) {
     // 2XL screens (≥1536px) - plus à droite pour laisser place au contenu
-    xPercent = 0.17
+    xPercent = 0.85
     yPercent = 0.28
   } else if (windowWidth >= 1200) {
     // XL screens (≥1280px)
-    xPercent = 0.05
+    xPercent = 0.40
     yPercent = 0.25
   } else if (windowWidth >= 1024) {
     // LG screens (≥1024px)
-    xPercent = 0.05
-    yPercent = 0.14
+    xPercent = 0.40
+    yPercent = 0.25
   } else if (windowWidth >= 768) {
     // MD screens (≥768px) - plus à gauche pour ne pas gêner le contenu
-    xPercent = 0.00
-    yPercent = 0.15
+    xPercent = 0.30
+    yPercent = 0.25
   } else {
     // Mobile - position par défaut (non utilisée car drag désactivé)
     xPercent = 0.05

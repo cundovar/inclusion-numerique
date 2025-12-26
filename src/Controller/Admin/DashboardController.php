@@ -23,6 +23,7 @@ use App\Entity\DocDeCode;
 use App\Entity\Logo;
 use App\Entity\PositionMenus;
 use App\Entity\Seo;
+use App\Entity\SuperMenu;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -98,6 +99,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Pages', 'fa fa-bars', Page::class);
         yield MenuItem::linkToCrud('Menus', 'fa fa-bars', Menus::class);
         yield MenuItem::linkToCrud('Positions', 'fa fa-bars', PositionMenus::class);
+        yield MenuItem::linkToCrud('SuperMenus', 'fa fa-bars', SuperMenu::class);
 
         yield MenuItem::section('👥 Utilisateurs');
         yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);

@@ -11,7 +11,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use App\Controller\Admin\PositionMenusCrudController;
-
+use App\Controller\Admin\SuperMenuCrudController;
+use App\Controller\Admin\LogoCrudController;
 class CategoryCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -30,9 +31,14 @@ class CategoryCrudController extends AbstractCrudController
             BooleanField::new('visible', 'Visible')
                 ->setHelp('Si décoché, la catégorie ne sera pas affichée dans les menus'),
 
+            AssociationField::new('superMenu', 'Super Menu')
+                ->setCrudController(SuperMenuCrudController::class)
+                ->autocomplete(),
+
             AssociationField::new('positionMenus', 'Position du menu')
                 ->setCrudController(PositionMenusCrudController::class)
                 ->autocomplete(),
+
 
             AssociationField::new('logo', 'Logo')
                 ->setCrudController(LogoCrudController::class)

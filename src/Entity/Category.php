@@ -74,6 +74,10 @@ class Category
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?bool $visible = true;
 
+    #[ORM\ManyToOne(inversedBy: 'category')]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?SuperMenu $superMenu = null;
+
     public function __construct()
     {
         $this->menus = new ArrayCollection();
@@ -311,6 +315,18 @@ class Category
     public function setVisible(?bool $visible): static
     {
         $this->visible = $visible;
+
+        return $this;
+    }
+
+    public function getSuperMenu(): ?SuperMenu
+    {
+        return $this->superMenu;
+    }
+
+    public function setSuperMenu(?SuperMenu $superMenu): static
+    {
+        $this->superMenu = $superMenu;
 
         return $this;
     }

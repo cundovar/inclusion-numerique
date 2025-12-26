@@ -1,18 +1,9 @@
 <template>
   <div
-    class="pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5 shadow-2xl bg-gray-50 md:rounded-2xl relative z-20"
+    class="pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5  border border-red-500 shadow-2xl bg-gray-50 md:rounded-2xl relative z-20"
   >
     <div v-if="pageContent" class="page-layout">
       <!-- Sommaire flottant (position fixed) -->
-      <TableOfContents
-        v-if="toc.length > 0"
-        :toc="toc"
-        :activeId="activeId"
-        :pageId="getPageId(pageContent.page)"
-        @scroll-to="scrollToHeading"
-        :bgCategorie="pageContent.category?.couleur"
-        :bgHover="pageContent.category?.couleur"
-      />
 
       <!-- Breadcrumb -->
       <div
@@ -21,8 +12,19 @@
       ></div>
 
       <!-- Contenu principal centré -->
-      <div class="content-container">
+      <div class="content-container border border-red-500 relative">
+              <!-- Sommaire flottant (position fixed) -->
+          <TableOfContents
+        v-if="toc.length > 0"
+        :toc="toc"
+        :activeId="activeId"
+        :pageId="getPageId(pageContent.page)"
+        @scroll-to="scrollToHeading"
+        :bgCategorie="pageContent.category?.couleur"
+        :bgHover="pageContent.category?.couleur"
+      />
         <main class="main-content">
+          
           <div class="flex justify-between items-center p-5 max-md:p-2">
             <h1 class="text-2xl text-center flex-1">{{ pageContent.title }}</h1>
             <FavoriteButton
@@ -34,6 +36,7 @@
 
           <!-- Contenu de la page -->
           <div v-if="pageContent.code" ref="contentRef">
+            
             <div
               class="text-center max-md:w-full xl:w-full m-auto p-5"
               v-html="pageContent.code"
