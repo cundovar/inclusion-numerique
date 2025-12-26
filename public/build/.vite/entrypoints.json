@@ -2,23 +2,17 @@
   "base": "/build/",
   "entryPoints": {
     "main": {
-<<<<<<< HEAD
       "css": [
-        "/build/assets/main-BxxFVQoQ.css"
+        "/build/assets/main-BbQdM3K8.css"
       ],
       "dynamic": [
         "/build/assets/workbox-window.prod.es5-B9K5rw8f.js"
       ],
       "js": [
-        "/build/assets/main-BUO5GToO.js"
+        "/build/assets/main-DzQM2cD3.js"
       ],
       "legacy": false,
       "preload": []
-=======
-      "js": [
-        "http://localhost:5173/build/src/main.js"
-      ]
->>>>>>> main
     }
   },
   "legacy": false,
@@ -29,9 +23,5 @@
     1,
     1
   ],
-<<<<<<< HEAD
   "viteServer": null
-=======
-  "viteServer": "http://localhost:5173"
->>>>>>> main
 }
