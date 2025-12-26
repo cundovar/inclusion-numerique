@@ -1,7 +1,7 @@
 <template>
-  <div
+  <div  
     @click="!isXlOuPlus && $emit('openMenu', cat.name)"
-    class="cursor-pointer flex relative flex-col justify-center"
+    class="cursor-pointer flex relative  px-2 flex-col justify-center"
     @mouseenter="isXlOuPlus && $emit('hoverCategory', cat.name)"
   >
     <!-- Titre de la catégorie -->
@@ -16,14 +16,14 @@
         },
         isOpenMenuGauche ? 'flex items-end justify-end ' : ''
       ]"
-      class="max-md:text-xl max-md:drop-shadow-xl max-md:drop-shadow-gray-400 max-md:border-b max-md:border-gray-400 pt-2 md:mt-2 max-md:text-center uppercase max-md:bg-blue-200 pb-2 pl-1"
+      class=" max-md:drop-shadow-xl max-md:drop-shadow-gray-400 max-md:border-b max-md:border-gray-400 pt-2 md:mt-2 max-md:text-center uppercase  pb-2 pl-1"
     >
       <!-- Desktop : lien direct vers la catégorie -->
       <router-link
         v-if="isXlOuPlus"
         :to="`/category/${cat.name.toLowerCase()}`"
         @click="$emit('closeMenu')"
-        class="cursor-pointer block focus:bg-blue-500"
+        class="cursor-pointer text-lg hover:underline block  focus:bg-blue-500"
       >
         {{ cat.name }}
       </router-link>
@@ -57,21 +57,24 @@
       </div>
 
       <!-- Menu des cours -->
+
       <div
         class="md:gap-y-1"
         v-if="(isXlOuPlus && hoveredCategory === cat.name) || (!isXlOuPlus && clickMenu === cat.name)"
         v-for="group in menusByCategory[cat.name]"
         :key="group.label"
       >
-        <div class="p-2 md:w-2/3 md:mt-1 md:border-b border-green-950 mb-2 md:text-start md:bg-transparent md:text-black max-md:border-b max-md:hover:bg-indigo-200 max-md:border-b-blue-300 max-md:border-t-blue-300 max-md:bg-indigo-100 max-md:text-xl max-md:border-t">
-          {{ group.label }}
+      
+        <div class="p-2 md:w-2/3 md:mt-1 md:border-b mb-2 md:text-start md:bg-transparent   max-md:text-center  max-md:text-sm max-md:border-t">
+          
+          <p class="font-semibold  ">{{ group.label }}</p>
         </div>
 
         <button
           :class="[
             menuGauche.menuItemBgColor,
             menuGauche.menuItemHoverBgColor,
-            'w-full md:rounded-sm shadow-2xl border border-indigo-800 mb-2 xl:ml-2 flex flex-col gap-2'
+            'w-full md:rounded-sm shadow-2xl border border-indigo-800 mb-2 xl:ml-2 flex flex-col gap-2 text-sm'
           ]"
           v-for="menu in group.items"
           :key="menu.page.slug"
@@ -90,7 +93,7 @@
               </div>
 
               <div class="flex-1 text-center border-blue-300 shadow border flex justify-center items-center">
-                {{ capitalize(menu.title) }}
+                {{ menu.title }}
               </div>
 
               <div class="flex justify-center items-center w-1/3">

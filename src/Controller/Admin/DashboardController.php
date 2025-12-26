@@ -23,7 +23,13 @@ use App\Entity\DocDeCode;
 use App\Entity\Logo;
 use App\Entity\PositionMenus;
 use App\Entity\Seo;
+use App\Entity\SuperMenu;
+use App\Entity\UserCustomization;
+use App\Entity\SiteConfiguration;
+use App\Repository\SiteConfigurationRepository;
+use App\Controller\Admin\SiteConfigurationCrudController;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[Route('/admin')]
@@ -31,8 +37,26 @@ class DashboardController extends AbstractDashboardController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private SiteConfigurationRepository $siteConfigRepository,
+        private AdminUrlGenerator $adminUrlGenerator,
         #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled,
     ) {}
+
+    #[Route('/site-config', name: 'admin_site_config')]
+    public function siteConfig(): Response
+    {
+        // Récupère ou crée la config par défaut
+        $config = $this->siteConfigRepository->getDefault();
+
+        // Redirige vers l'édition
+        $url = $this->adminUrlGenerator
+            ->setController(SiteConfigurationCrudController::class)
+            ->setAction('edit')
+            ->setEntityId($config->getId())
+            ->generateUrl();
+
+        return $this->redirect($url);
+    }
 
     #[Route('/', name: 'dashboard')]
     public function index(): Response
@@ -98,9 +122,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Pages', 'fa fa-bars', Page::class);
         yield MenuItem::linkToCrud('Menus', 'fa fa-bars', Menus::class);
         yield MenuItem::linkToCrud('Positions', 'fa fa-bars', PositionMenus::class);
+        yield MenuItem::linkToCrud('SuperMenus', 'fa fa-bars', SuperMenu::class);
 
         yield MenuItem::section('👥 Utilisateurs');
         yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);
+        yield MenuItem::linkToCrud('Personnalisations', 'fa fa-palette', UserCustomization::class);
         if ($this->trackingEnabled) {
             yield MenuItem::linkToCrud('Visites', 'fa fa-chart-line', UserPageVisit::class);
             yield MenuItem::linkToRoute('Statistiques des visites', 'fa fa-chart-bar', 'admin_stats_page_visits');
@@ -114,5 +140,8 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('🔍 SEO');
         yield MenuItem::linkToCrud('SEO', 'fa fa-search', Seo::class);
+
+        yield MenuItem::section('⚙️ Configuration');
+        yield MenuItem::linkToRoute('Config globale', 'fa fa-cog', 'admin_site_config');
     }
 }

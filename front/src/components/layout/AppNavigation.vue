@@ -1,16 +1,16 @@
 <template>
   <div
     :class="[
-      'xl:z-30 scroll-gauche xl:top-20 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
+      'xl:z-30 scroll-gauche   xl:top-20 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
       isXlOuPlus ? '' : isMenuOpen ? 'max-xl:w-full md:w-2/3 z-40 top-28 ' : 'w-full -translate-x-full top-28',
       hoveredCategory ? 'z-40 w-1/2 ' : 'z-0 w-[20rem]',
-      isOpenMenuGauche ? '-translate-x-[9rem]' : 'translate-x-0',
+      isOpenMenuGauche ? '-translate-x-[90%]' : 'translate-x-0',
     ]"
   >
     <nav
       @mouseleave="isXlOuPlus && $emit('hoverCategory', null)"
       :class="[
-        'md:p-5 relative 2xl:top-1 float-left z-50 h-screen max-md:z-50 transition-transform duration-300 ease-in-out',
+        'md:p-5  gap-y-2 relative 2xl:top-1 float-left z-50 h-screen max-md:z-50 transition-transform duration-300 ease-in-out',
         isXlOuPlus
           ? 'flex xl:w-[16rem] 2xl:w-[20rem] flex-col translate-x-0'
           : isMenuOpen
@@ -48,6 +48,23 @@
         @hoverCategory="$emit('hoverCategory', $event)"
         @closeMenu="$emit('closeMenu')"
       />
+        <router-link
+      to="/qcm"
+      class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <i class="fas fa-brain"></i>
+    QCM
+    </router-link>
+    
+    <router-link
+      to="/exercices"
+      class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-green-300 p-2 hover:bg-green-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <i class="pi pi-book"></i>
+      EXERCICES
+    </router-link>
+    
+    <SelectfunctionVocabulaire class="max-xl:hidden"/>
 
       <!-- Liens QCM, Exercices, Documentation -->
       <MenuLinks @closeMenu="$emit('closeMenu')" />
@@ -59,7 +76,7 @@
 import ButtonArrowMenu from '../commun/button/ButtonArrowMenu.vue';
 import CategoryMenu from '../navigation/CategoryMenu.vue';
 import MenuLinks from '../navigation/MenuLinks.vue';
-
+import SelectfunctionVocabulaire from '../MenuPageFramwork/SelectfunctionVocabulaire.vue';
 defineProps({
   cats: {
     type: Array,

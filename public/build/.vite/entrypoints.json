@@ -2,6 +2,7 @@
   "base": "/build/",
   "entryPoints": {
     "main": {
+<<<<<<< HEAD
       "css": [
         "/build/assets/main-BxxFVQoQ.css"
       ],
@@ -13,6 +14,11 @@
       ],
       "legacy": false,
       "preload": []
+=======
+      "js": [
+        "http://localhost:5173/build/src/main.js"
+      ]
+>>>>>>> main
     }
   },
   "legacy": false,
@@ -23,5 +29,9 @@
     1,
     1
   ],
+<<<<<<< HEAD
   "viteServer": null
+=======
+  "viteServer": "http://localhost:5173"
+>>>>>>> main
 }

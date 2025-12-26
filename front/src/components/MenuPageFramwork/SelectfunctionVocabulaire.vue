@@ -1,6 +1,6 @@
 <template>
 
-<div class="bg-amber-200 max-xl:bg-violet-300 max-xl:mt-2 max-xl:mb-2 xl:p-2">
+<div class="bg-amber-200  max-xl:mt-2 max-xl:mb-2 xl:p-2">
 
 
 

@@ -13,9 +13,9 @@
     ajoutClass="absolute left-0 top-0"
     />
     <div  class="h-5"></div>
-
-
+<!-- <TableOfContents></TableOfContents> -->
   </div>
+<!--<div
     <router-link
       v-for="tech in catsMenuDroite"
       :key="tech.slug"
@@ -31,7 +31,7 @@
       {{ tech.name }}
     </router-link>
     
-    <!-- Lien vers le QCM -->
+     Lien vers le QCM 
     <router-link
       to="/qcm"
       class="text-xl xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
@@ -49,7 +49,8 @@
     </router-link>
     
     <SelectfunctionVocabulaire/>
-  </div>
+  -->
+  </div> 
 
 </template>
 
@@ -60,6 +61,7 @@ import { ref, computed } from 'vue'
 import { useData } from '../../utlis/fetchDataPwa'
 import { useVisibilityFilter } from '../../composables/useVisibilityFilter.js'
 import { useCustomization } from '../../composables/useCustomization'
+import TableOfContents from '../TableOfContents.vue'
 
 const { cats, menus } = useData()
 const { filterByVisibility } = useVisibilityFilter()

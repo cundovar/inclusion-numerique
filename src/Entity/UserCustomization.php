@@ -31,7 +31,7 @@ class UserCustomization
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
-        $this->settings = $this->getDefaultSettings();
+        $this->settings = [];
     }
 
     public function getId(): ?int
@@ -64,6 +64,22 @@ class UserCustomization
         return $this;
     }
 
+    public function getSettingsJson(): string
+    {
+        return json_encode($this->settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    public function setSettingsJson(string $json): static
+    {
+        $decoded = json_decode($json, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $this->settings = $decoded;
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -89,45 +105,11 @@ class UserCustomization
     }
 
     /**
-     * Paramètres par défaut
-     */
-    private function getDefaultSettings(): array
-    {
-        return [
-            'siteName' => 'DevDoc',
-            'header' => [
-                'bgColor' => '',
-                'textColor' => '',
-                'hoverColor' => '',
-            ],
-            'body' => [
-                'bgColor' => '',
-                'textColor' => '',
-            ],
-            'menuGauche' => [
-                'categoryBgColor' => 'bg-blue-300',
-                'categoryTextColor' => 'text-gray-800',
-                'categoryTextSize' => 'text-2xl',
-                'categoryHoverColor' => 'hover:bg-blue-400',
-                'menuItemBgColor' => 'bg-gray-100',
-                'menuItemTextColor' => 'text-blue-500',
-                'menuItemHoverBgColor' => 'hover:bg-gray-300',
-            ],
-            'menuDroit' => [
-                'categoryBgColor' => 'bg-blue-300',
-                'categoryTextColor' => 'text-gray-600',
-                'categoryTextSize' => 'text-xl',
-                'categoryHoverColor' => 'hover:bg-blue-400',
-            ],
-        ];
-    }
-
-    /**
-     * Réinitialiser aux valeurs par défaut
+     * Réinitialiser les settings utilisateur (vide pour utiliser les defaults du site)
      */
     public function resetToDefaults(): static
     {
-        $this->settings = $this->getDefaultSettings();
+        $this->settings = [];
         $this->updatedAt = new \DateTimeImmutable();
 
         return $this;

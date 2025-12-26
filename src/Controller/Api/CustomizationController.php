@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Repository\UserCustomizationRepository;
+use App\Repository\SiteConfigurationRepository;
 use App\Service\CustomizationValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,26 +14,45 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/customization')]
-#[IsGranted('ROLE_USER')]
 class CustomizationController extends AbstractController
 {
     public function __construct(
         private UserCustomizationRepository $customizationRepository,
+        private SiteConfigurationRepository $siteConfigRepository,
         private CustomizationValidator $validator,
         private EntityManagerInterface $em
     ) {}
 
     /**
-     * Récupérer la personnalisation de l'utilisateur
+     * Récupérer la configuration par défaut du site (public)
+     */
+    #[Route('/defaults', name: 'api_customization_defaults', methods: ['GET'])]
+    public function getDefaults(): JsonResponse
+    {
+        $settings = $this->siteConfigRepository->getDefaultSettings();
+
+        return $this->json([
+            'settings' => $settings
+        ]);
+    }
+
+    /**
+     * Récupérer la personnalisation de l'utilisateur (merge avec defaults)
      */
     #[Route('', name: 'api_customization_get', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function get(): JsonResponse
     {
         $user = $this->getUser();
         $customization = $this->customizationRepository->findOrCreateForUser($user);
 
+        // Merger avec les defaults du site
+        $defaults = $this->siteConfigRepository->getDefaultSettings();
+        $userSettings = $customization->getSettings();
+        $mergedSettings = array_replace_recursive($defaults, $userSettings);
+
         return $this->json([
-            'settings' => $customization->getSettings(),
+            'settings' => $mergedSettings,
             'updatedAt' => $customization->getUpdatedAt()->format('Y-m-d H:i:s')
         ]);
     }
@@ -41,6 +61,7 @@ class CustomizationController extends AbstractController
      * Sauvegarder la personnalisation
      */
     #[Route('', name: 'api_customization_save', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
     public function save(Request $request): JsonResponse
     {
         $user = $this->getUser();
@@ -80,6 +101,7 @@ class CustomizationController extends AbstractController
      * Réinitialiser la personnalisation aux valeurs par défaut
      */
     #[Route('/reset', name: 'api_customization_reset', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
     public function reset(): JsonResponse
     {
         $user = $this->getUser();
