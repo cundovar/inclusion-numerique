@@ -74,7 +74,7 @@
 
     <!-- Contenu principal -->
     <main :class="sectionSize ? 'w-full min-h-screen z-[60] mt-0 pt-0 absolute ' : ' relative xl:p-20 max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden'">
-      <div v-if="!$route.path.includes('/exercices') && !$route.path.includes('/profile') && !$route.path.includes('/qcm') && !$route.path.includes('/category') && $route.path !== '/'" class="max-xl:hidden absolute top-15 z-70 right-50" >
+      <div v-if="!$route.path.includes('/exercices') && !$route.path.includes('/pages') && !$route.path.includes('/profile') && !$route.path.includes('/qcm') && !$route.path.includes('/category') && $route.path !== '/'" class="max-xl:hidden absolute top-15 z-70 right-50" >
 
         <AppButton v-if="sectionSize " variant="danger" text-content="fermer" type="button" @click="toggleSectionSize" />
         <AppButton v-else variant="danger" text-content="agrandir" type="button" @click="toggleSectionSize" />

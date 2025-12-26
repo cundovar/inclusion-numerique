@@ -3,6 +3,7 @@ import axios from 'axios'
 
 // État global de personnalisation
 const customization = ref(null)
+const siteDefaults = ref(null)
 const allowedClasses = ref(null)
 const loading = ref(false)
 
@@ -11,27 +12,39 @@ const loading = ref(false)
  */
 export function useCustomization() {
   /**
+   * Charger les defaults du site depuis l'API
+   */
+  const fetchSiteDefaults = async () => {
+    try {
+      const response = await axios.get('/api/customization/defaults')
+      siteDefaults.value = response.data.settings
+      return siteDefaults.value
+    } catch (error) {
+      console.error('Erreur lors du chargement des defaults:', error)
+      return null
+    }
+  }
+
+  /**
    * Charger la personnalisation depuis l'API
    */
   const fetchCustomization = async () => {
     loading.value = true
     try {
-      const response = await axios.get('/api/customization')
-      // Merger les settings avec les valeurs par défaut pour s'assurer que toutes les propriétés existent
-      const defaults = getDefaultSettings()
-      customization.value = {
-        ...defaults,
-        ...response.data.settings,
-        header: { ...defaults.header, ...(response.data.settings.header || {}) },
-        body: { ...defaults.body, ...(response.data.settings.body || {}) },
-        menuGauche: { ...defaults.menuGauche, ...(response.data.settings.menuGauche || {}) },
-        menuDroit: { ...defaults.menuDroit, ...(response.data.settings.menuDroit || {}) }
+      // D'abord charger les defaults si pas encore fait
+      if (!siteDefaults.value) {
+        await fetchSiteDefaults()
       }
+
+      const response = await axios.get('/api/customization')
+      customization.value = response.data.settings
       return customization.value
     } catch (error) {
       console.error('Erreur lors du chargement de la personnalisation:', error)
-      // Utiliser les valeurs par défaut en cas d'erreur
-      customization.value = getDefaultSettings()
+      // Utiliser les defaults du site
+      if (siteDefaults.value) {
+        customization.value = siteDefaults.value
+      }
       return customization.value
     } finally {
       loading.value = false
@@ -87,51 +100,23 @@ export function useCustomization() {
   }
 
   /**
-   * Valeurs par défaut (fallback)
-   */
-  const getDefaultSettings = () => {
-    return {
-      siteName: 'DevDoc',
-      header: {
-        bgColor: '',
-        textColor: '',
-        hoverColor: '',
-      },
-      body: {
-        bgColor: '',
-        textColor: '',
-      },
-      menuGauche: {
-        categoryBgColor: 'bg-blue-300',
-        categoryTextColor: 'text-gray-800',
-        categoryTextSize: 'text-2xl',
-        categoryHoverColor: 'hover:bg-blue-400',
-        menuItemBgColor: 'bg-gray-100',
-        menuItemTextColor: 'text-blue-500',
-        menuItemHoverBgColor: 'hover:bg-gray-300',
-      },
-      menuDroit: {
-        categoryBgColor: 'bg-blue-300',
-        categoryTextColor: 'text-gray-600',
-        categoryTextSize: 'text-xl',
-        categoryHoverColor: 'hover:bg-blue-400',
-      },
-    }
-  }
-
-  /**
    * Computed pour faciliter l'accès aux settings
    */
-  const siteName = computed(() => customization.value?.siteName || getDefaultSettings().siteName)
-  const header = computed(() => customization.value?.header || getDefaultSettings().header)
-  const body = computed(() => customization.value?.body || getDefaultSettings().body)
-  const menuGauche = computed(() => customization.value?.menuGauche || getDefaultSettings().menuGauche)
-  const menuDroit = computed(() => customization.value?.menuDroit || getDefaultSettings().menuDroit)
+  const siteName = computed(() => customization.value?.siteName || siteDefaults.value?.siteName || 'DevDoc')
+  const header = computed(() => customization.value?.header || siteDefaults.value?.header || {})
+  const body = computed(() => customization.value?.body || siteDefaults.value?.body || {})
+  const menuGauche = computed(() => customization.value?.menuGauche || siteDefaults.value?.menuGauche || {})
+  const menuDroit = computed(() => customization.value?.menuDroit || siteDefaults.value?.menuDroit || {})
 
   /**
    * Initialiser la personnalisation au démarrage
    */
   const initCustomization = async () => {
+    // Toujours charger les defaults du site en premier
+    if (!siteDefaults.value) {
+      await fetchSiteDefaults()
+    }
+    // Puis charger la personnalisation utilisateur (si connecté)
     if (!customization.value) {
       await fetchCustomization()
     }
@@ -143,6 +128,7 @@ export function useCustomization() {
   return {
     // État
     customization,
+    siteDefaults,
     allowedClasses,
     loading,
 
@@ -154,11 +140,11 @@ export function useCustomization() {
     menuDroit,
 
     // Méthodes
+    fetchSiteDefaults,
     fetchCustomization,
     fetchAllowedClasses,
     saveCustomization,
     resetCustomization,
     initCustomization,
-    getDefaultSettings,
   }
 }

@@ -1,9 +1,10 @@
 <template>
   <div
-    class="pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5  border border-red-500 shadow-2xl bg-gray-50 md:rounded-2xl relative z-20"
+    class=" flex pb-96 md:mt-16 xl:mt-0 md:p-20 lg:p-5   shadow-2xl bg-gray-50 md:rounded-2xl relative z-20"
   >
+
     <div v-if="pageContent" class="page-layout">
-      <!-- Sommaire flottant (position fixed) -->
+     
 
       <!-- Breadcrumb -->
       <div
@@ -12,19 +13,19 @@
       ></div>
 
       <!-- Contenu principal centré -->
-      <div class="content-container border border-red-500 relative">
-              <!-- Sommaire flottant (position fixed) -->
-          <TableOfContents
-        v-if="toc.length > 0"
-        :toc="toc"
-        :activeId="activeId"
-        :pageId="getPageId(pageContent.page)"
-        @scroll-to="scrollToHeading"
-        :bgCategorie="pageContent.category?.couleur"
-        :bgHover="pageContent.category?.couleur"
-      />
-        <main class="main-content">
-          
+      <div class="content-container flex items-start relative">
+              <!-- Sommaire à gauche -->
+              <SidebarToc
+                :toc="toc"
+                :activeId="activeId"
+                :showProgress="true"
+                :pageId="getPageId(pageContent.page)"
+                :bgCategorie="pageContent.category?.couleur || ''"
+                @scroll-to="scrollToHeading"
+                class="hidden xl:block"
+              />
+              <main class="main-content flex-1">
+       
           <div class="flex justify-between items-center p-5 max-md:p-2">
             <h1 class="text-2xl text-center flex-1">{{ pageContent.title }}</h1>
             <FavoriteButton
@@ -35,12 +36,13 @@
           </div>
 
           <!-- Contenu de la page -->
-          <div v-if="pageContent.code" ref="contentRef">
-            
+          <div class="flex " v-if="pageContent.code" ref="contentRef">
+
             <div
-              class="text-center max-md:w-full xl:w-full m-auto p-5"
+              class="text-center max-md:w-full xl:w-full m-auto flex  p-5"
               v-html="pageContent.code"
             ></div>
+
           </div>
 
           <!-- Navigation Précédent / Suivant -->
@@ -115,15 +117,18 @@ import axios from "axios";
 import { ref } from 'vue';
 import FavoriteButton from "./FavoriteButton.vue";
 import TableOfContents from "./TableOfContents.vue";
+import SidebarToc from "./SidebarToc.vue";
 import AppButton from "./commun/button/AppButton.vue";
 import { useToc } from "@/composables/useToc";
 import { useVisibilityFilter } from "@/composables/useVisibilityFilter";
+import TableContent2 from "./TableContent2.vue";
 const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
 
 export default {
   components: {
     FavoriteButton,
     TableOfContents,
+    SidebarToc,
     AppButton,
   },
   props: ["slug"],
