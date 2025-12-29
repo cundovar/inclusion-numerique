@@ -21,6 +21,7 @@
         </li>
         <li>sommaire dynamique </li>
         <li>agrandissement des pages possible pour exo</li>
+        <li>securité du html provenant de l' api</li>
       </ul>
       <p class="text-gray-600">
       
