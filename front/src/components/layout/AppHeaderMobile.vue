@@ -1,8 +1,9 @@
 <template>
   <div
+    ref="headerRef"
     :class="[
       header.bgColor || 'bg-[var(--primary-color)]',
-      'border-blue-950 z-50 py-2 fixed w-full shadow-xl top-0 xl:hidden'
+      'border-blue-950 z-50 py-2 fixed w-full shadow-xl top-0 left-0 xl:hidden'
     ]"
   >
     <!-- Ligne du haut: Menu burger, Logo, Bouton auth -->
@@ -52,6 +53,8 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
+import Headroom from 'headroom.js';
 import AuthButtonMobile from '../AuthButtonMobile.vue';
 import btnconnexioEtImgProfileMOBIL from '../btnconnexioEtImgProfileMOBIL.vue';
 import { useCustomization } from '../../composables/useCustomization';
@@ -70,4 +73,66 @@ defineProps({
 });
 
 defineEmits(['toggleMenu', 'update:search', 'search']);
+
+// Headroom.js
+const headerRef = ref(null);
+let headroom = null;
+
+onMounted(() => {
+  if (headerRef.value) {
+    headroom = new Headroom(headerRef.value, {
+      offset: 100,          // Ne pas activer avant 100px de scroll
+      tolerance: {
+        up: 10,             // Sensibilité scroll vers le haut
+        down: 10            // Sensibilité scroll vers le bas
+      },
+      classes: {
+        initial: 'headroom',
+        pinned: 'headroom--pinned',
+        unpinned: 'headroom--unpinned',
+        top: 'headroom--top',
+        notTop: 'headroom--not-top'
+      },
+      onPin: () => {},
+      onUnpin: () => {},
+    });
+    headroom.init();
+  }
+});
+
+onUnmounted(() => {
+  if (headroom) {
+    headroom.destroy();
+  }
+});
 </script>
+
+<style>
+/* Headroom.js animations */
+.headroom {
+  will-change: transform;
+  transition: transform 0.3s ease-in-out !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.headroom--pinned {
+  transform: translateY(0%) !important;
+}
+
+.headroom--unpinned {
+  transform: translateY(-100%) !important;
+}
+
+.headroom--top {
+  transform: translateY(0%) !important;
+}
+
+.headroom--not-top.headroom--pinned {
+  transform: translateY(0%) !important;
+}
+
+.headroom--not-top.headroom--unpinned {
+  transform: translateY(-100%) !important;
+}
+</style>
