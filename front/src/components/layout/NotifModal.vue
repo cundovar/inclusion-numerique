@@ -13,14 +13,14 @@
       <h3 class="text-center">mise a jour  :</h3>
       <ul>
         <li>
-          pour les user connectés :
+        
           <ul class="ml-6 list-disc">
-            <li class="ml-4">possibilité de prendre des notes dans pages cours</li>
-            <li class="ml-4">possibilité de personnaliser le site</li>
+            <li class="ml-4">menus pour mobile</li>
+            <li class="ml-4">gestions de category differente</li>
           </ul>
         </li>
-        <li>sommaire dynamique et déplaçable dans page des cours</li>
-        <li>agrandissement des pages possible</li>
+        <li>sommaire dynamique </li>
+        <li>agrandissement des pages possible pour exo</li>
       </ul>
       <p class="text-gray-600">
       
