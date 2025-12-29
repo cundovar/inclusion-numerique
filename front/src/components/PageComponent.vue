@@ -36,7 +36,7 @@
           </div>
 
           <!-- Contenu de la page -->
-          <div class="flex " v-if="pageContent.code" ref="contentRef">
+          <div class=" " v-if="pageContent.code" ref="contentRef">
 
 <SafeHtml
               :html="pageContent.code"
