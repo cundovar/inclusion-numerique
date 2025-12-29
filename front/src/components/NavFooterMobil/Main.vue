@@ -1,5 +1,7 @@
 <template>
-  <footer class="min-w-[320px] p-3 md:p-4 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-blue-300 z-50 shadow-2xl flex items-center justify-around xl:hidden gap-2 md:gap-4">
+  <footer
+    ref="footerRef"
+    class="min-w-[320px] p-3 md:p-4 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-blue-300 z-50 shadow-2xl flex items-center justify-around xl:hidden gap-2 md:gap-4">
 
     <!-- Bouton Profil -->
     <router-link
@@ -55,10 +57,12 @@
 
 <script setup>
 import axios from 'axios';
-import { ref } from 'vue';
-import { onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import Headroom from 'headroom.js';
 
-const user=ref(false)
+const user = ref(false);
+const footerRef = ref(null);
+let headroom = null;
 const techs = [
   {
     name: 'symfony',
@@ -112,7 +116,31 @@ const fetchUser = async () => {
 
 onMounted(() => {
   fetchUser();
- 
+
+  // Headroom.js pour le footer (logique inversée)
+  if (footerRef.value) {
+    headroom = new Headroom(footerRef.value, {
+      offset: 100,
+      tolerance: {
+        up: 10,
+        down: 10
+      },
+      classes: {
+        initial: 'footer-headroom',
+        pinned: 'footer-headroom--pinned',
+        unpinned: 'footer-headroom--unpinned',
+        top: 'footer-headroom--top',
+        notTop: 'footer-headroom--not-top'
+      }
+    });
+    headroom.init();
+  }
+});
+
+onUnmounted(() => {
+  if (headroom) {
+    headroom.destroy();
+  }
 });
 </script>
 
@@ -162,6 +190,34 @@ onMounted(() => {
 .footer-mobil{
     z-index: 1000 !important;
 }
+</style>
 
+<style>
+/* Headroom.js pour footer - logique inversée (glisse vers le bas) */
+.footer-headroom {
+  will-change: transform;
+  transition: transform 0.3s ease-in-out !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
 
+.footer-headroom--pinned {
+  transform: translateY(0%) !important;
+}
+
+.footer-headroom--unpinned {
+  transform: translateY(100%) !important;
+}
+
+.footer-headroom--top {
+  transform: translateY(0%) !important;
+}
+
+.footer-headroom--not-top.footer-headroom--pinned {
+  transform: translateY(0%) !important;
+}
+
+.footer-headroom--not-top.footer-headroom--unpinned {
+  transform: translateY(100%) !important;
+}
 </style>
