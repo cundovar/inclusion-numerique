@@ -38,16 +38,16 @@
           <!-- Contenu de la page -->
           <div class="flex " v-if="pageContent.code" ref="contentRef">
 
-            <div
-              class="text-center max-md:w-full xl:w-full m-auto flex  p-5"
-              v-html="pageContent.code"
-            ></div>
+<SafeHtml
+              :html="pageContent.code"
+              class="text-center max-md:w-full xl:w-full m-auto flex p-5"
+            />
 
           </div>
 
           <!-- Navigation Précédent / Suivant -->
           <div class="flex justify-center items-center p-3 md:p-5 mt-10 border-t border-gray-300 gap-4 md:gap-10">
-
+zzz
             <router-link
               v-if="previousPage"
               :to="`/pages/${previousPage.slug.replace('/', '')}`"
@@ -103,6 +103,7 @@ import FavoriteButton from "./FavoriteButton.vue";
 import TableOfContents from "./TableOfContents.vue";
 import SidebarToc from "./SidebarToc.vue";
 import AppButton from "./commun/button/AppButton.vue";
+import SafeHtml from "./security-html-bdd/safeHtml.vue";
 import { useToc } from "@/composables/useToc";
 import { useVisibilityFilter } from "@/composables/useVisibilityFilter";
 import TableContent2 from "./TableContent2.vue";
@@ -114,6 +115,7 @@ export default {
     TableOfContents,
     SidebarToc,
     AppButton,
+    SafeHtml,
   },
   props: ["slug"],
   setup() {
