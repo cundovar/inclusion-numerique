@@ -7,10 +7,10 @@
      
 
       <!-- Breadcrumb -->
-      <div
+      <SafeHtml
+        :html="'accueil/' + pageContent.menu.label"
         class="md:ml-10 lg:ml-20 p-3 md:p-5"
-        v-html="'accueil/' + pageContent.menu.label"
-      ></div>
+      ></SafeHtml>
 
       <!-- Contenu principal centré -->
       <div class="content-container flex items-start relative">
@@ -41,13 +41,14 @@
 <SafeHtml
               :html="pageContent.code"
               class="text-center max-md:w-full xl:w-full m-auto flex p-5"
+             
             />
 
           </div>
 
           <!-- Navigation Précédent / Suivant -->
           <div class="flex justify-center items-center p-3 md:p-5 mt-10 border-t border-gray-300 gap-4 md:gap-10">
-zzz
+
             <router-link
               v-if="previousPage"
               :to="`/pages/${previousPage.slug.replace('/', '')}`"
