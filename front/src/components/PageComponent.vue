@@ -7,10 +7,10 @@
      
 
       <!-- Breadcrumb -->
-      <div
+      <SafeHtml
+        :html="'accueil/' + pageContent.menu.label"
         class="md:ml-10 lg:ml-20 p-3 md:p-5"
-        v-html="'accueil/' + pageContent.menu.label"
-      ></div>
+      ></SafeHtml>
 
       <!-- Contenu principal centré -->
       <div class="content-container flex items-start relative">
@@ -36,12 +36,13 @@
           </div>
 
           <!-- Contenu de la page -->
-          <div class="flex " v-if="pageContent.code" ref="contentRef">
+          <div class=" " v-if="pageContent.code" ref="contentRef">
 
-            <div
-              class="text-center max-md:w-full xl:w-full m-auto flex  p-5"
-              v-html="pageContent.code"
-            ></div>
+<SafeHtml
+              :html="pageContent.code"
+              class="text-center max-md:w-full xl:w-full m-auto flex p-5"
+             
+            />
 
           </div>
 
@@ -103,6 +104,7 @@ import FavoriteButton from "./FavoriteButton.vue";
 import TableOfContents from "./TableOfContents.vue";
 import SidebarToc from "./SidebarToc.vue";
 import AppButton from "./commun/button/AppButton.vue";
+import SafeHtml from "./security-html-bdd/safeHtml.vue";
 import { useToc } from "@/composables/useToc";
 import { useVisibilityFilter } from "@/composables/useVisibilityFilter";
 import TableContent2 from "./TableContent2.vue";
@@ -114,6 +116,7 @@ export default {
     TableOfContents,
     SidebarToc,
     AppButton,
+    SafeHtml,
   },
   props: ["slug"],
   setup() {
