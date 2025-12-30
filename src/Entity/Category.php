@@ -19,11 +19,11 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['page_content:read', 'page_content:write'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['page_content:read', 'page_content:write'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read'])]
     private ?string $name = null;
 
     /**

@@ -19,10 +19,10 @@
       </div>
       <h3 class="font-semibold pb-2 text-xl ">Énoncé de l'exercice : </h3>
 
-      <h3
-        :class="exo.category.name==='css'?'bg-blue-50':'bg-yellow-50'" 
-        class=" ml-3 font-semibold pb-2 text-xl shadow p-3 rounded-md    mb-10" v-html="exo.code">
-      </h3>
+
+        <SafeHtml :html="exo.code" class=" ml-3 font-semibold pb-2 text-xl shadow p-3 rounded-md    mb-10" 
+        :class="exo.category.name==='css'?'bg-blue-50':'bg-yellow-50'" </SafeHtml>
+  
 
       <EditorCode
         v-if="exo.exo?.slug"
@@ -44,6 +44,7 @@ import { useRoute } from 'vue-router'
 import { onMounted, ref, computed } from 'vue'
 import EditorCode from './exercices/EditorCode.vue'
 
+import SafeHtml from './security-html-bdd/safeHtml.vue'
 const route = useRoute()
 const { exoContents, fetchExoContents } = useData()
 
