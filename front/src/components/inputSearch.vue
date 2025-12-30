@@ -17,7 +17,7 @@
       variant="primary"
       size="sm"
       text-content="Rechercher"
-      class="hidden xl:flex"
+      class="max-xl:hidden xl:flex"
     />
 
     <!-- Bouton mobile (icône ronde) -->
