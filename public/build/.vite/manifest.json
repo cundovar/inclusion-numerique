@@ -38,7 +38,7 @@
     "isDynamicEntry": true
   },
   "src/main.js": {
-    "file": "assets/main-Dhf6iWRo.js",
+    "file": "assets/main-D1_01NtC.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
@@ -46,7 +46,7 @@
       "node_modules/workbox-window/build/workbox-window.prod.es5.mjs"
     ],
     "css": [
-      "assets/main-DXDLD0Op.css"
+      "assets/main-BzSI_D_p.css"
     ],
     "assets": [
       "assets/fa-brands-400-D_cYUPeE.woff2",
