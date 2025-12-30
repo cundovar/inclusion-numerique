@@ -10,9 +10,9 @@
     @close="$emit('close')"
   >
     <template #header>
-      <div class="flex justify-between items-center w-full bg-blue-50 p-4 -m-5 mb-0 border-b">
+      <div class="flex justify-between items-center border w-full  bg-blue-50 p-4  mb-0 border-b">
         <div>
-          <h2 class="text-lg font-bold text-gray-800">Résultats IA</h2>
+          <h2 class="text-lg font-bold text-gray-800">Résultats </h2>
           <div class="text-sm text-gray-600">
             <span class="text-blue-600 font-medium">{{ searchResults.length }}</span> résultat(s)
           </div>

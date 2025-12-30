@@ -31,6 +31,10 @@ export function useNavigation() {
     modalIsOpen.value = false;
   };
 
+  const openModal = () => {
+    modalIsOpen.value = true;
+  };
+
   const closed = () => {
     closeModal();
     closeMobileMenu();
@@ -47,6 +51,7 @@ export function useNavigation() {
     openMenu,
     toggleMenuGauche,
     closeModal,
+    openModal,
     closed
   };
 }

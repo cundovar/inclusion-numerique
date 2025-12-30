@@ -137,10 +137,11 @@ const {
   openMenu,
   toggleMenuGauche,
   closeModal,
+  openModal,
   closed
 } = useNavigation();
 
-const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile);
+const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile, openModal);
 const { showMobileAppPopup, currentOrigin, checkMobileAppPopup, closeMobileAppPopup, installPWA } = usePWA();
 const { showNotifModal, closeNotifModal } = useNotifModal();
 const { filterByVisibility } = useVisibilityFilter();

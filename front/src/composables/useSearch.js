@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import IntelligentSearchService from '../services/intelligentSearchService.js';
 
-export function useSearch(menus, user, isMobile) {
+export function useSearch(menus, user, isMobile, onSearchComplete = null) {
   const search = ref('');
   const searchResults = ref([]);
   const searchAnalysis = ref(null);
@@ -128,6 +128,12 @@ export function useSearch(menus, user, isMobile) {
       });
     }
 
+    // Sur mobile, toujours ouvrir le modal (avec ou sans résultats)
+    if (isMobile.value && onSearchComplete) {
+      onSearchComplete();
+    }
+
+    // Sur desktop, scroller vers les résultats si présents
     if (searchResults.value.length > 0 && !isMobile.value) {
       setTimeout(() => {
         const resultsElement = document.querySelector('.search-results');

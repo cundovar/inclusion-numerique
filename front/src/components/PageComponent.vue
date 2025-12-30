@@ -31,7 +31,7 @@
             <FavoriteButton
               v-if="pageContent.page && getPageId(pageContent.page)"
               :pageId="getPageId(pageContent.page)"
-              class="max-md:absolute top-24 right-3"
+              class="max-md:absolute top-10 right-1"
             />
           </div>
 
