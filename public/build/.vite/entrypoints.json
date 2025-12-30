@@ -3,13 +3,13 @@
   "entryPoints": {
     "main": {
       "css": [
-        "/build/assets/main-BzSI_D_p.css"
+        "/build/assets/main-DNhpf37M.css"
       ],
       "dynamic": [
         "/build/assets/workbox-window.prod.es5-B9K5rw8f.js"
       ],
       "js": [
-        "/build/assets/main-C-GuunNS.js"
+        "/build/assets/main-B9wgDTGg.js"
       ],
       "legacy": false,
       "preload": []
