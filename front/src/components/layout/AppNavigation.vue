@@ -73,10 +73,10 @@
 </template>
 
 <script setup>
-import ButtonArrowMenu from '../commun/button/ButtonArrowMenu.vue';
+import ButtonArrowMenu from '../ui/ButtonArrowMenu.vue';
 import CategoryMenu from '../navigation/CategoryMenu.vue';
 import MenuLinks from '../navigation/MenuLinks.vue';
-import SelectfunctionVocabulaire from '../MenuPageFramwork/SelectfunctionVocabulaire.vue';
+import SelectfunctionVocabulaire from '../navigation/SelectfunctionVocabulaire.vue';
 defineProps({
   cats: {
     type: Array,

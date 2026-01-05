@@ -132,9 +132,9 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import axios from 'axios'
-import { useQCMStore } from '../../store/QCM'
+import { useQCMStore } from '../../stores/qcm'
 import { useRouter, useRoute } from 'vue-router'
-import AppButton from '../../components/commun/button/AppButton.vue'
+import AppButton from '../../components/ui/AppButton.vue'
 
 
 const qcmStore = useQCMStore()

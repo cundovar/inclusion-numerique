@@ -30,7 +30,7 @@
     </router-link>
 
     <!-- Recherche au centre -->
-    <inputSearch
+    <SearchInput
       :modelValue="search"
       @update:modelValue="$emit('update:search', $event)"
       @search="$emit('search')"
@@ -39,13 +39,13 @@
     />
 
     <!-- Boutons profil et déconnexion à droite -->
-    <btnconnexioEtImgProfile />
+    <AuthButton />
   </div>
 </template>
 
 <script setup>
-import inputSearch from '../inputSearch.vue';
-import btnconnexioEtImgProfile from '../btnconnexioEtImgProfile.vue';
+import SearchInput from '../features/search/SearchInput.vue';
+import AuthButton from '../features/auth/AuthButton.vue';
 import { useCustomization } from '../../composables/useCustomization';
 
 const { siteName, header } = useCustomization();

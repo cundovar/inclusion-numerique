@@ -43,10 +43,10 @@
 
     <!-- Ligne du bas: Barre de recherche -->
     <div class="px-3 pt-1 pb-2">
-      <btnconnexioEtImgProfileMOBIL
-        :search="search"
-        @update:search="$emit('update:search', $event)"
-        :launchSearch="() => $emit('search')"
+      <SearchInput
+        :modelValue="search"
+        @update:modelValue="$emit('update:search', $event)"
+        @search="$emit('search')"
       />
     </div>
   </div>
@@ -55,8 +55,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import Headroom from 'headroom.js';
-import AuthButtonMobile from '../AuthButtonMobile.vue';
-import btnconnexioEtImgProfileMOBIL from '../btnconnexioEtImgProfileMOBIL.vue';
+import AuthButtonMobile from '../features/auth/AuthButtonMobile.vue';
+import SearchInput from '../features/search/SearchInput.vue';
 import { useCustomization } from '../../composables/useCustomization';
 
 const { siteName, header } = useCustomization();

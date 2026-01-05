@@ -45,15 +45,17 @@ class NoteEncryptionService
      */
     public function decrypt(string $ciphertext): string
     {
-        // Décoder depuis base64
-        $data = base64_decode($ciphertext);
-
+        // Décoder depuis base64 (strict), fallback si contenu non chiffré
+        $data = base64_decode($ciphertext, true);
         if ($data === false) {
-            throw new \RuntimeException('Erreur lors du décodage');
+            return $ciphertext;
         }
 
         // Extraire IV et données chiffrées
         $ivLength = openssl_cipher_iv_length($this->cipher);
+        if ($ivLength === false || strlen($data) <= $ivLength) {
+            return $ciphertext;
+        }
         $iv = substr($data, 0, $ivLength);
         $encrypted = substr($data, $ivLength);
 
@@ -67,7 +69,7 @@ class NoteEncryptionService
         );
 
         if ($decrypted === false) {
-            throw new \RuntimeException('Erreur lors du déchiffrement');
+            return $ciphertext;
         }
 
         return $decrypted;

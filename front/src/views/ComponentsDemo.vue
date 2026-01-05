@@ -387,10 +387,10 @@
 
 <script setup>
 import { ref } from 'vue'
-import AppButton from '../components/commun/button/AppButton.vue'
-import AppInput from '../components/commun/input/AppInput.vue'
-import AppSelect from '../components/commun/select/AppSelect.vue'
-import AppAlert from '../components/commun/AppAlert.vue'
+import AppButton from '../components/ui/AppButton.vue'
+import AppInput from '../components/ui/AppInput.vue'
+import AppSelect from '../components/ui/AppSelect.vue'
+import AppAlert from '../components/ui/AppAlert.vue'
 
 // Demo data
 const demoInputs = ref({

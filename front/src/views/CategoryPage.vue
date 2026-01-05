@@ -39,9 +39,9 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useData } from '../utlis/fetchDataPwa'
-import CourseCard from '../components/CourseCard.vue'
-import SeoHead from '../components/SeoHead.vue'
+import { useData } from '../utils/fetchDataPwa'
+import CourseCard from '../components/features/pages/CourseCard.vue'
+import SeoHead from '../components/layout/SeoHead.vue'
 
 const route = useRoute()
 const { fetchMenus, menus, cats } = useData()
