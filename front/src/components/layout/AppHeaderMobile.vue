@@ -37,9 +37,24 @@
         </div>
       </router-link>
 
-      <!-- Bouton connexion/déconnexion -->
+    <!-- Bouton backoffice + connexion/déconnexion -->
+    <div class="flex items-center gap-2">
+      <a
+        v-if="isAdmin"
+        :href="APP_CONFIG.ADMIN_URL"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <AppButton
+          variant="outline"
+          size="xs"
+          icon="pi pi-cog"
+          rounded="full"
+        />
+      </a>
       <AuthButtonMobile />
     </div>
+  </div>
 
     <!-- Ligne du bas: Barre de recherche -->
     <div class="px-3 pt-1 pb-2">
@@ -53,13 +68,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import Headroom from 'headroom.js';
 import AuthButtonMobile from '../features/auth/AuthButtonMobile.vue';
 import SearchInput from '../features/search/SearchInput.vue';
-import { useCustomization } from '../../composables/useCustomization';
+import { useCustomization } from '../../composables/ui/useCustomization';
+import AppButton from '../ui/AppButton.vue';
+import { useData } from '../../utils/fetchDataPwa';
+import { APP_CONFIG } from '../../config/app.js';
 
 const { siteName, header } = useCustomization();
+const { user } = useData();
+const isAdmin = computed(() => user.value?.roles?.includes('ROLE_ADMIN'));
 
 defineProps({
   isMenuOpen: {

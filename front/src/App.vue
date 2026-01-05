@@ -92,7 +92,7 @@ import { computed, onMounted,ref } from "vue";
 import pagesFrame from "./components/navigation/PagesFrame.vue";
 import navFooterMobil from "./components/navigation/NavFooterMobile.vue";
 import { useData } from "./utils/fetchDataPwa";
-import { usePageTracking } from "./composables/usePageTracking.js";
+import { usePageTracking } from "./composables/domain/usePageTracking.js";
 const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
 
 // Composants importés
@@ -105,13 +105,13 @@ import SearchResults from "./components/features/search/SearchResults.vue";
 import SearchResultsMobile from "./components/features/search/SearchResultsMobile.vue";
 
 // Composables
-import { useResponsive } from "./composables/useResponsive.js";
-import { useNavigation } from "./composables/useNavigation.js";
-import { useSearch } from "./composables/useSearch.js";
-import { usePWA } from "./composables/usePWA.js";
-import { useNotifModal } from "./composables/useNotifModal.js";
-import { useVisibilityFilter } from "./composables/useVisibilityFilter.js";
-import { useCustomization } from "./composables/useCustomization.js";
+import { useResponsive } from "./composables/ui/useResponsive.js";
+import { useNavigation } from "./composables/ui/useNavigation.js";
+import { useSearch } from "./composables/domain/useSearch.js";
+import { usePWA } from "./composables/api/usePWA.js";
+import { useNotifModal } from "./composables/ui/useNotifModal.js";
+import { useVisibilityFilter } from "./composables/ui/useVisibilityFilter.js";
+import { useCustomization } from "./composables/ui/useCustomization.js";
 import AppButton from "./components/ui/AppButton.vue";
 
 // Données globales

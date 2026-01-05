@@ -109,7 +109,7 @@
 
 <script setup>
 import { capitalize } from '../../utils/stringsUtlis';
-import { useCustomization } from '../../composables/useCustomization';
+import { useCustomization } from '../../composables/ui/useCustomization';
 import AppButton from '../ui/AppButton.vue';
 
 const { menuGauche } = useCustomization();

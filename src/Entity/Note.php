@@ -5,13 +5,8 @@ namespace App\Entity;
 use App\Repository\NoteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
-#[ApiResource(
-    normalizationContext: ['groups' => ['note:read']],
-    denormalizationContext: ['groups' => ['note:write']]
-)]
 class Note
 {
     #[ORM\Id]

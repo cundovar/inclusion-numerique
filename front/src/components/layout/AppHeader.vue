@@ -39,16 +39,37 @@
     />
 
     <!-- Boutons profil et déconnexion à droite -->
-    <AuthButton />
+    <div class="flex items-center gap-2">
+      <a
+        v-if="isAdmin"
+        :href="APP_CONFIG.ADMIN_URL"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <AppButton
+          variant="outline"
+          size="sm"
+          icon="pi pi-cog"
+          text-content="Backoffice"
+        />
+      </a>
+      <AuthButton />
+    </div>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import SearchInput from '../features/search/SearchInput.vue';
 import AuthButton from '../features/auth/AuthButton.vue';
-import { useCustomization } from '../../composables/useCustomization';
+import { useCustomization } from '../../composables/ui/useCustomization';
+import AppButton from '../ui/AppButton.vue';
+import { useData } from '../../utils/fetchDataPwa';
+import { APP_CONFIG } from '../../config/app.js';
 
 const { siteName, header } = useCustomization();
+const { user } = useData();
+const isAdmin = computed(() => user.value?.roles?.includes('ROLE_ADMIN'));
 
 defineProps({
   search: {

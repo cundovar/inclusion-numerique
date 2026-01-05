@@ -563,7 +563,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useData } from '../utils/fetchDataPwa'
-import { useCustomization } from '../composables/useCustomization'
+import { useCustomization } from '../composables/ui/useCustomization'
 import AppButton from '../components/ui/AppButton.vue'
 import AppAlert from '../components/ui/AppAlert.vue'
 import AppInput from '../components/ui/AppInput.vue'
