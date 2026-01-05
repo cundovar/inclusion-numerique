@@ -1,5 +1,15 @@
+# Autres controllers
 controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
+        exclude:
+            - ../src/Controller/SpaController.php
     type: attribute
+
+# SPA Controller avec préfixe centralisé
+# Modifier le prefix ci-dessous pour changer l'URL de la SPA
+spa_routes:
+    resource: ../src/Controller/SpaController.php
+    type: attribute
+    prefix: /spa

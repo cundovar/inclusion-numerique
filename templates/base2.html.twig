@@ -1,3 +1,6 @@
+{# Chemin PWA - Modifier cette valeur pour changer le préfixe partout #}
+{% set pwaPath = '/spa' %}
+
 <!DOCTYPE html>
 <html lang="fr">
   <head>
@@ -49,7 +52,7 @@
 
 {# En dev, Vite ne génère pas le manifest : on l'inclut seulement en prod pour éviter les 404 #}
 {% if app.environment == 'prod' %}
-<link rel="manifest" href="/spa/manifest.webmanifest" />
+<link rel="manifest" href="{{ pwaPath }}/manifest.webmanifest" />
 {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
@@ -62,13 +65,13 @@
     <meta name="apple-mobile-web-app-title" content="spaVueSymfo">
     
     <!-- Icônes Apple -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/spa/pwa1.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/spa/pwa.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/spa/pwa.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/spa/pwa.png">
-    
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ pwaPath }}/pwa1.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ pwaPath }}/pwa.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ pwaPath }}/pwa.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ pwaPath }}/pwa.png">
+
     <!-- Splash screen iOS -->
-    <link rel="apple-touch-startup-image" href="/spa/pwa1.png">
+    <link rel="apple-touch-startup-image" href="{{ pwaPath }}/pwa1.png">
 
 
 <!-- Google tag (gtag.js) -->

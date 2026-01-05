@@ -1,6 +1,9 @@
 parameters:
     app.url: 'http://localhost:8080'
     app.user_page_visit.enabled: '%env(bool:USER_PAGE_VISIT_ENABLED)%'
+    # Chemin SPA - Modifier cette valeur pour changer le préfixe
+    # Note: Modifier aussi les Routes dans SpaController.php et SitemapController.php
+    app.spa_path: '/spa'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:
