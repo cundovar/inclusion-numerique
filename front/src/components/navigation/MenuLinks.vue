@@ -24,14 +24,14 @@
   <div class="flex w-full md:justify-start justify-end items-center">
     <div class="max-xl:mt-2 mb-96  max-xl:p-3 gap-y-5 flex flex-col max-xl:w-full">
       <h3>documentations :</h3>
-      <list_logo />
+      <LogoList />
     </div>
   </div>
 </template>
 
 <script setup>
-import SelectfunctionVocabulaire from '../MenuPageFramwork/SelectfunctionVocabulaire.vue';
-import list_logo from '../list_logo.vue';
+import SelectfunctionVocabulaire from './SelectfunctionVocabulaire.vue';
+import LogoList from '../features/home/LogoList.vue';
 
 defineEmits(['closeMenu']);
 </script>

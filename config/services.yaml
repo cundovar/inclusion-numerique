@@ -1,6 +1,9 @@
 parameters:
     app.url: 'http://localhost:8080'
     app.user_page_visit.enabled: '%env(bool:USER_PAGE_VISIT_ENABLED)%'
+    # Chemin SPA - Modifier cette valeur pour changer le préfixe
+    # Note: Modifier aussi les Routes dans SpaController.php et SitemapController.php
+    app.spa_path: '/spa'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:
@@ -23,7 +26,26 @@ services:
         tags:
             - { name: doctrine.event_listener, event: postPersist }
 
-    # Service de chiffrement des notes
+    # Service de chiffrement des notes (legacy - à supprimer après migration complète)
     App\Service\NoteEncryptionService:
         arguments:
             $appSecret: '%kernel.secret%'
+
+    # ===== ARCHITECTURE HEXAGONALE =====
+
+    # Infrastructure Services (doit être défini AVANT les bindings)
+    App\Infrastructure\Note\Service\NoteEncryptionService:
+        arguments:
+            $appSecret: '%kernel.secret%'
+
+    App\Infrastructure\Note\Repository\DoctrineNoteRepository: ~
+
+    # Domain -> Infrastructure bindings (Note)
+    App\Domain\Note\Repository\NoteRepositoryInterface: '@App\Infrastructure\Note\Repository\DoctrineNoteRepository'
+    App\Domain\Note\Service\NoteEncryptionInterface: '@App\Infrastructure\Note\Service\NoteEncryptionService'
+
+    # Infrastructure Services (Favorite)
+    App\Infrastructure\Favorite\Repository\DoctrineFavoriteRepository: ~
+
+    # Domain -> Infrastructure bindings (Favorite)
+    App\Domain\Favorite\Repository\FavoriteRepositoryInterface: '@App\Infrastructure\Favorite\Repository\DoctrineFavoriteRepository'

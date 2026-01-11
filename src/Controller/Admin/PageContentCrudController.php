@@ -30,6 +30,7 @@ class PageContentCrudController extends AbstractCrudController
             AssociationField::new('page'),
             AssociationField::new('category'),
             AssociationField::new('menu'),
+            AssociationField::new('niveauCours'),
 
             TextField::new('title'),
 

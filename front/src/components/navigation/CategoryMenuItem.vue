@@ -108,9 +108,9 @@
 </template>
 
 <script setup>
-import { capitalize } from '../../utlis/stringsUtlis';
-import { useCustomization } from '../../composables/useCustomization';
-import AppButton from '../commun/button/AppButton.vue';
+import { capitalize } from '../../utils/stringsUtlis';
+import { useCustomization } from '../../composables/ui/useCustomization';
+import AppButton from '../ui/AppButton.vue';
 
 const { menuGauche } = useCustomization();
 

@@ -120,10 +120,10 @@
 
 <script setup>
 import { computed, onMounted, onUpdated, nextTick, watch } from "vue";
-import { useQCMStore } from "../../store/QCM";
+import { useQCMStore } from "../../stores/qcm";
 import { useRouter } from "vue-router";
 import Prism from "prismjs";
-import AppButton from "../../components/commun/button/AppButton.vue";
+import AppButton from "../../components/ui/AppButton.vue";
 // N'importer QUE les langages (le thème est déjà dans main.js)
 // IMPORTANT: L'ordre d'import est crucial pour les dépendances
 import "prismjs/components/prism-markup"; // HTML (doit être avant markup-templating)

@@ -1,130 +1,123 @@
-//const BASE_URL = 'https://localhost:8002/api'; // Port du microservice IA LOCAL
-const BASE_URL = 'ia-qcm.varascundo .com/api'; // Port du microservice IA PROD 
+import axios from 'axios'
 
-class QCMService {
+// Instance Axios dediee au microservice IA QCM
+const qcmApi = axios.create({
+  // baseURL: 'https://localhost:8002/api', // LOCAL
+  baseURL: 'https://ia-qcm.varascundo.com/api', // PROD
+  timeout: 30000, // Timeout plus long pour la generation IA
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+})
+
+// Intercepteur pour gerer les erreurs
+qcmApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = error.response?.data?.error || error.message || 'Erreur inconnue'
+    return Promise.reject(new Error(message))
+  }
+)
+
+export const qcmService = {
+  /**
+   * Genere un nouveau QCM
+   */
   async generateQCM(options = {}) {
-    const response = await fetch(`${BASE_URL}/qcm/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        categoryId: options.categoryId || null,
-        difficulty: options.difficulty || 'medium',
-        questionsCount: options.questionsCount || 10,
-        userId: options.userId || null
-      })
-    });
+    const { data } = await qcmApi.post('/qcm/generate', {
+      categoryId: options.categoryId || null,
+      difficulty: options.difficulty || 'medium',
+      questionsCount: options.questionsCount || 10,
+      userId: options.userId || null
+    })
+    return data
+  },
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Erreur lors de la génération du QCM');
-    }
-
-    return await response.json();
-  }
-
+  /**
+   * Recupere une session QCM
+   */
   async getSession(sessionId) {
-    const response = await fetch(`${BASE_URL}/qcm/session/${sessionId}`);
-    
-    if (!response.ok) {
-      throw new Error('Session QCM non trouvée');
-    }
+    const { data } = await qcmApi.get(`/qcm/session/${sessionId}`)
+    return data
+  },
 
-    return await response.json();
-  }
-
+  /**
+   * Soumet une reponse
+   */
   async submitAnswer(sessionId, questionId, answer, timeSpent = 0, userId = null) {
-    const response = await fetch(`${BASE_URL}/qcm/session/${sessionId}/answer`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        questionId,
-        answer,
-        timeSpent,
-        userId
-      })
-    });
+    const { data } = await qcmApi.post(`/qcm/session/${sessionId}/answer`, {
+      questionId,
+      answer,
+      timeSpent,
+      userId
+    })
+    return data
+  },
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Erreur lors de l\'envoi de la réponse');
-    }
-
-    return await response.json();
-  }
-
+  /**
+   * Complete une session QCM
+   */
   async completeSession(sessionId) {
-    const response = await fetch(`${BASE_URL}/qcm/session/${sessionId}/complete`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+    const { data } = await qcmApi.post(`/qcm/session/${sessionId}/complete`)
+    return data
+  },
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Erreur lors de la finalisation du QCM');
-    }
-
-    return await response.json();
-  }
-
+  /**
+   * Recupere les sessions d'un utilisateur
+   */
   async getUserSessions(userId, limit = 10) {
-    const params = new URLSearchParams();
-    if (userId) params.append('userId', userId);
-    if (limit) params.append('limit', limit);
+    const params = new URLSearchParams()
+    if (userId) params.append('userId', userId)
+    if (limit) params.append('limit', limit)
 
-    const response = await fetch(`${BASE_URL}/qcm/sessions?${params}`);
-    
-    if (!response.ok) {
-      throw new Error('Erreur lors de la récupération des sessions');
-    }
+    const { data } = await qcmApi.get(`/qcm/sessions?${params}`)
+    return data
+  },
 
-    return await response.json();
-  }
-
+  /**
+   * Verifie la sante du service
+   */
   async checkServiceHealth() {
     try {
-      const response = await fetch(`${BASE_URL}/content/health`);
-      return response.ok;
-    } catch (error) {
-      return false;
+      await qcmApi.get('/content/health')
+      return true
+    } catch {
+      return false
     }
-  }
+  },
 
-  // Méthodes utilitaires
+  // Methodes utilitaires
   getDifficultyLabel(difficulty) {
     const labels = {
       'easy': 'Facile',
       'medium': 'Moyen',
       'hard': 'Difficile'
-    };
-    return labels[difficulty] || difficulty;
-  }
+    }
+    return labels[difficulty] || difficulty
+  },
 
   calculateGrade(score, total) {
-    if (total === 0) return 'N/A';
-    
-    const percentage = (score / total) * 100;
-    
-    if (percentage >= 90) return 'Excellent';
-    if (percentage >= 80) return 'Très bien';
-    if (percentage >= 70) return 'Bien';
-    if (percentage >= 60) return 'Assez bien';
-    if (percentage >= 50) return 'Passable';
-    return 'Insuffisant';
-  }
+    if (total === 0) return 'N/A'
+
+    const percentage = (score / total) * 100
+
+    if (percentage >= 90) return 'Excellent'
+    if (percentage >= 80) return 'Tres bien'
+    if (percentage >= 70) return 'Bien'
+    if (percentage >= 60) return 'Assez bien'
+    if (percentage >= 50) return 'Passable'
+    return 'Insuffisant'
+  },
 
   getGradeColor(score, total) {
-    const percentage = (score / total) * 100;
-    
-    if (percentage >= 80) return 'success';
-    if (percentage >= 60) return 'warning';
-    return 'danger';
+    const percentage = (score / total) * 100
+
+    if (percentage >= 80) return 'success'
+    if (percentage >= 60) return 'warning'
+    return 'danger'
   }
 }
 
-export default new QCMService();
+// Export par defaut pour retrocompatibilite
+export default qcmService

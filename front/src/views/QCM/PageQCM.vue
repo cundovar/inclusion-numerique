@@ -121,9 +121,9 @@
 import { ref, onMounted, reactive, watch } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import {useQCMStore} from '../../store/QCM'
-import AppButton from '../../components/commun/button/AppButton.vue'
-import AppSelect from '../../components/commun/select/AppSelect.vue'
+import { useQCMStore } from '../../stores/qcm'
+import AppButton from '../../components/ui/AppButton.vue'
+import AppSelect from '../../components/ui/AppSelect.vue'
 
 const router = useRouter();
 const qcmStore = useQCMStore();

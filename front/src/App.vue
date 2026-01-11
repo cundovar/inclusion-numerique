@@ -81,7 +81,6 @@
 
       </div>
       <router-view />
-      <AfertLogin v-if="$route.path === '/'" />
     </main>
 
     <navFooterMobil @click="closed" />
@@ -90,11 +89,10 @@
 
 <script setup>
 import { computed, onMounted,ref } from "vue";
-import pagesFrame from "./components/MenuPageFramwork/PagesFrame.vue";
-import AfertLogin from "./components/AfertLogin.vue";
-import navFooterMobil from "./components/NavFooterMobil/Main.vue";
-import { useData } from "./utlis/fetchDataPwa";
-import { usePageTracking } from "./composables/usePageTracking.js";
+import pagesFrame from "./components/navigation/PagesFrame.vue";
+import navFooterMobil from "./components/navigation/NavFooterMobile.vue";
+import { useData } from "./utils/fetchDataPwa";
+import { usePageTracking } from "./composables/domain/usePageTracking.js";
 const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
 
 // Composants importés
@@ -103,18 +101,18 @@ import AppHeaderMobile from "./components/layout/AppHeaderMobile.vue";
 import AppNavigation from "./components/layout/AppNavigation.vue";
 import MobileAppPopup from "./components/layout/MobileAppPopup.vue";
 import NotifModal from "./components/layout/NotifModal.vue";
-import SearchResults from "./components/search/SearchResults.vue";
-import SearchResultsMobile from "./components/search/SearchResultsMobile.vue";
+import SearchResults from "./components/features/search/SearchResults.vue";
+import SearchResultsMobile from "./components/features/search/SearchResultsMobile.vue";
 
 // Composables
-import { useResponsive } from "./composables/useResponsive.js";
-import { useNavigation } from "./composables/useNavigation.js";
-import { useSearch } from "./composables/useSearch.js";
-import { usePWA } from "./composables/usePWA.js";
-import { useNotifModal } from "./composables/useNotifModal.js";
-import { useVisibilityFilter } from "./composables/useVisibilityFilter.js";
-import { useCustomization } from "./composables/useCustomization.js";
-import AppButton from "./components/commun/button/AppButton.vue";
+import { useResponsive } from "./composables/ui/useResponsive.js";
+import { useNavigation } from "./composables/ui/useNavigation.js";
+import { useSearch } from "./composables/domain/useSearch.js";
+import { usePWA } from "./composables/api/usePWA.js";
+import { useNotifModal } from "./composables/ui/useNotifModal.js";
+import { useVisibilityFilter } from "./composables/ui/useVisibilityFilter.js";
+import { useCustomization } from "./composables/ui/useCustomization.js";
+import AppButton from "./components/ui/AppButton.vue";
 
 // Données globales
 const { menus, user, cats, fetchMenus, fetchUser } = useData();

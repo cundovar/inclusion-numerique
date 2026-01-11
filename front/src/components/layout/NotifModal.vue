@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import AppModal from '../commun/modal/AppModal.vue';
+import AppModal from '../ui/AppModal.vue';
 
 defineEmits(['close']);
 </script>

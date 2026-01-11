@@ -1,7 +1,7 @@
 import { ref } from "vue"
-import AppModal from "../components/commun/modal/AppModal.vue"
-import AppButton from "../components/commun/button/AppButton.vue"
-import AppInput from "../components/commun/input/AppInput.vue"
+import AppModal from "../components/ui/AppModal.vue"
+import AppButton from "../components/ui/AppButton.vue"
+import AppInput from "../components/ui/AppInput.vue"
 
 export default {
   title: "Components/AppModal",

@@ -1,17 +1,27 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
+import { authGuard } from './guards'
 
-import PageComponent from '../components/PageComponent.vue';
-import Profile from '../views/Profile.vue';
-import CategoryPage from '../views/CategoryPage.vue';
-import PageQCM from '../views/QCM/PageQCM.vue';
-import Exercices from '../views/exercices.vue';
-import ExoComponent from '../components/ExoComponent.vue';
-import questionQCM from '../views/QCM/questionQCM.vue';
-import resultQCM from '../views/QCM/resultQCM.vue';
-import ComponentsDemo from '../views/ComponentsDemo.vue';
+// Views (lazy-loaded)
+const PageContent = () => import('../components/features/pages/PageContent.vue')
+const Profile = () => import('../views/Profile.vue')
+const CategoryPage = () => import('../views/CategoryPage.vue')
+const PageQCM = () => import('../views/QCM/PageQCM.vue')
+const Exercices = () => import('../views/exercices.vue')
+const ExerciceView = () => import('../components/features/exercices/ExerciceView.vue')
+const questionQCM = () => import('../views/QCM/questionQCM.vue')
+const resultQCM = () => import('../views/QCM/resultQCM.vue')
+const ComponentsDemo = () => import('../views/ComponentsDemo.vue')
+const HomePage = () => import('../components/features/home/HomePage.vue')
 
 const routes = [
-  // Redirection des anciennes routes vers CategoryPage
+  // Route accueil
+  {
+    path: '/',
+    name: 'home',
+    component: HomePage
+  },
+
+  // Redirections des anciennes routes
   {
     path: '/pages/symfony',
     redirect: '/category/symfony'
@@ -28,16 +38,23 @@ const routes = [
     path: '/pages/wp',
     redirect: '/category/wordpress'
   },
+
+  // Route Profile (protegee)
   {
     path: '/profile',
     name: 'profile',
-    component: Profile
+    component: Profile,
+    beforeEnter: authGuard
   },
+
+  // Demo composants
   {
     path: '/components-demo',
     name: 'components-demo',
     component: ComponentsDemo
   },
+
+  // Categories
   {
     path: '/category/:category',
     name: 'category',
@@ -45,13 +62,15 @@ const routes = [
     props: true
   },
 
-
+  // Pages de contenu
   {
     path: '/pages/:slug',
     name: 'pages',
-    component: PageComponent,
+    component: PageContent,
     props: true
   },
+
+  // Exercices
   {
     path: '/exercices',
     name: 'exercices',
@@ -60,51 +79,47 @@ const routes = [
   {
     path: '/exercices/:slug',
     name: 'exercices-id',
-    component: ExoComponent,
-    
+    component: ExerciceView
   },
 
+  // QCM
   {
-    path:'/qcm',
-    name:'PageQCM',
-    component:PageQCM
+    path: '/qcm',
+    name: 'PageQCM',
+    component: PageQCM
   },
   {
-  path:'/qcm/:index',
-  name:'questionQCM',
-  component:questionQCM,
-  props:true
-},
-{
-  path:'/qcm/result',
-  name:'resultQCM',
-  component:resultQCM,
-  props:true
-},
-];
+    path: '/qcm/:index',
+    name: 'questionQCM',
+    component: questionQCM,
+    props: true
+  },
+  {
+    path: '/qcm/result',
+    name: 'resultQCM',
+    component: resultQCM,
+    props: true
+  }
+]
 
 const router = createRouter({
   history: createWebHistory('/spa'),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // Si on utilise les boutons précédent/suivant du navigateur
     if (savedPosition) {
-      return savedPosition;
+      return savedPosition
     }
-    // Si on a un hash (#) dans l'URL (pour les ancres)
-    else if (to.hash) {
+    if (to.hash) {
       return {
         el: to.hash,
-        behavior: 'smooth',
-      };
-    }
-    // Sinon, toujours scroller en haut
-    else {
-      return {
-        top: 0,
         behavior: 'smooth'
-      };
+      }
+    }
+    return {
+      top: 0,
+      behavior: 'smooth'
     }
   }
-});
-export default router;
+})
+
+export default router

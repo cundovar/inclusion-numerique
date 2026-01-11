@@ -1,5 +1,5 @@
 import { ref } from "vue"
-import AppInput from "../components/commun/input/AppInput.vue"
+import AppInput from "../components/ui/AppInput.vue"
 
 export default {
   title: "Components/AppInput",

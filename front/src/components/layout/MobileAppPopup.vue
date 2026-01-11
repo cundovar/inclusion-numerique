@@ -33,8 +33,8 @@
 </template>
 
 <script setup>
-import AppModal from '../commun/modal/AppModal.vue';
-import AppButton from '../commun/button/AppButton.vue';
+import AppModal from '../ui/AppModal.vue';
+import AppButton from '../ui/AppButton.vue';
 
 defineProps({
   currentOrigin: {

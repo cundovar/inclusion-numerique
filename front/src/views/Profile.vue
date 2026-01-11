@@ -24,7 +24,7 @@
       <AppModal v-model="isOpen"
        size="lg"
         title="Modifier le profile" 
-        show-footer="true"
+        :show-footer="true"
         @close="closeModal" >
 
 <form @submit.prevent="updateProfile">
@@ -562,14 +562,15 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useData } from '../utlis/fetchDataPwa'
-import { useCustomization } from '../composables/useCustomization'
-import AppButton from '../components/commun/button/AppButton.vue'
-import AppAlert from '../components/commun/AppAlert.vue'
-import AppInput from '../components/commun/input/AppInput.vue'
-import AppSelect from '../components/commun/select/AppSelect.vue'
+import { useData } from '../utils/fetchDataPwa'
+import { useCustomization } from '../composables/ui/useCustomization'
+import AppButton from '../components/ui/AppButton.vue'
+import AppAlert from '../components/ui/AppAlert.vue'
+import AppInput from '../components/ui/AppInput.vue'
+import AppSelect from '../components/ui/AppSelect.vue'
 import axios from 'axios'
-import AppModal from '../components/commun/modal/AppModal.vue'
+import { noteService } from '../services/noteService'
+import AppModal from '../components/ui/AppModal.vue'
 
 const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true'
 
@@ -784,16 +785,12 @@ const toggleTracking = async () => {
 const fetchNotes = async () => {
   try {
     console.log('=== FETCH NOTES CALLED ===')
-    const response = await axios.get('/api/notes/my-notes')
-    console.log('Notes reçues de l\'API:', response.data)
-    notes.value = response.data
+    const data = await noteService.getMyNotes()
+    console.log('Notes reçues de l\'API:', data)
+    notes.value = data
     console.log('Notes dans notes.value:', notes.value)
   } catch (error) {
     console.error('Erreur lors du chargement des notes:', error)
-    if (error.response) {
-      console.error('Status:', error.response.status)
-      console.error('Data:', error.response.data)
-    }
   } finally {
     loadingNotes.value = false
   }
@@ -806,7 +803,7 @@ const deleteNote = async (noteId) => {
   }
 
   try {
-    await axios.delete(`/api/notes/${noteId}`)
+    await noteService.delete(noteId)
     notes.value = notes.value.filter(n => n.id !== noteId)
   } catch (error) {
     console.error('Erreur lors de la suppression de la note:', error)

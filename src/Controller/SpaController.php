@@ -13,7 +13,8 @@ final class SpaController extends AbstractController
         private SeoService $seoService
     ) {}
 
-    #[Route('/spa/{vueRouting}', name: 'spa_app', requirements: ['vueRouting' => '.*'], defaults: ['vueRouting' => ''])]
+    // Note: Le préfixe '/spa' est défini dans config/routes.yaml (spa_routes)
+    #[Route('/{vueRouting}', name: 'spa_app', requirements: ['vueRouting' => '.*'], defaults: ['vueRouting' => ''])]
     public function index(string $vueRouting = ''): Response
     {
         // Debug: logger la route reçue
