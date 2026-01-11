@@ -2,27 +2,9 @@
   "base": "/build/",
   "entryPoints": {
     "main": {
-      "css": [
-        "/build/assets/main-CTVlaUQg.css"
-      ],
-      "dynamic": [
-        "/build/assets/PageContent-BRDvvLUe.js",
-        "/build/assets/Profile-CYCdDxQ2.js",
-        "/build/assets/CategoryPage-q4IuO2eQ.js",
-        "/build/assets/PageQCM-D13v7VwL.js",
-        "/build/assets/exercices-eXVRlgYg.js",
-        "/build/assets/ExerciceView-DPIqC0Lp.js",
-        "/build/assets/questionQCM-4ggXf5g2.js",
-        "/build/assets/resultQCM-Dfdlis2x.js",
-        "/build/assets/ComponentsDemo-B88dJjkj.js",
-        "/build/assets/HomePage-RvWE2wqN.js",
-        "/build/assets/workbox-window.prod.es5-B9K5rw8f.js"
-      ],
       "js": [
-        "/build/assets/main--bMXc_II.js"
-      ],
-      "legacy": false,
-      "preload": []
+        "http://localhost:5173/build/src/main.js"
+      ]
     }
   },
   "legacy": false,
@@ -33,5 +15,5 @@
     1,
     1
   ],
-  "viteServer": null
+  "viteServer": "http://localhost:5173"
 }
