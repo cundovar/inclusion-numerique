@@ -254,6 +254,17 @@ const categoryBgClass = computed(() => {
 })
 
 const categoryIconClass = computed(() => {
+  // D'abord, chercher l'icône dans l'API (category.logo.logo)
+  const currentCategory = cats.value?.find(
+    cat => cat.name.toLowerCase() === categoryName.value.toLowerCase()
+  )
+
+  // Si l'icône existe dans l'API, l'utiliser
+  if (currentCategory?.logo?.logo) {
+    return currentCategory.logo.logo
+  }
+
+  // Sinon, fallback sur le mapping hardcodé
   const iconClasses = {
     // Langages de programmation
     'javascript': 'fab fa-js-square',
@@ -281,8 +292,8 @@ const categoryIconClass = computed(() => {
     'haskell': 'fas fa-lambda',
     'clojure': 'fas fa-code',
     'fsharp': 'fas fa-code',
-    
-    // Technologies web  
+
+    // Technologies web
     'html': 'fab fa-html5',
     'css': 'fab fa-css3-alt',
     'sass': 'fab fa-sass',
@@ -290,7 +301,7 @@ const categoryIconClass = computed(() => {
     'less': 'fab fa-less',
     'tailwind': 'fas fa-wind',
     'bootstrap': 'fab fa-bootstrap',
-    
+
     // Frameworks JavaScript
     'react': 'fab fa-react',
     'vue': 'fab fa-vuejs',
@@ -305,7 +316,7 @@ const categoryIconClass = computed(() => {
     'express': 'fab fa-node-js',
     'nestjs': 'fas fa-cat',
     'fastify': 'fas fa-tachometer-alt',
-    
+
     // Frameworks backend
     'symfony': 'fab fa-symfony',
     'laravel': 'fab fa-laravel',
@@ -324,7 +335,7 @@ const categoryIconClass = computed(() => {
     'gin': 'fas fa-cocktail',
     'fiber': 'fas fa-spider',
     'echo': 'fas fa-volume-up',
-    
+
     // Bases de données
     'sql': 'fas fa-database',
     'mysql': 'fas fa-database',
@@ -338,7 +349,7 @@ const categoryIconClass = computed(() => {
     'mariadb': 'fas fa-database',
     'oracle': 'fas fa-database',
     'sqlserver': 'fab fa-microsoft',
-    
+
     // Outils et technologies
     'git': 'fab fa-git-alt',
     'docker': 'fab fa-docker',
@@ -360,7 +371,7 @@ const categoryIconClass = computed(() => {
     'pnpm': 'fas fa-package',
     'composer': 'fas fa-music',
     'pip': 'fas fa-package',
-    
+
     // Cloud et services
     'aws': 'fab fa-aws',
     'azure': 'fab fa-microsoft',
@@ -370,7 +381,7 @@ const categoryIconClass = computed(() => {
     'vercel': 'fas fa-triangle',
     'heroku': 'fas fa-cloud',
     'digitalocean': 'fab fa-digital-ocean',
-    
+
     // Mobile
     'android': 'fab fa-android',
     'ios': 'fab fa-apple',
@@ -379,7 +390,7 @@ const categoryIconClass = computed(() => {
     'ionic': 'fas fa-mobile',
     'xamarin': 'fab fa-microsoft',
     'cordova': 'fas fa-mobile-alt',
-    
+
     // Testing
     'jest': 'fas fa-vial',
     'mocha': 'fas fa-coffee',
@@ -389,7 +400,7 @@ const categoryIconClass = computed(() => {
     'selenium': 'fas fa-robot',
     'puppeteer': 'fas fa-theater-masks',
     'playwright': 'fas fa-masks-theater',
-    
+
     // CMS
     'wordpress': 'fab fa-wordpress',
     'drupal': 'fab fa-drupal',
@@ -397,7 +408,7 @@ const categoryIconClass = computed(() => {
     'strapi': 'fas fa-layer-group',
     'contentful': 'fas fa-file-alt',
     'sanity': 'fas fa-brain',
-    
+
     // Autres technologies
     'graphql': 'fas fa-project-diagram',
     'rest': 'fas fa-exchange-alt',
@@ -416,7 +427,7 @@ const categoryIconClass = computed(() => {
     'ar': 'fas fa-eye',
     'vr': 'fas fa-vr-cardboard'
   }
-  return iconClasses[categoryName.value] || 'fas fa-code'
+  return iconClasses[categoryName.value.toLowerCase()] || 'fas fa-code'
 })
 
 const categoryDescription = computed(() => {

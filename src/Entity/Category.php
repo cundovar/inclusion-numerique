@@ -78,6 +78,10 @@ class Category
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?SuperMenu $superMenu = null;
 
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?NiveauCours $niveauCours = null;
+
     public function __construct()
     {
         $this->menus = new ArrayCollection();
@@ -327,6 +331,18 @@ class Category
     public function setSuperMenu(?SuperMenu $superMenu): static
     {
         $this->superMenu = $superMenu;
+
+        return $this;
+    }
+
+    public function getNiveauCours(): ?NiveauCours
+    {
+        return $this->niveauCours;
+    }
+
+    public function setNiveauCours(?NiveauCours $niveauCours): static
+    {
+        $this->niveauCours = $niveauCours;
 
         return $this;
     }

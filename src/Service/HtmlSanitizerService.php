@@ -39,8 +39,6 @@ class HtmlSanitizerService
             'details[class]', 'summary[class]',
             // Images
             'img[src|alt|class|width|height]',
-            // Styles (balise style pour les classes CSS)
-            'style',
         ]));
 
         // ══════════════════════════════════════════════
@@ -86,6 +84,19 @@ class HtmlSanitizerService
         // NIVEAU 6 : Autoriser les IDs pour les ancres
         // ══════════════════════════════════════════════
         $config->set('Attr.EnableID', true);
+
+        // ══════════════════════════════════════════════
+        // NIVEAU 7 : Éléments HTML5 personnalisés
+        // ══════════════════════════════════════════════
+        $def = $config->getHTMLDefinition(true);
+        if ($def) {
+            // Ajouter l'élément <mark> (HTML5)
+            $def->addElement('mark', 'Inline', 'Inline', 'Common');
+            // Ajouter l'élément <details> (HTML5)
+            $def->addElement('details', 'Block', 'Flow', 'Common');
+            // Ajouter l'élément <summary> (HTML5)
+            $def->addElement('summary', 'Block', 'Inline', 'Common');
+        }
 
         $this->purifier = new HTMLPurifier($config);
     }

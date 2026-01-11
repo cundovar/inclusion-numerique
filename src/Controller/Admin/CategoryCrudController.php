@@ -38,6 +38,9 @@ class CategoryCrudController extends AbstractCrudController
             AssociationField::new('positionMenus', 'Position du menu')
                 ->setCrudController(PositionMenusCrudController::class)
                 ->autocomplete(),
+                AssociationField::new('niveauCours', 'Niveau de cours')
+                ->setCrudController(NiveauCoursCrudController::class)
+                ->autocomplete(),
 
 
             AssociationField::new('logo', 'Logo')

@@ -65,6 +65,10 @@ class Menus
     #[Groups(['page_content:read', 'page_content:write'])] 
     private ?PositionMenus $positionMenus = null;
 
+    #[ORM\ManyToOne(inversedBy: 'menus')]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?NiveauCours $niveauCours = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -172,6 +176,18 @@ class Menus
     public function setPositionMenus(?PositionMenus $positionMenus): static
     {
         $this->positionMenus = $positionMenus;
+
+        return $this;
+    }
+
+    public function getNiveauCours(): ?NiveauCours
+    {
+        return $this->niveauCours;
+    }
+
+    public function setNiveauCours(?NiveauCours $niveauCours): static
+    {
+        $this->niveauCours = $niveauCours;
 
         return $this;
     }

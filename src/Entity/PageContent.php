@@ -74,6 +74,9 @@ class PageContent
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?bool $visible = true;
 
+    #[ORM\ManyToOne(inversedBy: 'pageContents')]
+    private ?NiveauCours $niveauCours = null;
+
     public function __construct()
     {
         $this->pageBlocks = new ArrayCollection();
@@ -178,6 +181,18 @@ class PageContent
     public function setVisible(?bool $visible): static
     {
         $this->visible = $visible;
+        return $this;
+    }
+
+    public function getNiveauCours(): ?NiveauCours
+    {
+        return $this->niveauCours;
+    }
+
+    public function setNiveauCours(?NiveauCours $niveauCours): static
+    {
+        $this->niveauCours = $niveauCours;
+
         return $this;
     }
 }
