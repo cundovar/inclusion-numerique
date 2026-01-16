@@ -43,6 +43,10 @@ class NiveauCours
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'niveauCours')]
     private Collection $pageContents;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    #[Groups(['niveau_cours:read', 'page_content:read'])]
+    private ?int $ordre = null;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -158,4 +162,16 @@ class NiveauCours
     {
         return $this->name ?? '';
     }
+
+       public function getOrdre(): ?int
+       {
+           return $this->ordre;
+       }
+
+       public function setOrdre(int $ordre): static
+       {
+           $this->ordre = $ordre;
+
+           return $this;
+       }
 }

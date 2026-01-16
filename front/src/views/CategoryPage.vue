@@ -10,6 +10,13 @@
           <h1 class="tech-title">{{ categoryDisplayName }}</h1>
         </div>
 
+        <div >
+
+     
+
+
+        </div>
+
 
         <div class="framework-presentation" v-html="categoryPresentation">
 
@@ -24,6 +31,7 @@
           :menus="group.items"
           :icon-class="getGroupIconClass(group.label)"
         />
+        
       </div>
 
       <div v-if="!categoryMenus.length" class="text-center py-12">
@@ -42,10 +50,19 @@ import { useRoute } from 'vue-router'
 import { useData } from '../utils/fetchDataPwa'
 import CourseCard from '../components/features/pages/CourseCard.vue'
 import SeoHead from '../components/layout/SeoHead.vue'
+import { storeToRefs } from 'pinia'
+import NiveauFilter from '../components/ui/NiveauFilter.vue'
+import { useNiveauStore } from "@/stores/niveauCoursStore";
+
+
 
 const route = useRoute()
 const { fetchMenus, menus, cats } = useData()
 
+//const pour les bouton selected niveaux
+const niveauStore = useNiveauStore()
+const { selectedNiveau } = storeToRefs(niveauStore)
+   console.log("localstorage",selectedNiveau.value)
 const categoryName = computed(() => route.params.category)
 
 // Récupérer les données SEO directement depuis la catégorie
@@ -264,170 +281,8 @@ const categoryIconClass = computed(() => {
     return currentCategory.logo.logo
   }
 
-  // Sinon, fallback sur le mapping hardcodé
-  const iconClasses = {
-    // Langages de programmation
-    'javascript': 'fab fa-js-square',
-    'php': 'fab fa-php',
-    'python': 'fab fa-python',
-    'java': 'fab fa-java',
-    'csharp': 'fas fa-code',
-    'bdd': 'fas fa-code',
-    'c': 'fas fa-code',
-    'ruby': 'fas fa-gem',
-    'go': 'fas fa-bolt',
-    'rust': 'fas fa-cog',
-    'swift': 'fab fa-swift',
-    'kotlin': 'fas fa-mobile',
-    'scala': 'fas fa-code',
-    'perl': 'fas fa-code',
-    'lua': 'fas fa-moon',
-    'dart': 'fas fa-bullseye',
-    'typescript': 'fas fa-code',
-    'r': 'fas fa-chart-line',
-    'matlab': 'fas fa-calculator',
-    'julia': 'fas fa-infinity',
-    'elixir': 'fas fa-flask',
-    'erlang': 'fas fa-sitemap',
-    'haskell': 'fas fa-lambda',
-    'clojure': 'fas fa-code',
-    'fsharp': 'fas fa-code',
-
-    // Technologies web
-    'html': 'fab fa-html5',
-    'css': 'fab fa-css3-alt',
-    'sass': 'fab fa-sass',
-    'scss': 'fab fa-sass',
-    'less': 'fab fa-less',
-    'tailwind': 'fas fa-wind',
-    'bootstrap': 'fab fa-bootstrap',
-
-    // Frameworks JavaScript
-    'react': 'fab fa-react',
-    'vue': 'fab fa-vuejs',
-    'angular': 'fab fa-angular',
-    'svelte': 'fas fa-fire',
-    'nextjs': 'fas fa-forward',
-    'nuxtjs': 'fab fa-vuejs',
-    'gatsby': 'fas fa-rocket',
-    'ember': 'fas fa-fire',
-    'backbone': 'fas fa-bone',
-    'jquery': 'fas fa-dollar-sign',
-    'express': 'fab fa-node-js',
-    'nestjs': 'fas fa-cat',
-    'fastify': 'fas fa-tachometer-alt',
-
-    // Frameworks backend
-    'symfony': 'fab fa-symfony',
-    'laravel': 'fab fa-laravel',
-    'codeigniter': 'fas fa-fire',
-    'cakephp': 'fas fa-birthday-cake',
-    'zend': 'fas fa-code',
-    'django': 'fas fa-dragon',
-    'flask': 'fas fa-flask',
-    'fastapi': 'fas fa-rocket',
-    'spring': 'fas fa-leaf',
-    'springboot': 'fas fa-leaf',
-    'dotnet': 'fab fa-microsoft',
-    'aspnet': 'fab fa-microsoft',
-    'rails': 'fas fa-gem',
-    'sinatra': 'fas fa-microphone',
-    'gin': 'fas fa-cocktail',
-    'fiber': 'fas fa-spider',
-    'echo': 'fas fa-volume-up',
-
-    // Bases de données
-    'sql': 'fas fa-database',
-    'mysql': 'fas fa-database',
-    'postgresql': 'fas fa-elephant',
-    'sqlite': 'fas fa-database',
-    'mongodb': 'fas fa-leaf',
-    'redis': 'fas fa-memory',
-    'elasticsearch': 'fas fa-search',
-    'cassandra': 'fas fa-server',
-    'neo4j': 'fas fa-project-diagram',
-    'mariadb': 'fas fa-database',
-    'oracle': 'fas fa-database',
-    'sqlserver': 'fab fa-microsoft',
-
-    // Outils et technologies
-    'git': 'fab fa-git-alt',
-    'docker': 'fab fa-docker',
-    'kubernetes': 'fas fa-dharmachakra',
-    'jenkins': 'fas fa-hammer',
-    'gitlab': 'fab fa-gitlab',
-    'github': 'fab fa-github',
-    'bitbucket': 'fab fa-bitbucket',
-    'terraform': 'fas fa-mountain',
-    'ansible': 'fas fa-robot',
-    'vagrant': 'fas fa-box',
-    'webpack': 'fas fa-cube',
-    'vite': 'fas fa-bolt',
-    'rollup': 'fas fa-scroll',
-    'gulp': 'fas fa-glass-water',
-    'grunt': 'fas fa-grunt',
-    'npm': 'fab fa-npm',
-    'yarn': 'fab fa-yarn',
-    'pnpm': 'fas fa-package',
-    'composer': 'fas fa-music',
-    'pip': 'fas fa-package',
-
-    // Cloud et services
-    'aws': 'fab fa-aws',
-    'azure': 'fab fa-microsoft',
-    'gcp': 'fab fa-google',
-    'firebase': 'fas fa-fire',
-    'netlify': 'fas fa-globe',
-    'vercel': 'fas fa-triangle',
-    'heroku': 'fas fa-cloud',
-    'digitalocean': 'fab fa-digital-ocean',
-
-    // Mobile
-    'android': 'fab fa-android',
-    'ios': 'fab fa-apple',
-    'reactnative': 'fab fa-react',
-    'flutter': 'fas fa-mobile',
-    'ionic': 'fas fa-mobile',
-    'xamarin': 'fab fa-microsoft',
-    'cordova': 'fas fa-mobile-alt',
-
-    // Testing
-    'jest': 'fas fa-vial',
-    'mocha': 'fas fa-coffee',
-    'chai': 'fas fa-mug-hot',
-    'jasmine': 'fas fa-seedling',
-    'cypress': 'fas fa-tree',
-    'selenium': 'fas fa-robot',
-    'puppeteer': 'fas fa-theater-masks',
-    'playwright': 'fas fa-masks-theater',
-
-    // CMS
-    'wordpress': 'fab fa-wordpress',
-    'drupal': 'fab fa-drupal',
-    'joomla': 'fab fa-joomla',
-    'strapi': 'fas fa-layer-group',
-    'contentful': 'fas fa-file-alt',
-    'sanity': 'fas fa-brain',
-
-    // Autres technologies
-    'graphql': 'fas fa-project-diagram',
-    'rest': 'fas fa-exchange-alt',
-    'websockets': 'fas fa-plug',
-    'grpc': 'fas fa-satellite',
-    'microservices': 'fas fa-cubes',
-    'serverless': 'fas fa-cloud',
-    'jamstack': 'fas fa-layer-group',
-    'pwa': 'fas fa-mobile-alt',
-    'webassembly': 'fas fa-microchip',
-    'blockchain': 'fas fa-link',
-    'ai': 'fas fa-brain',
-    'ml': 'fas fa-robot',
-    'dl': 'fas fa-network-wired',
-    'iot': 'fas fa-wifi',
-    'ar': 'fas fa-eye',
-    'vr': 'fas fa-vr-cardboard'
-  }
-  return iconClasses[categoryName.value.toLowerCase()] || 'fas fa-code'
+  
+  return  'fas fa-code'
 })
 
 const categoryDescription = computed(() => {
@@ -474,17 +329,32 @@ const categoryMenus = computed(() => {
 
   const grouped = {}
 
-  const filteredMenus = menus.value.filter((menu) => {
+  // Étape 1: Filtrer par catégorie
+  let filteredMenus = menus.value.filter((menu) => {
     if (!menu.category) return false
     const matches = menu.category.name.toLowerCase() === categoryName.value.toLowerCase()
-    if (matches) {
-      console.log('  ✅ Match found:', menu.title, '- Category:', menu.category.name)
-    }
+  
+    // if (matches) {
+    //   console.log('  ✅ Match found:', menu.title, '- Category:', menu)
+   
+    // }
     return matches
   })
 
-  console.log('  - Filtered menus count:', filteredMenus.length)
-
+  // console.log('  - Filtered menus count:', filteredMenus.length)
+ // Étape 2: Filtrer par niveau (comme dans App.vue)
+if(selectedNiveau.value){
+  filteredMenus=filteredMenus.filter((menu)=>{
+    const menuOrdre=menu.niveauCours?.ordre
+    const selectedOrdre=selectedNiveau.value.ordre
+    const hasNoNiveau=!menu.niveauCours?.name
+    //garder menu si
+    //1 ordre <=ordre du niv selectionne dans localstorage
+    //2 ou si pas niveau defini 
+    return menuOrdre <=selectedOrdre || hasNoNiveau
+  })
+}
+  // Étape 3: Regrouper par label
   filteredMenus.forEach((menu) => {
     const label = menu.menu.label
 
@@ -501,6 +371,7 @@ const categoryMenus = computed(() => {
 
   return Object.values(grouped)
 })
+
 const getGroupIconClass = (groupLabel) => {
   const label = groupLabel.toLowerCase()
   
@@ -525,6 +396,7 @@ const getGroupIconClass = (groupLabel) => {
 
 onMounted(() => {
   fetchMenus()
+  niveauStore.fetchNiveaux()
 })
 </script>
 

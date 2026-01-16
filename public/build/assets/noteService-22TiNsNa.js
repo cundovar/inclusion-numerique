@@ -1,0 +1,1 @@
+import{L as e}from"./main-BAdedLp5.js";const o={async getMyNotes(){const{data:t}=await e.get("/notes/my-notes");return t},async getNoteByPage(t){const{data:a}=await e.get(`/notes/page/${t}`);return a},async createOrUpdate(t,a){const{data:n}=await e.post("/notes",{pageId:t,content:a});return n},async delete(t){await e.delete(`/notes/${t}`)}};export{o as n};

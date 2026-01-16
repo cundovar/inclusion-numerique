@@ -6,6 +6,7 @@ use App\Entity\NiveauCours;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 
 class NiveauCoursCrudController extends AbstractCrudController
 {
@@ -19,6 +20,7 @@ class NiveauCoursCrudController extends AbstractCrudController
         return [
             IdField::new('id')->hideOnForm(),
             TextField::new('name'),
+            IntegerField::new('ordre'),
           
         ];
     }

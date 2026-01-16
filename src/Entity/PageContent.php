@@ -75,6 +75,7 @@ class PageContent
     private ?bool $visible = true;
 
     #[ORM\ManyToOne(inversedBy: 'pageContents')]
+    #[Groups(['page_content:read', 'page_content:write'])]
     private ?NiveauCours $niveauCours = null;
 
     public function __construct()
