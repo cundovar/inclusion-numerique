@@ -3,23 +3,23 @@
   "entryPoints": {
     "main": {
       "css": [
-        "/build/assets/main-DyPS3OJA.css"
+        "/build/assets/main-CzUY3cm6.css"
       ],
       "dynamic": [
-        "/build/assets/PageContent-Dt5y45RE.js",
-        "/build/assets/Profile-B6MfvfzA.js",
-        "/build/assets/CategoryPage-G-V09Omn.js",
-        "/build/assets/PageQCM-B7iaWUTN.js",
-        "/build/assets/exercices-CIab2_hJ.js",
-        "/build/assets/ExerciceView-CQ7MRx_w.js",
-        "/build/assets/questionQCM-CBaYse8j.js",
-        "/build/assets/resultQCM-Dzmi0DEp.js",
-        "/build/assets/ComponentsDemo-BrlX9ImD.js",
-        "/build/assets/HomePage-BQFafC-v.js",
+        "/build/assets/PageContent-kgG_2zJZ.js",
+        "/build/assets/Profile-CcLQZyp5.js",
+        "/build/assets/CategoryPage-BJR_T4CP.js",
+        "/build/assets/PageQCM-BKxUDGKt.js",
+        "/build/assets/exercices-mRPQiZpp.js",
+        "/build/assets/ExerciceView-DEMNF946.js",
+        "/build/assets/questionQCM-DGaQp_q7.js",
+        "/build/assets/resultQCM-DvPJAVIn.js",
+        "/build/assets/ComponentsDemo-mBOPqIQk.js",
+        "/build/assets/HomePage-DqO7EtPx.js",
         "/build/assets/workbox-window.prod.es5-B9K5rw8f.js"
       ],
       "js": [
-        "/build/assets/main-DWpBaOyD.js"
+        "/build/assets/main-D3YH0v5Z.js"
       ],
       "legacy": false,
       "preload": []
