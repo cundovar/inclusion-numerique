@@ -88,10 +88,15 @@
 <script src="https://kit.fontawesome.com/c84dd1bc80.js" crossorigin="anonymous"></script>
 
 
-
-        <link rel="stylesheet" href="/build/assets/main-DyPS3OJA.css">
-        <script type="module" src="/build/assets/main-DWpBaOyD.js"></script>
-       
+                                                                                                                                                                
+  {% if app.environment == 'dev' %}                                                                                                                              
+      {{ vite_entry_script_tags('main') }}                                                                                                                       
+      {{ vite_entry_link_tags('main') }}                                                                                                                         
+  {% else %}                                                                                                                                                     
+      <link rel="stylesheet" href="/build/assets/main-CzUY3cm6.css">
+      <script type="module" src="/build/assets/main-D3YH0v5Z.js"></script>                                                                                       
+  {% endif %}                                                                                                                                                    
+               
   </head>
   <body>
     {% block body %}{% endblock %}
