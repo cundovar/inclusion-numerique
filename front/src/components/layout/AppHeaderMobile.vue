@@ -37,21 +37,7 @@
         </div>
       </router-link>
 
-        <!-- Sélecteur de niveau stylisé -->
-      <select
-        v-model="selectedLevel"
-        class="w-48 h-9 px-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-               hover:border-gray-400 cursor-pointer transition-all duration-200"
-      >
-        <option
-          v-for="level in levels"
-          :key="level.value"
-          :value="level.value"
-        >
-          {{ level.name }}
-        </option>
-      </select>
+    
 
     <!-- Bouton backoffice + connexion/déconnexion -->
     <div class="flex items-center gap-2">
@@ -73,7 +59,25 @@
   </div>
 
     <!-- Ligne du bas: Barre de recherche -->
-    <div class="px-3 pt-1 pb-2">
+    <div class="px-3 flex pt-1 pb-2">
+         <!-- Sélecteur de niveau stylisé -->
+      <select
+        v-model="selectedLevel"
+        class="w-48 h-9 px-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+               hover:border-gray-400 cursor-pointer transition-all duration-200"
+      >
+        <option
+          v-for="level in levels"
+          :key="level.value"
+          :value="level.value"
+        >
+          {{ level.name }}
+        </option>
+      </select>
+
+      
+
       <SearchInput
         :modelValue="search"
         @update:modelValue="$emit('update:search', $event)"
