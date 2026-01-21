@@ -19,11 +19,11 @@ class Exo
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['exo:read', 'exo:write'])]
+    #[Groups(['exo:read', 'exo:write', 'exo_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['exo:read', 'exo:write'])]
+    #[Groups(['exo:read', 'exo:write', 'exo_content:read'])]
     private ?string $slug = null;
 
     #[ORM\ManyToOne(inversedBy: 'exos')]

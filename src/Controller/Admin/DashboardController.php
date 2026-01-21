@@ -28,6 +28,7 @@ use App\Entity\UserCustomization;
 use App\Entity\SiteConfiguration;
 use App\Repository\SiteConfigurationRepository;
 use App\Controller\Admin\SiteConfigurationCrudController;
+use App\Entity\NiveauCours;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -123,6 +124,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Menus', 'fa fa-bars', Menus::class);
         yield MenuItem::linkToCrud('Positions', 'fa fa-bars', PositionMenus::class);
         yield MenuItem::linkToCrud('SuperMenus', 'fa fa-bars', SuperMenu::class);
+
+        yield MenuItem::section('📚 Niveau des cours');
+        yield MenuItem::linkToCrud('NiveauCours', 'fa fa-bars', NiveauCours::class);
 
         yield MenuItem::section('👥 Utilisateurs');
         yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);

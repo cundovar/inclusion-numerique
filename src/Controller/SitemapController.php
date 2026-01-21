@@ -22,10 +22,11 @@ class SitemapController extends AbstractController
     {
         $urls = [];
         $hostname = $this->getParameter('app.url') ?? 'https://yoursite.com';
+        $spaPath = $this->getParameter('app.spa_path') ?? '/spa';
 
         // Page d'accueil
         $urls[] = [
-            'loc' => $hostname . '/spa',
+            'loc' => $hostname . $spaPath,
             'changefreq' => 'daily',
             'priority' => '1.0',
             'lastmod' => (new \DateTime())->format('Y-m-d')
@@ -36,7 +37,7 @@ class SitemapController extends AbstractController
         foreach ($pages as $page) {
             $slug = ltrim($page->getSlug(), '/');
             $urls[] = [
-                'loc' => $hostname . '/spa/pages/' . $slug,
+                'loc' => $hostname . $spaPath . '/pages/' . $slug,
                 'changefreq' => 'weekly',
                 'priority' => '0.8',
                 'lastmod' => (new \DateTime())->format('Y-m-d')
@@ -47,7 +48,7 @@ class SitemapController extends AbstractController
         $categories = $this->categoryRepository->findAll();
         foreach ($categories as $category) {
             $urls[] = [
-                'loc' => $hostname . '/spa/category/' . $category->getName(),
+                'loc' => $hostname . $spaPath . '/category/' . $category->getName(),
                 'changefreq' => 'weekly',
                 'priority' => '0.9',
                 'lastmod' => (new \DateTime())->format('Y-m-d')

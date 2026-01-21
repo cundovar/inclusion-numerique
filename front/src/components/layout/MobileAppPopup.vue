@@ -20,21 +20,21 @@
           text-content="Installer l'application"
         />
 
-        <a
+        <!-- {# <a
           :href="currentOrigin"
           class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-green-700 transition-colors"
         >
           <i class="pi pi-external-link"></i>
           Ouvrir dans le navigateur
-        </a>
+        </a> #}-->
       </div>
     </div> 
   </AppModal>
 </template>
 
 <script setup>
-import AppModal from '../commun/modal/AppModal.vue';
-import AppButton from '../commun/button/AppButton.vue';
+import AppModal from '../ui/AppModal.vue';
+import AppButton from '../ui/AppButton.vue';
 
 defineProps({
   currentOrigin: {

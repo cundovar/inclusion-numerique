@@ -19,11 +19,11 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['page_content:read', 'page_content:write'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['page_content:read', 'page_content:write'])]
+    #[Groups(['page_content:read', 'page_content:write', 'exo_content:read'])]
     private ?string $name = null;
 
     /**
@@ -77,6 +77,10 @@ class Category
     #[ORM\ManyToOne(inversedBy: 'category')]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?SuperMenu $superMenu = null;
+
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?NiveauCours $niveauCours = null;
 
     public function __construct()
     {
@@ -327,6 +331,18 @@ class Category
     public function setSuperMenu(?SuperMenu $superMenu): static
     {
         $this->superMenu = $superMenu;
+
+        return $this;
+    }
+
+    public function getNiveauCours(): ?NiveauCours
+    {
+        return $this->niveauCours;
+    }
+
+    public function setNiveauCours(?NiveauCours $niveauCours): static
+    {
+        $this->niveauCours = $niveauCours;
 
         return $this;
     }

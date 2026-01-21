@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Menus;
 use App\Controller\Admin\PositionMenusCrudController;
+use App\Controller\Admin\NiveauCoursCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
@@ -26,6 +27,10 @@ class MenusCrudController extends AbstractCrudController
 
             AssociationField::new('positionMenus', 'Position du menu')
                 ->setCrudController(PositionMenusCrudController::class)
+                ->autocomplete(),
+
+            AssociationField::new('niveauCours', 'Niveau du menu')
+                ->setCrudController(NiveauCoursCrudController::class)
                 ->autocomplete(),
         ];
     }

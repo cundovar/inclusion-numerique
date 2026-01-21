@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useData } from '../utlis/fetchDataPwa'
+import { useData } from '../utils/fetchDataPwa'
 
 // Composable pour récupérer les logos depuis l'API
 export function useLogos() {

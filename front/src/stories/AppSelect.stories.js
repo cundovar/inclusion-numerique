@@ -1,5 +1,5 @@
 import { ref } from "vue"
-import AppSelect from "../components/commun/select/AppSelect.vue"
+import AppSelect from "../components/ui/AppSelect.vue"
 
 export default {
   title: "Components/AppSelect",

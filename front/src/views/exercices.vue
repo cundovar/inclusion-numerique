@@ -78,8 +78,8 @@
   </template>
   
   <script setup>
-  import Exocard from "../components/exercices/Exocard.vue"
-  import { useData } from "../utlis/fetchDataPwa"
+  import Exocard from "../components/features/exercices/ExerciceCard.vue"
+  import { useData } from "../utils/fetchDataPwa"
   import { onMounted, ref, reactive } from "vue"
 
   const { exoMenus, fetchExoMenus } = useData()

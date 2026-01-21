@@ -21,6 +21,9 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 
+// Chemin PWA - Modifier cette valeur pour changer le préfixe partout
+const PWA_PATH = '/spa';
+
 // Détecte si on est dans le contexte Storybook
 const isStorybook = process.env.npm_lifecycle_script?.includes('storybook') || false;
 
@@ -55,7 +58,7 @@ export default defineConfig(({ mode }) => {
         // Nom du fichier manifest généré
         injectRegister: 'auto',
         // Injection automatique du registre du service worker
-        outDir: 'public/spa',
+        outDir: `public${PWA_PATH}`,
         // Où mettre le service worker et le manifest (dans le repo)
         manifest: {
           // Contenu du manifest PWA
@@ -63,9 +66,9 @@ export default defineConfig(({ mode }) => {
           // Nom complet de l'application
           short_name: 'SpaVueSymfo',
           // Nom court (pour l'écran d'accueil)
-          start_url: '/spa/',
+          start_url: `${PWA_PATH}/`,
           // URL de démarrage quand l'app est lancée
-          scope: '/spa/',
+          scope: `${PWA_PATH}/`,
           // Limite les pages où le PWA fonctionne
           description: 'Application hybride combinant Vue.js et Symfony pour une expérience utilisateur optimale',
           theme_color: '#3b82f6',
@@ -79,13 +82,13 @@ export default defineConfig(({ mode }) => {
           icons: [
           // Icônes de l'application
           {
-            src: '/spa/pwa.png',
+            src: `${PWA_PATH}/pwa.png`,
             // Chemin de l'icône 192x192
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           }, {
-            src: '/spa/pwa1.png',
+            src: `${PWA_PATH}/pwa1.png`,
             // Chemin de l'icône 512x512
             sizes: '512x512',
             type: 'image/png',
@@ -94,14 +97,14 @@ export default defineConfig(({ mode }) => {
           screenshots: [
           // Screenshots pour l'installation PWA
           {
-            src: '/spa/screenshot.png',
+            src: `${PWA_PATH}/screenshot.png`,
             sizes: '1280x720',
             type: 'image/png',
             form_factor: 'wide',
             label: 'Application principale'
           },
           {
-            src: '/spa/screenshot.png',
+            src: `${PWA_PATH}/screenshot.png`,
             sizes: '1280x720',
             type: 'image/png',
             form_factor: 'narrow',
@@ -110,7 +113,7 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           // Configuration de Workbox pour gérer le cache
-          globDirectory: 'public/spa',
+          globDirectory: `public${PWA_PATH}`,
           // Où chercher les fichiers à mettre en cache (aligné avec outDir)
           globPatterns: ['**/*.{js,css,html,png,svg}'],
           // Quels types de fichiers à inclure

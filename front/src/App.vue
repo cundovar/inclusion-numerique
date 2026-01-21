@@ -81,7 +81,6 @@
 
       </div>
       <router-view />
-      <AfertLogin v-if="$route.path === '/'" />
     </main>
 
     <navFooterMobil @click="closed" />
@@ -90,11 +89,10 @@
 
 <script setup>
 import { computed, onMounted,ref } from "vue";
-import pagesFrame from "./components/MenuPageFramwork/PagesFrame.vue";
-import AfertLogin from "./components/AfertLogin.vue";
-import navFooterMobil from "./components/NavFooterMobil/Main.vue";
-import { useData } from "./utlis/fetchDataPwa";
-import { usePageTracking } from "./composables/usePageTracking.js";
+import pagesFrame from "./components/navigation/PagesFrame.vue";
+import navFooterMobil from "./components/navigation/NavFooterMobile.vue";
+import { useData } from "./utils/fetchDataPwa";
+import { usePageTracking } from "./composables/domain/usePageTracking.js";
 const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
 
 // Composants importés
@@ -103,18 +101,34 @@ import AppHeaderMobile from "./components/layout/AppHeaderMobile.vue";
 import AppNavigation from "./components/layout/AppNavigation.vue";
 import MobileAppPopup from "./components/layout/MobileAppPopup.vue";
 import NotifModal from "./components/layout/NotifModal.vue";
-import SearchResults from "./components/search/SearchResults.vue";
-import SearchResultsMobile from "./components/search/SearchResultsMobile.vue";
+import SearchResults from "./components/features/search/SearchResults.vue";
+import SearchResultsMobile from "./components/features/search/SearchResultsMobile.vue";
 
 // Composables
-import { useResponsive } from "./composables/useResponsive.js";
-import { useNavigation } from "./composables/useNavigation.js";
-import { useSearch } from "./composables/useSearch.js";
-import { usePWA } from "./composables/usePWA.js";
-import { useNotifModal } from "./composables/useNotifModal.js";
-import { useVisibilityFilter } from "./composables/useVisibilityFilter.js";
-import { useCustomization } from "./composables/useCustomization.js";
-import AppButton from "./components/commun/button/AppButton.vue";
+import { useResponsive } from "./composables/ui/useResponsive.js";
+import { useNavigation } from "./composables/ui/useNavigation.js";
+import { useSearch } from "./composables/domain/useSearch.js";
+import { usePWA } from "./composables/api/usePWA.js";
+import { useNotifModal } from "./composables/ui/useNotifModal.js";
+import { useVisibilityFilter } from "./composables/ui/useVisibilityFilter.js";
+import { useCustomization } from "./composables/ui/useCustomization.js";
+import AppButton from "./components/ui/AppButton.vue";
+
+// =============================================================================
+// STORE NIVEAU - Filtrage global par niveau de cours (Junior, Senior, etc.)
+// =============================================================================
+// Ce store permet de filtrer les catégories/cours dans toute l'application.
+// Quand l'utilisateur sélectionne un niveau dans le header (AppSelect),
+// toutes les pages qui utilisent ce store se mettent à jour automatiquement.
+// Le niveau sélectionné est persisté dans localStorage (via pinia-plugin-persistedstate)
+import { useNiveauStore } from "./stores/niveauCoursStore";
+import { storeToRefs } from "pinia";
+
+// Initialisation du store niveau
+// storeToRefs() permet de garder la réactivité des propriétés du store
+// selectedNiveau: le niveau actuellement sélectionné (ex: "Junior", "Senior", ou null pour tous)
+const niveauStore = useNiveauStore()
+const { selectedNiveau } = storeToRefs(niveauStore)
 
 // Données globales
 const { menus, user, cats, fetchMenus, fetchUser } = useData();
@@ -137,10 +151,11 @@ const {
   openMenu,
   toggleMenuGauche,
   closeModal,
+  openModal,
   closed
 } = useNavigation();
 
-const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile);
+const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile, openModal);
 const { showMobileAppPopup, currentOrigin, checkMobileAppPopup, closeMobileAppPopup, installPWA } = usePWA();
 const { showNotifModal, closeNotifModal } = useNotifModal();
 const { filterByVisibility } = useVisibilityFilter();
@@ -150,35 +165,103 @@ const sectionSize= ref(false)
 const toggleSectionSize = () => {
   sectionSize.value = !sectionSize.value
 }
-// Filtrer les catégories visibles du menu gauche
-const catsMenuGauche = computed(() => {
-  const menuGaucheCategories = (cats.value || []).filter(
-    (cat) => cat.positionMenus?.position === "menu-gauche" || cat.positionMenus?.position === "menu-droite"
-  );
 
-  // Appliquer le filtre de visibilité
-  return filterByVisibility(menuGaucheCategories);
+// =============================================================================
+// COMPUTED: catsMenuGauche - Catégories filtrées pour le menu de navigation
+// =============================================================================
+// Cette computed filtre les catégories en 3 étapes:
+// 1. Position: seulement les catégories du menu-gauche ou menu-droite
+// 2. Visibilité: filtre selon les droits utilisateur (admin, connecté, etc.)
+// 3. NIVEAU: filtre par le niveau sélectionné dans le header (Junior/Senior/etc.)
+const catsMenuGauche = computed(() => {
+  // Étape 1: Filtrer par position dans le menu
+  let menuGaucheCategories = (cats.value || []).filter(
+    (cat) => cat.positionMenus?.position === "menu-gauche" ||
+             cat.positionMenus?.position === "menu-droite"
+  )
+
+  // Étape 2: Appliquer le filtre de visibilité (droits utilisateur)
+  menuGaucheCategories = filterByVisibility(menuGaucheCategories)
+
+  // Étape 3: FILTRAGE PAR NIVEAU
+  // Si un niveau est sélectionné (ex: "Junior"), on ne garde que les catégories
+  // dont le niveauCours.name correspond au niveau sélectionné.
+  // Si selectedNiveau est null, on affiche toutes les catégories (pas de filtre)
+  if (selectedNiveau.value) {
+
+    menuGaucheCategories = menuGaucheCategories.filter(
+      (cat) => {
+        const catOrdre = cat.niveauCours?.ordre
+        const selectedOrdre = selectedNiveau.value.ordre
+        const hasNoNiveau = !cat.niveauCours?.name
+
+        // DEBUG: voir les valeurs
+      //   console.log(`📦 ${cat.name}: catOrdre=${catOrdre}, selectedOrdre=${selectedOrdre}, hasNoNiveau=${hasNoNiveau}`)
+
+        // Garder la catégorie si:
+        // 1. Son niveau a un ordre <= à l'ordre du niveau sélectionné
+        // 2. OU si la catégorie n'a pas de niveau défini (on l'affiche quand même)
+        return catOrdre <= selectedOrdre || hasNoNiveau
+      }
+    )
+  }
+
+ // console.log('🔍 catsMenuGauche - selectedNiveau:', selectedNiveau.value, '- count:', menuGaucheCategories.length)
+  return menuGaucheCategories
 });
-// Computed pour les menus par catégorie
-// filtrage des categorie, je veux juste les categorie qui seront positionner en menu-gauche
+// =============================================================================
+// COMPUTED: menusByCategory - Menus groupés par catégorie
+// =============================================================================
+// Cette computed organise les menus par catégorie pour l'affichage dans la navigation.
+// IMPORTANT: Elle utilise catsMenuGauche qui est DÉJÀ FILTRÉ par niveau.
+// Donc quand selectedNiveau change, menusByCategory se recalcule automatiquement
+// car catsMenuGauche (sa dépendance) a changé. C'est la magie de la réactivité Vue!
 const menusByCategory = computed(() => {
   const result = {};
 
-  console.log("cats:", cats.value);
-  console.log("menus:", menus.value);
+ 
 
+  // On itère sur les catégories DÉJÀ FILTRÉES par niveau
   catsMenuGauche.value.forEach((cat) => {
     const grouped = {};
 
-    const menusForCat = (menus.value || []).filter(
+
+    let menusForCat = (menus.value || []).filter(
       (menu) => {
+       //  console.log("DEBUG menu.category?.name:", menu.category?.name, "vs cat.name:", cat.name);
         return menu.category?.name === cat.name;
+
       }
     );
-    console.log("menusForCat", menusForCat);
+
+    if(selectedNiveau.value){
+      console.log("🔍 selectedNiveau:", selectedNiveau.value, "ordre:", selectedNiveau.value.ordre)
+      menusForCat = menusForCat.filter((menu) => {
+        const selectedOrdre = selectedNiveau.value.ordre
+
+        // Niveau du PageContent direct
+        const pageContentOrdre = menu.niveauCours?.ordre
+        // Niveau du Menu associé
+        const menuNiveauOrdre = menu.menu?.niveauCours?.ordre
+
+        // Utiliser le niveau du PageContent en priorité, sinon celui du Menu
+        const effectiveOrdre = pageContentOrdre ?? menuNiveauOrdre
+
+        console.log(`📦 ${menu.title}: pageContentOrdre=${pageContentOrdre}, menuNiveauOrdre=${menuNiveauOrdre}, effectiveOrdre=${effectiveOrdre}, selectedOrdre=${selectedOrdre}, pass=${effectiveOrdre === undefined || effectiveOrdre <= selectedOrdre}`)
+
+        // Si aucun niveau défini nulle part, on garde l'élément
+        if (effectiveOrdre === undefined) return true
+
+        return effectiveOrdre <= selectedOrdre
+      })
+    }
+
+    console.log("dddsds",menusForCat)
+   
 
     menusForCat.forEach((menu) => {
       const label = menu.menu.label;
+      
 
       if (!grouped[label]) {
         grouped[label] = {
@@ -193,7 +276,7 @@ const menusByCategory = computed(() => {
     result[cat.name] = Object.values(grouped);
   });
 
-  console.log("menusByCategory result:", result);
+  //console.log("menusByCategory result:", result);
 
   return result;
 });
@@ -202,6 +285,10 @@ onMounted(() => {
   fetchMenus();
   fetchUser();
   updateScreenSizes();
+
+  // Charger les niveaux de cours depuis l'API pour le filtre du header
+  // Les niveaux seront disponibles dans le store pour AppHeader et toutes les pages
+  niveauStore.fetchNiveaux();
 
   // Initialiser la personnalisation utilisateur
   initCustomization();

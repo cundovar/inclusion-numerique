@@ -1,4 +1,4 @@
-import AppBadge from "../components/commun/badge/AppBadge.vue"
+import AppBadge from "../components/ui/AppBadge.vue"
 
 export default {
   title: "Components/AppBadge",

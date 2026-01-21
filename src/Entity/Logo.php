@@ -24,15 +24,15 @@ class Logo
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write'])]
+    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write', 'page_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write'])]
+    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write', 'page_content:read'])]
     private ?string $logo = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write'])]
+    #[Groups(['logo:read', 'doc_de_code:read', 'logo:write', 'page_content:read'])]
     private ?string $titre = null;
 
 

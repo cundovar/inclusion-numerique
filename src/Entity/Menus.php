@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiProperty;
   use ApiPlatform\Metadata\GetCollection;
   use ApiPlatform\Metadata\Post;
   use ApiPlatform\Metadata\Get;
@@ -64,6 +65,11 @@ class Menus
     #[ORM\ManyToOne(inversedBy: 'menus')]
     #[Groups(['page_content:read', 'page_content:write'])] 
     private ?PositionMenus $positionMenus = null;
+
+    #[ORM\ManyToOne(inversedBy: 'menus')]
+    #[ApiProperty(readableLink: true)]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?NiveauCours $niveauCours = null;
 
     public function __construct()
     {
@@ -172,6 +178,18 @@ class Menus
     public function setPositionMenus(?PositionMenus $positionMenus): static
     {
         $this->positionMenus = $positionMenus;
+
+        return $this;
+    }
+
+    public function getNiveauCours(): ?NiveauCours
+    {
+        return $this->niveauCours;
+    }
+
+    public function setNiveauCours(?NiveauCours $niveauCours): static
+    {
+        $this->niveauCours = $niveauCours;
 
         return $this;
     }

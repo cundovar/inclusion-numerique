@@ -25,15 +25,15 @@
         @click="$emit('closeMenu')"
         class="cursor-pointer text-lg hover:underline block  focus:bg-blue-500"
       >
-        {{ cat.name }}
+      hhhh  {{ cat.name }}
       </router-link>
 
       <!-- Mobile/Tablet : texte cliquable qui ouvre le menu -->
       <span
         v-else
-        class="cursor-pointer max-md:w-full max-md:h-full block max-md:text-center"
+        :class="[menuGauche.categoryTextSize, menuGauche.categoryBgColor]"
       >
-        {{ cat.name }}
+       ggg {{ cat.name }}
       </span>
     </h1>
 
@@ -108,12 +108,12 @@
 </template>
 
 <script setup>
-import { capitalize } from '../../utlis/stringsUtlis';
-import { useCustomization } from '../../composables/useCustomization';
-import AppButton from '../commun/button/AppButton.vue';
+import { capitalize } from '../../utils/stringsUtlis';
+import { useCustomization } from '../../composables/ui/useCustomization';
+import AppButton from '../ui/AppButton.vue';
 
 const { menuGauche } = useCustomization();
-
+console.log("rrrrr",menuGauche.value)
 defineProps({
   cat: {
     type: Object,
