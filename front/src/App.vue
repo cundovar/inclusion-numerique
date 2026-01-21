@@ -196,7 +196,7 @@ const catsMenuGauche = computed(() => {
         const hasNoNiveau = !cat.niveauCours?.name
 
         // DEBUG: voir les valeurs
-        console.log(`📦 ${cat.name}: catOrdre=${catOrdre}, selectedOrdre=${selectedOrdre}, hasNoNiveau=${hasNoNiveau}`)
+      //   console.log(`📦 ${cat.name}: catOrdre=${catOrdre}, selectedOrdre=${selectedOrdre}, hasNoNiveau=${hasNoNiveau}`)
 
         // Garder la catégorie si:
         // 1. Son niveau a un ordre <= à l'ordre du niveau sélectionné
@@ -206,7 +206,7 @@ const catsMenuGauche = computed(() => {
     )
   }
 
-  console.log('🔍 catsMenuGauche - selectedNiveau:', selectedNiveau.value, '- count:', menuGaucheCategories.length)
+ // console.log('🔍 catsMenuGauche - selectedNiveau:', selectedNiveau.value, '- count:', menuGaucheCategories.length)
   return menuGaucheCategories
 });
 // =============================================================================
@@ -219,19 +219,49 @@ const catsMenuGauche = computed(() => {
 const menusByCategory = computed(() => {
   const result = {};
 
+ 
+
   // On itère sur les catégories DÉJÀ FILTRÉES par niveau
   catsMenuGauche.value.forEach((cat) => {
     const grouped = {};
 
-    const menusForCat = (menus.value || []).filter(
+
+    let menusForCat = (menus.value || []).filter(
       (menu) => {
+       //  console.log("DEBUG menu.category?.name:", menu.category?.name, "vs cat.name:", cat.name);
         return menu.category?.name === cat.name;
+
       }
     );
-    console.log("menusForCat", menusForCat);
+
+    if(selectedNiveau.value){
+      console.log("🔍 selectedNiveau:", selectedNiveau.value, "ordre:", selectedNiveau.value.ordre)
+      menusForCat = menusForCat.filter((menu) => {
+        const selectedOrdre = selectedNiveau.value.ordre
+
+        // Niveau du PageContent direct
+        const pageContentOrdre = menu.niveauCours?.ordre
+        // Niveau du Menu associé
+        const menuNiveauOrdre = menu.menu?.niveauCours?.ordre
+
+        // Utiliser le niveau du PageContent en priorité, sinon celui du Menu
+        const effectiveOrdre = pageContentOrdre ?? menuNiveauOrdre
+
+        console.log(`📦 ${menu.title}: pageContentOrdre=${pageContentOrdre}, menuNiveauOrdre=${menuNiveauOrdre}, effectiveOrdre=${effectiveOrdre}, selectedOrdre=${selectedOrdre}, pass=${effectiveOrdre === undefined || effectiveOrdre <= selectedOrdre}`)
+
+        // Si aucun niveau défini nulle part, on garde l'élément
+        if (effectiveOrdre === undefined) return true
+
+        return effectiveOrdre <= selectedOrdre
+      })
+    }
+
+    console.log("dddsds",menusForCat)
+   
 
     menusForCat.forEach((menu) => {
       const label = menu.menu.label;
+      
 
       if (!grouped[label]) {
         grouped[label] = {
@@ -246,7 +276,7 @@ const menusByCategory = computed(() => {
     result[cat.name] = Object.values(grouped);
   });
 
-  console.log("menusByCategory result:", result);
+  //console.log("menusByCategory result:", result);
 
   return result;
 });

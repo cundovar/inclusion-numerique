@@ -311,6 +311,7 @@ const categoryPresentation = computed(() => {
   // Retourner la description HTML de l'API
   if (currentCategory?.description) {
     return currentCategory.description
+    
   }
 
   return '<div>Découvrez les ressources disponibles pour cette technologie.</div>'
@@ -344,10 +345,21 @@ const categoryMenus = computed(() => {
   // console.log('  - Filtered menus count:', filteredMenus.length)
  // Étape 2: Filtrer par niveau (comme dans App.vue)
 if(selectedNiveau.value){
-  filteredMenus=filteredMenus.filter((menu)=>{
-    const menuOrdre=menu.niveauCours?.ordre
-    const selectedOrdre=selectedNiveau.value.ordre
-    const hasNoNiveau=!menu.niveauCours?.name
+
+  console.log("eee",filteredMenus)
+  // Filtrage 1: Filtrer par le niveau du menu (menu.niveauCours)
+  filteredMenus = filteredMenus.filter((item) => {
+    const menuCatOrdre = item.menu?.niveauCours?.ordre
+    const selectedOrdre = selectedNiveau.value.ordre
+    const hasNoNiveau = !item.menu?.niveauCours?.name
+    return menuCatOrdre <= selectedOrdre || hasNoNiveau
+  })
+
+  // Filtrage 2: Filtrer par le niveau du PageContent (niveauCours direct)
+  filteredMenus = filteredMenus.filter((menu) => {
+    const menuOrdre = menu.niveauCours?.ordre
+    const selectedOrdre = selectedNiveau.value.ordre
+    const hasNoNiveau = !menu.niveauCours?.name
     //garder menu si
     //1 ordre <=ordre du niv selectionne dans localstorage
     //2 ou si pas niveau defini 

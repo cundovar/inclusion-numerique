@@ -8,6 +8,7 @@
 
       <!-- Boucle sur les Categories de ce SuperMenu -->
       <div class="">
+        
         <CategoryMenuItem
           v-for="cat in superMenu"
           :key="cat.id"
