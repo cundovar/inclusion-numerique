@@ -317,8 +317,10 @@
         </div>
 
         <!-- Onglet Apparence -->
-        <div v-if="activeTab === 'appearance'">
-          <div v-if="!allowedClasses || !customSettings.header || !customSettings.body" class="text-center py-8">
+        <!--- 
+        
+      <div v-if="activeTab === 'appearance'">
+        <div v-if="!allowedClasses || !customSettings.header || !customSettings.body" class="text-center py-8">
             <i class="pi pi-spinner pi-spin text-2xl text-blue-500"></i>
             <p class="text-gray-500 mt-2">Chargement des options de personnalisation...</p>
           </div>
@@ -336,7 +338,7 @@
             </router-link>
           </div>
 
-          <!-- Nom du site -->
+           Nom du site 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-globe mr-2 text-blue-500"></i>
@@ -354,7 +356,7 @@
             </div>
           </div>
 
-          <!-- Header -->
+           Header 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-window-maximize mr-2 text-blue-500"></i>
@@ -362,7 +364,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- Header - Couleur de fond -->
+              <-- Header - Couleur de fond 
               <AppSelect
                 v-model="customSettings.header.bgColor"
                 label="Couleur de fond"
@@ -370,7 +372,7 @@
                 clearable
               />
 
-              <!-- Header - Couleur de texte -->
+              <-- Header - Couleur de texte 
               <AppSelect
                 v-model="customSettings.header.textColor"
                 label="Couleur de texte"
@@ -378,7 +380,7 @@
                 clearable
               />
 
-              <!-- Header - Couleur hover -->
+              <-- Header - Couleur hover 
               <AppSelect
                 v-model="customSettings.header.hoverColor"
                 label="Couleur hover"
@@ -388,7 +390,7 @@
             </div>
           </div>
 
-          <!-- Body -->
+          <-- Body 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-file mr-2 text-blue-500"></i>
@@ -396,7 +398,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Body - Couleur de fond -->
+              <-- Body - Couleur de fond 
               <AppSelect
                 v-model="customSettings.body.bgColor"
                 label="Couleur de fond"
@@ -404,7 +406,7 @@
                 clearable
               />
 
-              <!-- Body - Couleur de texte -->
+              <-- Body - Couleur de texte 
               <AppSelect
                 v-model="customSettings.body.textColor"
                 label="Couleur de texte"
@@ -414,7 +416,7 @@
             </div>
           </div>
 
-          <!-- Menu Gauche -->
+          <- Menu Gauche 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-bars mr-2 text-blue-500"></i>
@@ -422,7 +424,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Catégorie - Couleur de fond -->
+              <-- Catégorie - Couleur de fond 
               <AppSelect
                 v-model="customSettings.menuGauche.categoryBgColor"
                 label="Catégorie - Couleur de fond"
@@ -430,7 +432,7 @@
                 clearable
               />
 
-              <!-- Catégorie - Couleur de texte -->
+              <-- Catégorie - Couleur de texte --
               <AppSelect
                 v-model="customSettings.menuGauche.categoryTextColor"
                 label="Catégorie - Couleur de texte"
@@ -438,7 +440,7 @@
                 clearable
               />
 
-              <!-- Catégorie - Taille de texte -->
+              <-- Catégorie - Taille de texte -
               <AppSelect
                 v-model="customSettings.menuGauche.categoryTextSize"
                 label="Catégorie - Taille de texte"
@@ -446,7 +448,7 @@
                 clearable
               />
 
-              <!-- Catégorie - Couleur hover -->
+              <-- Catégorie - Couleur hover 
               <AppSelect
                 v-model="customSettings.menuGauche.categoryHoverColor"
                 label="Catégorie - Couleur hover"
@@ -454,7 +456,7 @@
                 clearable
               />
 
-              <!-- Menu Item - Couleur de fond -->
+              <! Menu Item - Couleur de fond 
               <AppSelect
                 v-model="customSettings.menuGauche.menuItemBgColor"
                 label="Menu Item - Couleur de fond"
@@ -462,7 +464,7 @@
                 clearable
               />
 
-              <!-- Menu Item - Couleur de texte -->
+               Menu Item - Couleur de texte 
               <AppSelect
                 v-model="customSettings.menuGauche.menuItemTextColor"
                 label="Menu Item - Couleur de texte"
@@ -470,7 +472,7 @@
                 clearable
               />
 
-              <!-- Menu Item - Couleur hover -->
+               Menu Item - Couleur hover 
               <AppSelect
                 v-model="customSettings.menuGauche.menuItemHoverBgColor"
                 label="Menu Item - Couleur hover fond"
@@ -480,7 +482,7 @@
             </div>
           </div>
 
-          <!-- Menu Droit -->
+          Menu Droit 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-bars mr-2 text-green-500"></i>
@@ -488,7 +490,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Catégorie - Couleur de fond -->
+               Catégorie - Couleur de fond 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryBgColor"
                 label="Catégorie - Couleur de fond"
@@ -496,7 +498,7 @@
                 clearable
               />
 
-              <!-- Catégorie - Couleur de texte -->
+               Catégorie - Couleur de texte 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryTextColor"
                 label="Catégorie - Couleur de texte"
@@ -504,7 +506,7 @@
                 clearable
               />
 
-              <!-- Catégorie - Taille de texte -->
+               Catégorie - Taille de texte 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryTextSize"
                 label="Catégorie - Taille de texte"
@@ -512,7 +514,7 @@
                 clearable
               />
 
-              <!-- Catégorie - Couleur hover -->
+               Catégorie - Couleur hover 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryHoverColor"
                 label="Catégorie - Couleur hover"
@@ -522,7 +524,7 @@
             </div>
           </div>
 
-          <!-- Boutons d'action -->
+          Boutons d'action 
           <div class="flex gap-4">
             <AppButton
               @click="saveAppearance"
@@ -544,7 +546,7 @@
             />
           </div>
 
-          <!-- Message de succès -->
+           Message de succès 
           <AppAlert
             v-if="appearanceMessage"
             type="success"
@@ -554,6 +556,8 @@
           />
           </div>
         </div>
+
+      -->
       </div>
     </div>
   </div>

@@ -14,7 +14,7 @@ class UserCustomization
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'customization', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'customization', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
