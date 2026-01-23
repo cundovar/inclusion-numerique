@@ -89,10 +89,13 @@
 
 
                                                                                                                                                                 
-                                                                                                                                                 
+  {% if app.environment == 'dev' %}                                                                                                                              
+      {{ vite_entry_script_tags('main') }}                                                                                                                       
+      {{ vite_entry_link_tags('main') }}                                                                                                                         
+  {% else %}                                                                                                                                                     
       <link rel="stylesheet" href="/build/assets/main-BWEaqHIt.css">
-      <script type="module" src="/build/assets/main-D2yqr2ZS.js"></script>                                                                                       
-                                                                                                                                                  
+      <script type="module" src="/build/assets/main-CMmCy4T5.js"></script>                                                                                       
+  {% endif %}                                                                                                                                                    
                
   </head>
   <body>
