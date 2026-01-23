@@ -32,9 +32,9 @@
     <!-- Header mobile -->
     <AppHeaderMobile
       :isMenuOpen="isMenuOpen"
-      v-model:search="search"
+  
       @toggleMenu="toggleMenu"
-      @search="launchSearch"
+      
     />
 
     <!-- Résultats de recherche desktop -->
@@ -45,14 +45,7 @@
       @close="closeSearchResults"
     />
 
-    <!-- Résultats de recherche mobile -->
-    <SearchResultsMobile
-      :modalIsOpen="modalIsOpen"
-      :searchResults="searchResults"
-      :searchAnalysis="searchAnalysis"
-      :search="search"
-      @close="closeModal"
-    />
+
 
     <div class="h-28"></div>
 
@@ -256,7 +249,7 @@ const menusByCategory = computed(() => {
       })
     }
 
-    console.log("dddsds",menusForCat)
+    // console.log("dddsds",menusForCat)//
    
 
     menusForCat.forEach((menu) => {

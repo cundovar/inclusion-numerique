@@ -59,11 +59,11 @@
   </div>
 
     <!-- Ligne du bas: Barre de recherche -->
-    <div class="px-3 flex pt-1 pb-2">
+    <div class="px-3    flex justify-between pt-1 pb-2">
          <!-- Sélecteur de niveau stylisé -->
       <select
         v-model="selectedLevel"
-        class="w-48 h-9 px-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
+        class="w-48 h-9 px-3  bg-white border border-gray-300 rounded-lg text-sm text-gray-700
                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                hover:border-gray-400 cursor-pointer transition-all duration-200"
       >
@@ -71,18 +71,71 @@
           v-for="level in levels"
           :key="level.value"
           :value="level.value"
+          ref=""
         >
           {{ level.name }}
         </option>
       </select>
 
+      <AppButton 
+      
+      rounded="full"
+      variant=""
+      size="md"
+      icon="pi pi-search"
+      @click="toggleSearchPanel"
+      class="  "
+      :class="showSearch ? 'invisible': 'visible'"
+      />
+<Transition                                                                                                                                                                    
+    enter-active-class="transition-all duration-300 ease-out"                                                                                                                    
+    enter-from-class="opacity-0 translate-x-full"                                                                                                                                
+    enter-to-class="opacity-100 translate-x-0"                                                                                                                                   
+    leave-active-class="transition-all duration-300 ease-in"                                                                                                                     
+    leave-from-class="opacity-100 translate-x-0"                                                                                                                                 
+    leave-to-class="opacity-0 translate-x-full"                                                                                                                                  
+  >                                                                                                                                                                              
+    <div                                                                                                                                                                         
+      v-show="showSearch"                                                                                                                                                        
+      class=" bg-sky-50  w-screen  absolute right-0 min-h-screen"                                                                                                                     
+    >                                                                                                                                                                            
+      <SearchInput                                                                                                                                                               
+        :modelValue="search"                                                                                                                                                      
+        @update:modelValue="(val)=>search=val"                                                                                                                      
+        @search="launchSearch"                                                                                                                                                
+        class=" w-[80%] mt-10"                                                                                                                                                     
+      />                                                                                                                                                                         
+                                                                                                                                                                                 
       
 
-      <SearchInput
-        :modelValue="search"
-        @update:modelValue="$emit('update:search', $event)"
-        @search="$emit('search')"
+      <AppButton
+      class="absolute border cursor-pointer right-0 top-0"
+       size="sm"
+        textContent="X"
+         variant="danger"
+       @click="toggleSearchPanel"
+          
+           />
+      
+
+        <!-- Résultats de recherche mobile -->
+ 
+        <ul class="space-y-3 mt-10  flex justify-center flex-col items-center">
+          
+      <SearchResultItem
+        v-for="result in searchResults"
+        :key="result.id || result.page?.slug"
+        :result="result"
+        @close="toggleSearchPanel"
       />
+    </ul>
+    </div>                                                                                                                                                                       
+  </Transition>                                                                                                                                                                  
+                        
+
+
+      
+
     </div>
   </div>
 </template>
@@ -96,15 +149,36 @@ import { useCustomization } from '../../composables/ui/useCustomization';
 import AppButton from '../ui/AppButton.vue';
 import { useData } from '../../utils/fetchDataPwa';
 import { APP_CONFIG } from '../../config/app.js';
+import SearchResults from '../features/search/SearchResultsMobile.vue';
+import SearchResultItem from '../features/search/SearchResultItem.vue';
 
 // =============================================================================
 // STORE NIVEAU - Connexion au filtre global
 // =============================================================================
 import { useNiveauStore } from '@/stores/niveauCoursStore';
 import { storeToRefs } from 'pinia';
+import { useNavigation } from '@/composables/ui/useNavigation';
+import { useSearch } from '@/composables/domain/useSearch';
+;
+import { useResponsive } from '@/composables/ui/useResponsive';
 
+
+const { user,menus } = useData();
+const { isMobile } = useResponsive()
+const {openModal,closeModal,modalIsOpen} = useNavigation()
+const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile, openModal);
 // Initialisation du store
 const niveauStore = useNiveauStore()
+
+//pour input search
+const showSearch = ref(false)
+
+const toggleSearchPanel = () => {
+  showSearch.value = !showSearch.value
+  if (!showSearch.value) {
+    closeSearchResults()
+  }
+}
 
 // Extraction des refs réactives du store:
 // - niveaux: liste des niveaux disponibles depuis l'API (Junior, Senior, etc.)
@@ -136,6 +210,9 @@ const selectedLevel = computed({
   }
 })
 
+
+
+
 // Charger les niveaux au montage du composant
 // Note: fetchNiveaux() ne fait rien si les niveaux sont déjà chargés (optimisation)
 onMounted(() => {
@@ -157,7 +234,8 @@ watch(levels, (newLevels) => {
 }, { immediate: true })
 
 const { siteName, header } = useCustomization();
-const { user } = useData();
+const {toggleMenu}=useNavigation()
+const { menu } = useData();
 const isAdmin = computed(() => user.value?.roles?.includes('ROLE_ADMIN'));
 
 defineProps({
@@ -165,13 +243,10 @@ defineProps({
     type: Boolean,
     default: false
   },
-  search: {
-    type: String,
-    default: ''
-  }
+
 });
 
-defineEmits(['toggleMenu', 'update:search', 'search']);
+defineEmits(['toggleMenu']);
 
 // Headroom.js
 const headerRef = ref(null);
