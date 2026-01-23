@@ -1,0 +1,214 @@
+{
+  "_SafeHtml-sDh8RftE.js": {
+    "file": "assets/SafeHtml-sDh8RftE.js",
+    "name": "SafeHtml",
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "_noteService-BblDM8jL.js": {
+    "file": "assets/noteService-BblDM8jL.js",
+    "name": "noteService",
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "_qcm-DY56sEnu.js": {
+    "file": "assets/qcm-DY56sEnu.js",
+    "name": "qcm",
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf": {
+    "file": "assets/fa-brands-400-D1LuMI3I.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-D_cYUPeE.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf": {
+    "file": "assets/fa-regular-400-DZaxPHgR.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-BjRzuEpd.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf": {
+    "file": "assets/fa-solid-900-D0aA9rwL.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-CTAAxXor.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf": {
+    "file": "assets/fa-v4compatibility-CCth-dXg.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2": {
+    "file": "assets/fa-v4compatibility-C9RhG_FT.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
+  },
+  "node_modules/workbox-window/build/workbox-window.prod.es5.mjs": {
+    "file": "assets/workbox-window.prod.es5-B9K5rw8f.js",
+    "name": "workbox-window.prod.es5",
+    "src": "node_modules/workbox-window/build/workbox-window.prod.es5.mjs",
+    "isDynamicEntry": true
+  },
+  "src/components/features/exercices/ExerciceView.vue": {
+    "file": "assets/ExerciceView-cLmoS_mB.js",
+    "name": "ExerciceView",
+    "src": "src/components/features/exercices/ExerciceView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js",
+      "_SafeHtml-sDh8RftE.js"
+    ],
+    "css": [
+      "assets/ExerciceView-p8Ri04OF.css"
+    ]
+  },
+  "src/components/features/home/HomePage.vue": {
+    "file": "assets/HomePage-bvrehTqD.js",
+    "name": "HomePage",
+    "src": "src/components/features/home/HomePage.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/components/features/pages/PageContent.vue": {
+    "file": "assets/PageContent-CBZbWh6x.js",
+    "name": "PageContent",
+    "src": "src/components/features/pages/PageContent.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js",
+      "_noteService-BblDM8jL.js",
+      "_SafeHtml-sDh8RftE.js"
+    ],
+    "css": [
+      "assets/PageContent-LhYNn9Ao.css"
+    ]
+  },
+  "src/main.js": {
+    "file": "assets/main-C1DmfBBY.js",
+    "name": "main",
+    "src": "src/main.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "src/components/features/pages/PageContent.vue",
+      "src/views/Profile.vue",
+      "src/views/CategoryPage.vue",
+      "src/views/QCM/PageQCM.vue",
+      "src/views/exercices.vue",
+      "src/components/features/exercices/ExerciceView.vue",
+      "src/views/QCM/questionQCM.vue",
+      "src/views/QCM/resultQCM.vue",
+      "src/views/ComponentsDemo.vue",
+      "src/components/features/home/HomePage.vue",
+      "node_modules/workbox-window/build/workbox-window.prod.es5.mjs"
+    ],
+    "css": [
+      "assets/main-DvDZJc3E.css"
+    ],
+    "assets": [
+      "assets/fa-brands-400-D_cYUPeE.woff2",
+      "assets/fa-brands-400-D1LuMI3I.ttf",
+      "assets/fa-regular-400-BjRzuEpd.woff2",
+      "assets/fa-regular-400-DZaxPHgR.ttf",
+      "assets/fa-solid-900-CTAAxXor.woff2",
+      "assets/fa-solid-900-D0aA9rwL.ttf",
+      "assets/fa-v4compatibility-C9RhG_FT.woff2",
+      "assets/fa-v4compatibility-CCth-dXg.ttf"
+    ]
+  },
+  "src/views/CategoryPage.vue": {
+    "file": "assets/CategoryPage-CKyhTlMG.js",
+    "name": "CategoryPage",
+    "src": "src/views/CategoryPage.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/CategoryPage-B_ROYzTD.css"
+    ]
+  },
+  "src/views/ComponentsDemo.vue": {
+    "file": "assets/ComponentsDemo-CJkqsn5l.js",
+    "name": "ComponentsDemo",
+    "src": "src/views/ComponentsDemo.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/views/Profile.vue": {
+    "file": "assets/Profile-BX5wcKzY.js",
+    "name": "Profile",
+    "src": "src/views/Profile.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js",
+      "_noteService-BblDM8jL.js"
+    ],
+    "css": [
+      "assets/Profile-VTupzDUF.css"
+    ]
+  },
+  "src/views/QCM/PageQCM.vue": {
+    "file": "assets/PageQCM-DUgK57m8.js",
+    "name": "PageQCM",
+    "src": "src/views/QCM/PageQCM.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js",
+      "_qcm-DY56sEnu.js"
+    ],
+    "css": [
+      "assets/PageQCM-CZGI7b4Z.css"
+    ]
+  },
+  "src/views/QCM/questionQCM.vue": {
+    "file": "assets/questionQCM-CZn66-0Q.js",
+    "name": "questionQCM",
+    "src": "src/views/QCM/questionQCM.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js",
+      "_qcm-DY56sEnu.js"
+    ],
+    "css": [
+      "assets/questionQCM-CXWIfxNK.css"
+    ]
+  },
+  "src/views/QCM/resultQCM.vue": {
+    "file": "assets/resultQCM-DjUtkJsC.js",
+    "name": "resultQCM",
+    "src": "src/views/QCM/resultQCM.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_qcm-DY56sEnu.js",
+      "src/main.js"
+    ],
+    "css": [
+      "assets/resultQCM-TfXHG6aH.css"
+    ]
+  },
+  "src/views/exercices.vue": {
+    "file": "assets/exercices-BbUUHxQt.js",
+    "name": "exercices",
+    "src": "src/views/exercices.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/exercices-OryBisk_.css"
+    ]
+  }
+}
