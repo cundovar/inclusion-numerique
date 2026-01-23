@@ -1,20 +1,20 @@
 {
-  "_SafeHtml-sDh8RftE.js": {
-    "file": "assets/SafeHtml-sDh8RftE.js",
+  "_SafeHtml-DyMpPdYG.js": {
+    "file": "assets/SafeHtml-DyMpPdYG.js",
     "name": "SafeHtml",
     "imports": [
       "src/main.js"
     ]
   },
-  "_noteService-BblDM8jL.js": {
-    "file": "assets/noteService-BblDM8jL.js",
+  "_noteService-mRva9tA-.js": {
+    "file": "assets/noteService-mRva9tA-.js",
     "name": "noteService",
     "imports": [
       "src/main.js"
     ]
   },
-  "_qcm-DY56sEnu.js": {
-    "file": "assets/qcm-DY56sEnu.js",
+  "_qcm-_Li_6jwu.js": {
+    "file": "assets/qcm-_Li_6jwu.js",
     "name": "qcm",
     "imports": [
       "src/main.js"
@@ -59,20 +59,20 @@
     "isDynamicEntry": true
   },
   "src/components/features/exercices/ExerciceView.vue": {
-    "file": "assets/ExerciceView-cLmoS_mB.js",
+    "file": "assets/ExerciceView-0fIoGaHj.js",
     "name": "ExerciceView",
     "src": "src/components/features/exercices/ExerciceView.vue",
     "isDynamicEntry": true,
     "imports": [
       "src/main.js",
-      "_SafeHtml-sDh8RftE.js"
+      "_SafeHtml-DyMpPdYG.js"
     ],
     "css": [
       "assets/ExerciceView-p8Ri04OF.css"
     ]
   },
   "src/components/features/home/HomePage.vue": {
-    "file": "assets/HomePage-bvrehTqD.js",
+    "file": "assets/HomePage-BfYlz3fA.js",
     "name": "HomePage",
     "src": "src/components/features/home/HomePage.vue",
     "isDynamicEntry": true,
@@ -81,21 +81,21 @@
     ]
   },
   "src/components/features/pages/PageContent.vue": {
-    "file": "assets/PageContent-CBZbWh6x.js",
+    "file": "assets/PageContent-C8nsXDAr.js",
     "name": "PageContent",
     "src": "src/components/features/pages/PageContent.vue",
     "isDynamicEntry": true,
     "imports": [
       "src/main.js",
-      "_noteService-BblDM8jL.js",
-      "_SafeHtml-sDh8RftE.js"
+      "_noteService-mRva9tA-.js",
+      "_SafeHtml-DyMpPdYG.js"
     ],
     "css": [
       "assets/PageContent-LhYNn9Ao.css"
     ]
   },
   "src/main.js": {
-    "file": "assets/main-C1DmfBBY.js",
+    "file": "assets/main-Dpcb7jiu.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
@@ -127,7 +127,7 @@
     ]
   },
   "src/views/CategoryPage.vue": {
-    "file": "assets/CategoryPage-CKyhTlMG.js",
+    "file": "assets/CategoryPage-CZJZh1Gn.js",
     "name": "CategoryPage",
     "src": "src/views/CategoryPage.vue",
     "isDynamicEntry": true,
@@ -139,7 +139,7 @@
     ]
   },
   "src/views/ComponentsDemo.vue": {
-    "file": "assets/ComponentsDemo-CJkqsn5l.js",
+    "file": "assets/ComponentsDemo-CQ3eADVP.js",
     "name": "ComponentsDemo",
     "src": "src/views/ComponentsDemo.vue",
     "isDynamicEntry": true,
@@ -148,51 +148,51 @@
     ]
   },
   "src/views/Profile.vue": {
-    "file": "assets/Profile-BX5wcKzY.js",
+    "file": "assets/Profile-07W3pivT.js",
     "name": "Profile",
     "src": "src/views/Profile.vue",
     "isDynamicEntry": true,
     "imports": [
       "src/main.js",
-      "_noteService-BblDM8jL.js"
+      "_noteService-mRva9tA-.js"
     ],
     "css": [
       "assets/Profile-VTupzDUF.css"
     ]
   },
   "src/views/QCM/PageQCM.vue": {
-    "file": "assets/PageQCM-DUgK57m8.js",
+    "file": "assets/PageQCM-ZvXBBiBb.js",
     "name": "PageQCM",
     "src": "src/views/QCM/PageQCM.vue",
     "isDynamicEntry": true,
     "imports": [
       "src/main.js",
-      "_qcm-DY56sEnu.js"
+      "_qcm-_Li_6jwu.js"
     ],
     "css": [
       "assets/PageQCM-CZGI7b4Z.css"
     ]
   },
   "src/views/QCM/questionQCM.vue": {
-    "file": "assets/questionQCM-CZn66-0Q.js",
+    "file": "assets/questionQCM-CwGW7bY0.js",
     "name": "questionQCM",
     "src": "src/views/QCM/questionQCM.vue",
     "isDynamicEntry": true,
     "imports": [
       "src/main.js",
-      "_qcm-DY56sEnu.js"
+      "_qcm-_Li_6jwu.js"
     ],
     "css": [
       "assets/questionQCM-CXWIfxNK.css"
     ]
   },
   "src/views/QCM/resultQCM.vue": {
-    "file": "assets/resultQCM-DjUtkJsC.js",
+    "file": "assets/resultQCM-Czwteh8z.js",
     "name": "resultQCM",
     "src": "src/views/QCM/resultQCM.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_qcm-DY56sEnu.js",
+      "_qcm-_Li_6jwu.js",
       "src/main.js"
     ],
     "css": [
@@ -200,7 +200,7 @@
     ]
   },
   "src/views/exercices.vue": {
-    "file": "assets/exercices-BbUUHxQt.js",
+    "file": "assets/exercices-KvfFzDJP.js",
     "name": "exercices",
     "src": "src/views/exercices.vue",
     "isDynamicEntry": true,
