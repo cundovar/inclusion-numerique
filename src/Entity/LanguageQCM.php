@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\LanguageQCMRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\ApiResource;
 
-#[ORM\Entity(repositoryClass: LanguageQCMRepository::class)]
+#[ORM\Entity]
 #[ApiResource(
     normalizationContext: ['groups' => ['qcm:read']],
     denormalizationContext: ['groups' => ['qcm:write']]

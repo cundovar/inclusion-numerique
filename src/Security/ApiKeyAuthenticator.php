@@ -2,7 +2,7 @@
 
 namespace App\Security;
 
-use App\Repository\UserRepository;
+use App\Domain\User\Repository\UserRepositoryInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         private ParameterBagInterface $parameterBag,
-        private UserRepository $userRepository
+        private UserRepositoryInterface $userRepository
     ) {}
 
     /**
@@ -53,7 +53,7 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
 
         // Récupérer l'utilisateur associé à cette clé
         $userName = $validApiKeys[$apiKey]['user'];
-        $user = $this->userRepository->findOneBy(['username' => $userName]);
+        $user = $this->userRepository->findByUsername($userName);
         
         if (!$user) {
             throw new CustomUserMessageAuthenticationException('Utilisateur associé à l\'API key non trouvé');
@@ -61,7 +61,7 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
 
         return new SelfValidatingPassport(
             new UserBadge($user->getUserIdentifier(), function ($userIdentifier) {
-                return $this->userRepository->findOneBy(['username' => $userIdentifier]);
+                return $this->userRepository->findByUsername($userIdentifier);
             })
         );
     }

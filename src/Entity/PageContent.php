@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\PageContentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -13,7 +12,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 
-#[ORM\Entity(repositoryClass: PageContentRepository::class)]
+#[ORM\Entity]
 #[ApiResource(
     normalizationContext: ['groups' => ['page_content:read']],
     denormalizationContext: ['groups' => ['page_content:write']],

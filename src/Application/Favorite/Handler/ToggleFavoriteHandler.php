@@ -6,14 +6,14 @@ namespace App\Application\Favorite\Handler;
 
 use App\Application\Favorite\Command\ToggleFavoriteCommand;
 use App\Domain\Favorite\Repository\FavoriteRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 use App\Entity\Favorite;
-use App\Repository\PageRepository;
 
 final class ToggleFavoriteHandler
 {
     public function __construct(
         private FavoriteRepositoryInterface $favoriteRepository,
-        private PageRepository $pageRepository
+        private PageRepositoryInterface $pageRepository
     ) {}
 
     /**
@@ -21,7 +21,7 @@ final class ToggleFavoriteHandler
      */
     public function handle(ToggleFavoriteCommand $command): array
     {
-        $page = $this->pageRepository->find($command->pageId);
+        $page = $this->pageRepository->findById($command->pageId);
 
         if (!$page) {
             throw new \InvalidArgumentException('Page non trouvée');

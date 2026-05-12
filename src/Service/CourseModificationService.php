@@ -2,21 +2,17 @@
 
 namespace App\Service;
 
+use App\Domain\Shared\Persistence\PersistenceFlusherInterface;
 use App\Entity\ContentRecommendation;
 use App\Entity\PageContent;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class CourseModificationService
 {
-    private EntityManagerInterface $entityManager;
-    private Security $security;
-
-    public function __construct(EntityManagerInterface $entityManager, Security $security)
-    {
-        $this->entityManager = $entityManager;
-        $this->security = $security;
-    }
+    public function __construct(
+        private PersistenceFlusherInterface $persistenceFlusher,
+        private Security $security
+    ) {}
 
     /**
      * Applique une recommandation au cours
@@ -61,7 +57,7 @@ class CourseModificationService
             $recommendation->setAppliedBy($this->security->getUser());
             $recommendation->setAppliedAt(new \DateTime());
 
-            $this->entityManager->flush();
+            $this->persistenceFlusher->flush();
             
             return true;
         } catch (\Exception $e) {

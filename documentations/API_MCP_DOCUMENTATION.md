@@ -85,11 +85,11 @@ Les menus permettent de structurer la navigation dans une categorie.
 
 | Methode | Endpoint | Description |
 |---------|----------|-------------|
-| GET | `/api/menus` | Liste tous les menus |
-| GET | `/api/menus/{id}` | Recupere un menu par ID |
-| POST | `/api/menus` | Cree un nouveau menu |
-| PUT | `/api/menus/{id}` | Met a jour un menu |
-| DELETE | `/api/menus/{id}` | Supprime un menu |
+| GET | `/api/admin/menus` | Liste tous les menus |
+| GET | `/api/admin/menus/{id}` | Recupere un menu par ID |
+| POST | `/api/admin/menus` | Cree un nouveau menu |
+| PUT | `/api/admin/menus/{id}` | Met a jour un menu |
+| DELETE | `/api/admin/menus/{id}` | Supprime un menu |
 
 ### Champs
 
@@ -99,20 +99,30 @@ Les menus permettent de structurer la navigation dans une categorie.
 | `label` | string | Libelle du menu |
 | `category` | object/IRI | Categorie parente |
 | `positionMenus` | object/IRI | Position d'affichage |
+| `niveauCours` | object/IRI | Niveau de cours associe |
 | `pages` | array | Pages associees |
 | `pageContents` | array | Contenus de pages associes |
+
+### Filtres disponibles
+
+`GET /api/admin/menus` accepte aussi :
+
+- `categoryId`
+- `positionMenusId`
+- `niveauCoursId`
 
 ### Exemple de reponse
 
 ```json
 {
   "@context": "/api/contexts/Menus",
-  "@id": "/api/menus/1",
+  "@id": "/api/admin/menus/1",
   "@type": "Menus",
   "id": 1,
   "label": "Les bases",
   "category": "/api/categories/1",
   "positionMenus": "/api/position_menus/1",
+  "niveauCours": "/api/niveau_cours/1",
   "pages": [
     "/api/pages/1",
     "/api/pages/2"

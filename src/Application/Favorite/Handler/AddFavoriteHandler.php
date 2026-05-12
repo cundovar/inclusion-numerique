@@ -8,19 +8,19 @@ use App\Application\Favorite\Command\AddFavoriteCommand;
 use App\Application\Favorite\DTO\FavoriteDTO;
 use App\Domain\Favorite\Exception\FavoriteAlreadyExistsException;
 use App\Domain\Favorite\Repository\FavoriteRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 use App\Entity\Favorite;
-use App\Repository\PageRepository;
 
 final class AddFavoriteHandler
 {
     public function __construct(
         private FavoriteRepositoryInterface $favoriteRepository,
-        private PageRepository $pageRepository
+        private PageRepositoryInterface $pageRepository
     ) {}
 
     public function handle(AddFavoriteCommand $command): FavoriteDTO
     {
-        $page = $this->pageRepository->find($command->pageId);
+        $page = $this->pageRepository->findById($command->pageId);
 
         if (!$page) {
             throw new \InvalidArgumentException('Page non trouvée');

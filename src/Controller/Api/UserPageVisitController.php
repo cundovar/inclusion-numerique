@@ -2,9 +2,8 @@
 
 namespace App\Controller\Api;
 
+use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use App\Entity\UserPageVisit;
-use App\Repository\UserPageVisitRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,8 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class UserPageVisitController extends AbstractController
 {
     public function __construct(
-        private UserPageVisitRepository $visitRepository,
-        private EntityManagerInterface $entityManager,
+        private UserPageVisitRepositoryInterface $visitRepository,
         #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled
     ) {}
 
@@ -54,8 +52,7 @@ class UserPageVisitController extends AbstractController
         $visit->setUserAgent($request->headers->get('User-Agent'));
         $visit->setIpAddress($request->getClientIp());
 
-        $this->entityManager->persist($visit);
-        $this->entityManager->flush();
+        $this->visitRepository->save($visit);
 
         return new JsonResponse(['success' => true], Response::HTTP_CREATED);
     }
@@ -108,8 +105,8 @@ class UserPageVisitController extends AbstractController
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $mostVisited = $this->visitRepository->getMostVisitedPages($user);
-        $totalVisits = $this->visitRepository->count(['user' => $user]);
+        $mostVisited = $this->visitRepository->getMostVisitedPagesByUser($user);
+        $totalVisits = $this->visitRepository->countByUser($user);
 
         return new JsonResponse([
             'mostVisitedPages' => $mostVisited,

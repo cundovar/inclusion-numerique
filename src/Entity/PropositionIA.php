@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\PropositionIARepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PropositionIARepository::class)]
+#[ORM\Entity]
 class PropositionIA
 {
     #[ORM\Id]

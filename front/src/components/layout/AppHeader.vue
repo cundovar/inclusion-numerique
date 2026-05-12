@@ -81,6 +81,14 @@
           text-content="Backoffice"
         />
       </a>
+      <router-link v-if="isAdmin" to="/agents-cours">
+        <AppButton
+          variant="outline"
+          size="sm"
+          icon="pi pi-wrench"
+          text-content="Agents Cours"
+        />
+      </router-link>
       <AuthButton />
     </div>
   </div>

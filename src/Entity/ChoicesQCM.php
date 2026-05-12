@@ -3,12 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\ChoicesQCMRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: ChoicesQCMRepository::class)]
+#[ORM\Entity]
 #[ApiResource]
 class ChoicesQCM
 {

@@ -46,6 +46,60 @@ services:
 
     # Infrastructure Services (Favorite)
     App\Infrastructure\Favorite\Repository\DoctrineFavoriteRepository: ~
+    App\Infrastructure\Page\Repository\DoctrinePageRepository: ~
+    App\Infrastructure\Category\Repository\DoctrineCategoryRepository: ~
+    App\Infrastructure\UserPageVisit\Repository\DoctrineUserPageVisitRepository: ~
+    App\Infrastructure\Menu\Repository\DoctrineMenuRepository: ~
+    App\Infrastructure\Seo\Repository\DoctrineSeoRepository: ~
+    App\Infrastructure\PositionMenu\Repository\DoctrinePositionMenuRepository: ~
+    App\Infrastructure\CourseLevel\Repository\DoctrineCourseLevelRepository: ~
+    App\Infrastructure\PageContent\Repository\DoctrinePageContentRepository: ~
+    App\Infrastructure\ExoContent\Repository\DoctrineExoContentRepository: ~
+    App\Infrastructure\ExoMenu\Repository\DoctrineExoMenuRepository: ~
+    App\Infrastructure\Exo\Repository\DoctrineExoRepository: ~
+    App\Infrastructure\QCM\Repository\DoctrineQCMRepository: ~
+    App\Infrastructure\UserCustomization\Repository\DoctrineUserCustomizationRepository: ~
+    App\Infrastructure\SiteConfiguration\Repository\DoctrineSiteConfigurationRepository: ~
+    App\Infrastructure\LanguageQCM\Repository\DoctrineLanguageQCMRepository: ~
+    App\Infrastructure\NiveauQCM\Repository\DoctrineNiveauQCMRepository: ~
+    App\Infrastructure\ChoicesQCM\Repository\DoctrineChoicesQCMRepository: ~
+    App\Infrastructure\PropositionIA\Repository\DoctrinePropositionIARepository: ~
+    App\Infrastructure\User\Repository\DoctrineUserRepository: ~
+    App\Infrastructure\PageBlock\Repository\DoctrinePageBlockRepository: ~
+    App\Infrastructure\ExoBlock\Repository\DoctrineExoBlockRepository: ~
+    App\Infrastructure\SuperMenu\Repository\DoctrineSuperMenuRepository: ~
+    App\Infrastructure\DocDeCode\Repository\DoctrineDocDeCodeRepository: ~
+    App\Infrastructure\Logo\Repository\DoctrineLogoRepository: ~
+    App\Infrastructure\Persistence\DoctrinePersistenceFlusher: ~
+    App\Infrastructure\Persistence\DoctrineTransactionalExecutor: ~
+    App\Infrastructure\AgentCourseRevision\Repository\DoctrineAgentCourseRevisionRepository: ~
 
     # Domain -> Infrastructure bindings (Favorite)
     App\Domain\Favorite\Repository\FavoriteRepositoryInterface: '@App\Infrastructure\Favorite\Repository\DoctrineFavoriteRepository'
+    App\Domain\Page\Repository\PageRepositoryInterface: '@App\Infrastructure\Page\Repository\DoctrinePageRepository'
+    App\Domain\Category\Repository\CategoryRepositoryInterface: '@App\Infrastructure\Category\Repository\DoctrineCategoryRepository'
+    App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface: '@App\Infrastructure\UserPageVisit\Repository\DoctrineUserPageVisitRepository'
+    App\Domain\Menu\Repository\MenuRepositoryInterface: '@App\Infrastructure\Menu\Repository\DoctrineMenuRepository'
+    App\Domain\Seo\Repository\SeoRepositoryInterface: '@App\Infrastructure\Seo\Repository\DoctrineSeoRepository'
+    App\Domain\PositionMenu\Repository\PositionMenuRepositoryInterface: '@App\Infrastructure\PositionMenu\Repository\DoctrinePositionMenuRepository'
+    App\Domain\CourseLevel\Repository\CourseLevelRepositoryInterface: '@App\Infrastructure\CourseLevel\Repository\DoctrineCourseLevelRepository'
+    App\Domain\PageContent\Repository\PageContentRepositoryInterface: '@App\Infrastructure\PageContent\Repository\DoctrinePageContentRepository'
+    App\Domain\ExoContent\Repository\ExoContentRepositoryInterface: '@App\Infrastructure\ExoContent\Repository\DoctrineExoContentRepository'
+    App\Domain\ExoMenu\Repository\ExoMenuRepositoryInterface: '@App\Infrastructure\ExoMenu\Repository\DoctrineExoMenuRepository'
+    App\Domain\Exo\Repository\ExoRepositoryInterface: '@App\Infrastructure\Exo\Repository\DoctrineExoRepository'
+    App\Domain\QCM\Repository\QCMRepositoryInterface: '@App\Infrastructure\QCM\Repository\DoctrineQCMRepository'
+    App\Domain\UserCustomization\Repository\UserCustomizationRepositoryInterface: '@App\Infrastructure\UserCustomization\Repository\DoctrineUserCustomizationRepository'
+    App\Domain\SiteConfiguration\Repository\SiteConfigurationRepositoryInterface: '@App\Infrastructure\SiteConfiguration\Repository\DoctrineSiteConfigurationRepository'
+    App\Domain\LanguageQCM\Repository\LanguageQCMRepositoryInterface: '@App\Infrastructure\LanguageQCM\Repository\DoctrineLanguageQCMRepository'
+    App\Domain\NiveauQCM\Repository\NiveauQCMRepositoryInterface: '@App\Infrastructure\NiveauQCM\Repository\DoctrineNiveauQCMRepository'
+    App\Domain\ChoicesQCM\Repository\ChoicesQCMRepositoryInterface: '@App\Infrastructure\ChoicesQCM\Repository\DoctrineChoicesQCMRepository'
+    App\Domain\PropositionIA\Repository\PropositionIARepositoryInterface: '@App\Infrastructure\PropositionIA\Repository\DoctrinePropositionIARepository'
+    App\Domain\User\Repository\UserRepositoryInterface: '@App\Infrastructure\User\Repository\DoctrineUserRepository'
+    App\Domain\PageBlock\Repository\PageBlockRepositoryInterface: '@App\Infrastructure\PageBlock\Repository\DoctrinePageBlockRepository'
+    App\Domain\ExoBlock\Repository\ExoBlockRepositoryInterface: '@App\Infrastructure\ExoBlock\Repository\DoctrineExoBlockRepository'
+    App\Domain\SuperMenu\Repository\SuperMenuRepositoryInterface: '@App\Infrastructure\SuperMenu\Repository\DoctrineSuperMenuRepository'
+    App\Domain\DocDeCode\Repository\DocDeCodeRepositoryInterface: '@App\Infrastructure\DocDeCode\Repository\DoctrineDocDeCodeRepository'
+    App\Domain\Logo\Repository\LogoRepositoryInterface: '@App\Infrastructure\Logo\Repository\DoctrineLogoRepository'
+    App\Domain\Shared\Persistence\PersistenceFlusherInterface: '@App\Infrastructure\Persistence\DoctrinePersistenceFlusher'
+    App\Domain\Shared\Persistence\TransactionalExecutorInterface: '@App\Infrastructure\Persistence\DoctrineTransactionalExecutor'
+    App\Domain\AgentCourseRevision\Repository\AgentCourseRevisionRepositoryInterface: '@App\Infrastructure\AgentCourseRevision\Repository\DoctrineAgentCourseRevisionRepository'

@@ -60,7 +60,7 @@ services:
   nginx:
     image: nginx:stable
     ports:
-      - "8080:80"
+      - "${HOST_HTTP_PORT:-8092}:80"
     depends_on:
       - php
     volumes:
@@ -83,7 +83,7 @@ services:
     image: phpmyadmin/phpmyadmin
     restart: always
     ports:
-      - "8081:80"
+      - "8091:80"
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root

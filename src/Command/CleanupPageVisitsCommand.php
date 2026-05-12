@@ -2,8 +2,7 @@
 
 namespace App\Command;
 
-use App\Repository\UserPageVisitRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,8 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CleanupPageVisitsCommand extends Command
 {
     public function __construct(
-        private UserPageVisitRepository $visitRepository,
-        private EntityManagerInterface $entityManager
+        private UserPageVisitRepositoryInterface $visitRepository
     ) {
         parent::__construct();
     }
@@ -42,7 +40,7 @@ class CleanupPageVisitsCommand extends Command
         $io->info(sprintf('Limite configurée : %d visites maximum', $limit));
 
         // Compter le nombre total de visites
-        $totalVisits = $this->visitRepository->count([]);
+        $totalVisits = $this->visitRepository->countAll();
         $io->comment(sprintf('Nombre total de visites actuellement : %d', $totalVisits));
 
         if ($totalVisits <= $limit) {
@@ -55,11 +53,7 @@ class CleanupPageVisitsCommand extends Command
         $io->warning(sprintf('Nombre de visites à supprimer : %d', $toDelete));
 
         // Récupérer les visites les plus anciennes
-        $oldestVisits = $this->visitRepository->createQueryBuilder('v')
-            ->orderBy('v.visitedAt', 'ASC')
-            ->setMaxResults($toDelete)
-            ->getQuery()
-            ->getResult();
+        $oldestVisits = $this->visitRepository->findOldest($toDelete);
 
         if ($dryRun) {
             $io->note('Mode DRY-RUN activé : aucune suppression ne sera effectuée');
@@ -85,25 +79,18 @@ class CleanupPageVisitsCommand extends Command
         $deleted = 0;
 
         foreach ($oldestVisits as $visit) {
-            $this->entityManager->remove($visit);
+            $this->visitRepository->delete($visit);
             $deleted++;
-
-            // Flush par batch de 50 pour optimiser les performances
-            if ($deleted % 50 === 0) {
-                $this->entityManager->flush();
-            }
 
             $io->progressAdvance();
         }
 
-        // Flush final
-        $this->entityManager->flush();
         $io->progressFinish();
 
         $io->success(sprintf(
             '%d visites supprimées avec succès. Visites restantes : %d',
             $deleted,
-            $this->visitRepository->count([])
+            $this->visitRepository->countAll()
         ));
 
         return Command::SUCCESS;

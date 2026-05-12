@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Repository\UserPageVisitRepository;
+use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageVisitStatsController extends AbstractDashboardController
 {
     public function __construct(
-        private UserPageVisitRepository $visitRepository
+        private UserPageVisitRepositoryInterface $visitRepository
     ) {}
 
     #[Route('/admin/stats/page-visits', name: 'admin_stats_page_visits')]
@@ -24,12 +24,8 @@ class PageVisitStatsController extends AbstractDashboardController
         $pagesWithMostTime = $this->visitRepository->getPagesWithMostTime(20);
 
         // Statistiques générales
-        $totalVisits = $this->visitRepository->count([]);
-        $totalUsers = count($this->visitRepository->createQueryBuilder('v')
-            ->select('DISTINCT u.id')
-            ->join('v.user', 'u')
-            ->getQuery()
-            ->getResult());
+        $totalVisits = $this->visitRepository->countAll();
+        $totalUsers = $this->visitRepository->countDistinctUsers();
 
         return $this->render('admin/page_visit_stats.html.twig', [
             'mostVisitedPages' => $mostVisitedPages,

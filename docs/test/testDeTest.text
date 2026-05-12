@@ -1,0 +1,63 @@
+
+
+
+• Oui. Sur ce projet, commence par ces classes-là, dans cet ordre.
+
+  1. src/Infrastructure/Note/Service/NoteEncryptionService.php:9
+     C’est le meilleur point de départ. La classe a une responsabilité claire : encrypt() et decrypt().
+     Tu apprends les bases du test unitaire sans Doctrine, sans contrôleur, sans conteneur Symfony.
+
+  Il y a déjà un test associé : tests/Infrastructure/Note/Service/NoteEncryptionServiceTest.php:8
+
+  2. src/Application/Note/Handler/CreateOrUpdateNoteHandler.php:14
+     Ensuite passe à ça. Ici tu apprends les mocks :
+
+  - mock du repository,
+  - mock du service de chiffrement,
+  - scénario “page introuvable”,
+  - scénario “création”,
+  - scénario “mise à jour”.
+
+  Le test existe déjà : tests/Application/Note/Handler/CreateOrUpdateNoteHandlerTest.php:15
+
+  3. src/Application/Note/Handler/GetNoteByPageHandler.php:13 et src/Application/Note/Handler/GetUserNotesHandler.php:12
+     Très bien après CreateOrUpdateNoteHandler, parce que tu restes dans le même domaine métier.
+     Tu consolides :
+
+  - mocks,
+  - exceptions,
+  - transformation en DTO,
+  - logique métier simple.
+
+  4. src/Service/CustomizationValidator.php:5
+     Très bon exercice ensuite pour apprendre à tester :
+
+  - tableaux d’entrée,
+  - filtrage,
+  - whitelist,
+  - cas valides / invalides,
+  - structure attendue.
+
+  C’est une excellente classe pour écrire tes propres tests si elle n’en a pas encore.
+
+  5. src/Service/SeoService.php:10
+     À faire après, pas en premier.
+     Elle est intéressante, mais un peu plus large :
+
+  - plusieurs méthodes,
+  - dépendances repository,
+  - génération de tableaux SEO,
+  - parsing de routes.
+
+  6. src/Service/HtmlSanitizerService.php:12
+     À garder pour plus tard.
+     Testable, mais moins idéal pour débuter, car il dépend du comportement de HTMLPurifier et du HTML réel.
+
+  Mon conseil précis ici :
+
+  - commence par lire et exécuter les tests de NoteEncryptionService
+  - puis lis CreateOrUpdateNoteHandlerTest
+  - ensuite écris toi-même un nouveau test pour CustomizationValidator
+
+  Si tu veux, au prochain message je peux te prendre une seule classe réelle du projet et t’expliquer ligne par ligne comment écrire son test unitaire, en
+  commençant par NoteEncryptionService ou CustomizationValidator.

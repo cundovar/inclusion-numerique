@@ -2,9 +2,8 @@
 
 namespace App\EventListener;
 
+use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use App\Entity\UserPageVisit;
-use App\Repository\UserPageVisitRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 class UserPageVisitListener
@@ -12,8 +11,7 @@ class UserPageVisitListener
     private const MAX_VISITS = 200;
 
     public function __construct(
-        private UserPageVisitRepository $visitRepository,
-        private EntityManagerInterface $entityManager
+        private UserPageVisitRepositoryInterface $visitRepository
     ) {}
 
     public function postPersist(LifecycleEventArgs $args): void
@@ -26,25 +24,18 @@ class UserPageVisitListener
         }
 
         // Compter le nombre total de visites
-        $totalVisits = $this->visitRepository->count([]);
+        $totalVisits = $this->visitRepository->countAll();
 
         // Si on dépasse la limite, supprimer les plus anciennes
         if ($totalVisits > self::MAX_VISITS) {
             $toDelete = $totalVisits - self::MAX_VISITS;
 
             // Récupérer les visites les plus anciennes
-            $oldestVisits = $this->visitRepository->createQueryBuilder('v')
-                ->orderBy('v.visitedAt', 'ASC')
-                ->setMaxResults($toDelete)
-                ->getQuery()
-                ->getResult();
+            $oldestVisits = $this->visitRepository->findOldest($toDelete);
 
-            // Supprimer les visites
             foreach ($oldestVisits as $visit) {
-                $this->entityManager->remove($visit);
+                $this->visitRepository->delete($visit);
             }
-
-            $this->entityManager->flush();
         }
     }
 }

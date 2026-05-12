@@ -165,6 +165,24 @@
             "type": "integer",
             "description": "ID du menu (requis pour read/update/delete)"
           },
+          "filters": {
+            "type": "object",
+            "description": "Filtres pour l'action list",
+            "properties": {
+              "categoryId": {
+                "type": "integer",
+                "description": "Filtrer par catégorie parente"
+              },
+              "positionMenusId": {
+                "type": "integer",
+                "description": "Filtrer par position de menu"
+              },
+              "niveauCoursId": {
+                "type": "integer",
+                "description": "Filtrer par niveau de cours"
+              }
+            }
+          },
           "data": {
             "type": "object",
             "description": "Données pour create/update",
@@ -180,6 +198,10 @@
               "positionMenusId": {
                 "type": "integer",
                 "description": "ID de la position du menu"
+              },
+              "niveauCoursId": {
+                "type": "integer",
+                "description": "ID du niveau de cours associé"
               }
             }
           }

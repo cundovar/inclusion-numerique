@@ -3,23 +3,24 @@
   "entryPoints": {
     "main": {
       "css": [
-        "/build/assets/main-DvDZJc3E.css"
+        "/build/assets/main-DWjPjJqy.css"
       ],
       "dynamic": [
-        "/build/assets/PageContent-C8nsXDAr.js",
-        "/build/assets/Profile-07W3pivT.js",
-        "/build/assets/CategoryPage-CZJZh1Gn.js",
-        "/build/assets/PageQCM-ZvXBBiBb.js",
-        "/build/assets/exercices-KvfFzDJP.js",
-        "/build/assets/ExerciceView-0fIoGaHj.js",
-        "/build/assets/questionQCM-CwGW7bY0.js",
-        "/build/assets/resultQCM-Czwteh8z.js",
-        "/build/assets/ComponentsDemo-CQ3eADVP.js",
-        "/build/assets/HomePage-BfYlz3fA.js",
+        "/build/assets/PageContent-C3l80fNY.js",
+        "/build/assets/Profile-D8ijSk6g.js",
+        "/build/assets/CategoryPage-C75pvFue.js",
+        "/build/assets/PageQCM-CEEOysKd.js",
+        "/build/assets/exercices-Ds8AykdG.js",
+        "/build/assets/ExerciceView-BdRN430Q.js",
+        "/build/assets/questionQCM-BIXq-NXs.js",
+        "/build/assets/resultQCM-M4LJae46.js",
+        "/build/assets/ComponentsDemo-h14xgJe7.js",
+        "/build/assets/HomePage-5wzH3PPc.js",
+        "/build/assets/AgentsCours-Bfe_sg26.js",
         "/build/assets/workbox-window.prod.es5-B9K5rw8f.js"
       ],
       "js": [
-        "/build/assets/main-Dpcb7jiu.js"
+        "/build/assets/main-h8VHggQo.js"
       ],
       "legacy": false,
       "preload": []

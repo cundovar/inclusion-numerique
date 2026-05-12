@@ -2,12 +2,11 @@
 
 namespace App\Controller\Api\AdminCrud;
 
+use App\Domain\Category\Repository\CategoryRepositoryInterface;
+use App\Domain\Menu\Repository\MenuRepositoryInterface;
+use App\Domain\PageContent\Repository\PageContentRepositoryInterface;
 use App\Entity\PageContent;
-use App\Repository\PageContentRepository;
-use App\Repository\PageRepository;
-use App\Repository\CategoryRepository;
-use App\Repository\MenusRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,11 +19,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class ApiPageContentController extends AbstractController
 {
     public function __construct(
-        private PageContentRepository $pageContentRepository,
-        private PageRepository $pageRepository,
-        private CategoryRepository $categoryRepository,
-        private MenusRepository $menuRepository,
-        private EntityManagerInterface $entityManager,
+        private PageContentRepositoryInterface $pageContentRepository,
+        private PageRepositoryInterface $pageRepository,
+        private CategoryRepositoryInterface $categoryRepository,
+        private MenuRepositoryInterface $menuRepository,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator
     ) {}
@@ -41,7 +39,7 @@ final class ApiPageContentController extends AbstractController
     #[Route('/{id}', name: 'api_page_contents_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(int $id): JsonResponse
     {
-        $pageContent = $this->pageContentRepository->find($id);
+        $pageContent = $this->pageContentRepository->findById($id);
         
         if (!$pageContent) {
             return new JsonResponse(['error' => 'Contenu de page non trouvé'], Response::HTTP_NOT_FOUND);
@@ -85,7 +83,7 @@ final class ApiPageContentController extends AbstractController
 
         // Assignation des relations
         if (isset($data['pageId'])) {
-            $page = $this->pageRepository->find($data['pageId']);
+            $page = $this->pageRepository->findById((int) $data['pageId']);
             if ($page) {
                 $pageContent->setPage($page);
             } else {
@@ -94,7 +92,7 @@ final class ApiPageContentController extends AbstractController
         }
 
         if (isset($data['categoryId'])) {
-            $category = $this->categoryRepository->find($data['categoryId']);
+            $category = $this->categoryRepository->findById((int) $data['categoryId']);
             if ($category) {
                 $pageContent->setCategory($category);
             } else {
@@ -103,7 +101,7 @@ final class ApiPageContentController extends AbstractController
         }
 
         if (isset($data['menuId'])) {
-            $menu = $this->menuRepository->find($data['menuId']);
+            $menu = $this->menuRepository->findById((int) $data['menuId']);
             if ($menu) {
                 $pageContent->setMenu($menu);
             } else {
@@ -121,8 +119,7 @@ final class ApiPageContentController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->entityManager->persist($pageContent);
-        $this->entityManager->flush();
+        $this->pageContentRepository->save($pageContent);
 
         $jsonPageContent = $this->serializer->serialize($pageContent, 'json', ['groups' => ['page_content:read']]);
         
@@ -132,7 +129,7 @@ final class ApiPageContentController extends AbstractController
     #[Route('/{id}', name: 'api_page_contents_update', methods: ['PUT'], requirements: ['id' => '\d+'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        $pageContent = $this->pageContentRepository->find($id);
+        $pageContent = $this->pageContentRepository->findById($id);
         
         if (!$pageContent) {
             return new JsonResponse(['error' => 'Contenu de page non trouvé'], Response::HTTP_NOT_FOUND);
@@ -166,7 +163,7 @@ final class ApiPageContentController extends AbstractController
             if ($data['pageId'] === null) {
                 $pageContent->setPage(null);
             } else {
-                $page = $this->pageRepository->find($data['pageId']);
+                $page = $this->pageRepository->findById((int) $data['pageId']);
                 if ($page) {
                     $pageContent->setPage($page);
                 } else {
@@ -179,7 +176,7 @@ final class ApiPageContentController extends AbstractController
             if ($data['categoryId'] === null) {
                 $pageContent->setCategory(null);
             } else {
-                $category = $this->categoryRepository->find($data['categoryId']);
+                $category = $this->categoryRepository->findById((int) $data['categoryId']);
                 if ($category) {
                     $pageContent->setCategory($category);
                 } else {
@@ -192,7 +189,7 @@ final class ApiPageContentController extends AbstractController
             if ($data['menuId'] === null) {
                 $pageContent->setMenu(null);
             } else {
-                $menu = $this->menuRepository->find($data['menuId']);
+                $menu = $this->menuRepository->findById((int) $data['menuId']);
                 if ($menu) {
                     $pageContent->setMenu($menu);
                 } else {
@@ -211,7 +208,7 @@ final class ApiPageContentController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->entityManager->flush();
+        $this->pageContentRepository->save($pageContent);
 
         $jsonPageContent = $this->serializer->serialize($pageContent, 'json', ['groups' => ['page_content:read']]);
         
@@ -221,7 +218,7 @@ final class ApiPageContentController extends AbstractController
     #[Route('/{id}', name: 'api_page_contents_delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]
     public function delete(int $id): JsonResponse
     {
-        $pageContent = $this->pageContentRepository->find($id);
+        $pageContent = $this->pageContentRepository->findById($id);
         
         if (!$pageContent) {
             return new JsonResponse(['error' => 'Contenu de page non trouvé'], Response::HTTP_NOT_FOUND);
@@ -229,8 +226,7 @@ final class ApiPageContentController extends AbstractController
 
         // Supprimer les blocs de page associés (ils seront supprimés automatiquement grâce à orphanRemoval: true)
         
-        $this->entityManager->remove($pageContent);
-        $this->entityManager->flush();
+        $this->pageContentRepository->delete($pageContent);
 
         return new JsonResponse(['message' => 'Contenu de page supprimé avec succès'], Response::HTTP_OK);
     }
@@ -238,13 +234,13 @@ final class ApiPageContentController extends AbstractController
     #[Route('/by-page/{pageId}', name: 'api_page_contents_by_page', methods: ['GET'], requirements: ['pageId' => '\d+'])]
     public function getByPage(int $pageId): JsonResponse
     {
-        $page = $this->pageRepository->find($pageId);
+        $page = $this->pageRepository->findById($pageId);
         
         if (!$page) {
             return new JsonResponse(['error' => 'Page non trouvée'], Response::HTTP_NOT_FOUND);
         }
 
-        $pageContents = $this->pageContentRepository->findBy(['page' => $page]);
+        $pageContents = $this->pageContentRepository->findByPage($page);
         $jsonPageContents = $this->serializer->serialize($pageContents, 'json', ['groups' => ['page_content:read']]);
         
         return new JsonResponse($jsonPageContents, Response::HTTP_OK, [], true);
@@ -253,13 +249,13 @@ final class ApiPageContentController extends AbstractController
     #[Route('/by-category/{categoryId}', name: 'api_page_contents_by_category', methods: ['GET'], requirements: ['categoryId' => '\d+'])]
     public function getByCategory(int $categoryId): JsonResponse
     {
-        $category = $this->categoryRepository->find($categoryId);
+        $category = $this->categoryRepository->findById($categoryId);
         
         if (!$category) {
             return new JsonResponse(['error' => 'Catégorie non trouvée'], Response::HTTP_NOT_FOUND);
         }
 
-        $pageContents = $this->pageContentRepository->findBy(['category' => $category]);
+        $pageContents = $this->pageContentRepository->findByCategory($category);
         $jsonPageContents = $this->serializer->serialize($pageContents, 'json', ['groups' => ['page_content:read']]);
         
         return new JsonResponse($jsonPageContents, Response::HTTP_OK, [], true);

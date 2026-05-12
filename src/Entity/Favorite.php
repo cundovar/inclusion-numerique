@@ -2,12 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\FavoriteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\ApiResource;
 
-#[ORM\Entity(repositoryClass: FavoriteRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'appy_favorite')]
 #[ORM\UniqueConstraint(name: 'user_page_unique', columns: ['user_id', 'page_id'])]
 

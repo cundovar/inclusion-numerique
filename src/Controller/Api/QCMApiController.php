@@ -2,8 +2,8 @@
 
 namespace App\Controller\Api;
 
+use App\Domain\QCM\Repository\QCMRepositoryInterface;
 use App\Entity\QCM;
-use App\Repository\QCMRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class QCMApiController extends AbstractController
 {
     public function __construct(
-        private QCMRepository $qcmRepository
+        private QCMRepositoryInterface $qcmRepository
     ) {}
 
     #[Route('', name: 'api_qcm_list', methods: ['GET'])]
@@ -26,7 +26,7 @@ final class QCMApiController extends AbstractController
     #[Route('/{id}', name: 'api_qcm_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(int $id): JsonResponse
     {
-        $qcm = $this->qcmRepository->find($id);
+        $qcm = $this->qcmRepository->findById($id);
 
         if (!$qcm) {
             return new JsonResponse(['error' => 'QCM non trouvé'], Response::HTTP_NOT_FOUND);
@@ -38,12 +38,7 @@ final class QCMApiController extends AbstractController
     #[Route('/language/{language}', name: 'api_qcm_by_language', methods: ['GET'])]
     public function getByLanguage(string $language): JsonResponse
     {
-        $qcms = $this->qcmRepository->createQueryBuilder('q')
-            ->join('q.languageQCM', 'l')
-            ->where('l.name = :language')
-            ->setParameter('language', $language)
-            ->getQuery()
-            ->getResult();
+        $qcms = $this->qcmRepository->findByLanguage($language);
 
         return $this->formatQCMsResponse($qcms);
     }
@@ -51,12 +46,7 @@ final class QCMApiController extends AbstractController
     #[Route('/difficulty/{difficulty}', name: 'api_qcm_by_difficulty', methods: ['GET'])]
     public function getByDifficulty(string $difficulty): JsonResponse
     {
-        $qcms = $this->qcmRepository->createQueryBuilder('q')
-            ->join('q.niveauQCM', 'n')
-            ->where('n.titre = :difficulty')
-            ->setParameter('difficulty', $difficulty)
-            ->getQuery()
-            ->getResult();
+        $qcms = $this->qcmRepository->findByDifficulty($difficulty);
 
         return $this->formatQCMsResponse($qcms);
     }
@@ -64,15 +54,7 @@ final class QCMApiController extends AbstractController
     #[Route('/language/{language}/difficulty/{difficulty}', name: 'api_qcm_by_language_and_difficulty', methods: ['GET'])]
     public function getByLanguageAndDifficulty(string $language, string $difficulty): JsonResponse
     {
-        $qcms = $this->qcmRepository->createQueryBuilder('q')
-            ->join('q.languageQCM', 'l')
-            ->join('q.niveauQCM', 'n')
-            ->where('l.name = :language')
-            ->andWhere('n.titre = :difficulty')
-            ->setParameter('language', $language)
-            ->setParameter('difficulty', $difficulty)
-            ->getQuery()
-            ->getResult();
+        $qcms = $this->qcmRepository->findByLanguageAndDifficulty($language, $difficulty);
 
         return $this->formatQCMsResponse($qcms);
     }
