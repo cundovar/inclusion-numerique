@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,7 +10,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Metadata\ApiResource;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: '`appy_User`')] // Pour éviter les conflits avec les mots-clés SQL
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', columns: ['username'])]
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]

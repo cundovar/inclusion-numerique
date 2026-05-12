@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\NoteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: NoteRepository::class)]
+#[ORM\Entity]
 class Note
 {
     #[ORM\Id]

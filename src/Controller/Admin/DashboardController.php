@@ -1,6 +1,13 @@
 <?php
 namespace App\Controller\Admin;
 
+use App\Domain\Category\Repository\CategoryRepositoryInterface;
+use App\Domain\ExoContent\Repository\ExoContentRepositoryInterface;
+use App\Domain\PageContent\Repository\PageContentRepositoryInterface;
+use App\Domain\QCM\Repository\QCMRepositoryInterface;
+use App\Domain\SiteConfiguration\Repository\SiteConfigurationRepositoryInterface;
+use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use App\Entity\Category;
 use App\Entity\Menus;
 use App\Entity\Page;
@@ -26,10 +33,8 @@ use App\Entity\Seo;
 use App\Entity\SuperMenu;
 use App\Entity\UserCustomization;
 use App\Entity\SiteConfiguration;
-use App\Repository\SiteConfigurationRepository;
 use App\Controller\Admin\SiteConfigurationCrudController;
 use App\Entity\NiveauCours;
-use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -37,8 +42,13 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private SiteConfigurationRepository $siteConfigRepository,
+        private CategoryRepositoryInterface $categoryRepository,
+        private UserRepositoryInterface $userRepository,
+        private PageContentRepositoryInterface $pageContentRepository,
+        private QCMRepositoryInterface $qcmRepository,
+        private ExoContentRepositoryInterface $exoContentRepository,
+        private UserPageVisitRepositoryInterface $userPageVisitRepository,
+        private SiteConfigurationRepositoryInterface $siteConfigRepository,
         private AdminUrlGenerator $adminUrlGenerator,
         #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled,
     ) {}
@@ -64,25 +74,23 @@ class DashboardController extends AbstractDashboardController
     {
         // Récupérer les statistiques
         $stats = [
-            'users' => $this->entityManager->getRepository(User::class)->count([]),
-            'pages' => $this->entityManager->getRepository(PageContent::class)->count([]),
-            'categories' => $this->entityManager->getRepository(Category::class)->count([]),
-            'qcm' => $this->entityManager->getRepository(QCM::class)->count([]),
-            'exercices' => $this->entityManager->getRepository(ExoContent::class)->count([]),
+            'users' => $this->userRepository->countAll(),
+            'pages' => $this->pageContentRepository->countAll(),
+            'categories' => count($this->categoryRepository->findAll()),
+            'qcm' => $this->qcmRepository->countAll(),
+            'exercices' => $this->exoContentRepository->countAll(),
             'visits' => $this->trackingEnabled
-                ? $this->entityManager->getRepository(UserPageVisit::class)->count([])
+                ? $this->userPageVisitRepository->countAll()
                 : 0,
         ];
 
         // Récupérer les dernières visites
         $recentVisits = $this->trackingEnabled
-            ? $this->entityManager->getRepository(UserPageVisit::class)
-                ->findBy([], ['visitedAt' => 'DESC'], 10)
+            ? $this->userPageVisitRepository->findLatest(10)
             : [];
 
         // Récupérer les derniers utilisateurs
-        $recentUsers = $this->entityManager->getRepository(User::class)
-            ->findBy([], ['id' => 'DESC'], 5);
+        $recentUsers = $this->userRepository->findLatest(5);
 
         return $this->render('admin/dashboard.html.twig', [
             'stats' => $stats,

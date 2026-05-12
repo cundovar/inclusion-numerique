@@ -19,6 +19,15 @@
       <i class="pi pi-book"></i>
       EXERCICES
     </router-link>
+
+    <router-link
+      to="/agents-cours"
+      @click="$emit('closeMenu')"
+      class=" h-[3rem] text-lg cursor-pointer mt-4 shadow-neutral-600 bg-blue-300 p-2 hover:bg-blue-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <i class="fas fa-robot"></i>
+      AGENTS COURS
+    </router-link>
   </div>
 
   <div class="flex w-full md:justify-start justify-end items-center">

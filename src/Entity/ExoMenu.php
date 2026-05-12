@@ -3,13 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\ExoMenuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: ExoMenuRepository::class)]
+#[ORM\Entity]
 #[ApiResource(
     normalizationContext: ['groups' => ['exo_content:read']],
     denormalizationContext: ['groups' => ['exo_content:write']]

@@ -2,10 +2,9 @@
 
 namespace App\Controller\Api;
 
-use App\Repository\UserCustomizationRepository;
-use App\Repository\SiteConfigurationRepository;
+use App\Domain\SiteConfiguration\Repository\SiteConfigurationRepositoryInterface;
+use App\Domain\UserCustomization\Repository\UserCustomizationRepositoryInterface;
 use App\Service\CustomizationValidator;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,10 +16,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class CustomizationController extends AbstractController
 {
     public function __construct(
-        private UserCustomizationRepository $customizationRepository,
-        private SiteConfigurationRepository $siteConfigRepository,
-        private CustomizationValidator $validator,
-        private EntityManagerInterface $em
+        private UserCustomizationRepositoryInterface $customizationRepository,
+        private SiteConfigurationRepositoryInterface $siteConfigRepository,
+        private CustomizationValidator $validator
     ) {}
 
     /**
@@ -87,8 +85,7 @@ class CustomizationController extends AbstractController
 
         $customization->setSettings($mergedSettings);
 
-        $this->em->persist($customization);
-        $this->em->flush();
+        $this->customizationRepository->save($customization);
 
         return $this->json([
             'message' => 'Personnalisation sauvegardée',
@@ -109,8 +106,7 @@ class CustomizationController extends AbstractController
 
         $customization->resetToDefaults();
 
-        $this->em->persist($customization);
-        $this->em->flush();
+        $this->customizationRepository->save($customization);
 
         return $this->json([
             'message' => 'Personnalisation réinitialisée',

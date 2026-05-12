@@ -7,21 +7,21 @@ namespace App\Application\Note\Handler;
 use App\Application\Note\Command\CreateOrUpdateNoteCommand;
 use App\Application\Note\DTO\NoteDTO;
 use App\Domain\Note\Repository\NoteRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 use App\Domain\Note\Service\NoteEncryptionInterface;
 use App\Entity\Note;
-use App\Repository\PageRepository;
 
 final class CreateOrUpdateNoteHandler
 {
     public function __construct(
         private NoteRepositoryInterface $noteRepository,
-        private PageRepository $pageRepository,
+        private PageRepositoryInterface $pageRepository,
         private NoteEncryptionInterface $encryption
     ) {}
 
     public function handle(CreateOrUpdateNoteCommand $command): NoteDTO
     {
-        $page = $this->pageRepository->find($command->pageId);
+        $page = $this->pageRepository->findById($command->pageId);
 
         if (!$page) {
             throw new \InvalidArgumentException('Page non trouvée');

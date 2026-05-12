@@ -4,11 +4,10 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Repository\PageBlockRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PageBlockRepository::class)]
+#[ORM\Entity]
 #[ApiResource(
     normalizationContext: ['groups' => ['page_block:read']],
     denormalizationContext: ['groups' => ['page_block:write']]

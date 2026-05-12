@@ -2,12 +2,11 @@
 
 namespace App\Controller\Api\AdminCrud;
 
+use App\Domain\Category\Repository\CategoryRepositoryInterface;
+use App\Domain\ExoContent\Repository\ExoContentRepositoryInterface;
+use App\Domain\ExoMenu\Repository\ExoMenuRepositoryInterface;
+use App\Domain\Exo\Repository\ExoRepositoryInterface;
 use App\Entity\ExoContent;
-use App\Repository\ExoContentRepository;
-use App\Repository\ExoRepository;
-use App\Repository\CategoryRepository;
-use App\Repository\ExoMenuRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,11 +19,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class ApiExoContentController extends AbstractController
 {
     public function __construct(
-        private ExoContentRepository $exoContentRepository,
-        private ExoRepository $exoRepository,
-        private CategoryRepository $categoryRepository,
-        private ExoMenuRepository $exoMenuRepository,
-        private EntityManagerInterface $entityManager,
+        private ExoContentRepositoryInterface $exoContentRepository,
+        private ExoRepositoryInterface $exoRepository,
+        private CategoryRepositoryInterface $categoryRepository,
+        private ExoMenuRepositoryInterface $exoMenuRepository,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator
     ) {}
@@ -41,7 +39,7 @@ final class ApiExoContentController extends AbstractController
     #[Route('/{id}', name: 'api_exo_contents_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(int $id): JsonResponse
     {
-        $exoContent = $this->exoContentRepository->find($id);
+        $exoContent = $this->exoContentRepository->findById($id);
 
         if (!$exoContent) {
             return new JsonResponse(['error' => 'Contenu d\'exercice non trouvé'], Response::HTTP_NOT_FOUND);
@@ -85,7 +83,7 @@ final class ApiExoContentController extends AbstractController
 
         // Assignation des relations
         if (isset($data['exoId'])) {
-            $exo = $this->exoRepository->find($data['exoId']);
+            $exo = $this->exoRepository->findById((int) $data['exoId']);
             if ($exo) {
                 $exoContent->setExo($exo);
             } else {
@@ -94,7 +92,7 @@ final class ApiExoContentController extends AbstractController
         }
 
         if (isset($data['categoryId'])) {
-            $category = $this->categoryRepository->find($data['categoryId']);
+            $category = $this->categoryRepository->findById((int) $data['categoryId']);
             if ($category) {
                 $exoContent->setCategory($category);
             } else {
@@ -103,7 +101,7 @@ final class ApiExoContentController extends AbstractController
         }
 
         if (isset($data['exoMenuId'])) {
-            $exoMenu = $this->exoMenuRepository->find($data['exoMenuId']);
+            $exoMenu = $this->exoMenuRepository->findById((int) $data['exoMenuId']);
             if ($exoMenu) {
                 $exoContent->setExoMenu($exoMenu);
             } else {
@@ -121,8 +119,7 @@ final class ApiExoContentController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->entityManager->persist($exoContent);
-        $this->entityManager->flush();
+        $this->exoContentRepository->save($exoContent);
 
         $jsonExoContent = $this->serializer->serialize($exoContent, 'json', ['groups' => ['exo_content:read']]);
 
@@ -132,7 +129,7 @@ final class ApiExoContentController extends AbstractController
     #[Route('/{id}', name: 'api_exo_contents_update', methods: ['PUT'], requirements: ['id' => '\d+'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        $exoContent = $this->exoContentRepository->find($id);
+        $exoContent = $this->exoContentRepository->findById($id);
 
         if (!$exoContent) {
             return new JsonResponse(['error' => 'Contenu d\'exercice non trouvé'], Response::HTTP_NOT_FOUND);
@@ -166,7 +163,7 @@ final class ApiExoContentController extends AbstractController
             if ($data['exoId'] === null) {
                 $exoContent->setExo(null);
             } else {
-                $exo = $this->exoRepository->find($data['exoId']);
+                $exo = $this->exoRepository->findById((int) $data['exoId']);
                 if ($exo) {
                     $exoContent->setExo($exo);
                 } else {
@@ -179,7 +176,7 @@ final class ApiExoContentController extends AbstractController
             if ($data['categoryId'] === null) {
                 $exoContent->setCategory(null);
             } else {
-                $category = $this->categoryRepository->find($data['categoryId']);
+                $category = $this->categoryRepository->findById((int) $data['categoryId']);
                 if ($category) {
                     $exoContent->setCategory($category);
                 } else {
@@ -192,7 +189,7 @@ final class ApiExoContentController extends AbstractController
             if ($data['exoMenuId'] === null) {
                 $exoContent->setExoMenu(null);
             } else {
-                $exoMenu = $this->exoMenuRepository->find($data['exoMenuId']);
+                $exoMenu = $this->exoMenuRepository->findById((int) $data['exoMenuId']);
                 if ($exoMenu) {
                     $exoContent->setExoMenu($exoMenu);
                 } else {
@@ -211,7 +208,7 @@ final class ApiExoContentController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->entityManager->flush();
+        $this->exoContentRepository->save($exoContent);
 
         $jsonExoContent = $this->serializer->serialize($exoContent, 'json', ['groups' => ['exo_content:read']]);
 
@@ -221,14 +218,13 @@ final class ApiExoContentController extends AbstractController
     #[Route('/{id}', name: 'api_exo_contents_delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]
     public function delete(int $id): JsonResponse
     {
-        $exoContent = $this->exoContentRepository->find($id);
+        $exoContent = $this->exoContentRepository->findById($id);
 
         if (!$exoContent) {
             return new JsonResponse(['error' => 'Contenu d\'exercice non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
-        $this->entityManager->remove($exoContent);
-        $this->entityManager->flush();
+        $this->exoContentRepository->delete($exoContent);
 
         return new JsonResponse(['message' => 'Contenu d\'exercice supprimé avec succès'], Response::HTTP_OK);
     }
@@ -236,13 +232,13 @@ final class ApiExoContentController extends AbstractController
     #[Route('/by-exo/{exoId}', name: 'api_exo_contents_by_exo', methods: ['GET'], requirements: ['exoId' => '\d+'])]
     public function getByExo(int $exoId): JsonResponse
     {
-        $exo = $this->exoRepository->find($exoId);
+        $exo = $this->exoRepository->findById($exoId);
 
         if (!$exo) {
             return new JsonResponse(['error' => 'Exercice non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
-        $exoContents = $this->exoContentRepository->findBy(['exo' => $exo]);
+        $exoContents = $this->exoContentRepository->findByExo($exo);
         $jsonExoContents = $this->serializer->serialize($exoContents, 'json', ['groups' => ['exo_content:read']]);
 
         return new JsonResponse($jsonExoContents, Response::HTTP_OK, [], true);
@@ -251,13 +247,13 @@ final class ApiExoContentController extends AbstractController
     #[Route('/by-category/{categoryId}', name: 'api_exo_contents_by_category', methods: ['GET'], requirements: ['categoryId' => '\d+'])]
     public function getByCategory(int $categoryId): JsonResponse
     {
-        $category = $this->categoryRepository->find($categoryId);
+        $category = $this->categoryRepository->findById($categoryId);
 
         if (!$category) {
             return new JsonResponse(['error' => 'Catégorie non trouvée'], Response::HTTP_NOT_FOUND);
         }
 
-        $exoContents = $this->exoContentRepository->findBy(['category' => $category]);
+        $exoContents = $this->exoContentRepository->findByCategory($category);
         $jsonExoContents = $this->serializer->serialize($exoContents, 'json', ['groups' => ['exo_content:read']]);
 
         return new JsonResponse($jsonExoContents, Response::HTTP_OK, [], true);

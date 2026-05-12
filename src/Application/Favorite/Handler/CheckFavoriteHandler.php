@@ -6,13 +6,13 @@ namespace App\Application\Favorite\Handler;
 
 use App\Application\Favorite\Query\CheckFavoriteQuery;
 use App\Domain\Favorite\Repository\FavoriteRepositoryInterface;
-use App\Repository\PageRepository;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 
 final class CheckFavoriteHandler
 {
     public function __construct(
         private FavoriteRepositoryInterface $favoriteRepository,
-        private PageRepository $pageRepository
+        private PageRepositoryInterface $pageRepository
     ) {}
 
     /**
@@ -20,7 +20,7 @@ final class CheckFavoriteHandler
      */
     public function handle(CheckFavoriteQuery $query): array
     {
-        $page = $this->pageRepository->find($query->pageId);
+        $page = $this->pageRepository->findById($query->pageId);
 
         if (!$page) {
             throw new \InvalidArgumentException('Page non trouvée');

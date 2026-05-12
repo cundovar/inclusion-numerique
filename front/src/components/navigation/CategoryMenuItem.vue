@@ -25,7 +25,7 @@
         @click="$emit('closeMenu')"
         class="cursor-pointer text-lg hover:underline block  focus:bg-blue-500"
       >
-      hhhh  {{ cat.name }}
+       {{ cat.name }}
       </router-link>
 
       <!-- Mobile/Tablet : texte cliquable qui ouvre le menu -->
@@ -33,7 +33,7 @@
         v-else
         :class="[menuGauche.categoryTextSize, menuGauche.categoryBgColor]"
       >
-       ggg {{ cat.name }}
+        {{ cat.name }}
       </span>
     </h1>
 

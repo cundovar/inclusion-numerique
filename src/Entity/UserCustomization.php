@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\UserCustomizationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: UserCustomizationRepository::class)]
+#[ORM\Entity]
 class UserCustomization
 {
     #[ORM\Id]

@@ -11,7 +11,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use Doctrine\ORM\EntityManagerInterface;
 
 class SiteConfigurationCrudController extends AbstractCrudController
 {
@@ -52,14 +51,5 @@ class SiteConfigurationCrudController extends AbstractCrudController
             DateTimeField::new('updatedAt', 'Dernière modification')
                 ->hideOnForm(),
         ];
-    }
-
-    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
-    {
-        // Force la mise à jour du timestamp
-        $entityInstance->setSettings($entityInstance->getSettings());
-
-        $entityManager->persist($entityInstance);
-        $entityManager->flush();
     }
 }

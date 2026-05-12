@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\MenusRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,7 +16,7 @@ use ApiPlatform\Metadata\ApiProperty;
   use ApiPlatform\Metadata\Delete;
 
 
-#[ORM\Entity(repositoryClass: MenusRepository::class)]
+#[ORM\Entity]
 #[ApiResource(
   operations: [
           new GetCollection(),
@@ -35,11 +34,11 @@ class Menus
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['page_content:read'])]
+    #[Groups(['page_content:read', 'menu:read', 'menu:list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Groups(['page_content:read', 'page_content:write'])] 
+    #[Groups(['page_content:read', 'page_content:write', 'menu:read', 'menu:write', 'menu:list'])]
     private ?string $label = null;
 
     /**
@@ -50,7 +49,7 @@ class Menus
     private Collection $pages;
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
-    #[Groups(['page_content:read', 'page_content:write'])] 
+    #[Groups(['page_content:read', 'page_content:write', 'menu:read', 'menu:write'])] 
     private ?Category $category = null;
 
     /**
@@ -63,12 +62,12 @@ class Menus
 
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
-    #[Groups(['page_content:read', 'page_content:write'])] 
+    #[Groups(['page_content:read', 'page_content:write', 'menu:read', 'menu:write'])] 
     private ?PositionMenus $positionMenus = null;
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
     #[ApiProperty(readableLink: true)]
-    #[Groups(['page_content:read', 'page_content:write'])]
+    #[Groups(['page_content:read', 'page_content:write', 'menu:read', 'menu:write'])]
     private ?NiveauCours $niveauCours = null;
 
     public function __construct()

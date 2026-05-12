@@ -2,17 +2,18 @@
 
 namespace App\Service;
 
+use App\Domain\Category\Repository\CategoryRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
+use App\Domain\Seo\Repository\SeoRepositoryInterface;
 use App\Entity\Category;
 use App\Entity\Seo;
-use App\Repository\CategoryRepository;
-use App\Repository\SeoRepository;
 
 class SeoService
 {
     public function __construct(
-        private SeoRepository $seoRepository,
-        private CategoryRepository $categoryRepository,
-        private \App\Repository\PageRepository $pageRepository
+        private SeoRepositoryInterface $seoRepository,
+        private CategoryRepositoryInterface $categoryRepository,
+        private PageRepositoryInterface $pageRepository
     ) {}
 
     /**
@@ -40,7 +41,7 @@ class SeoService
      */
     public function getSeoForCategory(string $categoryName): array
     {
-        $category = $this->categoryRepository->findOneBy(['name' => $categoryName]);
+        $category = $this->categoryRepository->findByName($categoryName);
 
         if (!$category) {
             return $this->getDefaultSeo();
@@ -60,7 +61,7 @@ class SeoService
      */
     public function getSeoForPageSlug(string $slug): array
     {
-        $page = $this->pageRepository->findOneBy(['slug' => $slug]);
+        $page = $this->pageRepository->findBySlug($slug);
 
         if (!$page) {
             return $this->getDefaultSeo();

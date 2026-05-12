@@ -3,9 +3,8 @@
 namespace App\Controller\Api\AdminCrud;
 
 use App\Entity\Page;
-use App\Repository\PageRepository;
-use App\Repository\MenuRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Domain\Menu\Repository\MenuRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,9 +17,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class ApiPageController extends AbstractController
 {
     public function __construct(
-        private PageRepository $pageRepository,
-        private MenuRepository $menuRepository,
-        private EntityManagerInterface $entityManager,
+        private PageRepositoryInterface $pageRepository,
+        private MenuRepositoryInterface $menuRepository,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator
     ) {}
@@ -37,7 +35,7 @@ final class ApiPageController extends AbstractController
     #[Route('/{id}', name: 'api_pages_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(int $id): JsonResponse
     {
-        $page = $this->pageRepository->find($id);
+        $page = $this->pageRepository->findById($id);
         
         if (!$page) {
             return new JsonResponse(['error' => 'Page non trouvée'], Response::HTTP_NOT_FOUND);
@@ -68,7 +66,7 @@ final class ApiPageController extends AbstractController
 
         // Assignation du menu si fourni
         if (isset($data['menuId'])) {
-            $menu = $this->menuRepository->find($data['menuId']);
+            $menu = $this->menuRepository->findById((int) $data['menuId']);
             if ($menu) {
                 $page->setMenus($menu);
             } else {
@@ -86,8 +84,7 @@ final class ApiPageController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->entityManager->persist($page);
-        $this->entityManager->flush();
+        $this->pageRepository->save($page);
 
         $jsonPage = $this->serializer->serialize($page, 'json', ['groups' => ['page_content:read']]);
         
@@ -97,7 +94,7 @@ final class ApiPageController extends AbstractController
     #[Route('/{id}', name: 'api_pages_update', methods: ['PUT'], requirements: ['id' => '\d+'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        $page = $this->pageRepository->find($id);
+        $page = $this->pageRepository->findById($id);
         
         if (!$page) {
             return new JsonResponse(['error' => 'Page non trouvée'], Response::HTTP_NOT_FOUND);
@@ -119,7 +116,7 @@ final class ApiPageController extends AbstractController
             if ($data['menuId'] === null) {
                 $page->setMenus(null);
             } else {
-                $menu = $this->menuRepository->find($data['menuId']);
+                $menu = $this->menuRepository->findById((int) $data['menuId']);
                 if ($menu) {
                     $page->setMenus($menu);
                 } else {
@@ -138,7 +135,7 @@ final class ApiPageController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->entityManager->flush();
+        $this->pageRepository->save($page);
 
         $jsonPage = $this->serializer->serialize($page, 'json', ['groups' => ['page_content:read']]);
         
@@ -148,7 +145,7 @@ final class ApiPageController extends AbstractController
     #[Route('/{id}', name: 'api_pages_delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]
     public function delete(int $id): JsonResponse
     {
-        $page = $this->pageRepository->find($id);
+        $page = $this->pageRepository->findById($id);
         
         if (!$page) {
             return new JsonResponse(['error' => 'Page non trouvée'], Response::HTTP_NOT_FOUND);
@@ -168,8 +165,7 @@ final class ApiPageController extends AbstractController
             ], Response::HTTP_CONFLICT);
         }
 
-        $this->entityManager->remove($page);
-        $this->entityManager->flush();
+        $this->pageRepository->delete($page);
 
         return new JsonResponse(['message' => 'Page supprimée avec succès'], Response::HTTP_OK);
     }

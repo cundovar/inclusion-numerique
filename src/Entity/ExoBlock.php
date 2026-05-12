@@ -4,11 +4,10 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Repository\ExoBlockRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ExoBlockRepository::class)]
+#[ORM\Entity]
 #[ApiResource(
     normalizationContext: ['groups' => ['exo_block:read']],
     denormalizationContext: ['groups' => ['exo_block:write']]

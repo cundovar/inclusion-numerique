@@ -2,14 +2,13 @@
 
 namespace App\Controller;
 
+use App\Domain\Category\Repository\CategoryRepositoryInterface;
+use App\Domain\Menu\Repository\MenuRepositoryInterface;
+use App\Domain\PageContent\Repository\PageContentRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
+use App\Domain\PropositionIA\Repository\PropositionIARepositoryInterface;
 use App\Entity\PageContent;
 use App\Entity\PropositionIA;
-use App\Repository\CategoryRepository;
-use App\Repository\MenusRepository;
-use App\Repository\PageContentRepository;
-use App\Repository\PropositionIARepository;
-use App\Repository\PageRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,13 +19,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PropositionIAController extends AbstractController
 {
     public function __construct(
-        private PropositionIARepository $propositionIARepository,
+        private PropositionIARepositoryInterface $propositionIARepository,
         private SerializerInterface $serializer,
-        private EntityManagerInterface $em,
-        private PageContentRepository $pageContentRepository,
-        private CategoryRepository $categoryRepository,
-        private MenusRepository $menuRepository,
-        private PageRepository $pageRepository,
+        private PageContentRepositoryInterface $pageContentRepository,
+        private CategoryRepositoryInterface $categoryRepository,
+        private MenuRepositoryInterface $menuRepository,
+        private PageRepositoryInterface $pageRepository,
    
     ) {}
     #[Route('api/proposition-ia', name: 'proposition_ia')]
@@ -41,7 +39,7 @@ final class PropositionIAController extends AbstractController
 
     }
     #[Route('api/proposition-ia/accept/{id}', name: 'ia_accept', methods: ['POST'])]
-    public function accept(PropositionIA $propoIA, EntityManagerInterface $em): JsonResponse
+    public function accept(PropositionIA $propoIA): JsonResponse
     {
         $payload = $propoIA->getPayload();
         $action = $propoIA->getAction();
@@ -50,22 +48,22 @@ final class PropositionIAController extends AbstractController
 
             // Récupérer les entités depuis la base de données
             $page = isset($payload['pageId'])
-                ? $this->pageRepository->find($payload['pageId'])
+                ? $this->pageRepository->findById((int) $payload['pageId'])
                 : null;
 
             $category = isset($payload['categoryId'])
-                ? $this->categoryRepository->find($payload['categoryId'])
+                ? $this->categoryRepository->findById((int) $payload['categoryId'])
                 : null;
 
             $menu = isset($payload['menuId'])
-                ? $this->menuRepository->find($payload['menuId'])
+                ? $this->menuRepository->findById((int) $payload['menuId'])
                 : null;
 
             // Créer ou mettre à jour PageContent
             if ($action === 'creation_cours') {
                 $pageContent = new PageContent();
             } else {
-                $pageContent = $this->pageContentRepository->find($payload['id']);
+                $pageContent = $this->pageContentRepository->findById((int) $payload['id']);
                 if (!$pageContent) {
                     return new JsonResponse(['error' => 'PageContent not found'], Response::HTTP_NOT_FOUND);
                 }
@@ -82,12 +80,10 @@ final class PropositionIAController extends AbstractController
             if ($category) $pageContent->setCategory($category);
             if ($menu) $pageContent->setMenu($menu);
 
-            $em->persist($pageContent);
-            $em->flush();
+            $this->pageContentRepository->save($pageContent);
 
             $propoIA->setStatut('accepted');
-            $em->persist($propoIA);
-            $em->flush();
+            $this->propositionIARepository->save($propoIA);
 
             return new JsonResponse([
                 'message' => 'Proposition acceptée',
@@ -98,27 +94,24 @@ final class PropositionIAController extends AbstractController
         return new JsonResponse(['error' => 'Action non supportée'], Response::HTTP_BAD_REQUEST);
     }
     #[Route('api/proposition-ia/reject/{id}', name: 'ia_reject', methods: ['POST'])]
-    public function reject(PropositionIA $propoIA,EntityManagerInterface $em) : JsonResponse
+    public function reject(PropositionIA $propoIA) : JsonResponse
     {
         $propoIA->setStatut('rejected');
-        $em->persist($propoIA);
-        $em->flush();
+        $this->propositionIARepository->save($propoIA);
         return new JsonResponse(['message' => 'Proposition refusée'], Response::HTTP_OK);
     }
 
     #[Route('api/proposition-ia/review/{id}', name: 'ia_review', methods: ['POST'])]
-    public function review(PropositionIA $propoIA,EntityManagerInterface $em) : JsonResponse
+    public function review(PropositionIA $propoIA) : JsonResponse
     {
         $propoIA->setStatut('review');
-        $em->persist($propoIA);
-        $em->flush();
+        $this->propositionIARepository->save($propoIA);
         return new JsonResponse(['message' => 'Proposition revue'], Response::HTTP_OK);
     }
     #[Route('api/proposition-ia/delete/{id}', name: 'ia_delete', methods: ['POST'])]
-    public function delete(PropositionIA $propoIA,EntityManagerInterface $em) : JsonResponse
+    public function delete(PropositionIA $propoIA) : JsonResponse
     {
-        $em->remove($propoIA);
-        $em->flush();
+        $this->propositionIARepository->delete($propoIA);
         return new JsonResponse(['message' => 'Proposition supprimée'], Response::HTTP_OK);
     }
     #[Route('api/proposition-ia/list', name: 'ia_list', methods: ['GET'])]
@@ -135,7 +128,7 @@ final class PropositionIAController extends AbstractController
         return new JsonResponse($jsonProposition, Response::HTTP_OK, [], true);
     }
     #[Route('api/proposition-ia/create', name: 'ia_create', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         // Récupérer correctement les données JSON
         $data = json_decode($request->getContent(), true);
@@ -150,8 +143,7 @@ final class PropositionIAController extends AbstractController
         $propoIA->setPayload($data['payload'] ?? []);
         $propoIA->setCreatedAt(new \DateTimeImmutable());
 
-        $em->persist($propoIA);
-        $em->flush();
+        $this->propositionIARepository->save($propoIA);
 
         return new JsonResponse([
             'message' => 'Proposition créée',

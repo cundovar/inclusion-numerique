@@ -7,20 +7,20 @@ namespace App\Application\Note\Handler;
 use App\Application\Note\DTO\NoteDTO;
 use App\Application\Note\Query\GetNoteByPageQuery;
 use App\Domain\Note\Repository\NoteRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 use App\Domain\Note\Service\NoteEncryptionInterface;
-use App\Repository\PageRepository;
 
 final class GetNoteByPageHandler
 {
     public function __construct(
         private NoteRepositoryInterface $noteRepository,
-        private PageRepository $pageRepository,
+        private PageRepositoryInterface $pageRepository,
         private NoteEncryptionInterface $encryption
     ) {}
 
     public function handle(GetNoteByPageQuery $query): ?NoteDTO
     {
-        $page = $this->pageRepository->find($query->pageId);
+        $page = $this->pageRepository->findById($query->pageId);
 
         if (!$page) {
             throw new \InvalidArgumentException('Page non trouvée');

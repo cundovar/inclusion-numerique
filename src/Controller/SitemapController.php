@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Repository\CategoryRepository;
-use App\Repository\PageRepository;
+use App\Domain\Category\Repository\CategoryRepositoryInterface;
+use App\Domain\Page\Repository\PageRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,8 +12,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class SitemapController extends AbstractController
 {
     public function __construct(
-        private PageRepository $pageRepository,
-        private CategoryRepository $categoryRepository,
+        private PageRepositoryInterface $pageRepository,
+        private CategoryRepositoryInterface $categoryRepository,
         private UrlGeneratorInterface $urlGenerator
     ) {}
 

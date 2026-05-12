@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\UserPageVisitRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: UserPageVisitRepository::class)]
+#[ORM\Entity]
 #[ORM\Index(columns: ['user_id', 'visited_at'])]
 class UserPageVisit
 {

@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use App\Entity\UserPageVisit;
-use App\Repository\UserPageVisitRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,8 +16,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class PageVisitController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private UserPageVisitRepository $visitRepository,
+        private UserRepositoryInterface $userRepository,
+        private UserPageVisitRepositoryInterface $visitRepository,
         #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled
     ) {}
 
@@ -58,8 +58,7 @@ class PageVisitController extends AbstractController
         $visit->setUserAgent($request->headers->get('User-Agent'));
         $visit->setIpAddress($request->getClientIp());
 
-        $this->em->persist($visit);
-        $this->em->flush();
+        $this->visitRepository->save($visit);
 
         return $this->json(['message' => 'Visite enregistrée'], 200);
     }
@@ -78,10 +77,7 @@ class PageVisitController extends AbstractController
         $user = $this->getUser();
 
         // Récupérer toutes les visites individuelles
-        $visits = $this->visitRepository->findBy(
-            ['user' => $user],
-            ['visitedAt' => 'DESC']
-        );
+        $visits = $this->visitRepository->findRecentVisitsByUser($user, 1000);
 
         $data = array_map(function($visit) {
             return [
@@ -114,7 +110,7 @@ class PageVisitController extends AbstractController
 
         $user = $this->getUser();
 
-        $visit = $this->visitRepository->find($id);
+        $visit = $this->visitRepository->findById($id);
 
         if (!$visit) {
             return $this->json(['error' => 'Visite non trouvée'], 404);
@@ -125,8 +121,7 @@ class PageVisitController extends AbstractController
             return $this->json(['error' => 'Non autorisé'], 403);
         }
 
-        $this->em->remove($visit);
-        $this->em->flush();
+        $this->visitRepository->delete($visit);
 
         return $this->json(['message' => 'Visite supprimée'], 200);
     }
@@ -148,11 +143,7 @@ class PageVisitController extends AbstractController
         $user = $this->getUser();
 
         // Utiliser DQL pour supprimer directement en base de données
-        $query = $this->em->createQuery(
-            'DELETE FROM App\Entity\UserPageVisit v WHERE v.user = :user'
-        );
-        $query->setParameter('user', $user);
-        $deletedCount = $query->execute();
+        $deletedCount = $this->visitRepository->clearByUser($user);
 
         return $this->json([
             'message' => 'Historique effacé',
@@ -183,7 +174,7 @@ class PageVisitController extends AbstractController
         }
 
         $user->setTrackPageVisits((bool)$enabled);
-        $this->em->flush();
+        $this->userRepository->save($user);
 
         return $this->json([
             'message' => 'Préférences mises à jour',
