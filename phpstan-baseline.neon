@@ -1,0 +1,235 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 3
+			path: src/Controller/Api/AdminCrud/ApiExoContentController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 3
+			path: src/Controller/Api/AdminCrud/ApiPageContentController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Controller/Api/AdminCrud/ApiPageController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Domain\\UserCustomization\\Repository\\UserCustomizationRepositoryInterface\:\:findOrCreateForUser\(\) expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Controller/Api/CustomizationController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Favorite\\Command\\AddFavoriteCommand constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/FavoriteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Favorite\\Command\\RemoveFavoriteCommand constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/FavoriteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Favorite\\Command\\ToggleFavoriteCommand constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/FavoriteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Favorite\\Query\\CheckFavoriteQuery constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/FavoriteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Favorite\\Query\\GetFavoriteByIdQuery constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/FavoriteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Favorite\\Query\\GetUserFavoritesQuery constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/FavoriteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Note\\Command\\CreateOrUpdateNoteCommand constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/NoteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Note\\Command\\DeleteNoteCommand constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/NoteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Note\\Query\\GetNoteByPageQuery constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/NoteController.php
+
+		-
+			message: '#^Parameter \$user of class App\\Application\\Note\\Query\\GetUserNotesQuery constructor expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/NoteController.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\ChoicesQCM\:\:isCorrect\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/Api/QCMApiController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Domain\\UserPageVisit\\Repository\\UserPageVisitRepositoryInterface\:\:countByUser\(\) expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/UserPageVisitController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Domain\\UserPageVisit\\Repository\\UserPageVisitRepositoryInterface\:\:findRecentVisitsByUser\(\) expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/UserPageVisitController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Domain\\UserPageVisit\\Repository\\UserPageVisitRepositoryInterface\:\:getMostVisitedPagesByUser\(\) expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/UserPageVisitController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Entity\\UserPageVisit\:\:setUser\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Api/UserPageVisitController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:isTrackPageVisits\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Controller/PageVisitController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:setTrackPageVisits\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/PageVisitController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Domain\\UserPageVisit\\Repository\\UserPageVisitRepositoryInterface\:\:clearByUser\(\) expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/PageVisitController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Domain\\UserPageVisit\\Repository\\UserPageVisitRepositoryInterface\:\:findRecentVisitsByUser\(\) expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/PageVisitController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Domain\\User\\Repository\\UserRepositoryInterface\:\:save\(\) expects App\\Entity\\User, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/PageVisitController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Entity\\UserPageVisit\:\:setUser\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/PageVisitController.php
+
+		-
+			message: '#^Property App\\Controller\\SitemapController\:\:\$urlGenerator is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Controller/SitemapController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Entity\\UserCustomization\:\:setUser\(\) expects App\\Entity\\User, null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Infrastructure/Note/Service/NoteEncryptionService.php
+
+		-
+			message: '#^Call to method getDescription\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Call to method getPageContent\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Call to method getSuggestedContent\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Call to method getTitle\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Call to method getType\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Call to method setAppliedAt\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Call to method setAppliedBy\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Call to method setStatus\(\) on an unknown class App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Parameter \$recommendation of method App\\Service\\CourseModificationService\:\:applyRecommendation\(\) has invalid type App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Parameter \$recommendation of method App\\Service\\CourseModificationService\:\:integrateCodeImprovement\(\) has invalid type App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Service/CourseModificationService.php
+
+		-
+			message: '#^Parameter \$recommendation of method App\\Service\\CourseModificationService\:\:previewModification\(\) has invalid type App\\Entity\\ContentRecommendation\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Service/CourseModificationService.php

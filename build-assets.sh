@@ -12,7 +12,7 @@ npm run build
 # 2. Build Front-end Vue.js avec Vite
 echo "⚡ Building Vue.js front-end with Vite..."
 cd front
-npm run build
+BUILD_OUTPUT_DIR=../public/build PWA_OUTPUT_DIR=../public/spa npm run build
 cd ..
 
 # 3. Vérification des assets générés

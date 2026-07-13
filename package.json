@@ -7,7 +7,8 @@
         "dev-server": "encore dev-server",
         "dev": "encore dev",
         "watch": "encore dev --watch",
-        "build": "encore production --progress"
+        "build": "encore production --progress",
+        "lint": "eslint assets"
     },
     "devDependencies": {
         "@hotwired/stimulus": "^3.0.0",
@@ -16,6 +17,9 @@
         "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",
         "@symfony/webpack-encore": "^4.0.0",
         "core-js": "^3.0.0",
+        "@eslint/js": "^8.57.1",
+        "eslint": "^8.57.1",
+        "eslint-webpack-plugin": "^4.2.0",
         "regenerator-runtime": "^0.14.0",
         "sass": "^1.0.0",
         "sass-loader": "^13.0.0",

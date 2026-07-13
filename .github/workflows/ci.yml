@@ -1,0 +1,305 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [main, deploy]
+  push:
+    branches: [main, deploy]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the validated main branch to production
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: '8.3'
+  NODE_VERSION: '22'
+
+jobs:
+  setup_variables:
+    name: Setup variables
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.context.outputs.deploy }}
+    steps:
+      - id: context
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          MANUAL_DEPLOY: ${{ inputs.deploy }}
+        run: |
+          deploy=false
+          if [[ "$EVENT_NAME" == "push" && "$REF_NAME" == "main" ]]; then
+            deploy=true
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" && "$REF_NAME" == "main" && "$MANUAL_DEPLOY" == "true" ]]; then
+            deploy=true
+          fi
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+
+  dependencies:
+    name: Dependencies
+    needs: setup_variables
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            front/package-lock.json
+      - name: Validate Composer files
+        run: composer validate --no-check-publish
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Install root JavaScript dependencies
+        run: npm ci --ignore-scripts
+      - name: Install Vue dependencies
+        run: npm ci --ignore-scripts --prefix front
+
+  php_quality:
+    name: PHP quality
+    needs: dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      phpstan: ${{ steps.phpstan.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Check PHP syntax
+        run: find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Run PHPStan (informational)
+        id: phpstan
+        continue-on-error: true
+        run: composer analyse
+
+  frontend_quality:
+    name: Frontend quality
+    needs: dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      eslint: ${{ steps.eslint.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            front/package-lock.json
+      - name: Install root dependencies
+        run: npm ci
+      - name: Lint EasyAdmin assets (informational)
+        id: eslint
+        continue-on-error: true
+        run: npm run lint
+      - name: Install Vue dependencies
+        run: npm ci --prefix front
+      - name: Validate Vue production build
+        run: npm run check --prefix front
+
+  unit_tests:
+    name: Unit tests
+    needs: dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Run PHPUnit
+        run: composer test
+
+  security:
+    name: Security audit
+    needs: dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      composer_audit: ${{ steps.composer_audit.outcome }}
+      root_npm_audit: ${{ steps.root_npm_audit.outcome }}
+      front_npm_audit: ${{ steps.front_npm_audit.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Audit production PHP dependencies (informational)
+        id: composer_audit
+        continue-on-error: true
+        run: composer audit --locked --no-dev
+      - name: Audit EasyAdmin production dependencies (informational)
+        id: root_npm_audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+      - name: Audit Vue production dependencies (informational)
+        id: front_npm_audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high --prefix front
+
+  coverage:
+    name: Save coverage
+    needs: unit_tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: pcov
+          tools: composer:v2
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Generate coverage report
+        run: mkdir -p var/coverage && composer test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: php-coverage
+          path: var/coverage/clover.xml
+          retention-days: 14
+
+  build:
+    name: Build release
+    needs: [php_quality, frontend_quality, unit_tests, security]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            front/package-lock.json
+      - name: Install production PHP dependencies
+        env:
+          APP_ENV: prod
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+      - name: Build EasyAdmin assets
+        run: npm ci && npm run build
+      - name: Build Vue assets
+        env:
+          BUILD_OUTPUT_DIR: ../public/build
+          PWA_OUTPUT_DIR: ../public/spa
+        run: npm ci --prefix front && npm run build --prefix front
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-assets
+          path: |
+            public/build
+            public/spa
+          retention-days: 14
+
+  report:
+    name: Report
+    if: always()
+    needs: [php_quality, frontend_quality, unit_tests, security, coverage, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish pipeline summary
+        env:
+          PHP_QUALITY: ${{ needs.php_quality.result }}
+          PHPSTAN: ${{ needs.php_quality.outputs.phpstan }}
+          FRONTEND_QUALITY: ${{ needs.frontend_quality.result }}
+          ESLINT: ${{ needs.frontend_quality.outputs.eslint }}
+          UNIT_TESTS: ${{ needs.unit_tests.result }}
+          SECURITY: ${{ needs.security.result }}
+          COMPOSER_AUDIT: ${{ needs.security.outputs.composer_audit }}
+          ROOT_NPM_AUDIT: ${{ needs.security.outputs.root_npm_audit }}
+          FRONT_NPM_AUDIT: ${{ needs.security.outputs.front_npm_audit }}
+          COVERAGE: ${{ needs.coverage.result }}
+          BUILD: ${{ needs.build.result }}
+        run: |
+          {
+            echo '## CI/CD report'
+            echo '| Check | Result |'
+            echo '| --- | --- |'
+            echo "| PHP quality | $PHP_QUALITY |"
+            echo "| PHPStan (informational) | $PHPSTAN |"
+            echo "| Frontend quality | $FRONTEND_QUALITY |"
+            echo "| ESLint (informational) | $ESLINT |"
+            echo "| Unit tests | $UNIT_TESTS |"
+            echo "| Security | $SECURITY |"
+            echo "| Composer audit (informational) | $COMPOSER_AUDIT |"
+            echo "| Root npm audit (informational) | $ROOT_NPM_AUDIT |"
+            echo "| Vue npm audit (informational) | $FRONT_NPM_AUDIT |"
+            echo "| Coverage | $COVERAGE |"
+            echo "| Build | $BUILD |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          [[ "$PHP_QUALITY" == "success" ]]
+          [[ "$FRONTEND_QUALITY" == "success" ]]
+          [[ "$UNIT_TESTS" == "success" ]]
+          [[ "$SECURITY" == "success" ]]
+          [[ "$COVERAGE" == "success" ]]
+          [[ "$BUILD" == "success" ]]
+
+  deploy:
+    name: Deploy production
+    needs: [setup_variables, report]
+    if: needs.setup_variables.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+          tools: composer:v2
+      - name: Install Deployer
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: Register production host key
+        env:
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: mkdir -p ~/.ssh && printf '%s\n' "$DEPLOY_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+      - name: Deploy validated revision
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_BRANCH: main
+        run: vendor/bin/dep deploy production
