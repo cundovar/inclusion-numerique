@@ -16,6 +16,10 @@ leurs erreurs apparaissent dans les jobs et dans le rapport, sans bloquer une
 fusion ou un deploiement. Il suffira ensuite de retirer `continue-on-error` pour
 les rendre bloquants.
 
+Les variables applicatives necessaires a la compilation (`APP_ENV`, base SQLite,
+mailer, messenger, CORS et variables Vite) ont des valeurs non sensibles definies
+directement dans le workflow. Elles ne necessitent aucune configuration GitHub.
+
 ## Execution locale
 
 ```bash

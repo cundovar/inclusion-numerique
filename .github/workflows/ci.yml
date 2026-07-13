@@ -22,6 +22,17 @@ concurrency:
 env:
   PHP_VERSION: '8.3'
   NODE_VERSION: '22'
+  APP_ENV: test
+  APP_SECRET: REDACTED
+  DATABASE_URL: sqlite:///%kernel.project_dir%/var/ci.db
+  MAILER_DSN: null://null
+  MESSENGER_TRANSPORT_DSN: sync://
+  CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+  USER_PAGE_VISIT_ENABLED: 'false'
+  N8N_API_KEY: REDACTED
+  API_ADMIN_USER_EMAIL: ci@example.test
+  VITE_ENABLE_PAGE_TRACKING: 'false'
+  VITE_AGENTS_API_URL: /api/agents-cours
 
 jobs:
   setup_variables:
