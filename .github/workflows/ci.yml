@@ -1,0 +1,403 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [main, deploy]
+  push:
+    branches: [main, deploy]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the validated deploy branch to production
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: '8.2'
+  NODE_VERSION: '22'
+  APP_ENV: test
+  APP_SECRET: REDACTED
+  DATABASE_URL: sqlite:///%kernel.project_dir%/var/ci.db
+  MAILER_DSN: null://null
+  MESSENGER_TRANSPORT_DSN: sync://
+  CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+  USER_PAGE_VISIT_ENABLED: 'false'
+  N8N_API_KEY: REDACTED
+  API_ADMIN_USER_EMAIL: ci@example.test
+  VITE_ENABLE_PAGE_TRACKING: 'false'
+  VITE_AGENTS_API_URL: /api/agents-cours
+
+jobs:
+  setup_variables:
+    name: Setup variables
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.context.outputs.deploy }}
+    steps:
+      - id: context
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          MANUAL_DEPLOY: ${{ inputs.deploy }}
+        run: |
+          deploy=false
+          if [[ "$EVENT_NAME" == "push" && "$REF_NAME" == "deploy" ]]; then
+            deploy=true
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" && "$REF_NAME" == "deploy" && "$MANUAL_DEPLOY" == "true" ]]; then
+            deploy=true
+          fi
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+
+  dependencies:
+    name: Dependencies
+    needs: setup_variables
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            front/package-lock.json
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
+      - name: Validate Composer files
+        run: composer validate --no-check-publish
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Install root JavaScript dependencies
+        run: npm ci --ignore-scripts
+      - name: Install Vue dependencies
+        run: npm ci --ignore-scripts --prefix front
+
+  php_quality:
+    name: PHP quality
+    needs: dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      phpstan: ${{ steps.phpstan.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Check PHP syntax
+        run: find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Run PHPStan (informational)
+        id: phpstan
+        continue-on-error: true
+        run: composer analyse
+
+  frontend_quality:
+    name: Frontend quality
+    needs: dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      eslint: ${{ steps.eslint.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            front/package-lock.json
+      - name: Install root dependencies
+        run: npm ci
+      - name: Lint EasyAdmin assets (informational)
+        id: eslint
+        continue-on-error: true
+        run: npm run lint
+      - name: Install Vue dependencies
+        run: npm ci --prefix front
+      - name: Validate Vue production build
+        run: npm run check --prefix front
+
+  unit_tests:
+    name: Unit tests
+    needs: dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Run PHPUnit
+        run: composer test
+
+  security:
+    name: Security audit
+    needs: dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      composer_audit: ${{ steps.composer_audit.outcome }}
+      root_npm_audit: ${{ steps.root_npm_audit.outcome }}
+      front_npm_audit: ${{ steps.front_npm_audit.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Audit production PHP dependencies (informational)
+        id: composer_audit
+        continue-on-error: true
+        run: composer audit --locked --no-dev
+      - name: Audit EasyAdmin production dependencies (informational)
+        id: root_npm_audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+      - name: Audit Vue production dependencies (informational)
+        id: front_npm_audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high --prefix front
+
+  coverage:
+    name: Save coverage
+    needs: unit_tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          coverage: pcov
+          tools: composer:v2
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Generate coverage report
+        run: mkdir -p var/coverage && composer test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: php-coverage
+          path: var/coverage/clover.xml
+          retention-days: 14
+
+  build:
+    name: Build release
+    needs: [php_quality, frontend_quality, unit_tests, security]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, iconv, intl, pdo_mysql
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            front/package-lock.json
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=prod"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
+      - name: Install production PHP dependencies
+        env:
+          APP_ENV: prod
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+      - name: Build EasyAdmin assets
+        run: npm ci && npm run build
+      - name: Build Vue assets
+        env:
+          BUILD_OUTPUT_DIR: ../public/build
+          PWA_OUTPUT_DIR: ../public/spa
+        run: npm ci --prefix front && npm run build --prefix front
+      - name: Assemble production release
+        run: |
+          mkdir -p /tmp/production-release
+          git archive HEAD | tar -x -C /tmp/production-release
+          cp -a vendor /tmp/production-release/vendor
+          rm -rf /tmp/production-release/public/build /tmp/production-release/public/spa
+          cp -a public/build /tmp/production-release/public/build
+          cp -a public/spa /tmp/production-release/public/spa
+          tar -C /tmp/production-release -czf /tmp/production-release.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-release
+          path: /tmp/production-release.tar.gz
+          retention-days: 14
+
+  report:
+    name: Report
+    if: always()
+    needs: [php_quality, frontend_quality, unit_tests, security, coverage, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish pipeline summary
+        env:
+          PHP_QUALITY: ${{ needs.php_quality.result }}
+          PHPSTAN: ${{ needs.php_quality.outputs.phpstan }}
+          FRONTEND_QUALITY: ${{ needs.frontend_quality.result }}
+          ESLINT: ${{ needs.frontend_quality.outputs.eslint }}
+          UNIT_TESTS: ${{ needs.unit_tests.result }}
+          SECURITY: ${{ needs.security.result }}
+          COMPOSER_AUDIT: ${{ needs.security.outputs.composer_audit }}
+          ROOT_NPM_AUDIT: ${{ needs.security.outputs.root_npm_audit }}
+          FRONT_NPM_AUDIT: ${{ needs.security.outputs.front_npm_audit }}
+          COVERAGE: ${{ needs.coverage.result }}
+          BUILD: ${{ needs.build.result }}
+        run: |
+          {
+            echo '## CI/CD report'
+            echo '| Check | Result |'
+            echo '| --- | --- |'
+            echo "| PHP quality | $PHP_QUALITY |"
+            echo "| PHPStan (informational) | $PHPSTAN |"
+            echo "| Frontend quality | $FRONTEND_QUALITY |"
+            echo "| ESLint (informational) | $ESLINT |"
+            echo "| Unit tests | $UNIT_TESTS |"
+            echo "| Security | $SECURITY |"
+            echo "| Composer audit (informational) | $COMPOSER_AUDIT |"
+            echo "| Root npm audit (informational) | $ROOT_NPM_AUDIT |"
+            echo "| Vue npm audit (informational) | $FRONT_NPM_AUDIT |"
+            echo "| Coverage | $COVERAGE |"
+            echo "| Build | $BUILD |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          [[ "$PHP_QUALITY" == "success" ]]
+          [[ "$FRONTEND_QUALITY" == "success" ]]
+          [[ "$UNIT_TESTS" == "success" ]]
+          [[ "$SECURITY" == "success" ]]
+          [[ "$COVERAGE" == "success" ]]
+          [[ "$BUILD" == "success" ]]
+
+  deploy:
+    name: Deploy production
+    needs: [setup_variables, report]
+    if: needs.setup_variables.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: production
+    env:
+      OVH_HOST: ssh.cluster130.hosting.ovh.net
+      OVH_USER: egflbug
+      OVH_PATH: /home/egflbug/devdoc/prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-release
+          path: /tmp/artifact
+      - name: Prepare SSH and release
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+          install -d -m 700 ~/.ssh
+          install -m 600 .github/ovh_known_hosts ~/.ssh/known_hosts
+          mkdir -p /tmp/release
+          tar -xzf /tmp/artifact/production-release.tar.gz -C /tmp/release
+      - name: Synchronize release to OVH
+        env:
+          SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
+        run: |
+          sshpass -e rsync -az --delete --delay-updates \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='.git/' \
+            --exclude='.ovhconfig' \
+            --exclude='var/' \
+            --exclude='backups/' \
+            --exclude='public/uploads/' \
+            -e 'ssh -o StrictHostKeyChecking=yes' \
+            /tmp/release/ "$OVH_USER@$OVH_HOST:$OVH_PATH/"
+      - name: Clear Symfony production cache
+        env:
+          SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=yes "$OVH_USER@$OVH_HOST" \
+            "cd '$OVH_PATH' && mkdir -p var/cache var/log && php bin/console cache:clear --env=prod --no-debug"

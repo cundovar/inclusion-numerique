@@ -1,4 +1,5 @@
 const Encore = require('@symfony/webpack-encore');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 // Configuration uniquement pour EasyAdmin
 // Ne pas interférer avec Vite qui gère le front-end Vue.js
@@ -28,6 +29,12 @@ Encore
         config.useBuiltIns = 'entry';
         config.corejs = 3;
     });
+
+Encore.addPlugin(new ESLintPlugin({
+    context: 'assets',
+    extensions: ['js'],
+    failOnError: false,
+}));
 
 // Configuration séparée pour éviter les conflits avec Vite
 Encore.configureWatchOptions(function(watchOptions) {

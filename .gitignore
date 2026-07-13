@@ -12,10 +12,8 @@
 /backoffice/
 /microservice/
 /.env
-/front/ 
 /documentations/
 /mysql_data/
-/tests/
 .claude/
 
 .vscode/
@@ -31,6 +29,9 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 /front/node_modules
+/front/dist/
+/front/public/build/
+/front/storybook-static/
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 
@@ -49,3 +50,6 @@ microservice/ia-service/.env
 backoffice/
 front/build-output
 front/public/build/.vite/
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

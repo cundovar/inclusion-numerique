@@ -1,10 +1,11 @@
 <?php
+
 namespace Deployer;
 
 require 'recipe/symfony.php';
 
 // Config
-set('repository', 'git@github.com:cundovar/vue-symfony.git');
+set('repository', getenv('DEPLOY_REPOSITORY') ?: 'git@github.com:cundovar/vue-symfony.git');
 set('git_tty', true);
 
 // Shared files and directories
@@ -31,23 +32,39 @@ add('writable_dirs', [
 
 // Hosts
 host('production')
-    ->set('hostname', '51.83.32.36')
-    ->set('remote_user', 'deployer')
-    ->set('deploy_path', '/var/www/coursPoleS')
-    ->set('branch', 'main')
+    ->set('hostname', getenv('DEPLOY_HOST') ?: '51.83.32.36')
+    ->set('remote_user', getenv('DEPLOY_USER') ?: 'deployer')
+    ->set('deploy_path', getenv('DEPLOY_PATH') ?: '/var/www/coursPoleS')
+    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main')
     ->set('http_user', 'www-data')
-    ->set('identity_file', '~/.ssh/id_rsa');
+    ->set('forward_agent', true);
 
 // Tasks
-task('frontend:build', function () {
-    runLocally('docker-compose run --rm front-build');
+task('easyadmin:build', function () {
+    run(
+        'docker run --rm --user "$(id -u):$(id -g)" --env HOME=/tmp '
+        . '--volume {{release_path}}:/app --workdir /app node:22 '
+        . 'sh -c "npm ci && npm run build"'
+    );
 });
+
+task('frontend:build', function () {
+    run(
+        'cd {{release_path}} && HOST_UID=$(id -u) HOST_GID=$(id -g) '
+        . 'docker compose run --rm front-build'
+    );
+});
+
+task('assets:build', [
+    'easyadmin:build',
+    'frontend:build',
+]);
 
 task('cache:clear', function () {
     run('{{bin/console}} cache:clear --env=prod --no-debug');
 });
 
 // Hooks
-after('deploy:vendors', 'frontend:build');
+after('deploy:vendors', 'assets:build');
 after('deploy:cache:clear', 'cache:clear');
 after('deploy:failed', 'deploy:unlock');

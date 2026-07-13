@@ -23,6 +23,8 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // Chemin PWA - Modifier cette valeur pour changer le préfixe partout
 const PWA_PATH = '/spa';
+const BUILD_OUTPUT_DIR = process.env.BUILD_OUTPUT_DIR || 'public/build';
+const PWA_OUTPUT_DIR = process.env.PWA_OUTPUT_DIR || `public${PWA_PATH}`;
 
 // Détecte si on est dans le contexte Storybook
 const isStorybook = process.env.npm_lifecycle_script?.includes('storybook') || false;
@@ -58,7 +60,7 @@ export default defineConfig(({ mode }) => {
         // Nom du fichier manifest généré
         injectRegister: 'auto',
         // Injection automatique du registre du service worker
-        outDir: `public${PWA_PATH}`,
+        outDir: PWA_OUTPUT_DIR,
         // Où mettre le service worker et le manifest (dans le repo)
         manifest: {
           // Contenu du manifest PWA
@@ -113,7 +115,7 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           // Configuration de Workbox pour gérer le cache
-          globDirectory: `public${PWA_PATH}`,
+          globDirectory: PWA_OUTPUT_DIR,
           // Où chercher les fichiers à mettre en cache (aligné avec outDir)
           globPatterns: ['**/*.{js,css,html,png,svg}'],
           // Quels types de fichiers à inclure
@@ -194,7 +196,7 @@ export default defineConfig(({ mode }) => {
       // Place le manifest à la racine de outDir (pas dans .vite/)
       manifest: true,
       manifestDir: '.',
-      outDir: 'public/build',
+      outDir: BUILD_OUTPUT_DIR,
       emptyOutDir: false,
       rollupOptions: {
         // Options supplémentaires pour le bundler Rollup
