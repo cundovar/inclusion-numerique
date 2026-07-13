@@ -74,6 +74,19 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             front/package-lock.json
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
       - name: Validate Composer files
         run: composer validate --no-check-publish
       - name: Install PHP dependencies
@@ -97,6 +110,19 @@ jobs:
           extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
           coverage: none
           tools: composer:v2
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
       - name: Check PHP syntax
@@ -144,6 +170,19 @@ jobs:
           extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
           coverage: none
           tools: composer:v2
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
       - name: Run PHPUnit
@@ -192,6 +231,19 @@ jobs:
           extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
           coverage: pcov
           tools: composer:v2
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
       - name: Generate coverage report
@@ -221,6 +273,19 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             front/package-lock.json
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=prod"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
+            echo "N8N_API_KEY=$N8N_API_KEY"
+            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+          } > .env
       - name: Install production PHP dependencies
         env:
           APP_ENV: prod
