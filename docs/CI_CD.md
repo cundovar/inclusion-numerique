@@ -51,8 +51,10 @@ ensuite le code, `vendor`, `public/build` et `public/spa` par rsync/SSH vers
 `.ovhconfig`, `var`, `backups`, `.git` et `public/uploads` deja presents sur OVH.
 Le cache Symfony de production est vide apres la synchronisation.
 
-Un push valide sur `deploy` lance le deploiement. Il peut aussi etre lance depuis
-l'onglet Actions avec `Run workflow`, sur `deploy`, en cochant l'option de
+Un push valide sur `main` lance le deploiement. Le flux recommande est de
+travailler sur `deploy`, ouvrir ou mettre a jour une pull request vers `main`,
+puis merger quand les checks sont verts. Il peut aussi etre lance depuis
+l'onglet Actions avec `Run workflow`, sur `main`, en cochant l'option de
 deploiement.
 
 Le deploiement rsync remplace les anciens `git pull` manuels sur OVH. Le depot
@@ -61,6 +63,6 @@ production a jour.
 
 ## Protection de branche
 
-Dans les regles de protection de `deploy`, rendre obligatoires les checks `PHP
+Dans les regles de protection de `main`, rendre obligatoires les checks `PHP
 quality`, `Frontend quality`, `Unit tests`, `Security audit` et `Report` avant
 fusion.

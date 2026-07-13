@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy:
-        description: Deploy the validated deploy branch to production
+        description: Deploy the selected branch to production
         type: boolean
         default: false
 
@@ -48,9 +48,9 @@ jobs:
           MANUAL_DEPLOY: ${{ inputs.deploy }}
         run: |
           deploy=false
-          if [[ "$EVENT_NAME" == "push" && "$REF_NAME" == "deploy" ]]; then
+          if [[ "$EVENT_NAME" == "push" && "$REF_NAME" == "main" ]]; then
             deploy=true
-          elif [[ "$EVENT_NAME" == "workflow_dispatch" && "$REF_NAME" == "deploy" && "$MANUAL_DEPLOY" == "true" ]]; then
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" && "$REF_NAME" == "main" && "$MANUAL_DEPLOY" == "true" ]]; then
             deploy=true
           fi
           echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
