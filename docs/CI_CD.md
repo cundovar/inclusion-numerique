@@ -33,31 +33,34 @@ npm run check --prefix front
 ```
 
 PHPStan utilise `phpstan-baseline.neon` pour representer la dette existante. Les
-nouvelles erreurs restent bloquantes. La baseline ne doit etre regeneree qu'apres
-revue des erreurs supprimees ou acceptees.
+nouvelles erreurs restent visibles dans le job informatif. La baseline ne doit
+etre regeneree qu'apres revue des erreurs supprimees ou acceptees.
 
-## Configuration du deploiement
+## Configuration du deploiement OVH
 
 Creer l'environnement GitHub `production` et, de preference, activer une
-validation obligatoire. Ajouter les secrets suivants a cet environnement :
+validation obligatoire. Ajouter un seul secret a cet environnement :
 
 | Secret | Contenu |
 | --- | --- |
-| `DEPLOY_HOST` | Nom DNS ou adresse du serveur |
-| `DEPLOY_USER` | Utilisateur SSH Deployer |
-| `DEPLOY_PATH` | Repertoire racine des releases sur le serveur |
-| `DEPLOY_SSH_KEY` | Cle privee SSH dediee au deploiement |
-| `DEPLOY_KNOWN_HOSTS` | Ligne `known_hosts` verifiee du serveur |
+| `OVH_SSH_PASSWORD` | Mot de passe SSH du compte OVH `egflbug` |
 
-Le serveur doit disposer de Git, Docker avec `docker compose`, et d'un acces en
-lecture au depot GitHub. Deployer construit EasyAdmin avec une image Node 22,
-puis Vue avec le service `front-build`; les deux alimentent `public/build`. Un
-push valide sur `main` lance le deploiement. Il peut
-aussi etre lance depuis l'onglet Actions avec `Run workflow`, sur `main`, en
-cochant l'option de deploiement.
+GitHub construit la release complete avec PHP 8.2, Composer et Node 22. Il envoie
+ensuite le code, `vendor`, `public/build` et `public/spa` par rsync/SSH vers
+`/home/egflbug/devdoc/prod`. La synchronisation conserve les fichiers `.env`,
+`.ovhconfig`, `var`, `backups`, `.git` et `public/uploads` deja presents sur OVH.
+Le cache Symfony de production est vide apres la synchronisation.
+
+Un push valide sur `deploy` lance le deploiement. Il peut aussi etre lance depuis
+l'onglet Actions avec `Run workflow`, sur `deploy`, en cochant l'option de
+deploiement.
+
+Le deploiement rsync remplace les anciens `git pull` manuels sur OVH. Le depot
+`.git` distant est conserve par securite, mais ne doit plus servir a mettre la
+production a jour.
 
 ## Protection de branche
 
-Dans les regles de protection de `main`, rendre obligatoires les checks `PHP
+Dans les regles de protection de `deploy`, rendre obligatoires les checks `PHP
 quality`, `Frontend quality`, `Unit tests`, `Security audit` et `Report` avant
 fusion.

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy:
-        description: Deploy the validated main branch to production
+        description: Deploy the validated deploy branch to production
         type: boolean
         default: false
 
@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PHP_VERSION: '8.3'
+  PHP_VERSION: '8.2'
   NODE_VERSION: '22'
   APP_ENV: test
   APP_SECRET: REDACTED
@@ -48,9 +48,9 @@ jobs:
           MANUAL_DEPLOY: ${{ inputs.deploy }}
         run: |
           deploy=false
-          if [[ "$EVENT_NAME" == "push" && "$REF_NAME" == "main" ]]; then
+          if [[ "$EVENT_NAME" == "push" && "$REF_NAME" == "deploy" ]]; then
             deploy=true
-          elif [[ "$EVENT_NAME" == "workflow_dispatch" && "$REF_NAME" == "main" && "$MANUAL_DEPLOY" == "true" ]]; then
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" && "$REF_NAME" == "deploy" && "$MANUAL_DEPLOY" == "true" ]]; then
             deploy=true
           fi
           echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
@@ -232,12 +232,19 @@ jobs:
           BUILD_OUTPUT_DIR: ../public/build
           PWA_OUTPUT_DIR: ../public/spa
         run: npm ci --prefix front && npm run build --prefix front
+      - name: Assemble production release
+        run: |
+          mkdir -p /tmp/production-release
+          git archive HEAD | tar -x -C /tmp/production-release
+          cp -a vendor /tmp/production-release/vendor
+          rm -rf /tmp/production-release/public/build /tmp/production-release/public/spa
+          cp -a public/build /tmp/production-release/public/build
+          cp -a public/spa /tmp/production-release/public/spa
+          tar -C /tmp/production-release -czf /tmp/production-release.tar.gz .
       - uses: actions/upload-artifact@v4
         with:
-          name: production-assets
-          path: |
-            public/build
-            public/spa
+          name: production-release
+          path: /tmp/production-release.tar.gz
           retention-days: 14
 
   report:
@@ -291,26 +298,41 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     concurrency: production
+    env:
+      OVH_HOST: ssh.cluster130.hosting.ovh.net
+      OVH_USER: egflbug
+      OVH_PATH: /home/egflbug/devdoc/prod
     steps:
       - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/download-artifact@v4
         with:
-          php-version: ${{ env.PHP_VERSION }}
-          coverage: none
-          tools: composer:v2
-      - name: Install Deployer
-        run: composer install --prefer-dist --no-interaction --no-progress
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
-      - name: Register production host key
+          name: production-release
+          path: /tmp/artifact
+      - name: Prepare SSH and release
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+          install -d -m 700 ~/.ssh
+          install -m 600 .github/ovh_known_hosts ~/.ssh/known_hosts
+          mkdir -p /tmp/release
+          tar -xzf /tmp/artifact/production-release.tar.gz -C /tmp/release
+      - name: Synchronize release to OVH
         env:
-          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-        run: mkdir -p ~/.ssh && printf '%s\n' "$DEPLOY_KNOWN_HOSTS" >> ~/.ssh/known_hosts
-      - name: Deploy validated revision
+          SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
+        run: |
+          sshpass -e rsync -az --delete --delay-updates \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='.git/' \
+            --exclude='.ovhconfig' \
+            --exclude='var/' \
+            --exclude='backups/' \
+            --exclude='public/uploads/' \
+            -e 'ssh -o StrictHostKeyChecking=yes' \
+            /tmp/release/ "$OVH_USER@$OVH_HOST:$OVH_PATH/"
+      - name: Clear Symfony production cache
         env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          DEPLOY_BRANCH: main
-        run: vendor/bin/dep deploy production
+          SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=yes "$OVH_USER@$OVH_HOST" \
+            "cd '$OVH_PATH' && mkdir -p var/cache var/log && php bin/console cache:clear --env=prod --no-debug"
