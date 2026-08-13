@@ -31,6 +31,8 @@ const isStorybook = process.env.npm_lifecycle_script?.includes('storybook') || f
 
 export default defineConfig(({ mode }) => {
   const isProdBuild = mode === 'production';
+  const viteDevOrigin = process.env.VITE_DEV_ORIGIN || 'http://localhost:8092';
+  const viteDevUrl = new URL(viteDevOrigin);
 
   return {
     // Toujours /build/ pour que Nginx proxifie correctement vers Vite
@@ -48,8 +50,8 @@ export default defineConfig(({ mode }) => {
       vue(),
       // Active le support de Vue.js dans Vite
       !isStorybook && symfony({
-        // Hostname pour le navigateur (pas Docker internal)
-        originOverride: 'http://localhost:5173'
+        // Le navigateur passe par Nginx, qui proxifie /build vers Vite.
+        originOverride: viteDevOrigin
       }),
       // Active l'intégration spéciale avec Symfony
       !isStorybook && VitePWA({
@@ -178,9 +180,10 @@ export default defineConfig(({ mode }) => {
       },
       hmr: {
         port: 5173,
-        host: 'localhost',
-        // Le navigateur se connecte à localhost, pas au hostname Docker
-        clientPort: 5173
+        host: viteDevUrl.hostname,
+        protocol: viteDevUrl.protocol === 'https:' ? 'wss' : 'ws',
+        // Le navigateur se connecte à Nginx, pas directement au port Docker de Vite.
+        clientPort: Number(viteDevUrl.port) || (viteDevUrl.protocol === 'https:' ? 443 : 80)
       },
       force: true, // Force la reconstruction des dépendances
       // Désactiver les protections pour Docker

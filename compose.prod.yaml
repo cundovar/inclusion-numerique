@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   php:
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-      - APP_ENV=dev
-      - APP_DEBUG=1
+      - APP_ENV=prod
+      - APP_DEBUG=0
     volumes:
       - .:/var/www/symfony
       - ./var/cache:/var/www/symfony/var/cache
@@ -21,9 +19,27 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/symfony
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - php
+      php:
+        condition: service_started
+      front-build:
+        condition: service_completed_successfully
+    networks:
+      - connectPerso
+
+  front-build:
+    build:
+      context: ./front
+    working_dir: /app
+    volumes:
+      - ./front:/app
+      - front_node_modules:/app/node_modules
+      - ./public/build:/app/public/build
+      - ./public/spa:/app/public/spa
+    command: >-
+      sh -c "npm run build && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000}
+      /app/public/build /app/public/spa"
     networks:
       - connectPerso
 
@@ -45,3 +61,4 @@ networks:
 
 volumes:
   mysql_data:
+  front_node_modules:
