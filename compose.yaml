@@ -27,6 +27,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=500
+      - VITE_DEV_ORIGIN=${VITE_DEV_ORIGIN:-http://localhost:8092}
     networks: [connectPerso]
 
   # (optionnel) front-build pour produire /public/build
