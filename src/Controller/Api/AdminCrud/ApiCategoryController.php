@@ -3,6 +3,9 @@
 namespace App\Controller\Api\AdminCrud;
 
 use App\Domain\Category\Repository\CategoryRepositoryInterface;
+use App\Domain\CourseLevel\Repository\CourseLevelRepositoryInterface;
+use App\Domain\PositionMenu\Repository\PositionMenuRepositoryInterface;
+use App\Domain\SuperMenu\Repository\SuperMenuRepositoryInterface;
 use App\Entity\Category;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +20,9 @@ final class ApiCategoryController extends AbstractController
 {
     public function __construct(
         private CategoryRepositoryInterface $categoryRepository,
+        private SuperMenuRepositoryInterface $superMenuRepository,
+        private PositionMenuRepositoryInterface $positionMenuRepository,
+        private CourseLevelRepositoryInterface $courseLevelRepository,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator
     ) {}
@@ -68,6 +74,10 @@ final class ApiCategoryController extends AbstractController
             return new JsonResponse(['error' => 'Le champ name est requis'], Response::HTTP_BAD_REQUEST);
         }
 
+        if ($error = $this->assignRelations($category, $data)) {
+            return $error;
+        }
+
         // Validation de l'entité
         $errors = $this->validator->validate($category);
         if (count($errors) > 0) {
@@ -103,6 +113,10 @@ final class ApiCategoryController extends AbstractController
         // Mise à jour des champs
         if (isset($data['name'])) {
             $category->setName($data['name']);
+        }
+
+        if ($error = $this->assignRelations($category, $data, true)) {
+            return $error;
         }
 
         // Validation de l'entité
@@ -178,5 +192,40 @@ final class ApiCategoryController extends AbstractController
         $jsonMenus = $this->serializer->serialize($menus, 'json', ['groups' => ['menu_list']]);
         
         return new JsonResponse($jsonMenus, Response::HTTP_OK, [], true);
+    }
+
+    private function assignRelations(Category $category, array $data, bool $allowNull = false): ?JsonResponse
+    {
+        if (array_key_exists('superMenuId', $data)) {
+            if ($allowNull && $data['superMenuId'] === null) {
+                $category->setSuperMenu(null);
+            } else {
+                $superMenu = $this->superMenuRepository->findById((int) $data['superMenuId']);
+                if (!$superMenu) return new JsonResponse(['error' => 'Supermenu non trouvé'], Response::HTTP_BAD_REQUEST);
+                $category->setSuperMenu($superMenu);
+            }
+        }
+
+        if (array_key_exists('positionMenusId', $data)) {
+            if ($allowNull && $data['positionMenusId'] === null) {
+                $category->setPositionMenus(null);
+            } else {
+                $position = $this->positionMenuRepository->findById((int) $data['positionMenusId']);
+                if (!$position) return new JsonResponse(['error' => 'Position de menu non trouvée'], Response::HTTP_BAD_REQUEST);
+                $category->setPositionMenus($position);
+            }
+        }
+
+        if (array_key_exists('niveauCoursId', $data)) {
+            if ($allowNull && $data['niveauCoursId'] === null) {
+                $category->setNiveauCours(null);
+            } else {
+                $level = $this->courseLevelRepository->findById((int) $data['niveauCoursId']);
+                if (!$level) return new JsonResponse(['error' => 'Niveau de cours non trouvé'], Response::HTTP_BAD_REQUEST);
+                $category->setNiveauCours($level);
+            }
+        }
+
+        return null;
     }
 }

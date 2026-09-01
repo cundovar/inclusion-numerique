@@ -18,6 +18,7 @@ class SuperMenu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['supermenu:read', 'page_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
