@@ -60,14 +60,14 @@ jobs:
     needs: setup_variables
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
           coverage: none
           tools: composer:v2
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -103,7 +103,7 @@ jobs:
     outputs:
       phpstan: ${{ steps.phpstan.outcome }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
@@ -139,8 +139,8 @@ jobs:
     outputs:
       eslint: ${{ steps.eslint.outcome }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -163,7 +163,7 @@ jobs:
     needs: dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
@@ -197,13 +197,13 @@ jobs:
       root_npm_audit: ${{ steps.root_npm_audit.outcome }}
       front_npm_audit: ${{ steps.front_npm_audit.outcome }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           coverage: none
           tools: composer:v2
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Audit production PHP dependencies (informational)
@@ -224,7 +224,7 @@ jobs:
     needs: unit_tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
@@ -248,7 +248,7 @@ jobs:
         run: composer install --prefer-dist --no-interaction --no-progress
       - name: Generate coverage report
         run: mkdir -p var/coverage && composer test:coverage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: php-coverage
           path: var/coverage/clover.xml
@@ -259,14 +259,14 @@ jobs:
     needs: [php_quality, frontend_quality, unit_tests, security]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ctype, iconv, intl, pdo_mysql
           coverage: none
           tools: composer:v2
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -306,7 +306,7 @@ jobs:
           cp -a public/build /tmp/production-release/public/build
           cp -a public/spa /tmp/production-release/public/spa
           tar -C /tmp/production-release -czf /tmp/production-release.tar.gz .
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: production-release
           path: /tmp/production-release.tar.gz
@@ -368,8 +368,8 @@ jobs:
       OVH_USER: egflbug
       OVH_PATH: /home/egflbug/devdoc/prod
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: production-release
           path: /tmp/artifact
