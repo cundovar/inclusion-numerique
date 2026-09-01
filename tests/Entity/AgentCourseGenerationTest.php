@@ -23,4 +23,20 @@ final class AgentCourseGenerationTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $generation->update('unknown', null, null, null);
     }
+
+    public function testFailDoesNotCountTheLastReportTwice(): void
+    {
+        $generation = new AgentCourseGeneration('batch-1', 'course-1', ['title' => 'Cours test']);
+        $report = ['approved' => false, 'issues' => [['severity' => 'blocking']]];
+
+        for ($attempt = 0; $attempt < 3; $attempt++) {
+            $generation->update('verifying', null, $report, null);
+        }
+        $generation->fail($report, 'Trois vérifications refusées');
+
+        self::assertSame('failed', $generation->getStatus());
+        self::assertSame(3, $generation->getVerificationAttempts());
+        self::assertSame($report, $generation->getVerificationReport());
+        self::assertNotNull($generation->getFinishedAt());
+    }
 }

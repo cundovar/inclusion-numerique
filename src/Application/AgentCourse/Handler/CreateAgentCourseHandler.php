@@ -51,6 +51,14 @@ final class CreateAgentCourseHandler
                 throw new InvalidArgumentException('Le menu n\'a pas été trouvé');
             }
 
+            if ($menu !== null && $menu->getCategory()?->getId() !== $category->getId()) {
+                throw new InvalidArgumentException('Le menu n\'appartient pas à la catégorie demandée');
+            }
+
+            if ($menu !== null && $menu->getNiveauCours()?->getId() !== $level->getId()) {
+                throw new InvalidArgumentException('Le menu n\'appartient pas au niveau demandé');
+            }
+
             if ($menu === null) {
                 $menu = new Menus();
                 $menu->setLabel($command->newMenuLabel ?: $command->title);

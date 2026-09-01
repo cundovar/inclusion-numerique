@@ -93,4 +93,12 @@ class AgentCourseGeneration
         $this->status = 'succeeded';
         $this->finishedAt = $this->updatedAt = new \DateTimeImmutable();
     }
+
+    public function fail(?array $report, ?string $technicalError): void
+    {
+        $this->status = 'failed';
+        if ($report !== null) $this->verificationReport = $report;
+        $this->technicalError = $technicalError;
+        $this->finishedAt = $this->updatedAt = new \DateTimeImmutable();
+    }
 }

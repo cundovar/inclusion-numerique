@@ -26,9 +26,22 @@ final class ApiCourseMediaController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {
-        $criteria = [];
-        if ($request->query->has('generationId')) $criteria['generation'] = $this->em->find(AgentCourseGeneration::class, $request->query->getInt('generationId'));
-        return new JsonResponse(array_map(fn (CourseMedia $item) => $this->map($item), $this->em->getRepository(CourseMedia::class)->findBy($criteria, ['id' => 'DESC'])));
+        $limit = max(1, min(100, $request->query->getInt('limit', 25)));
+        $builder = $this->em->getRepository(CourseMedia::class)->createQueryBuilder('media')
+            ->orderBy('media.id', 'DESC')
+            ->setMaxResults($limit);
+        if ($request->query->has('generationId')) $builder->andWhere('IDENTITY(media.generation) = :generationId')->setParameter('generationId', $request->query->getInt('generationId'));
+        if ($request->query->has('courseId')) $builder->andWhere('IDENTITY(media.course) = :courseId')->setParameter('courseId', $request->query->getInt('courseId'));
+        if ($request->query->has('checksum')) $builder->andWhere('media.checksum = :checksum')->setParameter('checksum', trim((string) $request->query->get('checksum')));
+        if ($request->query->has('q')) $builder->andWhere('LOWER(media.altText) LIKE :query OR LOWER(media.caption) LIKE :query OR LOWER(media.prompt) LIKE :query')->setParameter('query', '%' . mb_strtolower(trim((string) $request->query->get('q'))) . '%');
+        return new JsonResponse(array_map(fn (CourseMedia $item) => $this->map($item), $builder->getQuery()->getResult()));
+    }
+
+    #[Route('/{id}', methods: ['GET'])]
+    public function show(int $id): JsonResponse
+    {
+        $media = $this->em->find(CourseMedia::class, $id);
+        return $media ? new JsonResponse($this->map($media)) : new JsonResponse(['error' => 'Média non trouvé'], Response::HTTP_NOT_FOUND);
     }
 
     #[Route('', methods: ['POST'])]

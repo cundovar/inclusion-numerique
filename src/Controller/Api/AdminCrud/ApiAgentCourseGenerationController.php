@@ -124,7 +124,7 @@ final class ApiAgentCourseGenerationController extends AbstractController
         $generation = $this->find($id);
         if (!$generation) return new JsonResponse(['error' => 'Génération non trouvée'], Response::HTTP_NOT_FOUND);
         $data = $this->payload($request);
-        $generation->update('failed', null, isset($data['verificationReport']) && is_array($data['verificationReport']) ? $data['verificationReport'] : null, isset($data['technicalError']) ? (string) $data['technicalError'] : null);
+        $generation->fail(isset($data['verificationReport']) && is_array($data['verificationReport']) ? $data['verificationReport'] : null, isset($data['technicalError']) ? (string) $data['technicalError'] : null);
         foreach ($this->em->getRepository(CourseMedia::class)->findBy(['generation' => $generation]) as $media) {
             $file = $this->parameters->get('kernel.project_dir') . '/public' . $media->getPublicPath();
             if (is_file($file)) unlink($file);
