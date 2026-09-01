@@ -18,4 +18,26 @@ final class DoctrinePositionMenuRepository implements PositionMenuRepositoryInte
     {
         return $this->em->find(PositionMenus::class, $id);
     }
+
+    public function findByPosition(string $position): ?PositionMenus
+    {
+        return $this->em->getRepository(PositionMenus::class)->findOneBy(['position' => $position]);
+    }
+
+    public function findAll(): array
+    {
+        return $this->em->getRepository(PositionMenus::class)->findAll();
+    }
+
+    public function save(PositionMenus $position): void
+    {
+        $this->em->persist($position);
+        $this->em->flush();
+    }
+
+    public function remove(PositionMenus $position): void
+    {
+        $this->em->remove($position);
+        $this->em->flush();
+    }
 }

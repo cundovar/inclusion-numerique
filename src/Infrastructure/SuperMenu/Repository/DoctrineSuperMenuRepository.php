@@ -19,6 +19,11 @@ final class DoctrineSuperMenuRepository implements SuperMenuRepositoryInterface
         return $this->em->getRepository(SuperMenu::class)->find($id);
     }
 
+    public function findByName(string $name): ?SuperMenu
+    {
+        return $this->em->getRepository(SuperMenu::class)->findOneBy(['name' => $name]);
+    }
+
     public function findAll(): array
     {
         return $this->em->getRepository(SuperMenu::class)->findAll();

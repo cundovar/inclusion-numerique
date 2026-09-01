@@ -18,7 +18,7 @@ class PositionMenus
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['position_menus:read'])]
+    #[Groups(['position_menus:read', 'page_content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

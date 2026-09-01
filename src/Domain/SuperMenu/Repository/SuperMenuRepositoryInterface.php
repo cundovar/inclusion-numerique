@@ -10,6 +10,8 @@ interface SuperMenuRepositoryInterface
 {
     public function findById(int $id): ?SuperMenu;
 
+    public function findByName(string $name): ?SuperMenu;
+
     /**
      * @return SuperMenu[]
      */
