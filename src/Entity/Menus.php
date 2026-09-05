@@ -46,7 +46,6 @@ class Menus
      */
     #[ORM\OneToMany(targetEntity: Page::class, mappedBy: 'menus')]
    
-    #[Groups(['menu:read', 'menu:list'])]
     private Collection $pages;
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
@@ -58,7 +57,6 @@ class Menus
      */
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'menu')]
    
-    #[Groups(['menu:read', 'menu:list'])]
     private Collection $pageContents;
 
 
@@ -173,6 +171,12 @@ class Menus
 
     public function getPositionMenus(): ?PositionMenus
     {
+    #[Groups(['menu:read', 'menu:list'])]
+    public function getPagesCount(): int { return $this->pages->count(); }
+
+    #[Groups(['menu:read', 'menu:list'])]
+    public function getCoursCount(): int { return $this->pageContents->count(); }
+
         return $this->positionMenus;
     }
 
