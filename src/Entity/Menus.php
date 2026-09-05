@@ -169,19 +169,17 @@ class Menus
         return $this->label ?? '';
     }
 
-    public function getPositionMenus(): ?PositionMenus
-    {
     #[Groups(['menu:read', 'menu:list'])]
     public function getPagesCount(): int { return $this->pages->count(); }
 
     #[Groups(['menu:read', 'menu:list'])]
     public function getCoursCount(): int { return $this->pageContents->count(); }
 
+    public function getPositionMenus(): ?PositionMenus
     {
-        $this->positionMenus = $positionMenus;
-
-        return $this;
+        return $this->positionMenus;
     }
+
 
     public function getNiveauCours(): ?NiveauCours
     {
