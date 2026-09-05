@@ -252,7 +252,7 @@ final class ApiAgentCourseController extends AbstractController
             'title' => $course->getTitle(),
             'description' => $course->getContent(),
             'code' => $course->getCode(),
-            'duration' => 'N/A',
+            'duration' => $course->getDuration() ?: 'N/A',
             'status' => $course->isVisible() ? 'publie' : 'brouillon',
             'genereParIA' => $course->getType() === 'agent-cours',
             'technology' => $course->getCategory() ? [

@@ -59,6 +59,10 @@ class PageContent
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?string $code = null;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?string $duration = null;
+
     #[ORM\OneToMany(
         mappedBy: 'pageContent',
         targetEntity: PageBlock::class,
@@ -130,6 +134,14 @@ class PageContent
     public function setMenu(?Menus $menu): static
     {
         $this->menu = $menu;
+        return $this;
+    }
+
+    public function getDuration(): ?string { return $this->duration; }
+
+    public function setDuration(?string $duration): static
+    {
+        $this->duration = $duration;
         return $this;
     }
 

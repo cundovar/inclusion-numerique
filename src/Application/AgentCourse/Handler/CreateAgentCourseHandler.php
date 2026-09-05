@@ -77,6 +77,7 @@ final class CreateAgentCourseHandler
             $pageContent->setType('agent-cours');
             $pageContent->setContent($command->description ?: sprintf('Cours %s généré automatiquement', $command->title));
             $pageContent->setCode($command->codeHtml);
+            $pageContent->setDuration($command->duration);
             $pageContent->setPage($page);
             $pageContent->setCategory($category);
             $pageContent->setMenu($menu);

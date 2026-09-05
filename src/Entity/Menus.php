@@ -46,6 +46,7 @@ class Menus
      */
     #[ORM\OneToMany(targetEntity: Page::class, mappedBy: 'menus')]
    
+    #[Groups(['menu:read', 'menu:list'])]
     private Collection $pages;
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
@@ -57,6 +58,7 @@ class Menus
      */
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'menu')]
    
+    #[Groups(['menu:read', 'menu:list'])]
     private Collection $pageContents;
 
 
