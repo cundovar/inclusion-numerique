@@ -76,10 +76,11 @@ class AgentCourseGeneration
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
     public function getFinishedAt(): ?\DateTimeImmutable { return $this->finishedAt; }
 
-    public function update(string $status, ?array $candidate, ?array $report, ?string $technicalError): void
+    public function update(string $status, ?array $candidate, ?array $report, ?string $technicalError, ?array $payload = null): void
     {
-        if (!in_array($status, ['pending', 'generating', 'verifying', 'succeeded', 'failed'], true)) throw new \InvalidArgumentException('Statut de génération invalide');
+        if (!in_array($status, ['pending', 'generating', 'verifying', 'ready', 'succeeded', 'failed'], true)) throw new \InvalidArgumentException('Statut de génération invalide');
         $this->status = $status;
+        if ($payload !== null) $this->payload = $payload;
         if ($candidate !== null) $this->candidate = $candidate;
         if ($report !== null) { $this->verificationReport = $report; $this->verificationAttempts++; }
         $this->technicalError = $technicalError;

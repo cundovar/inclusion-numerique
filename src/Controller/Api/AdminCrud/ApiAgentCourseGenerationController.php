@@ -29,6 +29,32 @@ final class ApiAgentCourseGenerationController extends AbstractController
         private ParameterBagInterface $parameters,
     ) {}
 
+
+    #[Route('', methods: ['GET'])]
+    public function list(Request $request): JsonResponse
+    {
+        $requested = array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) $request->query->get('status', 'pending,generating,verifying,ready'))
+        )));
+        $allowed = ['pending', 'generating', 'verifying', 'ready', 'succeeded', 'failed'];
+        foreach ($requested as $status) {
+            if (!in_array($status, $allowed, true)) {
+                return new JsonResponse(['error' => 'Statut de génération invalide'], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        $limit = max(1, min(100, $request->query->getInt('limit', 50)));
+        $criteria = $requested === [] ? [] : ['status' => $requested];
+        $items = $this->em->getRepository(AgentCourseGeneration::class)->findBy(
+            $criteria,
+            ['updatedAt' => 'ASC'],
+            $limit
+        );
+
+        return new JsonResponse(array_map(fn (AgentCourseGeneration $item) => $this->map($item), $items));
+    }
+
     #[Route('', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
@@ -68,6 +94,7 @@ final class ApiAgentCourseGenerationController extends AbstractController
                 isset($data['candidate']) && is_array($data['candidate']) ? $data['candidate'] : null,
                 isset($data['verificationReport']) && is_array($data['verificationReport']) ? $data['verificationReport'] : null,
                 isset($data['technicalError']) ? (string) $data['technicalError'] : null,
+                isset($data['payload']) && is_array($data['payload']) ? $data['payload'] : null,
             );
             $this->em->flush();
         } catch (\InvalidArgumentException $exception) {

@@ -39,4 +39,21 @@ final class AgentCourseGenerationTest extends TestCase
         self::assertSame($report, $generation->getVerificationReport());
         self::assertNotNull($generation->getFinishedAt());
     }
+    public function testItCanBecomeReadyAndReplaceItsPayload(): void
+    {
+        $generation = new AgentCourseGeneration('batch-1', 'course-1', ['menuId' => 92]);
+
+        $generation->update(
+            'ready',
+            ['codeHTML' => '<main class="principal"></main>'],
+            ['approved' => true],
+            null,
+            ['menuId' => 93]
+        );
+
+        self::assertSame('ready', $generation->getStatus());
+        self::assertSame(['menuId' => 93], $generation->getPayload());
+        self::assertSame(1, $generation->getVerificationAttempts());
+    }
+
 }
