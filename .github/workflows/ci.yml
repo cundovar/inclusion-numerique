@@ -400,4 +400,4 @@ jobs:
           SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=yes "$OVH_USER@$OVH_HOST" \
-            "cd '$OVH_PATH' && mkdir -p var/cache var/log && php bin/console doctrine:migrations:migrate --env=prod --no-debug --no-interaction && php bin/console cache:clear --env=prod --no-debug"
+            "cd '$OVH_PATH' && mkdir -p var/cache var/log && php bin/console cache:clear --env=prod --no-debug"
