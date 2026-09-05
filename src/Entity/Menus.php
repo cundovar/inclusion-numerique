@@ -177,10 +177,6 @@ class Menus
     #[Groups(['menu:read', 'menu:list'])]
     public function getCoursCount(): int { return $this->pageContents->count(); }
 
-        return $this->positionMenus;
-    }
-
-    public function setPositionMenus(?PositionMenus $positionMenus): static
     {
         $this->positionMenus = $positionMenus;
 
