@@ -67,7 +67,16 @@ final class ApiAgentCourseGenerationController extends AbstractController
         }
 
         $existing = $this->em->getRepository(AgentCourseGeneration::class)->findOneBy(['batchId' => $batchId, 'externalId' => $externalId]);
-        if ($existing) return new JsonResponse($this->map($existing), Response::HTTP_OK);
+        if ($existing) {
+            if ($this->canonical($existing->getPayload()) !== $this->canonical($payload)) {
+                if ($existing->getStatus() !== 'failed') {
+                    return new JsonResponse(['error' => 'Cette génération est déjà en cours ou terminée. Utilisez un nouveau requestId pour modifier les paramètres.', 'generationId' => $existing->getId(), 'status' => $existing->getStatus()], Response::HTTP_CONFLICT);
+                }
+                $existing->retryWithPayload($payload);
+                $this->em->flush();
+            }
+            return new JsonResponse($this->map($existing), Response::HTTP_OK);
+        }
 
         $generation = new AgentCourseGeneration($batchId, $externalId, $payload);
         $this->em->persist($generation);
@@ -163,6 +172,16 @@ final class ApiAgentCourseGenerationController extends AbstractController
 
     private function find(int $id): ?AgentCourseGeneration { return $this->em->find(AgentCourseGeneration::class, $id); }
     private function payload(Request $request): array { $data = json_decode($request->getContent(), true); return is_array($data) ? $data : []; }
+    private function canonical(mixed $value): string
+    {
+        if (is_array($value)) {
+            if (array_is_list($value)) return "[" . implode(",", array_map(fn ($item) => $this->canonical($item), $value)) . "]";
+            ksort($value);
+            return "{" . implode(",", array_map(fn ($key, $item) => json_encode((string) $key) . ":" . $this->canonical($item), array_keys($value), $value)) . "}";
+        }
+        return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
     private function map(AgentCourseGeneration $item): array
     {
         return ['id' => $item->getId(), 'batchId' => $item->getBatchId(), 'externalId' => $item->getExternalId(), 'status' => $item->getStatus(), 'verificationAttempts' => $item->getVerificationAttempts(), 'payload' => $item->getPayload(), 'candidate' => $item->getCandidate(), 'verificationReport' => $item->getVerificationReport(), 'technicalError' => $item->getTechnicalError(), 'courseId' => $item->getCourse()?->getId(), 'createdAt' => $item->getCreatedAt()->format(DATE_ATOM), 'updatedAt' => $item->getUpdatedAt()->format(DATE_ATOM), 'finishedAt' => $item->getFinishedAt()?->format(DATE_ATOM)];

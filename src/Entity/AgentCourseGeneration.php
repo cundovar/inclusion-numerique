@@ -88,6 +88,22 @@ class AgentCourseGeneration
         if (in_array($status, ['succeeded', 'failed'], true)) $this->finishedAt = $this->updatedAt;
     }
 
+    /** Reset a failed generation with a new payload without creating a duplicate. */
+    public function retryWithPayload(array $payload): void
+    {
+        if ($this->status !== "failed") {
+            throw new \InvalidArgumentException("Seule une génération échouée peut être relancée avec de nouveaux paramètres");
+        }
+        $this->payload = $payload;
+        $this->status = "pending";
+        $this->candidate = null;
+        $this->verificationReport = null;
+        $this->technicalError = null;
+        $this->verificationAttempts = 0;
+        $this->finishedAt = null;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     public function complete(PageContent $course): void
     {
         $this->course = $course;
