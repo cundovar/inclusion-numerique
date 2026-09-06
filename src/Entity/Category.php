@@ -74,6 +74,7 @@ class Category
     private ?bool $visible = true;
 
     #[ORM\ManyToOne(inversedBy: 'category')]
+    #[ApiProperty(readableLink: true)]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?SuperMenu $superMenu = null;
 
