@@ -110,7 +110,6 @@
       "src/views/QCM/resultQCM.vue",
       "src/views/ComponentsDemo.vue",
       "src/components/features/home/HomePage.vue",
-      "src/views/AgentsCours.vue",
       "node_modules/workbox-window/build/workbox-window.prod.es5.mjs"
     ],
     "css": [
@@ -125,15 +124,6 @@
       "assets/fa-solid-900-D0aA9rwL.ttf",
       "assets/fa-v4compatibility-C9RhG_FT.woff2",
       "assets/fa-v4compatibility-CCth-dXg.ttf"
-    ]
-  },
-  "src/views/AgentsCours.vue": {
-    "file": "assets/AgentsCours-Bfe_sg26.js",
-    "name": "AgentsCours",
-    "src": "src/views/AgentsCours.vue",
-    "isDynamicEntry": true,
-    "imports": [
-      "src/main.js"
     ]
   },
   "src/views/CategoryPage.vue": {

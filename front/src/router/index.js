@@ -12,7 +12,6 @@ const questionQCM = () => import('../views/QCM/questionQCM.vue')
 const resultQCM = () => import('../views/QCM/resultQCM.vue')
 const ComponentsDemo = () => import('../views/ComponentsDemo.vue')
 const HomePage = () => import('../components/features/home/HomePage.vue')
-const AgentsCours = () => import('../views/AgentsCours.vue')
 
 const routes = [
   // Route accueil
@@ -53,11 +52,6 @@ const routes = [
     path: '/components-demo',
     name: 'components-demo',
     component: ComponentsDemo
-  },
-  {
-    path: '/agents-cours',
-    name: 'agents-cours',
-    component: AgentsCours
   },
 
   // Categories
