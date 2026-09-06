@@ -54,14 +54,6 @@
           rounded="full"
         />
       </a>
-      <router-link v-if="isAdmin" to="/agents-cours">
-        <AppButton
-          variant="outline"
-          size="xs"
-          icon="pi pi-wrench"
-          rounded="full"
-        />
-      </router-link>
       <AuthButtonMobile />
     </div>
   </div>
