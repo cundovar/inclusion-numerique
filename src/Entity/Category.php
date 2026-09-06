@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\ApiProperty;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -74,6 +75,7 @@ class Category
     private ?bool $visible = true;
 
     #[ORM\ManyToOne(inversedBy: 'category')]
+    #[ApiProperty(readableLink: true)]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?SuperMenu $superMenu = null;
 
