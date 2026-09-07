@@ -6,12 +6,12 @@ tests et securite s'executent en parallele apres l'installation des dependances.
 Une couverture Clover et les assets de production sont conserves 14 jours dans
 les artifacts GitHub Actions.
 
-Le build EasyAdmin est execute en premier, puis Vite ajoute les assets Vue dans
-`public/build` sans effacer ceux d'Encore. La PWA est produite dans `public/spa`.
-Ces chemins correspondent a la configuration Twig/Pentatrion de Symfony.
+Le build Vite produit les assets Vue dans `public/build` et la PWA dans
+`public/spa`. Ces chemins correspondent a la configuration Twig/Pentatrion de
+Symfony.
 
-La syntaxe PHP, PHPUnit et les builds sont bloquants. PHPStan, ESLint et les
-audits de securite sont informatifs pendant la remise a niveau de la codebase :
+La syntaxe PHP, PHPUnit et les builds sont bloquants. PHPStan et les audits de
+securite sont informatifs pendant la remise a niveau de la codebase :
 leurs erreurs apparaissent dans les jobs et dans le rapport, sans bloquer une
 fusion ou un deploiement. Il suffira ensuite de retirer `continue-on-error` pour
 les rendre bloquants.
@@ -26,8 +26,6 @@ directement dans le workflow. Elles ne necessitent aucune configuration GitHub.
 composer install
 composer analyse
 composer test
-npm ci
-npm run lint
 npm ci --prefix front
 npm run check --prefix front
 ```

@@ -40,14 +40,6 @@ host('production')
     ->set('forward_agent', true);
 
 // Tasks
-task('easyadmin:build', function () {
-    run(
-        'docker run --rm --user "$(id -u):$(id -g)" --env HOME=/tmp '
-        . '--volume {{release_path}}:/app --workdir /app node:22 '
-        . 'sh -c "npm ci && npm run build"'
-    );
-});
-
 task('frontend:build', function () {
     run(
         'cd {{release_path}} && HOST_UID=$(id -u) HOST_GID=$(id -g) '
@@ -56,7 +48,6 @@ task('frontend:build', function () {
 });
 
 task('assets:build', [
-    'easyadmin:build',
     'frontend:build',
 ]);
 
