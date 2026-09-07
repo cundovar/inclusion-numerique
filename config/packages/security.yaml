@@ -17,24 +17,35 @@ security:
             stateless: false
             provider: app_user_provider
             context: main
+            entry_point: App\Security\ApiAuthenticationEntryPoint
 
         api_page_visits:
             pattern: ^/api/page-visits
             stateless: false
             provider: app_user_provider
             context: main
+            entry_point: App\Security\ApiAuthenticationEntryPoint
 
         api_notes:
             pattern: ^/api/notes
             stateless: false
             provider: app_user_provider
             context: main
+            entry_point: App\Security\ApiAuthenticationEntryPoint
 
         api_customization:
             pattern: ^/api/customization
             stateless: false
             provider: app_user_provider
             context: main
+            entry_point: App\Security\ApiAuthenticationEntryPoint
+
+        api_propositions:
+            pattern: ^/api/proposition-ia
+            stateless: false
+            provider: app_user_provider
+            context: main
+            entry_point: App\Security\ApiAuthenticationEntryPoint
 
         api_admin:
             pattern: ^/api/admin
@@ -54,6 +65,9 @@ security:
             logout:
                 path: app_logout
                 target: app_login
+                enable_csrf: true
+                csrf_token_id: logout
+                invalidate_session: true
 
             remember_me:
                 secret: '%kernel.secret%'
@@ -69,6 +83,8 @@ security:
          - { path: ^/api/page-visits, roles: ROLE_USER }
          - { path: ^/api/notes, roles: ROLE_USER }
          - { path: ^/api/customization, roles: ROLE_USER }
+         - { path: ^/api/proposition-ia, roles: ROLE_ADMIN }
+         - { path: ^/user-api/me, roles: ROLE_USER }
         #  - { path: ^/spa, roles: ROLE_USER }
 
 when@test:

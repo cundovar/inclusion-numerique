@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class PropositionIAController extends AbstractController
 {
@@ -28,6 +29,7 @@ final class PropositionIAController extends AbstractController
    
     ) {}
     #[Route('api/proposition-ia', name: 'proposition_ia')]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(): JsonResponse
     {
      $propositions = $this->propositionIARepository->findAll();
@@ -39,6 +41,7 @@ final class PropositionIAController extends AbstractController
 
     }
     #[Route('api/proposition-ia/accept/{id}', name: 'ia_accept', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function accept(PropositionIA $propoIA): JsonResponse
     {
         $payload = $propoIA->getPayload();
@@ -94,6 +97,7 @@ final class PropositionIAController extends AbstractController
         return new JsonResponse(['error' => 'Action non supportée'], Response::HTTP_BAD_REQUEST);
     }
     #[Route('api/proposition-ia/reject/{id}', name: 'ia_reject', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function reject(PropositionIA $propoIA) : JsonResponse
     {
         $propoIA->setStatut('rejected');
@@ -102,6 +106,7 @@ final class PropositionIAController extends AbstractController
     }
 
     #[Route('api/proposition-ia/review/{id}', name: 'ia_review', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function review(PropositionIA $propoIA) : JsonResponse
     {
         $propoIA->setStatut('review');
@@ -109,12 +114,14 @@ final class PropositionIAController extends AbstractController
         return new JsonResponse(['message' => 'Proposition revue'], Response::HTTP_OK);
     }
     #[Route('api/proposition-ia/delete/{id}', name: 'ia_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(PropositionIA $propoIA) : JsonResponse
     {
         $this->propositionIARepository->delete($propoIA);
         return new JsonResponse(['message' => 'Proposition supprimée'], Response::HTTP_OK);
     }
     #[Route('api/proposition-ia/list', name: 'ia_list', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function list() : JsonResponse
     {
         $propositions = $this->propositionIARepository->findAll();
@@ -122,12 +129,14 @@ final class PropositionIAController extends AbstractController
         return new JsonResponse($jsonPropositions, Response::HTTP_OK, [], true);
     }
     #[Route('api/proposition-ia/show/{id}', name: 'ia_show', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(PropositionIA $propoIA) : JsonResponse
     {
         $jsonProposition = $this->serializer->serialize($propoIA, 'json', ['groups' => ['proposition_ia:read']]);
         return new JsonResponse($jsonProposition, Response::HTTP_OK, [], true);
     }
     #[Route('api/proposition-ia/create', name: 'ia_create', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request): JsonResponse
     {
         // Récupérer correctement les données JSON

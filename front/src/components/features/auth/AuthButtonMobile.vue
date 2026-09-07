@@ -6,15 +6,16 @@
     <i v-if="user.roles && user.roles.includes('ROLE_USER')" class="text-2xl pi pi-sign-out"></i>
     <i v-else class="text-2xl pi pi-sign-in"></i>
   </button>
+  <p v-if="logoutError" class="text-sm text-red-600" role="alert">{{ logoutError }}</p>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { LOGOUT_EVENT, logout as logoutRequest } from '../../../services/auth.js';
 
-const router = useRouter();
 const user = ref({ username: '', roles: [] });
+const logoutError = ref('');
 
 const handleAuthAction = () => {
   if (user.value.roles && user.value.roles.includes('ROLE_USER')) {
@@ -27,14 +28,20 @@ const handleAuthAction = () => {
 };
 
 const logout = async () => {
+  logoutError.value = '';
+
   try {
-    await axios.post('/logout');
-    // Naviguer vers l'accueil puis recharger pour mettre à jour l'état
-    await router.push('/');
-    window.location.reload();
+    await logoutRequest();
+    user.value = { username: '', roles: [] };
+    window.location.assign('/login');
   } catch (error) {
     console.error('Erreur lors de la déconnexion', error);
+    logoutError.value = 'La déconnexion a échoué. Vous êtes toujours connecté.';
   }
+};
+
+const clearUser = () => {
+  user.value = { username: '', roles: [] };
 };
 
 const fetchUser = async () => {
@@ -48,5 +55,10 @@ const fetchUser = async () => {
 
 onMounted(() => {
   fetchUser();
+  window.addEventListener(LOGOUT_EVENT, clearUser);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener(LOGOUT_EVENT, clearUser);
 });
 </script>
