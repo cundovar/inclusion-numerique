@@ -35,9 +35,9 @@ final class ApiAgentCourseGenerationController extends AbstractController
     {
         $requested = array_values(array_filter(array_map(
             'trim',
-            explode(',', (string) $request->query->get('status', 'pending,generating,verifying,ready'))
+            explode(',', (string) $request->query->get('status', 'pending,queued,generating,verifying,ready'))
         )));
-        $allowed = ['pending', 'generating', 'verifying', 'ready', 'succeeded', 'failed'];
+        $allowed = ['pending', 'queued', 'generating', 'verifying', 'ready', 'succeeded', 'failed'];
         foreach ($requested as $status) {
             if (!in_array($status, $allowed, true)) {
                 return new JsonResponse(['error' => 'Statut de génération invalide'], Response::HTTP_BAD_REQUEST);

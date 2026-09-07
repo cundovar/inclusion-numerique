@@ -78,7 +78,7 @@ class AgentCourseGeneration
 
     public function update(string $status, ?array $candidate, ?array $report, ?string $technicalError, ?array $payload = null): void
     {
-        if (!in_array($status, ['pending', 'generating', 'verifying', 'ready', 'succeeded', 'failed'], true)) throw new \InvalidArgumentException('Statut de génération invalide');
+        if (!in_array($status, ['pending', 'queued', 'generating', 'verifying', 'ready', 'succeeded', 'failed'], true)) throw new \InvalidArgumentException('Statut de génération invalide');
         $this->status = $status;
         if ($payload !== null) $this->payload = $payload;
         if ($candidate !== null) $this->candidate = $candidate;

@@ -24,6 +24,16 @@ final class AgentCourseGenerationTest extends TestCase
         $generation->update('unknown', null, null, null);
     }
 
+    public function testItCanBeQueuedBeforeGenerationStarts(): void
+    {
+        $generation = new AgentCourseGeneration('batch-1', 'course-1', ['title' => 'Cours test']);
+
+        $generation->update('queued', null, null, null);
+
+        self::assertSame('queued', $generation->getStatus());
+        self::assertNull($generation->getFinishedAt());
+    }
+
     public function testFailDoesNotCountTheLastReportTwice(): void
     {
         $generation = new AgentCourseGeneration('batch-1', 'course-1', ['title' => 'Cours test']);
