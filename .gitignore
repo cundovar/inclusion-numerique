@@ -32,12 +32,6 @@
 /front/dist/
 /front/public/build/
 /front/storybook-static/
-###> symfony/webpack-encore-bundle ###
-/node_modules/
-
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###
 
 # MySQL data directory
 mysql_data/

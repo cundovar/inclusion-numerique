@@ -71,9 +71,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            front/package-lock.json
+          cache-dependency-path: front/package-lock.json
       - name: Create CI .env
         run: |
           {
@@ -91,8 +89,6 @@ jobs:
         run: composer validate --no-check-publish
       - name: Install PHP dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
-      - name: Install root JavaScript dependencies
-        run: npm ci --ignore-scripts
       - name: Install Vue dependencies
         run: npm ci --ignore-scripts --prefix front
 
@@ -136,23 +132,13 @@ jobs:
     name: Frontend quality
     needs: dependencies
     runs-on: ubuntu-latest
-    outputs:
-      eslint: ${{ steps.eslint.outcome }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            front/package-lock.json
-      - name: Install root dependencies
-        run: npm ci
-      - name: Lint EasyAdmin assets (informational)
-        id: eslint
-        continue-on-error: true
-        run: npm run lint
+          cache-dependency-path: front/package-lock.json
       - name: Install Vue dependencies
         run: npm ci --prefix front
       - name: Validate Vue production build
@@ -194,7 +180,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       composer_audit: ${{ steps.composer_audit.outcome }}
-      root_npm_audit: ${{ steps.root_npm_audit.outcome }}
       front_npm_audit: ${{ steps.front_npm_audit.outcome }}
     steps:
       - uses: actions/checkout@v7
@@ -210,10 +195,6 @@ jobs:
         id: composer_audit
         continue-on-error: true
         run: composer audit --locked --no-dev
-      - name: Audit EasyAdmin production dependencies (informational)
-        id: root_npm_audit
-        continue-on-error: true
-        run: npm audit --omit=dev --audit-level=high
       - name: Audit Vue production dependencies (informational)
         id: front_npm_audit
         continue-on-error: true
@@ -270,9 +251,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            front/package-lock.json
+          cache-dependency-path: front/package-lock.json
       - name: Create CI .env
         run: |
           {
@@ -290,8 +269,6 @@ jobs:
         env:
           APP_ENV: prod
         run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
-      - name: Build EasyAdmin assets
-        run: npm ci && npm run build
       - name: Build Vue assets
         env:
           BUILD_OUTPUT_DIR: ../public/build
@@ -323,11 +300,9 @@ jobs:
           PHP_QUALITY: ${{ needs.php_quality.result }}
           PHPSTAN: ${{ needs.php_quality.outputs.phpstan }}
           FRONTEND_QUALITY: ${{ needs.frontend_quality.result }}
-          ESLINT: ${{ needs.frontend_quality.outputs.eslint }}
           UNIT_TESTS: ${{ needs.unit_tests.result }}
           SECURITY: ${{ needs.security.result }}
           COMPOSER_AUDIT: ${{ needs.security.outputs.composer_audit }}
-          ROOT_NPM_AUDIT: ${{ needs.security.outputs.root_npm_audit }}
           FRONT_NPM_AUDIT: ${{ needs.security.outputs.front_npm_audit }}
           COVERAGE: ${{ needs.coverage.result }}
           BUILD: ${{ needs.build.result }}
@@ -339,11 +314,9 @@ jobs:
             echo "| PHP quality | $PHP_QUALITY |"
             echo "| PHPStan (informational) | $PHPSTAN |"
             echo "| Frontend quality | $FRONTEND_QUALITY |"
-            echo "| ESLint (informational) | $ESLINT |"
             echo "| Unit tests | $UNIT_TESTS |"
             echo "| Security | $SECURITY |"
             echo "| Composer audit (informational) | $COMPOSER_AUDIT |"
-            echo "| Root npm audit (informational) | $ROOT_NPM_AUDIT |"
             echo "| Vue npm audit (informational) | $FRONT_NPM_AUDIT |"
             echo "| Coverage | $COVERAGE |"
             echo "| Build | $BUILD |"
