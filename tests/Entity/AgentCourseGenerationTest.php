@@ -49,6 +49,24 @@ final class AgentCourseGenerationTest extends TestCase
         self::assertSame($report, $generation->getVerificationReport());
         self::assertNotNull($generation->getFinishedAt());
     }
+    public function testRetryResetsAFailedGenerationWithTheSamePayload(): void
+    {
+        $payload = ['title' => 'Cours test'];
+        $generation = new AgentCourseGeneration('batch-1', 'course-1', $payload);
+        $report = ['approved' => false, 'issues' => [['severity' => 'blocking']]];
+
+        $generation->update('verifying', ['codeHTML' => '<main class="principal"></main>'], $report, null);
+        $generation->fail($report, 'Vérification refusée');
+        $generation->retryWithPayload($payload);
+
+        self::assertSame('pending', $generation->getStatus());
+        self::assertSame(0, $generation->getVerificationAttempts());
+        self::assertNull($generation->getCandidate());
+        self::assertNull($generation->getVerificationReport());
+        self::assertNull($generation->getTechnicalError());
+        self::assertNull($generation->getFinishedAt());
+    }
+
     public function testItCanBecomeReadyAndReplaceItsPayload(): void
     {
         $generation = new AgentCourseGeneration('batch-1', 'course-1', ['menuId' => 92]);
