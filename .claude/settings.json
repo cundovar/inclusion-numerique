@@ -8,6 +8,7 @@
       "Bash(make analyse)",
       "Bash(make test)",
       "Bash(make test-front)",
+      "Bash(make test-e2e)",
       "Bash(make build-front)",
       "Bash(make up)",
       "Bash(make dev)",

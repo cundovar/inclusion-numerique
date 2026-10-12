@@ -1,0 +1,11 @@
+{
+  "name": "devdoc-e2e",
+  "private": true,
+  "description": "Tests de bout en bout (Playwright) de la SPA DevDoc",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
