@@ -23,6 +23,7 @@ Hors périmètre à ce jour : les tests de bout en bout du navigateur (E2E) et l
 | Fonctionnel HTTP | Contrôles d'accès de bout en bout (routage, pare-feu, API Platform, EasyAdmin) | PHPUnit `WebTestCase` + SQLite jetable (`tests/Functional`) | Local, CI | Oui |
 | Build | Compilation Vite et PWA | `make build-front`, job « Build release » | Local, CI | Oui |
 | Sécurité des dépendances | Vulnérabilités connues | `composer audit`, `npm audit` | CI | Informatif |
+| Bout en bout (E2E) | Parcours utilisateur dans un vrai navigateur : navigation, recherche, QCM, accès, hors ligne | Playwright 1.63 (Chromium), image Docker officielle (`make test-e2e`, `e2e/`) | Local, sur l'application compilée et la base de développement | Non (hors `make check` et de la CI) |
 | Recette fonctionnelle | Parcours utilisateur réels | Navigateur (Chrome DevTools) et requêtes HTTP non destructives | Local, production | Manuel |
 
 Les tests automatisés ne touchent jamais la base MySQL. `phpunit.xml.dist` force `DATABASE_URL` vers une base SQLite jetable (`var/test.db`), et le schéma est recréé avant chaque test fonctionnel.
@@ -39,7 +40,7 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 
 ## 4. Cas de test automatisés
 
-85 tests : 49 tests PHPUnit (121 assertions) et 36 tests Vitest. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
+94 tests : 49 tests PHPUnit (121 assertions), 36 tests Vitest et 9 tests de bout en bout Playwright. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
 
 | Exigence | Fichier de test | Ce qui est vérifié |
 |---|---|---|
@@ -60,6 +61,12 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 | US-02, US-04 | `front/tests/unit/utils/utils.spec.js` (5) | Mélange de Fisher-Yates sans perte ; majuscule et slug ; tri des menus par numéro |
 | ENF-02 | `front/tests/unit/utils/offlineDb.spec.js` (12) | Base IndexedDB `spa-db` (simulée par `fake-indexeddb`) : stores et clés ; migration depuis les versions 1 à 4 sans perte ; insertion ou remplacement par clé ; objets réactifs Vue ; effacement de l'utilisateur ; expiration du cache API à 1 heure |
 | ENF-02, US-13 | `front/tests/unit/utils/fetchDataPwa.spec.js` (3) | Repli hors ligne : menus visibles copiés en ligne puis relus sans réseau après redémarrage ; utilisateur restauré hors ligne ; effacé sur réponse 401 |
+| US-01, US-03 | `e2e/tests/navigation.spec.js` (2) | Accueil → catégorie `css` par le menu latéral → premier cours : titre, contenu et coloration du code affichés ; accès direct à `/spa/pages/flexbox` (200, routé par Vue) |
+| US-04 | `e2e/tests/search.spec.js` (2) | Recherche « flexbox » : panneau de résultats, ouverture d'un résultat ; une recherche sans correspondance vide la liste |
+| US-06, US-07 | `e2e/tests/qcm.spec.js` (1) | QCM complet : niveau et langue choisis dans les listes en cascade, 10 questions répondues, score « / 10 » affiché |
+| US-13, US-14 | `e2e/tests/access.spec.js` (2) | Un visiteur qui ouvre `/profile` revient à l'accueil, destination mémorisée ; `/admin` redirige vers `/login` (contrôle serveur) |
+| ENF-02 | `e2e/tests/offline.spec.js` (1) | Cours consulté, service worker actif, réseau coupé : le cours se recharge hors ligne (automatise R-11) |
+| — | `e2e/tests/notification.spec.js` (1) | Notification des mises à jour affichée à la première visite, fermée, puis plus réaffichée (cookie `notifVue`) |
 
 ## 5. Recette fonctionnelle exécutée
 
@@ -104,6 +111,8 @@ Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-sy
 | Vitest local (`test/front-vitest`) | 2026-10-12 | `Tests 21 passed (21)` ; `make check` réussi (49 tests PHPUnit, 21 tests Vitest, build Vite) |
 | Vitest local (`feat/nosql-indexeddb`) | 2026-10-12 | `Tests 36 passed (36)` ; `make check` réussi (49 tests PHPUnit, 36 tests Vitest, build Vite) ; dans le navigateur en local, `spa-db` v5 remplie par l'application (281 menus, 22 catégories, 42 exercices) |
 | CI [run `38256184034`](https://github.com/cundovar/vue-symfony/actions/runs/38256184034) (`23548597`, fusion PR #47) | 2026-10-12 | Tous les jobs réussis ; PHPUnit `OK (49 tests, 121 assertions)` ; Vitest `Tests 36 passed (36)` ; déploiement réussi |
+| Playwright local (`test/e2e-playwright`) | 2026-10-12 | `9 passed` sur 3 exécutions consécutives (environ 23 s chacune), après `docker compose run --rm front-build` |
+| Défaut introduit volontairement dans `authGuard` (garde désactivée, front recompilé) | 2026-10-12 | Le test E2E « profil » échoue ; les autres passent |
 | Défauts introduits volontairement dans `offlineDb.js` et `fetchDataPwa.js` | 2026-10-12 | Conversion des objets réactifs retirée : 2 tests échouent ; expiration du cache décalée : 1 test échoue ; création de `docDeCodes` avancée en version 4 : 1 test échoue (non détecté avant l'ajout des migrations depuis chaque version) ; copie des menus retirée : 1 test échoue ; effacement sur 401 retiré : 1 test échoue |
 | Défauts introduits volontairement dans le code front | 2026-10-12 | `authGuard` inversé : 2 tests échouent ; ajout de `rel="noopener noreferrer"` supprimé dans `SafeHtml` : 1 test échoue. Le filtre `javascript:` maison de `SafeHtml` peut être retiré sans échec, car DOMPurify bloque déjà ces liens par défaut (filtre redondant) |
 | Recette en production (§5) | 2026-10-12 | 9 OK, 1 KO |
@@ -122,7 +131,7 @@ Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-sy
 
 ## 8. Limites et suite
 
-- **Tests du frontend limités** : 36 tests unitaires Vitest sur la logique critique et l'accès IndexedDB ; aucun test de bout en bout. Ajouter un parcours E2E (Playwright) sur US-01, US-03, US-04 et US-06, puis des tests de composants de pages.
+- **Tests de bout en bout locaux seulement** : les 9 parcours Playwright dépendent de la base de développement (cours `flexbox`, QCM CSS « basique ») et ne tournent pas en CI. Pour les exécuter en CI : données de test (fixtures Doctrine) et MySQL dans le workflow. Pas encore de parcours connecté (US-08 à US-12) ni de test d'accessibilité.
 - **Recette de l'espace connecté** non exécutée : créer un compte de recette dédié pour US-08 à US-12, en local ou en préproduction.
 - **Couverture faible (7,5 %)** : prioriser les contrôleurs d'API maison (notes, favoris, historique) et `HtmlSanitizerService` (ENF-03, non testé).
 - **Contrôles non bloquants en CI** : PHPStan et les audits de dépendances sont informatifs, et ESLint est absent de la CI.

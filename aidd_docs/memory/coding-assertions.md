@@ -24,6 +24,7 @@ The heavier gate: `make check`. Clears `.agents/.needs-check` only when everythi
 | 2     | `make test`        | PHPUnit (`tests/`)             |
 | 3     | `make test-front`  | Vitest (`front/tests/unit/`)   |
 | 4     | `make build-front` | Vite production build and PWA  |
+| 5     | `make test-e2e`    | Playwright user journeys (`e2e/`), on the built local app; only when a user journey changed |
 
 ## Gotchas
 

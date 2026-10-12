@@ -79,7 +79,7 @@ flowchart LR
 | P2 | AN-05 : appels 401 pour un visiteur non connecté | Plan de tests | S |
 | P2 | Fonctions hors ligne jamais appelées (stores IndexedDB vides) | [`base-de-donnees.md` §6](conception/base-de-donnees.md) | S |
 | P3 | Rendre PHPStan bloquant et ajouter ESLint à la CI | Plan de tests §8 | S |
-| P3 | Tests de bout en bout (Playwright) sur les parcours principaux | Plan de tests §8 | M |
+| P3 | Exécuter les tests de bout en bout en CI (fixtures Doctrine, MySQL dans le workflow) ; ajouter les parcours connectés | Plan de tests §8 | M |
 | P3 | Tester `HtmlSanitizerService` et augmenter la couverture (7,5 %) | Plan de tests §8 | M |
 | P4 | Aligner la version de PHP (8.3 en local, 8.2 en CI et en production) | `preuves.md` | S |
 | P4 | Étendre l'architecture hexagonale aux autres contextes | [`roadmap-100-hexagonal.md`](roadmap-100-hexagonal.md) | L |
@@ -94,7 +94,7 @@ Effort : S = moins d'une demi-journée, M = une à deux journées, L = plusieurs
 | Pull requests fusionnées | 47 (et 1 ouverte) | `gh pr list` |
 | Commits sur `main` (hors fusions) | 156 | `git log` |
 | Commits au format Conventional Commits depuis 2026-07 | 47 sur 51 | `git log` |
-| Tests automatisés | 85 (49 PHPUnit, 36 Vitest) | CI [run `38256184034`](https://github.com/cundovar/vue-symfony/actions/runs/38256184034) |
+| Tests automatisés | 94 : 49 PHPUnit et 36 Vitest (CI [run `38256184034`](https://github.com/cundovar/vue-symfony/actions/runs/38256184034)), 9 Playwright (local) | CI et `make test-e2e` |
 | Couverture du code PHP | 7,5 % des lignes | Plan de tests §6 |
 | Anomalies ouvertes | 2 mineures (AN-04, AN-05) sur 5 | Plan de tests §7 |
 

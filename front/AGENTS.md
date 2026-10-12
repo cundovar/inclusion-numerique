@@ -17,3 +17,4 @@ Vue 3 (SFC), Pinia (`src/stores/`), Vue Router (`src/router/`), Vite (`vite.conf
 - `make lint-front` (ESLint, `eslint.config.js`) : 0 erreur exigée ; ne pas ajouter de warnings dans les fichiers touchés.
 - `make test-front` (Vitest, `vitest.config.js`, tests dans `tests/unit/`) : tout composant, store ou garde modifié garde ses tests verts ; nouveau test pour toute logique ajoutée.
 - `make build-front` : le build Vite doit passer.
+- `make test-e2e` (Playwright, `e2e/tests/`) après un changement de parcours utilisateur ; compiler d'abord avec `docker compose run --rm front-build`.
