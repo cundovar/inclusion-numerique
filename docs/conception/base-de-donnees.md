@@ -386,3 +386,73 @@ Vérification après correction, en local, le 2026-10-12 :
 - non-régression couverte par `tests/Integration/Doctrine/MappingTest.php` (validité du mapping et noms des 9 colonnes migrées), qui échoue sans le correctif.
 
 **Production** : le déploiement n'exécute pas les migrations. `Version20261012124537` doit être lancée à la main sur le serveur, après sauvegarde. Son exécution et `doctrine:schema:validate` en production ne sont pas vérifiés à ce jour (aucun accès à la base de production).
+
+## 6. Stockage NoSQL côté client : IndexedDB
+
+### Pourquoi une base NoSQL dans le navigateur
+
+Le mode hors ligne (ENF-02) impose de garder les contenus déjà consultés sur l'appareil. Le serveur reste la source de vérité (MySQL). Le navigateur garde une copie locale dans **IndexedDB**, une base NoSQL de type clé-valeur/documents :
+- les objets JSON renvoyés par l'API sont stockés tels quels, sans schéma de colonnes ;
+- chaque store (l'équivalent d'une collection) est indexé par une clé primaire.
+
+| Stockage client | Type | Contenu | Code |
+|---|---|---|---|
+| IndexedDB `spa-db` | Documents par clé, transactionnel, asynchrone | Copies des ressources API pour le hors ligne | `front/src/utils/offlineDb.js` |
+| `localStorage` / `sessionStorage` | Clé-valeur synchrone | Préférences d'affichage, filtre de niveau, réponses QCM en cours | Stores Pinia `persist` (`pinia-plugin-persistedstate`) |
+| Cache Storage (Workbox) | Réponses HTTP par URL | Pages `/spa/`, fichiers compilés, API publique | `front/vite.config.js` (`runtimeCaching`) |
+
+### Schéma de `spa-db` (version 5)
+
+| Store | Clé primaire | Contenu | Ajouté en version | Alimenté en pratique |
+|---|---|---|---|---|
+| `menus` | `id` | Pages de cours (`/api/page_contents`) | 1 | Oui (`fetchMenus`) |
+| `categories` | `id` | Catégories | 1 | Oui |
+| `user` | `username` | Utilisateur connecté (nom, rôles) | 1 | Oui (`fetchUser`) |
+| `pages` | `id` | Page de cours individuelle (id, slug, titre, contenu, `cached_at`) | 2 | Non (voir limites) |
+| `api_cache` | `url` | Réponse API brute, horodatée (`cached_at`) | 2 | Non (voir limites) |
+| `exoMenus` | `id` | Menus d'exercices | 3 | Oui (`fetchExoMenus`) |
+| `exoContents` | `id` | Contenus d'exercices | 3 | Oui (`fetchExoContents`) |
+| `seo` | `id` | Fiches SEO | 4 | Non (voir limites) |
+| `docDeCodes` | `id` | Liens de documentation | 5 | Oui (`fetchDocDeCodes`) |
+
+**Évolution du schéma** : `upgradeSchema(db, oldVersion)` applique, comme une migration, chaque étape manquante. Une base créée par une ancienne version de l'application monte en version 5 sans perdre ses données.
+
+### Composant d'accès aux données
+
+`front/src/utils/offlineDb.js` regroupe tout l'accès à IndexedDB, via la bibliothèque `idb` qui fournit des promesses au lieu des callbacks natifs. `createOfflineDb()` renvoie les opérations suivantes :
+
+| Opération | Rôle |
+|---|---|
+| `saveAll(store, items)` / `loadAll(store)` | Écrire une collection en une transaction (insertion ou remplacement par clé), puis la relire |
+| `saveUser` / `loadUser` / `clearUser` | Utilisateur connecté : enregistrement, lecture, effacement à la déconnexion |
+| `savePage` / `loadPage` | Page de cours individuelle |
+| `cacheApiResponse(url, data)` / `getCachedApiResponse(url, maxAge)` | Cache de réponses API par URL, valable 1 heure ; `maxAge = Infinity` accepte une réponse expirée quand le réseau est absent |
+
+Les objets réactifs de Vue sont convertis en objets simples avant l'écriture, car IndexedDB ne peut pas les cloner.
+
+Le composable `useData()` (`front/src/utils/fetchDataPwa.js`) utilise ce composant selon une stratégie **réseau d'abord, repli local** :
+1. appel de l'API ;
+2. en cas de succès, la réponse alimente l'interface et est copiée dans IndexedDB ;
+3. en cas d'échec réseau, l'interface est alimentée depuis IndexedDB ;
+4. une réponse 401 (session expirée) efface l'utilisateur stocké, tout comme l'événement `auth:logout`.
+
+### Tests
+
+- `front/tests/unit/utils/offlineDb.spec.js` (12 tests, base IndexedDB simulée par `fake-indexeddb`) :
+  - stores et clés primaires ;
+  - migration depuis chacune des versions 1 à 4 sans perte de données ;
+  - insertion ou remplacement par clé ;
+  - objets réactifs Vue ;
+  - effacement de l'utilisateur ;
+  - champs conservés pour une page ;
+  - expiration du cache à 1 heure.
+- `front/tests/unit/utils/fetchDataPwa.spec.js` (3 tests, API simulée) :
+  - en ligne, les menus visibles sont copiés, puis relus hors ligne après un redémarrage de l'application ;
+  - l'utilisateur est restauré hors ligne ;
+  - une réponse 401 l'efface.
+
+### Limites relevées (2026-10-12)
+
+- `fetchPageContent`, `fetchPageContentExo`, `fetchSeoData` et `fetchSeoByPage` sont exportées mais appelées par aucun composant. Les stores `pages`, `api_cache` et `seo` restent donc vides : vérifié dans le navigateur en local, après ouverture de l'accueil et de la page `flexbox`. Le hors ligne d'une page de cours repose sur le cache Workbox, pas sur IndexedDB.
+- `saveAll` ajoute ou remplace des éléments mais n'en supprime jamais. Un cours supprimé ou masqué côté serveur reste visible hors ligne jusqu'à ce que le navigateur vide le stockage.
+- Aucune limite de taille ni de purge n'est appliquée ; le navigateur gère seul le quota.
