@@ -2,7 +2,10 @@
   <div>
     <!-- Liste des titres -->
     <transition name="slide">
-      <ul v-show="isOpen" class="toc-list">
+      <ul
+        v-show="isOpen"
+        class="toc-list"
+      >
         <li
           v-for="item in toc"
           :key="item.id"
@@ -13,10 +16,10 @@
           ]"
         >
           <a
-            @click.prevent="handleClick(item.id)"
             :href="`#${item.id}`"
             class="toc-link"
             :title="item.text"
+            @click.prevent="handleClick(item.id)"
           >
             <span class="toc-bullet">•</span>
             <span class="toc-text">{{ item.text }}</span>
@@ -26,13 +29,18 @@
     </transition>
 
     <!-- Indicateur de progression de lecture -->
-    <div v-if="showProgress && isOpen" class="reading-progress">
-      <div class="progress-text">Progression</div>
+    <div
+      v-if="showProgress && isOpen"
+      class="reading-progress"
+    >
+      <div class="progress-text">
+        Progression
+      </div>
       <div class="progress-bar-container">
         <div
           class="progress-bar"
           :style="{ width: readingProgress + '%' }"
-        ></div>
+        />
       </div>
     </div>
   </div>

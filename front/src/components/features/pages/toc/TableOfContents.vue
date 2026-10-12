@@ -7,82 +7,85 @@
       :class="{ 'is-dragging': isDragging }"
       :style="draggableStyle"
     >
+      <!-- Hint déplaçable -->
+      <transition name="fade">
+        <div
+          v-if="showHint"
+          class="drag-hint"
+        >
+          💡 Glissez-déposez pour déplacer
+        </div>
+      </transition>
 
-    <!-- Hint déplaçable -->
-    <transition name="fade">
-      <div v-if="showHint" class="drag-hint">
-        💡 Glissez-déposez pour déplacer
+
+
+      <!-- Zone de drag en haut -->
+      <div
+        ref="dragHandle"
+        class="drag-handle"
+        :class="bgCategorie"
+        title="Cliquez et glissez pour déplacer le sommaire"
+      >
+        <AppButton
+          variant="danger"
+          :text-content="closed ? '+ ' : 'X'"
+          class="absolute top-1 left-1"
+          size="sm"
+          @click="toggleClosed"
+        />
+        <i class="pi pi-arrows-alt " />
+        <span class="drag-text" />
       </div>
-    </transition>
-
-    
-
-    <!-- Zone de drag en haut -->
-    <div
-      class="drag-handle"
-      :class="bgCategorie"
-      ref="dragHandle"
-      title="Cliquez et glissez pour déplacer le sommaire"
-    >
-      <AppButton
-      variant="danger"
-      :textContent="closed ? '+ ' : 'X'"
-      @click="toggleClosed"
-      class="absolute top-1 left-1"
-      size="sm"
-    />
-      <i class="pi pi-arrows-alt "></i>
-      <span class="drag-text"></span>
-    </div>
-<div class="transition-all duration-300 ease-in-out" :class="closed ? 'hidden' : 'transition-all duration-300 ease-in-out'">
-    <!-- Header avec onglets Sommaire et Notes -->
-    <div class="toc-tabs">
-      <button
-        class="toc-tab"
-        :class="{ active: activeTab === 'sommaire' }"
-        @click="switchTab('sommaire')"
+      <div
+        class="transition-all duration-300 ease-in-out"
+        :class="closed ? 'hidden' : 'transition-all duration-300 ease-in-out'"
       >
-        Sommaire
-      </button>
-      <button
-        v-if="isUserAuthenticated"
-        class="toc-tab"
-        :class="{ active: activeTab === 'notes' }"
-        @click="switchTab('notes')"
-      >
-        Notes
-      </button>
-    </div>
+        <!-- Header avec onglets Sommaire et Notes -->
+        <div class="toc-tabs">
+          <button
+            class="toc-tab"
+            :class="{ active: activeTab === 'sommaire' }"
+            @click="switchTab('sommaire')"
+          >
+            Sommaire
+          </button>
+          <button
+            v-if="isUserAuthenticated"
+            class="toc-tab"
+            :class="{ active: activeTab === 'notes' }"
+            @click="switchTab('notes')"
+          >
+            Notes
+          </button>
+        </div>
 
-    <!-- Contenu des onglets -->
-    <div class="tab-content">
-      <!-- Onglet Sommaire -->
-      <TocList
-        v-if="activeTab === 'sommaire'"
-        :toc="toc"
-        :activeId="activeId"
-        :showProgress="showProgress"
-        :isOpen="true"
-        :isMobile="isMobile()"
-        :collapsedOnMobile="collapsedOnMobile"
-        :bgCategorie="bgCategorie"
-        @scroll-to="handleScrollTo"
-        @close-mobile="toggleClosed"
-      />
+        <!-- Contenu des onglets -->
+        <div class="tab-content">
+          <!-- Onglet Sommaire -->
+          <TocList
+            v-if="activeTab === 'sommaire'"
+            :toc="toc"
+            :active-id="activeId"
+            :show-progress="showProgress"
+            :is-open="true"
+            :is-mobile="isMobile()"
+            :collapsed-on-mobile="collapsedOnMobile"
+            :bg-categorie="bgCategorie"
+            @scroll-to="handleScrollTo"
+            @close-mobile="toggleClosed"
+          />
 
-      <!-- Onglet Notes -->
-      <NoteEditor
-        v-if="activeTab === 'notes' && isUserAuthenticated"
-        :pageId="pageId"
-        :initialContent="noteContent"
-        @save="handleNoteSave"
-        :bgCategorie="bgCategorie"
-        :bgHover="bgHover"
-      />
-    </div>
-</div>
-
-
+          <!-- Onglet Notes -->
+          <NoteEditor
+            v-if="activeTab === 'notes' && isUserAuthenticated"
+            :page-id="pageId"
+            :initial-content="noteContent"
+            :bg-categorie="bgCategorie"
+            :bg-hover="bgHover"
+            @save="handleNoteSave"
+          />
+        </div>
+      </div>
     </nav>
   </Teleport>
 </template>

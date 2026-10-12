@@ -2,53 +2,54 @@
   <div
     class="flex pb-96 md:mt-16 xl:mt-0 p-2 md:p-10 lg:p-5 shadow-2xl bg-gray-50 md:rounded-2xl relative z-20 w-full overflow-x-hidden"
   >
-
-    <div v-if="pageContent" class="page-layout w-full">
-
-
+    <div
+      v-if="pageContent"
+      class="page-layout w-full"
+    >
       <!-- Breadcrumb -->
       <SafeHtml
         :html="'accueil/' + pageContent.menu.label"
         class="md:ml-10 lg:ml-20 p-3 md:p-5"
-      ></SafeHtml>
+      />
 
       <!-- Contenu principal centre -->
       <div class="content-container flex items-start relative">
-              <!-- Sommaire a gauche -->
-              <SidebarToc
-                :toc="toc"
-                :activeId="activeId"
-                :showProgress="true"
-                :pageId="getPageId(pageContent.page)"
-                :bgCategorie="pageContent.category?.couleur || ''"
-                @scroll-to="scrollToHeading"
-                class="hidden xl:block"
-              />
-              <main class="main-content flex-1">
-
+        <!-- Sommaire a gauche -->
+        <SidebarToc
+          :toc="toc"
+          :active-id="activeId"
+          :show-progress="true"
+          :page-id="getPageId(pageContent.page)"
+          :bg-categorie="pageContent.category?.couleur || ''"
+          class="hidden xl:block"
+          @scroll-to="scrollToHeading"
+        />
+        <main class="main-content flex-1">
           <div class="flex justify-between items-center p-5 max-md:p-2">
-            <h1 class="text-2xl text-center flex-1">{{ pageContent.title }}</h1>
+            <h1 class="text-2xl text-center flex-1">
+              {{ pageContent.title }}
+            </h1>
             <FavoriteButton
               v-if="pageContent.page && getPageId(pageContent.page)"
-              :pageId="getPageId(pageContent.page)"
+              :page-id="getPageId(pageContent.page)"
               class="max-md:absolute top-10 right-1"
             />
           </div>
 
           <!-- Contenu de la page -->
-          <div class=" " v-if="pageContent.code" ref="contentRef">
-
-<SafeHtml
+          <div
+            v-if="pageContent.code"
+            ref="contentRef"
+            class=" "
+          >
+            <SafeHtml
               :html="pageContent.code"
               class="text-center max-md:w-full xl:w-full m-auto flex p-5"
-
             />
-
           </div>
 
           <!-- Navigation Precedent / Suivant -->
           <div class="flex justify-center items-center p-3 md:p-5 mt-10 border-t border-gray-300 gap-4 md:gap-10">
-
             <router-link
               v-if="previousPage"
               :to="`/pages/${previousPage.slug.replace('/', '')}`"
@@ -62,7 +63,7 @@
                 <span class="md:hidden">Precedent</span>
               </AppButton>
             </router-link>
-            <div v-else></div>
+            <div v-else />
 
             <router-link
               v-if="nextPage"
@@ -78,21 +79,21 @@
                 <span class="md:hidden">Suivant</span>
               </AppButton>
             </router-link>
-            <div v-else></div>
-
+            <div v-else />
           </div>
-
         </main>
       </div>
     </div>
 
-    <div class="flex justify-center items-center h-full" v-else>
+    <div
+      v-else
+      class="flex justify-center items-center h-full"
+    >
       <i
         class="pi pi-spin m-5 p-5 rounded-full shadow-2xl pi-cog"
         style="font-size: 3rem"
-      ></i>
+      />
     </div>
-
   </div>
 </template>
 

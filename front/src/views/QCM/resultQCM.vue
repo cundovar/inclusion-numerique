@@ -6,7 +6,6 @@
     <div class="max-w-6xl mx-auto">
       <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 border border-gray-200">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 text-center flex items-center justify-center gap-3">
-    
           Résultats du QCM
         </h1>
 
@@ -14,22 +13,27 @@
         <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200 shadow-sm">
           <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12">
             <div class="text-center">
-              <p class="text-gray-600 text-sm mb-2">Votre score</p>
+              <p class="text-gray-600 text-sm mb-2">
+                Votre score
+              </p>
               <h2 class="text-4xl md:text-5xl font-bold text-blue-600">
                 {{ score }} <span class="text-2xl text-gray-400">/ {{ totalQuestions }}</span>
               </h2>
             </div>
 
-            <div class="hidden md:block w-px h-16 bg-gray-300"></div>
+            <div class="hidden md:block w-px h-16 bg-gray-300" />
 
             <div class="text-center">
-              <p class="text-gray-600 text-sm mb-2">Pourcentage</p>
-              <h2 class="text-4xl md:text-5xl font-bold text-purple-600">{{ pourcentage }}%</h2>
+              <p class="text-gray-600 text-sm mb-2">
+                Pourcentage
+              </p>
+              <h2 class="text-4xl md:text-5xl font-bold text-purple-600">
+                {{ pourcentage }}%
+              </h2>
             </div>
           </div>
 
           <!-- Barre de progression -->
-         
         </div>
       </div>
 
@@ -43,7 +47,10 @@
           <span class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
             {{ index + 1 }}
           </span>
-          <span v-html="qcm.titre"></span>
+          <SafeHtml
+            tag="span"
+            :html="qcm.titre"
+          />
         </h3>
 
         <div class="space-y-4">
@@ -55,23 +62,35 @@
               :class="isCorrect(qcm, index) ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'"
             >
               <p class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <i class="fas fa-user text-blue-500"></i>
+                <i class="fas fa-user text-blue-500" />
                 Votre réponse :
               </p>
               <div class="text-gray-800 flex items-center gap-2">
-                <span v-html="getAnswerText(qcm, index)"></span>
-                <span v-if="isCorrect(qcm, index)" class="text-2xl">✅</span>
-                <span v-else class="text-2xl">❌</span>
+                <SafeHtml
+                  tag="span"
+                  :html="getAnswerText(qcm, index)"
+                />
+                <span
+                  v-if="isCorrect(qcm, index)"
+                  class="text-2xl"
+                >✅</span>
+                <span
+                  v-else
+                  class="text-2xl"
+                >❌</span>
               </div>
             </div>
 
             <!-- Bonne réponse -->
             <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
               <p class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-500"></i>
+                <i class="fas fa-check-circle text-green-500" />
                 Bonne réponse :
               </p>
-              <div class="text-gray-800" v-html="getCorrectAnswerText(qcm)"></div>
+              <SafeHtml
+                :html="getCorrectAnswerText(qcm)"
+                class="text-gray-800"
+              />
             </div>
           </div>
 
@@ -83,19 +102,29 @@
               class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4"
             >
               <p class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <i class="fas fa-lightbulb text-yellow-500"></i>
+                <i class="fas fa-lightbulb text-yellow-500" />
                 Explication :
               </p>
-              <p class="text-gray-800 leading-relaxed" v-html="getExplication(qcm)"></p>
+              <SafeHtml
+                tag="p"
+                :html="getExplication(qcm)"
+                class="text-gray-800 leading-relaxed"
+              />
             </div>
 
             <!-- Solution code -->
-            <div v-if="getSolution(qcm)" class="solution-container">
+            <div
+              v-if="getSolution(qcm)"
+              class="solution-container"
+            >
               <p class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <i class="fas fa-code text-purple-500"></i>
+                <i class="fas fa-code text-purple-500" />
                 Solution détaillée :
               </p>
-              <div class="solution rounded-lg" v-html="getSolution(qcm)"></div>
+              <SafeHtml
+                :html="getSolution(qcm)"
+                class="solution rounded-lg"
+              />
             </div>
           </div>
         </div>
@@ -105,12 +134,12 @@
       <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <AppButton
-            @click="retourAccueil"
             variant="primary"
             size="lg"
             rounded="lg"
             icon="pi-refresh"
             text-content="Recommencer"
+            @click="retourAccueil"
           />
         </div>
       </div>
@@ -124,6 +153,7 @@ import { useQCMStore } from "../../stores/qcm";
 import { useRouter } from "vue-router";
 import Prism from "prismjs";
 import AppButton from "../../components/ui/AppButton.vue";
+import SafeHtml from "../../components/ui/SafeHtml.vue";
 // N'importer QUE les langages (le thème est déjà dans main.js)
 // IMPORTANT: L'ordre d'import est crucial pour les dépendances
 import "prismjs/components/prism-markup"; // HTML (doit être avant markup-templating)

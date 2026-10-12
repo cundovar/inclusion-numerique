@@ -1,74 +1,121 @@
 <!-- MonacoPlayground.vue -->
 <template>
-    <section
+  <section
     class="transition-all duration-500"
-    :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'playground'">
+    :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'playground'"
+  >
+    <div class="cols">
+      <AppButton
+        v-if="sectionSize"
+        class="absolute top-2 right-2"
+        variant="danger"
+        text-content="X"
+        @click="toggleSectionSize"
+      />
+      <AppButton
+        v-else
+        class="absolute top-2 right-2"
+        variant="danger"
+        text-content="agrandire"
+        @click="toggleSectionSize"
+      />
 
-      <div class="cols">
 
-       
 
-        <AppButton class="absolute top-2 right-2" v-if="sectionSize" @click="toggleSectionSize" variant="danger" text-content="X" />
-        <AppButton class="absolute top-2 right-2" v-else @click="toggleSectionSize" variant="danger" text-content="agrandire" />
-      
-        
-     
-            <!-- Colonne éditeurs -->
-            <div class="left">
-          <div class="editor-block">
-            <header class="hdr">
-              <h2>HTML</h2><small>html</small>
-            </header>
-            <div ref="htmlEl" class="editor-host"></div>
-          </div>
-  
-          <div class="editor-block">
-            <header class="hdr">
-              <h2>CSS</h2><small>css</small>
-            </header>
-            <div ref="cssEl" class="editor-host"></div>
-          </div>
-  
-          <div class="editor-block">
-            <header class="hdr">
-              <h2>JavaScript</h2><small>ascript</small>
-            </header>
-            <div ref="jsEl" class="editor-host"></div>
-          </div>
-  
-       
+      <!-- Colonne éditeurs -->
+      <div class="left">
+        <div class="editor-block">
+          <header class="hdr">
+            <h2>HTML</h2><small>html</small>
+          </header>
+          <div
+            ref="htmlEl"
+            class="editor-host"
+          />
         </div>
-  
-        <!-- Colonne preview + console -->
-        <div class="right ">
-          <h2 class="title">Prévisualisation</h2>
-          <div class="preview">
-            <iframe ref="frame" sandbox="allow-scripts"></iframe>
-          </div>
-  
-          <h2 class="title">Console</h2>
-          <div class="console">
-            <div v-if="logs.length === 0" class="muted">(aucune sortie)</div>
-            <div v-for="(line, i) in logs" :key="i" class="log">
-              <span :class="['tag', line.type]">[{{ line.type.toUpperCase() }}]</span>
-              <span class="msg">{{ line.msg }}</span>
-            </div>
-          </div>
-          <div class="flex gap-5 justify-center mt-5">
-            <AppButton variant="success" size="md" text-content="Exécuter" type="button" @click="rebuild" />
-            <label><input type="checkbox" v-model="autorun"> Auto</label>
-            <AppButton variant="danger" size="md" text-content="Tout réinitialiser" type="button" @click="resetAll" />
-          </div>
+
+        <div class="editor-block">
+          <header class="hdr">
+            <h2>CSS</h2><small>css</small>
+          </header>
+          <div
+            ref="cssEl"
+            class="editor-host"
+          />
+        </div>
+
+        <div class="editor-block">
+          <header class="hdr">
+            <h2>JavaScript</h2><small>ascript</small>
+          </header>
+          <div
+            ref="jsEl"
+            class="editor-host"
+          />
         </div>
       </div>
-    </section>
-  </template>
-  
+
+      <!-- Colonne preview + console -->
+      <div class="right ">
+        <h2 class="title">
+          Prévisualisation
+        </h2>
+        <div class="preview">
+          <iframe
+            ref="frame"
+            sandbox="allow-scripts"
+          />
+        </div>
+
+        <h2 class="title">
+          Console
+        </h2>
+        <div class="console">
+          <div
+            v-if="logs.length === 0"
+            class="muted"
+          >
+            (aucune sortie)
+          </div>
+          <div
+            v-for="(line, i) in logs"
+            :key="i"
+            class="log"
+          >
+            <span :class="['tag', line.type]">[{{ line.type.toUpperCase() }}]</span>
+            <span class="msg">{{ line.msg }}</span>
+          </div>
+        </div>
+        <div class="flex gap-5 justify-center mt-5">
+          <AppButton
+            variant="success"
+            size="md"
+            text-content="Exécuter"
+            type="button"
+            @click="rebuild"
+          />
+          <label><input
+            v-model="autorun"
+            type="checkbox"
+          > Auto</label>
+          <AppButton
+            variant="danger"
+            size="md"
+            text-content="Tout réinitialiser"
+            type="button"
+            @click="resetAll"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
   <script setup>
   import { ref, onMounted, onBeforeUnmount } from 'vue'
   import loader from '@monaco-editor/loader'
   import AppButton from '../../ui/AppButton.vue'
-  
+
   /**
    * Props optionnelles pour personnaliser les valeurs de départ et la persistance.
    * - slug: si fourni, on persiste dans localStorage (exo:<slug>:{html|css|js})
@@ -80,34 +127,34 @@
     autorunDefault: { type: Boolean, default: true },
     slug: { type: String, default: '' }
   })
-  
+
   // 👉 Dé-commente si tu veux éviter toute config Vite des workers en local.
   // loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs' } })
-  
+
   // Helpers persistance locale
   const hasSlug = !!props.slug
   const k = (part) => `exo:${props.slug}:${part}`
   const load = (part, fallback) => hasSlug ? (localStorage.getItem(k(part)) ?? fallback) : fallback
   const save = (part, val) => { if (hasSlug) localStorage.setItem(k(part), val) }
-  
+
   // Refs DOM
   const htmlEl = ref(null)
   const cssEl  = ref(null)
   const jsEl   = ref(null)
   const frame  = ref(null)
-  
+
   // Monaco + éditeurs
   let monaco = null
   let htmlEditor = null
   let cssEditor  = null
   let jsEditor   = null
-  
+
   // Etats UI
   const autorun = ref(props.autorunDefault)
   const logs = ref([])
   function pushLog(type, msg){ logs.value.push({ type, msg: String(msg) }) }
   function clearLogs(){ logs.value = [] }
-  
+
   // Timer debounce
   let timer = null
   function scheduleRebuild(){
@@ -123,7 +170,7 @@
   }
 
 
-  
+
   // Générer le srcdoc
   function buildSrcdoc(){
     const html = htmlEditor?.getValue() ?? props.initialHtml
@@ -158,7 +205,7 @@
     console.error(e && e.stack ? e.stack : e);
   }
   </${'script'}>`.trim()
-  
+
     return `<!doctype html>
   <html>
   <head>
@@ -174,7 +221,7 @@
   </body>
   </html>`
   }
-  
+
   // Rebuild iframe
   function rebuild(){
     clearLogs()
@@ -186,7 +233,7 @@
       jsEditor   && save('js',   jsEditor.getValue())
     }
   }
-  
+
   // Reset
   function resetAll(){
     htmlEditor?.setValue(props.initialHtml)
@@ -194,22 +241,22 @@
     jsEditor?.setValue(props.initialJs)
     rebuild()
   }
-  
+
   // Réception logs
   function onMsg(e){
     if (!e?.data || e.data.source !== 'exo-playground') return
     pushLog(e.data.type, e.data.msg)
   }
-  
+
   onMounted(async () => {
     window.addEventListener('message', onMsg)
     monaco = await loader.init()
-  
+
     // Valeurs initiales (avec persistance si slug)
     const startHtml = load('html', props.initialHtml)
     const startCss  = load('css',  props.initialCss)
     const startJs   = load('js',   props.initialJs)
-  
+
     // Création des 3 éditeurs
     htmlEditor = monaco.editor.create(htmlEl.value, {
       value: startHtml,
@@ -241,16 +288,16 @@
       scrollBeyondLastLine: false,
       tabSize: 2
     })
-  
+
     // Autorun sur modifications
     htmlEditor.onDidChangeModelContent(scheduleRebuild)
     cssEditor.onDidChangeModelContent(scheduleRebuild)
     jsEditor.onDidChangeModelContent(scheduleRebuild)
-  
+
     // Premier rendu
     rebuild()
   })
-  
+
   onBeforeUnmount(() => {
     window.removeEventListener('message', onMsg)
     htmlEditor?.dispose()
@@ -258,7 +305,7 @@
     jsEditor?.dispose()
   })
   </script>
-  
+
   <style scoped>
   * {
     box-sizing: border-box;
@@ -341,4 +388,3 @@
   .tag.warn  { color: #ffd166; }
   .tag.log, .tag.info { color: #3ad29f; }
   </style>
-  

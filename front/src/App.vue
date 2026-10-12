@@ -4,7 +4,7 @@
   <!-- Pop-up de téléchargement d'app mobile -->
   <MobileAppPopup
     v-if="showMobileAppPopup"
-    :currentOrigin="currentOrigin"
+    :current-origin="currentOrigin"
     @close="closeMobileAppPopup"
     @install="installPWA"
   />
@@ -31,47 +31,59 @@
 
     <!-- Header mobile -->
     <AppHeaderMobile
-      :isMenuOpen="isMenuOpen"
-  
-      @toggleMenu="toggleMenu"
-      
+      :is-menu-open="isMenuOpen"
+
+      @toggle-menu="toggleMenu"
     />
 
     <!-- Résultats de recherche desktop -->
     <SearchResults
-      :searchResults="searchResults"
-      :searchAnalysis="searchAnalysis"
+      :search-results="searchResults"
+      :search-analysis="searchAnalysis"
       :search="search"
       @close="closeSearchResults"
     />
 
 
 
-    <div class="h-28"></div>
+    <div class="h-28" />
 
     <!-- Navigation principale -->
     <AppNavigation
       :cats="catsMenuGauche"
-      :menusByCategory="menusByCategory"
-      :hoveredCategory="hoveredCategory"
-      :clickMenu="clickMenu"
-      :isMenuOpen="isMenuOpen"
-      :isXlOuPlus="isXlOuPlus"
-      :islgOuPlus="islgOuPlus"
-      :isOpenMenuGauche="isOpenMenuGauche"
-      @openMenu="openMenu"
-      @hoverCategory="(cat) => hoveredCategory = cat"
-      @closeMenu="closeMobileMenu"
-      @toggleMenuGauche="toggleMenuGauche"
+      :menus-by-category="menusByCategory"
+      :hovered-category="hoveredCategory"
+      :click-menu="clickMenu"
+      :is-menu-open="isMenuOpen"
+      :is-xl-ou-plus="isXlOuPlus"
+      :islg-ou-plus="islgOuPlus"
+      :is-open-menu-gauche="isOpenMenuGauche"
+      @open-menu="openMenu"
+      @hover-category="(cat) => hoveredCategory = cat"
+      @close-menu="closeMobileMenu"
+      @toggle-menu-gauche="toggleMenuGauche"
     />
 
     <!-- Contenu principal -->
     <main :class="sectionSize ? 'w-full min-h-screen z-[60] mt-0 pt-0 absolute ' : ' relative xl:p-20 max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden'">
-      <div v-if="!$route.path.includes('/exercices') && !$route.path.includes('/pages') && !$route.path.includes('/profile') && !$route.path.includes('/qcm') && !$route.path.includes('/category') && $route.path !== '/'" class="max-xl:hidden absolute top-15 z-70 right-50" >
-
-        <AppButton v-if="sectionSize " variant="danger" text-content="fermer" type="button" @click="toggleSectionSize" />
-        <AppButton v-else variant="danger" text-content="agrandir" type="button" @click="toggleSectionSize" />
-
+      <div
+        v-if="!$route.path.includes('/exercices') && !$route.path.includes('/pages') && !$route.path.includes('/profile') && !$route.path.includes('/qcm') && !$route.path.includes('/category') && $route.path !== '/'"
+        class="max-xl:hidden absolute top-15 z-70 right-50"
+      >
+        <AppButton
+          v-if="sectionSize "
+          variant="danger"
+          text-content="fermer"
+          type="button"
+          @click="toggleSectionSize"
+        />
+        <AppButton
+          v-else
+          variant="danger"
+          text-content="agrandir"
+          type="button"
+          @click="toggleSectionSize"
+        />
       </div>
       <router-view />
     </main>
@@ -212,7 +224,7 @@ const catsMenuGauche = computed(() => {
 const menusByCategory = computed(() => {
   const result = {};
 
- 
+
 
   // On itère sur les catégories DÉJÀ FILTRÉES par niveau
   catsMenuGauche.value.forEach((cat) => {
@@ -250,11 +262,11 @@ const menusByCategory = computed(() => {
     }
 
     // console.log("dddsds",menusForCat)//
-   
+
 
     menusForCat.forEach((menu) => {
       const label = menu.menu.label;
-      
+
 
       if (!grouped[label]) {
         grouped[label] = {

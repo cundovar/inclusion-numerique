@@ -7,17 +7,17 @@
     @close="$emit('close')"
   >
     <!-- Section commentée pour installation PWA -->
-     <div class="text-center">
+    <div class="text-center">
       <p class="text-gray-600 mb-4">
         Téléchargez notre application mobile pour une meilleure expérience !
       </p>
 
       <div class="flex flex-col gap-3">
         <AppButton
-          @click="$emit('install')"
           variant="primary"
           icon="pi-download"
           text-content="Installer l'application"
+          @click="$emit('install')"
         />
 
         <!-- {# <a
@@ -28,7 +28,7 @@
           Ouvrir dans le navigateur
         </a> #}-->
       </div>
-    </div> 
+    </div>
   </AppModal>
 </template>
 

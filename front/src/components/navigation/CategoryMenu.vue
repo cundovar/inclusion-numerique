@@ -1,6 +1,10 @@
 <template>
   <!-- Boucle sur les SuperMenus -->
-  <div v-for="(superMenu, superMenuName) in categoriesBySuperMenu" :key="superMenuName" class="border-b border-gray-300">
+  <div
+    v-for="(superMenu, superMenuName) in categoriesBySuperMenu"
+    :key="superMenuName"
+    class="border-b border-gray-300"
+  >
     <details class="group">
       <summary class="cursor-pointer p-2 bg-blue-100 hover:bg-blue-200 font-bold uppercase text-gray-500">
         {{ superMenuName }}
@@ -8,20 +12,19 @@
 
       <!-- Boucle sur les Categories de ce SuperMenu -->
       <div class="">
-        
         <CategoryMenuItem
           v-for="cat in superMenu"
           :key="cat.id"
           :cat="cat"
-          :menusByCategory="menusByCategory"
-          :hoveredCategory="hoveredCategory"
-          :clickMenu="clickMenu"
-          :isXlOuPlus="isXlOuPlus"
-          :islgOuPlus="islgOuPlus"
-          :isOpenMenuGauche="isOpenMenuGauche"
-          @openMenu="$emit('openMenu', $event)"
-          @hoverCategory="$emit('hoverCategory', $event)"
-          @closeMenu="$emit('closeMenu')"
+          :menus-by-category="menusByCategory"
+          :hovered-category="hoveredCategory"
+          :click-menu="clickMenu"
+          :is-xl-ou-plus="isXlOuPlus"
+          :islg-ou-plus="islgOuPlus"
+          :is-open-menu-gauche="isOpenMenuGauche"
+          @open-menu="$emit('openMenu', $event)"
+          @hover-category="$emit('hoverCategory', $event)"
+          @close-menu="$emit('closeMenu')"
         />
       </div>
     </details>

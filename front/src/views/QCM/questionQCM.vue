@@ -1,77 +1,144 @@
 <template>
   <div class="min-h-screen bg-gray-100 xl:p-6 max-xl:pb-32 relative z-20">
-    <div v-if="loading" class="text-center text-xl">Chargement...</div>
-    <div v-else-if="error" class="text-red-500 text-center">Erreur: {{ error.message }}</div>
-    <div v-else-if="currentQcm" class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
-      <h1 class="xl:text-3xl max-xl:text-2xl font-bold text-blue-600 mb-6" v-html="currentQcm.titre"></h1>
+    <div
+      v-if="loading"
+      class="text-center text-xl"
+    >
+      Chargement...
+    </div>
+    <div
+      v-else-if="error"
+      class="text-red-500 text-center"
+    >
+      Erreur: {{ error.message }}
+    </div>
+    <div
+      v-else-if="currentQcm"
+      class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8"
+    >
+      <SafeHtml
+        tag="h1"
+        :html="currentQcm.titre"
+        class="xl:text-3xl max-xl:text-2xl font-bold text-blue-600 mb-6"
+      />
 
       <div class="text-gray-500  mb-6">
         Question {{ currentIndex + 1 }} / {{ qcmStore.qcms.length }}
       </div>
 
       <!-- Choix de réponses -->
-      <div v-if="currentQcm.choicesQCMs && currentQcm.choicesQCMs.length" class="space-y-3 mb-6">
-        <transition-group name="fade-slide" tag="div" class="space-y-3">
-          <div
-            v-if="!soumissionBouton"
+      <div
+        v-if="currentQcm.choicesQCMs && currentQcm.choicesQCMs.length"
+        class="space-y-3 mb-6"
+      >
+        <transition-group
+          name="fade-slide"
+          tag="div"
+          class="space-y-3"
+        >
+          <template
             v-for="(choice, index) in currentQcm.choicesQCMs"
             :key="'choice-' + choice.id"
-            :style="{ transitionDelay: `${index * 50}ms` }"
-            class="border border-gray-300 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
-            @click="selectAnswer(choice.id)"
           >
-            <el-radio v-model="selectedChoice" :label="choice.id">
-              <span v-html="choice.question"></span>
-            </el-radio>
-          </div>
+            <div
+              v-if="!soumissionBouton"
+              :style="{ transitionDelay: `${index * 50}ms` }"
+              class="border border-gray-300 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              @click="selectAnswer(choice.id)"
+            >
+              <el-radio
+                v-model="selectedChoice"
+                :label="choice.id"
+              >
+                <SafeHtml
+                  tag="span"
+                  :html="choice.question"
+                />
+              </el-radio>
+            </div>
+          </template>
         </transition-group>
-
-      
       </div>
 
-      <div v-else-if="currentQcm.choicesQCMs && !currentQcm.choicesQCMs.length" class="text-red-500 mb-6">
+      <div
+        v-else-if="currentQcm.choicesQCMs && !currentQcm.choicesQCMs.length"
+        class="text-red-500 mb-6"
+      >
         Aucun choix disponible pour cette question
       </div>
 
       <!-- Icône cadenas séparateur -->
       <transition name="scale-fade">
-        <div v-if="soumissionBouton" class="flex justify-center my-6">
+        <div
+          v-if="soumissionBouton"
+          class="flex justify-center my-6"
+        >
           <div class="bg-gray-200 rounded-full p-4 shadow-md">
-            <i class="fas fa-lock text-gray-600 text-3xl"></i>
+            <i class="fas fa-lock text-gray-600 text-3xl" />
           </div>
         </div>
       </transition>
 
       <!-- resultats-->
       <transition name="bounce-in">
-        <div v-if="showResultat" class="my-6">
-          <div v-if="isQuestionIsCorrect" class="bg-green-100 border-2 border-green-500 rounded-lg p-1 text-center animate-pulse-once">
-            <i class="fas fa-check-circle text-green-500 text-xl"></i>
-
+        <div
+          v-if="showResultat"
+          class="my-6"
+        >
+          <div
+            v-if="isQuestionIsCorrect"
+            class="bg-green-100 border-2 border-green-500 rounded-lg p-1 text-center animate-pulse-once"
+          >
+            <i class="fas fa-check-circle text-green-500 text-xl" />
           </div>
-          <div v-else class="bg-red-100 border-2 border-red-500 rounded-lg p-1 text-center shake">
-            <i class="fas fa-times-circle text-red-500 text-xl"></i>
+          <div
+            v-else
+            class="bg-red-100 border-2 border-red-500 rounded-lg p-1 text-center shake"
+          >
+            <i class="fas fa-times-circle text-red-500 text-xl" />
             <div v-if="currentQcm.choicesQCMs && !isQuestionIsCorrect">
-              <span v-for="(CorrectChoice ,index) in currentQcm.choicesQCMs">
-                <div v-if="CorrectChoice.isCorrect" :key="index">
+              <span
+                v-for="CorrectChoice in currentQcm.choicesQCMs"
+                :key="'correct-' + CorrectChoice.id"
+              >
+                <div v-if="CorrectChoice.isCorrect">
                   la bonne reponse est :
-                  <p class="text-green-500 font-bold" v-html="CorrectChoice.question"></p>
+                  <SafeHtml
+                    tag="p"
+                    :html="CorrectChoice.question"
+                    class="text-green-500 font-bold"
+                  />
                   <div class="border mr-2 ml-2 mt-2 mb-2 rounded-xl p-5">
 
-                    <p v-html="CorrectChoice.explication"></p>
+                    <SafeHtml
+                      tag="p"
+                      :html="CorrectChoice.explication"
+                    />
 
                   </div>
 
                 </div>
 
               </span>
-              <div v-for="(choice ,index) in currentQcm.choicesQCMs" :key="index">
-
-                <div class="" v-if="choice.isCorrect==false" >
-
+              <div
+                v-for="(choice ,index) in currentQcm.choicesQCMs"
+                :key="index"
+              >
+                <div
+                  v-if="choice.isCorrect==false"
+                  class=""
+                >
                   <div class="flex flex-wrap m-2 justify-center align-center">
-                    <p class="text-red-500 font-bold"><span v-html="choice.question"></span> : </p>
-                    <p v-html="choice.explication"></p>
+                    <p class="text-red-500 font-bold">
+                      <SafeHtml
+                        tag="span"
+                        :html="choice.question"
+                      /> :
+                    </p>
+                    <SafeHtml
+                      tag="p"
+                      :html="choice.explication"
+                    />
                   </div>
                 </div>
               </div>
@@ -89,43 +156,44 @@
 
       <div class="flex justify-between items-center">
         <AppButton
-          @click="response()"
           variant="primary"
           icon="pi-check"
           text-content="Réponse"
+          @click="response()"
         />
 
         <AppButton
-          @click="nextQuestion()"
           v-if="soumissionBouton && pageSuivante"
           variant="primary"
           icon="pi-arrow-right"
           icon-position="right"
           text-content="Question suivante"
+          @click="nextQuestion()"
         />
 
         <AppButton
-          @click="nextQuestion()"
           v-if="soumissionBouton && !pageSuivante"
           variant="success"
           icon="pi-check-circle"
           text-content="Fin"
+          @click="nextQuestion()"
         />
-
-
-
-
-
       </div>
-
     </div>
-    <div v-else class="text-center pt-16 text-2xl font-bold text-gray-500">
-     EN COUR DE CONSTRUCTION, IL ME FAUT AJOUTER DES QUESTIONS !!! 
-<div>
-  <router-link to="/qcm" class="text-blue-500 hover:underline"> <i class="fas fa-arrow-left"></i>  Retour </router-link>
-</div>
+    <div
+      v-else
+      class="text-center pt-16 text-2xl font-bold text-gray-500"
+    >
+      EN COUR DE CONSTRUCTION, IL ME FAUT AJOUTER DES QUESTIONS !!!
+      <div>
+        <router-link
+          to="/qcm"
+          class="text-blue-500 hover:underline"
+        >
+          <i class="fas fa-arrow-left" />  Retour
+        </router-link>
+      </div>
     </div>
- 
   </div>
 </template>
 
@@ -135,6 +203,7 @@ import axios from 'axios'
 import { useQCMStore } from '../../stores/qcm'
 import { useRouter, useRoute } from 'vue-router'
 import AppButton from '../../components/ui/AppButton.vue'
+import SafeHtml from '../../components/ui/SafeHtml.vue'
 
 
 const qcmStore = useQCMStore()
@@ -292,7 +361,7 @@ onMounted(async () => {
 
 qcmStore.setQcms(list) // charger toutes les questions
 qcmStore.AleatoireQCM() // melanger les questions
-const dixQuestionAleatoire = qcmStore.qcms.slice(0, 10)//prendre 10 qestions 
+const dixQuestionAleatoire = qcmStore.qcms.slice(0, 10)//prendre 10 qestions
 qcmStore.setQcms(dixQuestionAleatoire)// charger les 10 questions
 qcmStore.AleatoireChoices() // melanger les choix
 

@@ -1,5 +1,9 @@
 <template>
   <!-- Ce composant n'a pas de rendu visuel, il gère seulement les meta tags -->
+  <span
+    aria-hidden="true"
+    class="hidden"
+  />
 </template>
 
 <script setup>

@@ -1,8 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-wrap justify-center items-start xl:p-20 max-xl:pb-96 " >
-    
-
- 
+  <div class="min-h-screen flex flex-wrap justify-center items-start xl:p-20 max-xl:pb-96 ">
     <div class=" 2xl:border-r max-2xl:mb-5 max-2xl:border-b max-2xl:pb-10 max-2xl:w-full flex flex-col  2xl:w-1/2 xl:h-full h-auto">
       <p class="text-[5rem] max-md:text-[3rem] font-bold text-blue-400">
         bienvenue
@@ -11,7 +8,6 @@
       <div
         class="flex 2xl:w-full 2xl:pr-10 self-center xl:text-2xl max-xl:text-xl gap-y-10 max-md:p-5 max-xl:p-20 text-justify flex-col md:text-xl xl:w-5/6  gap-2 font-bold"
       >
-      
         <p>
           ici vous trouverez des ressources pour apprendre et développer vos
           projets.
@@ -36,7 +32,7 @@
         <h2 class="text-3xl font-bold mb-6 text-start ml-10">
            Exercices
         </h2>
-       Exercices Grid 
+       Exercices Grid
          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 gap-6 2xl:grid-cols-4">
           <router-link
             v-for="(groups, category) in exoByCategory"
@@ -44,91 +40,83 @@
             :to="`/exercices`"
             class="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-105"
           >
-            Exercice Card 
+            Exercice Card
             <div class="aspect-square p-6 flex flex-col items-center justify-center text-center">
-               Category Icon 
+               Category Icon
               <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
                    :class="getExoCategoryBgClass(category)">
                 <i :class="getCategoryIconClass(category) + ' text-2xl text-white'"></i>
               </div>
-  
-               Category Name 
+
+               Category Name
               <h3 class="font-bold text-gray-800 text-lg capitalize mb-2 group-hover:text-green-600 transition-colors duration-300">
                 {{ getCategoryDisplayName(category) }}
               </h3>
-  
+
               Exercice Count
               <p class="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300">
                 {{ groups.length }} exercice{{ groups.length > 1 ? 's' : '' }}
               </p>
-  
+
               Hover Arrow
               <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                 <i class="fas fa-arrow-right text-green-500"></i>
               </div>
-            </div> 
-  
+            </div>
+
             Gradient Overlay on Hover
             <div class="absolute inset-0 bg-gradient-to-t from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </router-link>
-        </div> 
+        </div>
       </div>-->
-          <!-- Section COURS -->
-          <h2 class="text-3xl font-bold mb-6 text-start ml-10 max-2xl:mt-10">
-             Cours
-          </h2>
-    
-        <!-- Categories Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 gap-6 2xl:grid-cols-4">
-          <router-link
-            v-for="(groups, category) in filteredMenusByCategory" 
-            :key="category"
-            :to="`/category/${category}`"
-            class="group relative overflow-hidden   hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-105"
-          >
-            <!-- Category Card -->
-            <div class="aspect-square p-6 flex flex-col items-center justify-center text-center">
-              <!-- Category Icon -->
-              <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
-                   :class="getCategoryBgClass(category)">
-                <i :class="getCategoryIconClass(category) + ' text-2xl text-white'"></i>
-              </div>
-              
-              <!-- Category Name -->
-              <h3 class="font-bold text-gray-800 text-lg capitalize mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                {{ getCategoryDisplayName(category) }}
-              </h3>
-              
-              <!-- Course Count -->
-              <p class="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300">
-                {{ groups.length }} menu{{ groups.length > 1 ? 's' : '' }}
-              </p>
-              
-              <!-- Hover Arrow -->
-              <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                <i class="fas fa-arrow-right text-blue-500"></i>
-              </div>
+      <!-- Section COURS -->
+      <h2 class="text-3xl font-bold mb-6 text-start ml-10 max-2xl:mt-10">
+        Cours
+      </h2>
+
+      <!-- Categories Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 gap-6 2xl:grid-cols-4">
+        <router-link
+          v-for="(groups, category) in filteredMenusByCategory"
+          :key="category"
+          :to="`/category/${category}`"
+          class="group relative overflow-hidden   hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-105"
+        >
+          <!-- Category Card -->
+          <div class="aspect-square p-6 flex flex-col items-center justify-center text-center">
+            <!-- Category Icon -->
+            <div
+              class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+              :class="getCategoryBgClass(category)"
+            >
+              <i :class="getCategoryIconClass(category) + ' text-2xl text-white'" />
             </div>
-            
-            <!-- Gradient Overlay on Hover -->
-            <div class="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </router-link>
-        </div>
 
+            <!-- Category Name -->
+            <h3 class="font-bold text-gray-800 text-lg capitalize mb-2 group-hover:text-blue-600 transition-colors duration-300">
+              {{ getCategoryDisplayName(category) }}
+            </h3>
 
+            <!-- Course Count -->
+            <p class="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300">
+              {{ groups.length }} menu{{ groups.length > 1 ? 's' : '' }}
+            </p>
 
+            <!-- Hover Arrow -->
+            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+              <i class="fas fa-arrow-right text-blue-500" />
+            </div>
+          </div>
 
-
-
-
-
-        </div>
-
-
-        <!-- Call to Action -->
-
+          <!-- Gradient Overlay on Hover -->
+          <div class="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </router-link>
       </div>
+    </div>
 
+
+    <!-- Call to Action -->
+  </div>
 </template>
 
 
@@ -176,7 +164,7 @@ const menusByCategory = computed(() => {
   });
 
   uniqueCategories.forEach((categoryName) => {
-  
+
     if (filteredCategories.includes(categoryName.toLowerCase())) {
       return;
     }
@@ -321,7 +309,7 @@ const getCategoryDisplayName = (category) => {
     'haskell': 'Haskell',
     'clojure': 'Clojure',
     'fsharp': 'F#',
-    
+
     // Technologies web
     'html': 'HTML',
     'css': 'CSS',
@@ -330,7 +318,7 @@ const getCategoryDisplayName = (category) => {
     'less': 'Less',
     'tailwind': 'Tailwind CSS',
     'bootstrap': 'Bootstrap',
-    
+
     // Frameworks JavaScript
     'react': 'React',
     'vue': 'Vue.js',
@@ -345,7 +333,7 @@ const getCategoryDisplayName = (category) => {
     'express': 'Express.js',
     'nestjs': 'NestJS',
     'fastify': 'Fastify',
-    
+
     // Frameworks backend
     'symfony': 'Symfony',
     'laravel': 'Laravel',
@@ -364,7 +352,7 @@ const getCategoryDisplayName = (category) => {
     'gin': 'Gin',
     'fiber': 'Fiber',
     'echo': 'Echo',
-    
+
     // Bases de données
     'sql': 'SQL',
     'mysql': 'MySQL',
@@ -378,7 +366,7 @@ const getCategoryDisplayName = (category) => {
     'mariadb': 'MariaDB',
     'oracle': 'Oracle',
     'sqlserver': 'SQL Server',
-    
+
     // Outils et technologies
     'git': 'Git',
     'docker': 'Docker',
@@ -400,7 +388,7 @@ const getCategoryDisplayName = (category) => {
     'pnpm': 'PNPM',
     'composer': 'Composer',
     'pip': 'Pip',
-    
+
     // Cloud et services
     'aws': 'AWS',
     'azure': 'Azure',
@@ -410,7 +398,7 @@ const getCategoryDisplayName = (category) => {
     'vercel': 'Vercel',
     'heroku': 'Heroku',
     'digitalocean': 'DigitalOcean',
-    
+
     // Mobile
     'android': 'Android',
     'ios': 'iOS',
@@ -419,7 +407,7 @@ const getCategoryDisplayName = (category) => {
     'ionic': 'Ionic',
     'xamarin': 'Xamarin',
     'cordova': 'Cordova',
-    
+
     // Testing
     'jest': 'Jest',
     'mocha': 'Mocha',
@@ -429,7 +417,7 @@ const getCategoryDisplayName = (category) => {
     'selenium': 'Selenium',
     'puppeteer': 'Puppeteer',
     'playwright': 'Playwright',
-    
+
     // CMS
     'wordpress': 'WordPress',
     'drupal': 'Drupal',
@@ -437,7 +425,7 @@ const getCategoryDisplayName = (category) => {
     'strapi': 'Strapi',
     'contentful': 'Contentful',
     'sanity': 'Sanity',
-    
+
     // Autres technologies
     'graphql': 'GraphQL',
     'rest': 'REST API',
@@ -614,7 +602,7 @@ const getCategoryIconClass = (categoryName) => {
     'strapi': 'fas fa-layer-group',
     'contentful': 'fas fa-file-alt',
     'sanity': 'fas fa-brain',
-    
+
     // Autres technologies
     'graphql': 'fas fa-project-diagram',
     'rest': 'fas fa-exchange-alt',
@@ -664,7 +652,7 @@ const getCategoryBgClass = (category) => {
     'haskell': 'bg-gradient-to-br from-purple-600 to-indigo-700',
     'clojure': 'bg-gradient-to-br from-green-500 to-blue-600',
     'fsharp': 'bg-gradient-to-br from-blue-600 to-purple-600',
-    
+
     // Technologies web
     'html': 'bg-gradient-to-br from-orange-400 to-orange-600',
     'css': 'bg-gradient-to-br from-blue-400 to-blue-600',
@@ -673,7 +661,7 @@ const getCategoryBgClass = (category) => {
     'less': 'bg-gradient-to-br from-blue-500 to-indigo-600',
     'tailwind': 'bg-gradient-to-br from-cyan-400 to-blue-500',
     'bootstrap': 'bg-gradient-to-br from-purple-600 to-indigo-700',
-    
+
     // Frameworks JavaScript
     'react': 'bg-gradient-to-br from-cyan-400 to-blue-500',
     'vue': 'bg-gradient-to-br from-green-400 to-green-600',
@@ -688,7 +676,7 @@ const getCategoryBgClass = (category) => {
     'express': 'bg-gradient-to-br from-gray-700 to-gray-900',
     'nestjs': 'bg-gradient-to-br from-red-500 to-pink-600',
     'fastify': 'bg-gradient-to-br from-gray-800 to-black',
-    
+
     // Frameworks backend
     'symfony': 'bg-gradient-to-br from-gray-800 to-black',
     'laravel': 'bg-gradient-to-br from-red-500 to-orange-600',
@@ -707,7 +695,7 @@ const getCategoryBgClass = (category) => {
     'gin': 'bg-gradient-to-br from-cyan-500 to-blue-600',
     'fiber': 'bg-gradient-to-br from-blue-600 to-indigo-700',
     'echo': 'bg-gradient-to-br from-blue-500 to-cyan-600',
-    
+
     // Bases de données
     'sql': 'bg-gradient-to-br from-green-400 to-green-600',
     'mysql': 'bg-gradient-to-br from-orange-500 to-orange-700',
@@ -721,7 +709,7 @@ const getCategoryBgClass = (category) => {
     'mariadb': 'bg-gradient-to-br from-blue-600 to-brown-600',
     'oracle': 'bg-gradient-to-br from-red-600 to-orange-700',
     'sqlserver': 'bg-gradient-to-br from-blue-600 to-gray-700',
-    
+
     // Outils et technologies
     'git': 'bg-gradient-to-br from-orange-600 to-red-600',
     'docker': 'bg-gradient-to-br from-blue-500 to-blue-700',
@@ -743,7 +731,7 @@ const getCategoryBgClass = (category) => {
     'pnpm': 'bg-gradient-to-br from-orange-500 to-yellow-600',
     'composer': 'bg-gradient-to-br from-brown-600 to-brown-800',
     'pip': 'bg-gradient-to-br from-blue-500 to-yellow-500',
-    
+
     // Cloud et services
     'aws': 'bg-gradient-to-br from-orange-500 to-yellow-600',
     'azure': 'bg-gradient-to-br from-blue-600 to-blue-800',
@@ -753,7 +741,7 @@ const getCategoryBgClass = (category) => {
     'vercel': 'bg-gradient-to-br from-gray-800 to-black',
     'heroku': 'bg-gradient-to-br from-purple-600 to-purple-800',
     'digitalocean': 'bg-gradient-to-br from-blue-500 to-blue-700',
-    
+
     // Mobile
     'android': 'bg-gradient-to-br from-green-500 to-green-700',
     'ios': 'bg-gradient-to-br from-gray-600 to-gray-800',
@@ -762,7 +750,7 @@ const getCategoryBgClass = (category) => {
     'ionic': 'bg-gradient-to-br from-blue-500 to-blue-700',
     'xamarin': 'bg-gradient-to-br from-blue-600 to-purple-600',
     'cordova': 'bg-gradient-to-br from-gray-600 to-gray-800',
-    
+
     // Testing
     'jest': 'bg-gradient-to-br from-red-600 to-orange-600',
     'mocha': 'bg-gradient-to-br from-brown-600 to-brown-800',
@@ -772,7 +760,7 @@ const getCategoryBgClass = (category) => {
     'selenium': 'bg-gradient-to-br from-green-600 to-green-800',
     'puppeteer': 'bg-gradient-to-br from-blue-600 to-indigo-700',
     'playwright': 'bg-gradient-to-br from-green-600 to-blue-600',
-    
+
     // CMS
     'wordpress': 'bg-gradient-to-br from-blue-600 to-gray-700',
     'drupal': 'bg-gradient-to-br from-blue-600 to-blue-800',
@@ -780,7 +768,7 @@ const getCategoryBgClass = (category) => {
     'strapi': 'bg-gradient-to-br from-purple-600 to-indigo-700',
     'contentful': 'bg-gradient-to-br from-blue-500 to-teal-600',
     'sanity': 'bg-gradient-to-br from-red-500 to-pink-600',
-    
+
     // Autres technologies
     'graphql': 'bg-gradient-to-br from-pink-500 to-purple-600',
     'rest': 'bg-gradient-to-br from-blue-500 to-green-600',

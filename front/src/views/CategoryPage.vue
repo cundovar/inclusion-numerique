@@ -1,42 +1,53 @@
 <template>
   <!-- Composant SEO pour gérer les balises meta (seulement après le chargement des données) -->
-  <SeoHead v-if="cats.length > 0" :seo-data="seoData" />
+  <SeoHead
+    v-if="cats.length > 0"
+    :seo-data="seoData"
+  />
 
-  <div class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 text-blue-500 min-h-screen w-full" :class="categoryBgClass">
+  <div
+    class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 text-blue-500 min-h-screen w-full"
+    :class="categoryBgClass"
+  >
     <div class="">
       <div class="header-section">
         <div class="tech-header">
-          <i :class="categoryIconClass + ' tech-icon'"></i>
-          <h1 class="tech-title">{{ categoryDisplayName }}</h1>
+          <i :class="categoryIconClass + ' tech-icon'" />
+          <h1 class="tech-title">
+            {{ categoryDisplayName }}
+          </h1>
         </div>
 
-        <div >
-
-     
+        <div />
 
 
-        </div>
-
-
-        <div class="framework-presentation" v-html="categoryPresentation">
-
-        </div>
+        <SafeHtml
+          :html="categoryPresentation"
+          class="framework-presentation"
+        />
       </div>
 
       <div class="flex flex-wrap justify-center items-start">
         <CourseCard
-          v-for="group in categoryMenus" 
+          v-for="group in categoryMenus"
           :key="group.label"
           :title="group.label"
           :menus="group.items"
           :icon-class="getGroupIconClass(group.label)"
         />
-        
       </div>
 
-      <div v-if="!categoryMenus.length" class="text-center py-12">
-        <p class="text-gray-500 text-lg">Aucun menu disponible pour cette catégorie</p>
-        <router-link to="/" class="mt-4 inline-block text-blue-500 hover:underline">
+      <div
+        v-if="!categoryMenus.length"
+        class="text-center py-12"
+      >
+        <p class="text-gray-500 text-lg">
+          Aucun menu disponible pour cette catégorie
+        </p>
+        <router-link
+          to="/"
+          class="mt-4 inline-block text-blue-500 hover:underline"
+        >
           Retour à l'accueil
         </router-link>
       </div>
@@ -50,6 +61,7 @@ import { useRoute } from 'vue-router'
 import { useData } from '../utils/fetchDataPwa'
 import CourseCard from '../components/features/pages/CourseCard.vue'
 import SeoHead from '../components/layout/SeoHead.vue'
+import SafeHtml from '../components/ui/SafeHtml.vue'
 import { storeToRefs } from 'pinia'
 import NiveauFilter from '../components/ui/NiveauFilter.vue'
 import { useNiveauStore } from "@/stores/niveauCoursStore";
@@ -122,7 +134,7 @@ const categoryDisplayName = computed(() => {
     'haskell': 'Haskell',
     'clojure': 'Clojure',
     'fsharp': 'F#',
-    
+
     // Technologies web
     'html': 'HTML',
     'css': 'CSS',
@@ -131,7 +143,7 @@ const categoryDisplayName = computed(() => {
     'less': 'Less',
     'tailwind': 'Tailwind CSS',
     'bootstrap': 'Bootstrap',
-    
+
     // Frameworks JavaScript
     'react': 'React',
     'vue': 'Vue.js',
@@ -146,7 +158,7 @@ const categoryDisplayName = computed(() => {
     'express': 'Express.js',
     'nestjs': 'NestJS',
     'fastify': 'Fastify',
-    
+
     // Frameworks backend
     'symfony': 'Symfony',
     'laravel': 'Laravel',
@@ -165,7 +177,7 @@ const categoryDisplayName = computed(() => {
     'gin': 'Gin',
     'fiber': 'Fiber',
     'echo': 'Echo',
-    
+
     // Bases de données
     'sql': 'SQL',
     'mysql': 'MySQL',
@@ -179,7 +191,7 @@ const categoryDisplayName = computed(() => {
     'mariadb': 'MariaDB',
     'oracle': 'Oracle',
     'sqlserver': 'SQL Server',
-    
+
     // Outils et technologies
     'git': 'Git',
     'docker': 'Docker',
@@ -201,7 +213,7 @@ const categoryDisplayName = computed(() => {
     'pnpm': 'PNPM',
     'composer': 'Composer',
     'pip': 'Pip',
-    
+
     // Cloud et services
     'aws': 'AWS',
     'azure': 'Azure',
@@ -211,7 +223,7 @@ const categoryDisplayName = computed(() => {
     'vercel': 'Vercel',
     'heroku': 'Heroku',
     'digitalocean': 'DigitalOcean',
-    
+
     // Mobile
     'android': 'Android',
     'ios': 'iOS',
@@ -220,7 +232,7 @@ const categoryDisplayName = computed(() => {
     'ionic': 'Ionic',
     'xamarin': 'Xamarin',
     'cordova': 'Cordova',
-    
+
     // Testing
     'jest': 'Jest',
     'mocha': 'Mocha',
@@ -230,7 +242,7 @@ const categoryDisplayName = computed(() => {
     'selenium': 'Selenium',
     'puppeteer': 'Puppeteer',
     'playwright': 'Playwright',
-    
+
     // CMS
     'wordpress': 'WordPress',
     'drupal': 'Drupal',
@@ -238,7 +250,7 @@ const categoryDisplayName = computed(() => {
     'strapi': 'Strapi',
     'contentful': 'Contentful',
     'sanity': 'Sanity',
-    
+
     // Autres technologies
     'graphql': 'GraphQL',
     'rest': 'REST API',
@@ -281,7 +293,7 @@ const categoryIconClass = computed(() => {
     return currentCategory.logo.logo
   }
 
-  
+
   return  'fas fa-code'
 })
 
@@ -311,7 +323,7 @@ const categoryPresentation = computed(() => {
   // Retourner la description HTML de l'API
   if (currentCategory?.description) {
     return currentCategory.description
-    
+
   }
 
   return '<div>Découvrez les ressources disponibles pour cette technologie.</div>'
@@ -334,10 +346,10 @@ const categoryMenus = computed(() => {
   let filteredMenus = menus.value.filter((menu) => {
     if (!menu.category) return false
     const matches = menu.category.name.toLowerCase() === categoryName.value.toLowerCase()
-  
+
     // if (matches) {
     //   console.log('  ✅ Match found:', menu.title, '- Category:', menu)
-   
+
     // }
     return matches
   })
@@ -362,7 +374,7 @@ if(selectedNiveau.value){
     const hasNoNiveau = !menu.niveauCours?.name
     //garder menu si
     //1 ordre <=ordre du niv selectionne dans localstorage
-    //2 ou si pas niveau defini 
+    //2 ou si pas niveau defini
     return menuOrdre <=selectedOrdre || hasNoNiveau
   })
 }
@@ -386,7 +398,7 @@ if(selectedNiveau.value){
 
 const getGroupIconClass = (groupLabel) => {
   const label = groupLabel.toLowerCase()
-  
+
   if (label.includes('intro') || label.includes('base')) return 'fas fa-graduation-cap'
   if (label.includes('api')) return 'fas fa-plug'
   if (label.includes('form')) return 'fas fa-wpforms'
@@ -402,7 +414,7 @@ const getGroupIconClass = (groupLabel) => {
   if (label.includes('function')) return 'fas fa-code'
   if (label.includes('object')) return 'fas fa-cube'
   if (label.includes('array')) return 'fas fa-list'
-  
+
   return 'fas fa-book'
 }
 
@@ -488,30 +500,30 @@ onMounted(() => {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .tech-icon {
     font-size: 40px;
   }
-  
+
   .tech-title {
     font-size: 32px;
   }
-  
+
   .tech-description {
     font-size: 16px;
   }
-  
+
   .framework-presentation {
     margin: 20px 10px 0;
     padding: 20px;
   }
-  
+
   .framework-presentation p {
     font-size: 14px;
     line-height: 1.6;
     text-align: left;
   }
-  
+
   .symfony-container {
     padding: 16px;
     padding-bottom: 120px;

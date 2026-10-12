@@ -2,46 +2,47 @@
   <div
     class="md:rounded-2xl md:mt-10 xl:mt-0 pb-96 min-h-screen w-full bg-gray-200 p-6 relative z-20"
   >
+    <div class="flex qcm flex-col justify-center items-center max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+      <h1 class="text-4xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+        <i class="fas fa-brain text-purple-600" />
+        Formulaire QCM
+      </h1>
 
+      <AppSelect
+        v-model="selected_niveau"
+        cascader
+        :options="niveau_qcms"
+        :cascader-props="{
+          value: 'titre',
+          label: 'titre',
+        }"
+        clearable
+        placeholder="Sélectionnez un niveau"
+        class="w-full md:w-2/3 mb-4"
+      />
 
-  <div class="flex qcm flex-col justify-center items-center max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-
-    <h1 class="text-4xl font-bold text-gray-800 mb-8 flex items-center gap-3">
-      <i class="fas fa-brain text-purple-600"></i>
-      Formulaire QCM
-    </h1>
-
-  <AppSelect
-    v-model="selected_niveau"
-    cascader
-    :options="niveau_qcms"
-    :cascader-props="{
-      value: 'titre',
-      label: 'titre',
-    }"
-    clearable
-    placeholder="Sélectionnez un niveau"
-    class="w-full md:w-2/3 mb-4"
-  />
-
-  <AppSelect
-    v-model="selected_language"
-    cascader
-    :options="language_qcms"
-    :cascader-props="{
-      value: 'name',
-      label: 'name',
-    }"
-    clearable
-    placeholder="Sélectionnez une langue"
-    class="w-full md:w-2/3 mb-6"
-  />
+      <AppSelect
+        v-model="selected_language"
+        cascader
+        :options="language_qcms"
+        :cascader-props="{
+          value: 'name',
+          label: 'name',
+        }"
+        clearable
+        placeholder="Sélectionnez une langue"
+        class="w-full md:w-2/3 mb-6"
+      />
 
 
 
 
-    <form @submit.prevent="submitForm" action="" class="w-full">
-      <!-- <label for="">Niveau</label>
+      <form
+        action=""
+        class="w-full"
+        @submit.prevent="submitForm"
+      >
+        <!-- <label for="">Niveau</label>
 
       <select v-model="selected_niveau" name="" id="">
         <option
@@ -64,56 +65,54 @@
         </option>
       </select>-->
 
-      <div
-        v-if="selected_niveau || selected_language"
-        class="bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col jusrounded-xl p-6 border border-blue-200 shadow-sm"
-      >
-        <p class="text-gray-700 font-semibold mb-4 flex items-center gap-2">
-       
-          Vous avez sélectionné :
-        </p>
+        <div
+          v-if="selected_niveau || selected_language"
+          class="bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col jusrounded-xl p-6 border border-blue-200 shadow-sm"
+        >
+          <p class="text-gray-700 font-semibold mb-4 flex items-center gap-2">
+            Vous avez sélectionné :
+          </p>
 
-        <ul class="flex justify-center flex-col items-center gap-3 flex-wrap mb-6">
-          <li
-            class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md flex items-center gap-2 min-w-[140px] justify-center transition-transform hover:scale-105"
-            v-if="selected_niveau"
-          >
-            <i class="fas fa-layer-group"></i>
-            {{ selected_niveau }}
-          </li>
-          <span class="text-2xl text-gray-400"><i class="fas fa-plus-circle"></i></span>
-          <li
-            class="px-4 py-2 rounded-lg bg-gradient-to-r  from-blue-600 to-blue-500 text-white font-semibold shadow-md flex items-center gap-2 min-w-[140px] justify-center transition-transform hover:scale-105"
-            v-if="selected_language"
-          >
-            <i class="fas fa-code"></i>
-            {{ selected_language }}
-          </li>
-          <li
-            class="px-4 py-2 rounded-lg bg-gray-200 text-gray-400 font-semibold flex items-center gap-2 min-w-[140px] justify-center border-2 border-dashed border-gray-300"
-            v-else
-          >
-            <i class="fas fa-question-circle"></i>
-            ?
-          </li>
-        </ul>
+          <ul class="flex justify-center flex-col items-center gap-3 flex-wrap mb-6">
+            <li
+              v-if="selected_niveau"
+              class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md flex items-center gap-2 min-w-[140px] justify-center transition-transform hover:scale-105"
+            >
+              <i class="fas fa-layer-group" />
+              {{ selected_niveau }}
+            </li>
+            <span class="text-2xl text-gray-400"><i class="fas fa-plus-circle" /></span>
+            <li
+              v-if="selected_language"
+              class="px-4 py-2 rounded-lg bg-gradient-to-r  from-blue-600 to-blue-500 text-white font-semibold shadow-md flex items-center gap-2 min-w-[140px] justify-center transition-transform hover:scale-105"
+            >
+              <i class="fas fa-code" />
+              {{ selected_language }}
+            </li>
+            <li
+              v-else
+              class="px-4 py-2 rounded-lg bg-gray-200 text-gray-400 font-semibold flex items-center gap-2 min-w-[140px] justify-center border-2 border-dashed border-gray-300"
+            >
+              <i class="fas fa-question-circle" />
+              ?
+            </li>
+          </ul>
 
           <AppButton
-          v-if="selected_niveau && selected_language"
-          type="submit"
-          variant="primary"
-          size="lg"
-          rounded="lg"
-          class="mx-auto"
-        >
-          <i class="fas fa-play-circle mr-2"></i>
-          GO
-          <i class="fas fa-arrow-right ml-2"></i>
-        </AppButton>
-
-      </div>
-    </form>
-  </div>
+            v-if="selected_niveau && selected_language"
+            type="submit"
+            variant="primary"
+            size="lg"
+            rounded="lg"
+            class="mx-auto"
+          >
+            <i class="fas fa-play-circle mr-2" />
+            GO
+            <i class="fas fa-arrow-right ml-2" />
+          </AppButton>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -147,7 +146,7 @@ const submitForm = async () => {
     language: selected_language.value,
     niveau: selected_niveau.value,
   })
- 
+
 
   // 3) Navigue vers la page de jeu (PlayQcmView se chargera de fetch)
   router.push({

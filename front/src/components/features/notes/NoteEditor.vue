@@ -1,48 +1,58 @@
 <template>
-  <div class="note-editor-section"  >
-  
-
+  <div class="note-editor-section">
     <!-- Barre d'outils Tiptap -->
-    <div :class="bgCategorie" v-if="editor" class="flex flex-wrap max-w-64 m-auto p-5 gap-1 ">
-      <template v-for="(button, index) in tableButton" :key="button.key">
+    <div
+      v-if="editor"
+      :class="bgCategorie"
+      class="flex flex-wrap max-w-64 m-auto p-5 gap-1 "
+    >
+      <template
+        v-for="(button, index) in tableButton"
+        :key="button.key"
+      >
         <AppButton
-          @click="toggleFormat(button.key)"
           :disabled="!canToggleFormat(button.key)"
           :class="{ 'is-active': editor.isActive(button.key) }"
           variant="neutral"
-          :textContent="button.label"
+          :text-content="button.label"
           size="xs"
-          :hoverBgColor="hoverStyle"
+          :hover-bg-color="hoverStyle"
+          @click="toggleFormat(button.key)"
         />
-        <div v-if="index < tableButton.length - 1" class="toolbar-divider"></div>
+        <div
+          v-if="index < tableButton.length - 1"
+          class="toolbar-divider"
+        />
       </template>
     </div>
 
     <!-- Éditeur Tiptap -->
     <div class="note-editor">
-      <editor-content :editor="editor" class="tiptap-editor" />
+      <editor-content
+        :editor="editor"
+        class="tiptap-editor"
+      />
     </div>
 
     <!-- Message de confirmation -->
     <transition name="fade">
-      <div v-if="noteSaved" class="note-saved-message">
+      <div
+        v-if="noteSaved"
+        class="note-saved-message"
+      >
         ✓ Note enregistrée !
       </div>
     </transition>
   </div>
-    <div class="r">
-
-
-      <AppButton
-        v-if="editor"
-        @click="saveNote"
-       variant="ghost"
-       textContent="Enregistrer"
-        :disabled="isSavingNote || !hasContent"
-      >
-        
-      </AppButton>
-    </div>
+  <div class="r">
+    <AppButton
+      v-if="editor"
+      variant="ghost"
+      text-content="Enregistrer"
+      :disabled="isSavingNote || !hasContent"
+      @click="saveNote"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -288,7 +298,7 @@ width: 100%;
   gap: 0.25rem;
   padding: 0.5rem;
   background: #f8f9fa;
- 
+
 
   width: fit-content;
 

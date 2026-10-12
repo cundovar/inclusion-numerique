@@ -6,13 +6,13 @@
       :href="APP_CONFIG.ADMIN_URL"
       class="cursor-pointer text-amber-900 px-2 py-1 rounded text-sm"
     >
-      <i class="text-2xl pi pi-cog"></i>
+      <i class="text-2xl pi pi-cog" />
     </a>
     <inputSearch
       v-model="search"
-      @search="handleSearch"
       placeholder="Rechercher"
       class="flex-1"
+      @search="handleSearch"
     />
   </div>
 </template>
@@ -57,6 +57,6 @@ const fetchUser = async () => {
 
 onMounted(() => {
   fetchUser();
- 
+
 });
 </script>

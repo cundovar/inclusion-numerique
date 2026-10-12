@@ -2,36 +2,36 @@
   <div class="flex gap-2 md:w-1/2 lg:w-1/3 m-auto items-center justify-start flex-row">
     <AppInput
       :model-value="modelValue"
-      @update:model-value="$emit('update:modelValue', $event)"
-      @keyup.enter="$emit('search')"
       type="text"
       :placeholder="placeholder"
       prefix-icon="Search"
       clearable
       size="default"
+      @update:model-value="emit('update:modelValue', $event)"
+      @keyup.enter="emit('search')"
     />
 
     <!-- Bouton desktop -->
     <AppButton
-      @click="$emit('search')"
       variant="primary"
       size="sm"
       text-content="Rechercher"
       class="max-xl:hidden xl:flex"
+      @click="emit('search')"
     />
 
     <!-- Bouton mobile (icône ronde) -->
     <AppButton
-      @click="$emit('search')"
       variant="warning"
       size="md"
       icon="pi pi-search"
       rounded="full"
       class="xl:hidden"
+      @click="emit('search')"
     />
   </div>
 </template>
-  
+
 <script setup>
 import { ref } from 'vue';
 import { onMounted } from 'vue';
@@ -40,12 +40,16 @@ import AppButton from '../../ui/AppButton.vue';
 import AppInput from '../../ui/AppInput.vue';
 
 defineProps({
-  modelValue: String,
+  modelValue: {
+    type: String,
+    default: ''
+  },
   placeholder: {
     type: String,
     default: 'Rechercher'
   }
 });
+const emit = defineEmits(['update:modelValue', 'search']);
 // const fetchUser = async () => {
 //   try {
 //     const response = await axios.get('/user-api/me');
