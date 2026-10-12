@@ -1,321 +1,407 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <section  class="transition-all duration-500"
-    :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'playground'">
-
-
-    <div class="mx-auto p-6 max-md:pb-96" :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'max-w-4xl'">
-    <AppButton v-if="sectionSize" variant="danger" text-content="X" @click="toggleSectionSize" />
-    <AppButton v-else variant="danger" text-content="agrandire" @click="toggleSectionSize" />
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-      <!-- Header Profile -->
-      <div class="bg-gradient-to-r from-blue-500 px-6 py-8">
-        <div class="flex items-center space-x-4">
-          <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
-            <i class="pi pi-user text-3xl text-blue-500"></i>
-          </div> 
-          <div class="text-white">
-            <h1 class="text-2xl font-bold">{{ user.username }}</h1>
-            <p class="text-blue-100">{{ user.roles.includes('ROLE_ADMIN') ? 'Administrateur' : 'Utilisateur' }}</p>
-          </div>
-        </div>
-        <AppButton variant="ghost" text-content="modifier profile" @click="openModal"/>
-      </div>
-
-      <AppModal v-model="isOpen"
-       size="lg"
-        title="Modifier le profile" 
-        :show-footer="true"
-        @close="closeModal" >
-
-<form @submit.prevent="updateProfile">
-        <div>
-          <AppInput v-model="user.username" label="Nouveau nom" />
-         
-        </div>
-      </form>        
-
-        <template #footer>
-
-          <AppButton variant="secondary" text-content="Annuler" @click="closeModal" />
-          <AppButton variant="primary" type="submit" text-content="Modifier" @click="updateProfile" />
-        </template>
-      </AppModal>
-
-      <!-- Navigation tabs -->
-      <div class="border-b border-gray-200">
-        <nav class="flex">
-          <button
-            @click="activeTab = 'favorites'"
-            :class="[
-              'px-6 py-3 border-b-2 font-medium text-sm',
-              activeTab === 'favorites'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            ]"
-          >
-            <i class="pi pi-heart-fill mr-2"></i>
-            Mes Favoris ({{ favorites.length }})
-          </button>
-          <button
-            @click="activeTab = 'notes'"
-            :class="[
-              'px-6 py-3 border-b-2 font-medium text-sm',
-              activeTab === 'notes'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            ]"
-          >
-            <i class="pi pi-file-edit mr-2"></i>
-            Mes Notes ({{ notes.length }})
-          </button>
-          <button
-            v-if="pageTrackingEnabled"
-            @click="activeTab = 'stats'"
-            :class="[
-              'px-6 py-3 border-b-2 font-medium text-sm',
-              activeTab === 'stats'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            ]"
-          >
-            <i class="pi pi-chart-bar mr-2"></i>
-            Statistiques
-          </button>
-          <button
-            @click="activeTab = 'appearance'; console.log('Apparence clicked, activeTab:', activeTab)"
-            :class="[
-              'px-6 py-3 border-b-2 font-medium text-sm',
-              activeTab === 'appearance'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            ]"
-          >
-            <i class="pi pi-palette mr-2"></i>
-            Apparence
-          </button>
-        </nav>
-      </div>
-
-      <!-- Content -->
-      <div class="p-6">
-        <!-- Onglet Favoris -->
-        <div v-if="activeTab === 'favorites'">
-          <div v-if="loading" class="text-center py-8">
-            <i class="pi pi-spinner pi-spin text-2xl text-blue-500"></i>
-            <p class="text-gray-500 mt-2">Chargement de vos favoris...</p>
-          </div>
-
-          <div v-else-if="favorites.length === 0" class="text-center py-8">
-            <i class="pi pi-heart text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucun favori pour le moment</h3>
-            <p class="text-gray-500">Explorez les cours et ajoutez vos préférés à vos favoris !</p>
-          </div>
-
-          <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div 
-              v-for="favorite in favorites" 
-              :key="favorite.id"
-              class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow"
-            >
-              <div class="flex justify-between items-start mb-2">
-                <h3 class="font-semibold text-gray-800 text-sm">{{ favorite.title }}</h3>
-                <button
-                  @click="removeFavorite(favorite.id)"
-                  class="text-red-500 hover:text-red-700 text-sm"
-                >
-                  <i class="pi pi-trash"></i>
-                </button>
-              </div>
-              
-              <p class="text-gray-600 text-sm mb-2">{{ favorite.category.name }}</p>
-              
-              <div class="flex justify-between items-center">
-                <span class="text-xs text-gray-500">
-                  Ajouté le {{ formatDate(favorite.createdAt) }}
-                </span>
-                
-                <router-link
-                  :to="`/pages${favorite.page.slug}`"
-                  class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors"
-                >
-                  Voir le cours
-                </router-link>
-              </div>
+  <section
+    class="transition-all duration-500"
+    :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'playground'"
+  >
+    <div
+      class="mx-auto p-6 max-md:pb-96"
+      :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'max-w-4xl'"
+    >
+      <AppButton
+        v-if="sectionSize"
+        variant="danger"
+        text-content="X"
+        @click="toggleSectionSize"
+      />
+      <AppButton
+        v-else
+        variant="danger"
+        text-content="agrandire"
+        @click="toggleSectionSize"
+      />
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Header Profile -->
+        <div class="bg-gradient-to-r from-blue-500 px-6 py-8">
+          <div class="flex items-center space-x-4">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+              <i class="pi pi-user text-3xl text-blue-500" />
+            </div> 
+            <div class="text-white">
+              <h1 class="text-2xl font-bold">
+                {{ user.username }}
+              </h1>
+              <p class="text-blue-100">
+                {{ user.roles.includes('ROLE_ADMIN') ? 'Administrateur' : 'Utilisateur' }}
+              </p>
             </div>
           </div>
+          <AppButton
+            variant="ghost"
+            text-content="modifier profile"
+            @click="openModal"
+          />
         </div>
 
-        <!-- Onglet Notes -->
-        <div v-if="activeTab === 'notes'">
-          <div v-if="loadingNotes" class="text-center py-8">
-            <i class="pi pi-spinner pi-spin text-2xl text-blue-500"></i>
-            <p class="text-gray-500 mt-2">Chargement de vos notes...</p>
-          </div>
-
-          <div v-else-if="notes.length === 0" class="text-center py-8">
-            <i class="pi pi-file-edit text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucune note pour le moment</h3>
-            <p class="text-gray-500">Prenez des notes sur vos cours pour les retrouver ici !</p>
-          </div>
-
-          <div v-else class="grid gap-4">
-            <div
-              v-for="note in notes"
-              :key="note.id"
-              class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow"
-            >
-              <div class="flex justify-between items-start mb-3">
-                <div class="flex-1">
-                  <h3 class="font-semibold text-gray-800 mb-1">{{ note.page.slug }}</h3>
-                  <span class="text-xs text-gray-500">
-                    Modifié le {{ formatDateTime(note.updatedAt) }}
-                  </span>
-                </div>
-                <button
-                  @click="deleteNote(note.id)"
-                  class="text-red-500 hover:text-red-700 transition-colors ml-2"
-                  title="Supprimer la note"
-                >
-                  <i class="pi pi-trash"></i>
-                </button>
-              </div>
-
-              <div class="bg-white p-3 rounded border border-gray-200 mb-3">
-                <p v-html="note.content" class="text-sm text-gray-700 whitespace-pre-wrap"></p>
-              </div>
-
-              <div class="flex justify-end">
-                <router-link
-                  :to="`/pages/${(note.page.slug || '').replace(/^\//, '')}`"
-                  class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
-                >
-                  <i class="pi pi-external-link"></i>
-                  Voir le cours
-                </router-link>
-              </div>
+        <AppModal
+          v-model="isOpen"
+          size="lg"
+          title="Modifier le profile" 
+          :show-footer="true"
+          @close="closeModal"
+        >
+          <form @submit.prevent="updateProfile">
+            <div>
+              <AppInput
+                v-model="user.username"
+                label="Nouveau nom"
+              />
             </div>
-          </div>
-        </div>
+          </form>        
 
-        <!-- Onglet Statistiques -->
-        <div v-if="activeTab === 'stats' && pageTrackingEnabled">
-          <!-- Contrôles de l'historique -->
-          <div class="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-            <!-- Paramètre de tracking -->
-            <div class="flex-1 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="font-semibold text-gray-800 mb-1">Suivi de navigation</h3>
-                  <p class="text-sm text-gray-600">
-                    {{ trackingEnabled ? 'Vos visites sont enregistrées' : 'Le suivi est désactivé' }}
-                  </p>
-                </div>
-                <AppButton
-                  @click="toggleTracking"
-                  :variant="trackingEnabled ? 'danger' : 'success'"
-                  :text-content="trackingEnabled ? 'Désactiver' : 'Activer'"
-                />
-            
-              </div>
-            </div>
-
-            <!-- Bouton effacer historique -->
+          <template #footer>
             <AppButton
-              @click="clearAllHistory"
-              variant="danger"
-              text-content="Effacer l'historique"
-              icon="pi pi-trash"
+              variant="secondary"
+              text-content="Annuler"
+              @click="closeModal"
             />
-          
-          </div>
+            <AppButton
+              variant="primary"
+              type="submit"
+              text-content="Modifier"
+              @click="updateProfile"
+            />
+          </template>
+        </AppModal>
 
-          <div class="grid grid-cols-1 gap-6">
-            <div class="bg-purple-50 rounded-lg p-6 text-center">
-              <i class="pi pi-history text-3xl text-purple-500 mb-2"></i>
-              <h3 class="text-2xl font-bold text-purple-600">{{ pageVisits.length }}</h3>
-              <p class="text-purple-700">Pages visitées</p>
+        <!-- Navigation tabs -->
+        <div class="border-b border-gray-200">
+          <nav class="flex">
+            <button
+              :class="[
+                'px-6 py-3 border-b-2 font-medium text-sm',
+                activeTab === 'favorites'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              ]"
+              @click="activeTab = 'favorites'"
+            >
+              <i class="pi pi-heart-fill mr-2" />
+              Mes Favoris ({{ favorites.length }})
+            </button>
+            <button
+              :class="[
+                'px-6 py-3 border-b-2 font-medium text-sm',
+                activeTab === 'notes'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              ]"
+              @click="activeTab = 'notes'"
+            >
+              <i class="pi pi-file-edit mr-2" />
+              Mes Notes ({{ notes.length }})
+            </button>
+            <button
+              v-if="pageTrackingEnabled"
+              :class="[
+                'px-6 py-3 border-b-2 font-medium text-sm',
+                activeTab === 'stats'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              ]"
+              @click="activeTab = 'stats'"
+            >
+              <i class="pi pi-chart-bar mr-2" />
+              Statistiques
+            </button>
+            <button
+              :class="[
+                'px-6 py-3 border-b-2 font-medium text-sm',
+                activeTab === 'appearance'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              ]"
+              @click="activeTab = 'appearance'; console.log('Apparence clicked, activeTab:', activeTab)"
+            >
+              <i class="pi pi-palette mr-2" />
+              Apparence
+            </button>
+          </nav>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+          <!-- Onglet Favoris -->
+          <div v-if="activeTab === 'favorites'">
+            <div
+              v-if="loading"
+              class="text-center py-8"
+            >
+              <i class="pi pi-spinner pi-spin text-2xl text-blue-500" />
+              <p class="text-gray-500 mt-2">
+                Chargement de vos favoris...
+              </p>
             </div>
-          </div>
 
-          <!-- Historique détaillé des visites -->
-          <div v-if="pageVisits.length > 0" class="mt-8">
-            <h3 class="text-lg font-semibold mb-4">Historique des visites</h3>
-            <div class="overflow-x-auto">
-              <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Page
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date de visite
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Durée
-                    </th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                  <tr
-                    v-for="visit in pageVisits"
-                    :key="visit.id"
-                    class="hover:bg-gray-50 transition-colors"
-                  >
-                    <td class="px-4 py-3">
-                      <router-link
-                        :to="`/pages/${(visit.page?.slug || '').replace(/^\//, '')}`"
-                        class="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        {{ visit.page?.title || visit.page?.slug || 'Sans titre' }}
-                      </router-link>
-                    </td>
-                    <td class="px-4 py-3 text-sm text-gray-600">
-                      {{ formatDateTime(visit.visitedAt) }}
-                    </td>
-                    <td class="px-4 py-3 text-sm text-gray-600">
-                      {{ formatDuration(visit.timeSpent) }}
-                    </td>
-                    <td class="px-4 py-3 text-right">
-                      <button
-                        @click="removeVisit(visit.id)"
-                        class="text-red-500 hover:text-red-700 transition-colors"
-                      >
-                        <i class="pi pi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div
+              v-else-if="favorites.length === 0"
+              class="text-center py-8"
+            >
+              <i class="pi pi-heart text-6xl text-gray-300 mb-4" />
+              <h3 class="text-xl font-semibold text-gray-600 mb-2">
+                Aucun favori pour le moment
+              </h3>
+              <p class="text-gray-500">
+                Explorez les cours et ajoutez vos préférés à vos favoris !
+              </p>
             </div>
-          </div>
 
-          <!-- Répartition par catégorie (favoris) -->
-          <div v-if="categoryStats.length > 0" class="mt-8">
-            <h3 class="text-lg font-semibold mb-4">Répartition des favoris par catégorie</h3>
-            <div class="space-y-3">
-              <div
-                v-for="cat in categoryStats"
-                :key="cat.name"
-                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            <div
+              v-else
+              class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+            >
+              <div 
+                v-for="favorite in favorites" 
+                :key="favorite.id"
+                class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow"
               >
-                <span class="font-medium">{{ cat.name }}</span>
-                <div class="flex items-center space-x-2">
-                  <div class="w-32 bg-gray-200 rounded-full h-2">
-                    <div
-                      class="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                      :style="{ width: (cat.count / favorites.length * 100) + '%' }"
-                    ></div>
-                  </div>
-                  <span class="text-sm text-gray-600">{{ cat.count }}</span>
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="font-semibold text-gray-800 text-sm">
+                    {{ favorite.title }}
+                  </h3>
+                  <button
+                    class="text-red-500 hover:text-red-700 text-sm"
+                    @click="removeFavorite(favorite.id)"
+                  >
+                    <i class="pi pi-trash" />
+                  </button>
+                </div>
+              
+                <p class="text-gray-600 text-sm mb-2">
+                  {{ favorite.category.name }}
+                </p>
+              
+                <div class="flex justify-between items-center">
+                  <span class="text-xs text-gray-500">
+                    Ajouté le {{ formatDate(favorite.createdAt) }}
+                  </span>
+                
+                  <router-link
+                    :to="`/pages${favorite.page.slug}`"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors"
+                  >
+                    Voir le cours
+                  </router-link>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+
+          <!-- Onglet Notes -->
+          <div v-if="activeTab === 'notes'">
+            <div
+              v-if="loadingNotes"
+              class="text-center py-8"
+            >
+              <i class="pi pi-spinner pi-spin text-2xl text-blue-500" />
+              <p class="text-gray-500 mt-2">
+                Chargement de vos notes...
+              </p>
+            </div>
+
+            <div
+              v-else-if="notes.length === 0"
+              class="text-center py-8"
+            >
+              <i class="pi pi-file-edit text-6xl text-gray-300 mb-4" />
+              <h3 class="text-xl font-semibold text-gray-600 mb-2">
+                Aucune note pour le moment
+              </h3>
+              <p class="text-gray-500">
+                Prenez des notes sur vos cours pour les retrouver ici !
+              </p>
+            </div>
+
+            <div
+              v-else
+              class="grid gap-4"
+            >
+              <div
+                v-for="note in notes"
+                :key="note.id"
+                class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <div class="flex justify-between items-start mb-3">
+                  <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800 mb-1">
+                      {{ note.page.slug }}
+                    </h3>
+                    <span class="text-xs text-gray-500">
+                      Modifié le {{ formatDateTime(note.updatedAt) }}
+                    </span>
+                  </div>
+                  <button
+                    class="text-red-500 hover:text-red-700 transition-colors ml-2"
+                    title="Supprimer la note"
+                    @click="deleteNote(note.id)"
+                  >
+                    <i class="pi pi-trash" />
+                  </button>
+                </div>
+
+                <div class="bg-white p-3 rounded border border-gray-200 mb-3">
+                  <SafeHtml
+                    tag="p"
+                    :html="note.content"
+                    class="text-sm text-gray-700 whitespace-pre-wrap"
+                  />
+                </div>
+
+                <div class="flex justify-end">
+                  <router-link
+                    :to="`/pages/${(note.page.slug || '').replace(/^\//, '')}`"
+                    class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                  >
+                    <i class="pi pi-external-link" />
+                    Voir le cours
+                  </router-link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Onglet Statistiques -->
+          <div v-if="activeTab === 'stats' && pageTrackingEnabled">
+            <!-- Contrôles de l'historique -->
+            <div class="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+              <!-- Paramètre de tracking -->
+              <div class="flex-1 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="font-semibold text-gray-800 mb-1">
+                      Suivi de navigation
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                      {{ trackingEnabled ? 'Vos visites sont enregistrées' : 'Le suivi est désactivé' }}
+                    </p>
+                  </div>
+                  <AppButton
+                    :variant="trackingEnabled ? 'danger' : 'success'"
+                    :text-content="trackingEnabled ? 'Désactiver' : 'Activer'"
+                    @click="toggleTracking"
+                  />
+                </div>
+              </div>
+
+              <!-- Bouton effacer historique -->
+              <AppButton
+                variant="danger"
+                text-content="Effacer l'historique"
+                icon="pi pi-trash"
+                @click="clearAllHistory"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-6">
+              <div class="bg-purple-50 rounded-lg p-6 text-center">
+                <i class="pi pi-history text-3xl text-purple-500 mb-2" />
+                <h3 class="text-2xl font-bold text-purple-600">
+                  {{ pageVisits.length }}
+                </h3>
+                <p class="text-purple-700">
+                  Pages visitées
+                </p>
+              </div>
+            </div>
+
+            <!-- Historique détaillé des visites -->
+            <div
+              v-if="pageVisits.length > 0"
+              class="mt-8"
+            >
+              <h3 class="text-lg font-semibold mb-4">
+                Historique des visites
+              </h3>
+              <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Page
+                      </th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date de visite
+                      </th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Durée
+                      </th>
+                      <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    <tr
+                      v-for="visit in pageVisits"
+                      :key="visit.id"
+                      class="hover:bg-gray-50 transition-colors"
+                    >
+                      <td class="px-4 py-3">
+                        <router-link
+                          :to="`/pages/${(visit.page?.slug || '').replace(/^\//, '')}`"
+                          class="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          {{ visit.page?.title || visit.page?.slug || 'Sans titre' }}
+                        </router-link>
+                      </td>
+                      <td class="px-4 py-3 text-sm text-gray-600">
+                        {{ formatDateTime(visit.visitedAt) }}
+                      </td>
+                      <td class="px-4 py-3 text-sm text-gray-600">
+                        {{ formatDuration(visit.timeSpent) }}
+                      </td>
+                      <td class="px-4 py-3 text-right">
+                        <button
+                          class="text-red-500 hover:text-red-700 transition-colors"
+                          @click="removeVisit(visit.id)"
+                        >
+                          <i class="pi pi-trash" />
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Répartition par catégorie (favoris) -->
+            <div
+              v-if="categoryStats.length > 0"
+              class="mt-8"
+            >
+              <h3 class="text-lg font-semibold mb-4">
+                Répartition des favoris par catégorie
+              </h3>
+              <div class="space-y-3">
+                <div
+                  v-for="cat in categoryStats"
+                  :key="cat.name"
+                  class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
+                  <span class="font-medium">{{ cat.name }}</span>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-32 bg-gray-200 rounded-full h-2">
+                      <div
+                        class="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        :style="{ width: (cat.count / favorites.length * 100) + '%' }"
+                      />
+                    </div>
+                    <span class="text-sm text-gray-600">{{ cat.count }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
         <!-- Onglet Apparence -->
         <!--- 
@@ -559,9 +645,9 @@
         </div>
 
       -->
+        </div>
       </div>
     </div>
-  </div>
   </section>
 </template>
 
@@ -571,6 +657,7 @@ import { useData } from '../utils/fetchDataPwa'
 import { useCustomization } from '../composables/ui/useCustomization'
 import AppButton from '../components/ui/AppButton.vue'
 import AppInput from '../components/ui/AppInput.vue'
+import SafeHtml from '../components/ui/SafeHtml.vue'
 import axios from 'axios'
 import { noteService } from '../services/noteService'
 import AppModal from '../components/ui/AppModal.vue'

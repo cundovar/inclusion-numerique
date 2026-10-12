@@ -6,18 +6,24 @@
     <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-200">
       <div class="text-sm font-semibold text-gray-700">
         <span class="text-blue-600">{{ searchResults.length }}</span> résultat(s) trouvé(s)
-        <span v-if="searchAnalysis" class="text-xs text-gray-500 block mt-1">
+        <span
+          v-if="searchAnalysis"
+          class="text-xs text-gray-500 block mt-1"
+        >
           Recherche IA • {{ searchAnalysis.intent || 'Analyse en cours' }}
         </span>
       </div>
       <i
-        @click="$emit('close')"
         class="text-gray-400 hover:bg-red-100 hover:text-red-600 p-2 rounded-full pi pi-times cursor-pointer text-lg transition-colors"
-      ></i>
+        @click="$emit('close')"
+      />
     </div>
 
     <!-- Tags d'analyse IA -->
-    <div v-if="searchAnalysis && (searchAnalysis.keywords || searchAnalysis.technologies)" class="mb-3">
+    <div
+      v-if="searchAnalysis && (searchAnalysis.keywords || searchAnalysis.technologies)"
+      class="mb-3"
+    >
       <div class="flex flex-wrap gap-1">
         <AppBadge
           v-for="keyword in searchAnalysis.keywords?.slice(0, 3)"
@@ -52,7 +58,10 @@
     </ul>
   </div>
 
-  <div v-else-if="search && search.trim()" class="italic text-gray-500 my-4 max-md:hidden">
+  <div
+    v-else-if="search && search.trim()"
+    class="italic text-gray-500 my-4 max-md:hidden"
+  >
     Aucun résultat trouvé pour "{{ search }}".
   </div>
 </template>

@@ -3,19 +3,22 @@
     :title="title"
     :icon="iconClass"
     :items="menus"
-    :showFooter="true"
-    :showTopBorder="false"
-    footerText="cours"
-    footerIcon="fas fa-book"
-    borderClass="border-l-pink-500"
+    :show-footer="true"
+    :show-top-border="false"
+    footer-text="cours"
+    footer-icon="fas fa-book"
+    border-class="border-l-pink-500"
   >
     <template #item="{ item }">
-      <router-link :to="`/pages${item.page.slug}`" class="course-link">
+      <router-link
+        :to="`/pages${item.page.slug}`"
+        class="course-link"
+      >
         <div class="course-info">
-          <i class="fas fa-file-code course-item-icon"></i>
+          <i class="fas fa-file-code course-item-icon" />
           <span class="course-name"> {{ item.title }}</span>
         </div>
-        <i class="fas fa-arrow-right course-arrow"></i>
+        <i class="fas fa-arrow-right course-arrow" />
       </router-link>
     </template>
   </AppCard>

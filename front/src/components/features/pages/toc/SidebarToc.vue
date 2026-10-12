@@ -4,10 +4,13 @@
     class="sidebar-toc"
   >
     <!-- Header avec bouton toggle -->
-    <div class="toc-header" :class="bgCategorie">
+    <div
+      class="toc-header"
+      :class="bgCategorie"
+    >
       <button
-        @click="toggleClosed"
         class="toggle-btn"
+        @click="toggleClosed"
       >
         {{ closed ? '+' : 'X' }}
       </button>
@@ -15,7 +18,10 @@
     </div>
 
     <!-- Contenu (caché si closed) -->
-    <div v-show="!closed" class="toc-body">
+    <div
+      v-show="!closed"
+      class="toc-body"
+    >
       <!-- Onglets Sommaire et Notes -->
       <div class="toc-tabs">
         <button
@@ -41,22 +47,22 @@
         <TocList
           v-if="activeTab === 'sommaire'"
           :toc="toc"
-          :activeId="activeId"
-          :showProgress="showProgress"
-          :isOpen="true"
-          :isMobile="false"
-          :bgCategorie="bgCategorie"
+          :active-id="activeId"
+          :show-progress="showProgress"
+          :is-open="true"
+          :is-mobile="false"
+          :bg-categorie="bgCategorie"
           @scroll-to="handleScrollTo"
         />
 
         <!-- Onglet Notes -->
         <NoteEditor
           v-if="activeTab === 'notes' && isUserAuthenticated"
-          :pageId="pageId"
-          :initialContent="noteContent"
+          :page-id="pageId"
+          :initial-content="noteContent"
+          :bg-categorie="bgCategorie"
+          :bg-hover="bgHover"
           @save="handleNoteSave"
-          :bgCategorie="bgCategorie"
-          :bgHover="bgHover"
         />
       </div>
     </div>

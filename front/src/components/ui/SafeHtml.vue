@@ -1,10 +1,10 @@
 <template>
-  <!-- eslint-disable vue/no-v-html -- contenu nettoyé par DOMPurify -->
-  <div
-    class="class"
+  <!-- eslint-disable vue/no-v-html, vue/no-v-text-v-html-on-component -- contenu nettoyé par DOMPurify -->
+  <component
+    :is="tag"
     v-html="clean"
   />
-  <!-- eslint-enable vue/no-v-html -->
+  <!-- eslint-enable vue/no-v-html, vue/no-v-text-v-html-on-component -->
 </template>
 
 <script setup>
@@ -17,6 +17,10 @@
         html: {
           type: String,
           default: ''
+        },
+        tag: {
+          type: String,
+          default: 'div'
         }
     })
 

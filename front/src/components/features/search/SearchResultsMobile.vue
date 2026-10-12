@@ -12,20 +12,25 @@
     <template #header>
       <div class="flex justify-between items-center border w-full  bg-blue-50 p-4  mb-0 border-b">
         <div>
-          <h2 class="text-lg font-bold text-gray-800">Résultats </h2>
+          <h2 class="text-lg font-bold text-gray-800">
+            Résultats
+          </h2>
           <div class="text-sm text-gray-600">
             <span class="text-blue-600 font-medium">{{ searchResults.length }}</span> résultat(s)
           </div>
         </div>
         <i
-          @click="$emit('close')"
           class="text-gray-400 hover:text-red-600 pi pi-times cursor-pointer text-xl p-2 hover:bg-red-100 rounded-full transition-colors"
-        ></i>
+          @click="$emit('close')"
+        />
       </div>
     </template>
 
     <!-- Tags d'analyse IA mobile -->
-    <div v-if="searchAnalysis && (searchAnalysis.keywords || searchAnalysis.technologies)" class="p-3 border-b bg-gray-50">
+    <div
+      v-if="searchAnalysis && (searchAnalysis.keywords || searchAnalysis.technologies)"
+      class="p-3 border-b bg-gray-50"
+    >
       <div class="flex flex-wrap gap-1">
         <AppBadge
           v-for="keyword in searchAnalysis.keywords?.slice(0, 2)"
@@ -48,7 +53,10 @@
           {{ tech }}
         </AppBadge>
       </div>
-      <div v-if="searchAnalysis.intent" class="text-xs text-gray-600 mt-1">
+      <div
+        v-if="searchAnalysis.intent"
+        class="text-xs text-gray-600 mt-1"
+      >
         {{ searchAnalysis.intent }}
       </div>
     </div>
@@ -71,17 +79,28 @@
           </div>
 
           <div class="flex items-center gap-1 text-xs text-gray-600 mb-2 flex-wrap">
-            <AppBadge variant="default" size="xs" rounded="sm">
+            <AppBadge
+              variant="default"
+              size="xs"
+              rounded="sm"
+            >
               {{ result.category?.name || result.category || 'Non catégorisé' }}
             </AppBadge>
-            <AppBadge v-if="result.hasCode" variant="warning" size="xs" rounded="sm">
+            <AppBadge
+              v-if="result.hasCode"
+              variant="warning"
+              size="xs"
+              rounded="sm"
+            >
               Code
             </AppBadge>
           </div>
 
           <!-- Summary mobile -->
-          <div v-if="result.displaySummary || result.summary"
-               class="text-xs text-gray-600 leading-relaxed bg-blue-50 p-2 rounded border-l-2 border-blue-300">
+          <div
+            v-if="result.displaySummary || result.summary"
+            class="text-xs text-gray-600 leading-relaxed bg-blue-50 p-2 rounded border-l-2 border-blue-300"
+          >
             {{ (result.displaySummary || result.summary).substring(0, 120) }}{{ (result.displaySummary || result.summary).length > 120 ? '...' : '' }}
           </div>
         </router-link>

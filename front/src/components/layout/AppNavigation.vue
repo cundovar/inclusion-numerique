@@ -8,21 +8,21 @@
     ]"
   >
     <nav
-      @mouseleave="isXlOuPlus && $emit('hoverCategory', null)"
       :class="[
         'md:p-5  gap-y-2 relative 2xl:top-1 float-left z-50 h-screen max-md:z-50 transition-transform duration-300 ease-in-out',
         isXlOuPlus
           ? 'flex xl:w-[16rem] 2xl:w-[20rem] flex-col translate-x-0'
           : isMenuOpen
-          ? 'w-full pl-2 pr-2 bg-gray-200 translate-x-0 max-h-[calc(100vh-112px)] max-md:h-[calc(100vh-112px)] max-md:overflow-y-auto flex flex-col max-md:z-50'
-          : 'max-lg:w-full lg:w-1/2 -translate-x-full md:-translate-x-[60rem] lg:-translate-x-[70rem]',
+            ? 'w-full pl-2 pr-2 bg-gray-200 translate-x-0 max-h-[calc(100vh-112px)] max-md:h-[calc(100vh-112px)] max-md:overflow-y-auto flex flex-col max-md:z-50'
+            : 'max-lg:w-full lg:w-1/2 -translate-x-full md:-translate-x-[60rem] lg:-translate-x-[70rem]',
       ]"
+      @mouseleave="isXlOuPlus && $emit('hoverCategory', null)"
     >
       <div class="max-xl:hidden">
         <ButtonArrowMenu
           :fonction="() => $emit('toggleMenuGauche')"
-          :isOpen="isOpenMenuGauche"
-          ajoutClass="absolute right-3 top-0"
+          :is-open="isOpenMenuGauche"
+          ajout-class="absolute right-3 top-0"
         />
       </div>
 
@@ -31,43 +31,46 @@
         href="https://github.com/poleS-dev"
         target="_blank"
       >
-        <i class="pi pi-github cursor-pointer text-amber-200 right-1/2 top-5" style="font-size:2rem"></i>
+        <i
+          class="pi pi-github cursor-pointer text-amber-200 right-1/2 top-5"
+          style="font-size:2rem"
+        />
         <p class="text-amber-200 font-bold">GITHUB</p>
       </a>
 
       <!-- Menu des catégories -->
       <CategoryMenu
         :cats="cats"
-        :menusByCategory="menusByCategory"
-        :hoveredCategory="hoveredCategory"
-        :clickMenu="clickMenu"
-        :isXlOuPlus="isXlOuPlus"
-        :islgOuPlus="islgOuPlus"
-        :isOpenMenuGauche="isOpenMenuGauche"
-        @openMenu="$emit('openMenu', $event)"
-        @hoverCategory="$emit('hoverCategory', $event)"
-        @closeMenu="$emit('closeMenu')"
+        :menus-by-category="menusByCategory"
+        :hovered-category="hoveredCategory"
+        :click-menu="clickMenu"
+        :is-xl-ou-plus="isXlOuPlus"
+        :islg-ou-plus="islgOuPlus"
+        :is-open-menu-gauche="isOpenMenuGauche"
+        @open-menu="$emit('openMenu', $event)"
+        @hover-category="$emit('hoverCategory', $event)"
+        @close-menu="$emit('closeMenu')"
       />
-        <router-link
-      to="/qcm"
-      class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
-    >
-      <i class="fas fa-brain"></i>
-    QCM
-    </router-link>
-    
-    <router-link
-      to="/exercices"
-      class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-green-300 p-2 hover:bg-green-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
-    >
-      <i class="pi pi-book"></i>
-      EXERCICES
-    </router-link>
-    
-    <SelectfunctionVocabulaire class="max-xl:hidden"/>
+      <router-link
+        to="/qcm"
+        class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+      >
+        <i class="fas fa-brain" />
+        QCM
+      </router-link>
+
+      <router-link
+        to="/exercices"
+        class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-green-300 p-2 hover:bg-green-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
+      >
+        <i class="pi pi-book" />
+        EXERCICES
+      </router-link>
+
+      <SelectfunctionVocabulaire class="max-xl:hidden" />
 
       <!-- Liens QCM, Exercices, Documentation -->
-      <MenuLinks @closeMenu="$emit('closeMenu')" />
+      <MenuLinks @close-menu="$emit('closeMenu')" />
     </nav>
   </div>
 </template>

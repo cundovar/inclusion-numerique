@@ -1,42 +1,64 @@
 <template>
   <div class="course-detail-container">
     <div class="course-header">
-      <button @click="goBack" class="back-button">
-        <i class="fas fa-arrow-left"></i>
+      <button
+        class="back-button"
+        @click="goBack"
+      >
+        <i class="fas fa-arrow-left" />
         Retour
       </button>
-      
+
       <div class="course-title-section">
         <div class="course-icon">
-          <i :class="iconClass"></i>
+          <i :class="iconClass" />
         </div>
-        <h1 class="course-title">{{ course.title }}</h1>
-        <p class="course-description">{{ course.description }}</p>
+        <h1 class="course-title">
+          {{ course.title }}
+        </h1>
+        <p class="course-description">
+          {{ course.description }}
+        </p>
       </div>
     </div>
 
     <div class="course-content">
       <div class="content-section">
         <h2>Introduction</h2>
-        <p class="introduction">{{ course.content.introduction }}</p>
+        <p class="introduction">
+          {{ course.content.introduction }}
+        </p>
       </div>
 
-      <div class="content-section" v-if="course.content.steps">
+      <div
+        v-if="course.content.steps"
+        class="content-section"
+      >
         <h2>Étapes à suivre</h2>
         <ol class="steps-list">
-          <li v-for="step in course.content.steps" :key="step" class="step-item">
+          <li
+            v-for="step in course.content.steps"
+            :key="step"
+            class="step-item"
+          >
             {{ step }}
           </li>
         </ol>
       </div>
 
-      <div class="content-section" v-if="course.content.code">
+      <div
+        v-if="course.content.code"
+        class="content-section"
+      >
         <h2>Exemple de code</h2>
         <div class="code-block">
           <div class="code-header">
             <span class="language">{{ getLanguage() }}</span>
-            <button @click="copyCode" class="copy-button">
-              <i class="fas fa-copy"></i>
+            <button
+              class="copy-button"
+              @click="copyCode"
+            >
+              <i class="fas fa-copy" />
               {{ copied ? 'Copié !' : 'Copier' }}
             </button>
           </div>
@@ -46,22 +68,22 @@
 
       <div class="content-section navigation-section">
         <div class="course-navigation">
-          <button 
-            v-if="previousCourse" 
-            @click="navigateToCourse(previousCourse.id)"
+          <button
+            v-if="previousCourse"
             class="nav-button prev-button"
+            @click="navigateToCourse(previousCourse.id)"
           >
-            <i class="fas fa-chevron-left"></i>
+            <i class="fas fa-chevron-left" />
             {{ previousCourse.title }}
           </button>
-          
-          <button 
-            v-if="nextCourse" 
-            @click="navigateToCourse(nextCourse.id)"
+
+          <button
+            v-if="nextCourse"
             class="nav-button next-button"
+            @click="navigateToCourse(nextCourse.id)"
           >
             {{ nextCourse.title }}
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-right" />
           </button>
         </div>
       </div>
@@ -360,31 +382,31 @@ const navigateToCourse = (courseId) => {
   .course-detail-container {
     padding: 16px;
   }
-  
+
   .course-title-section {
     padding: 25px;
   }
-  
+
   .course-title {
     font-size: 28px;
   }
-  
+
   .course-description {
     font-size: 16px;
   }
-  
+
   .content-section {
     padding: 20px;
   }
-  
+
   .course-navigation {
     flex-direction: column;
   }
-  
+
   .nav-button {
     max-width: none;
   }
-  
+
   .next-button,
   .prev-button {
     margin: 0;

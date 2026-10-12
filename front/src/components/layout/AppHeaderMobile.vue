@@ -9,17 +9,20 @@
     <!-- Ligne du haut: Menu burger, Logo, Bouton auth -->
     <div class="flex justify-between items-center px-3 py-1">
       <!-- Bouton menu burger -->
-      <div @click="$emit('toggleMenu')" class="cursor-pointer">
+      <div
+        class="cursor-pointer"
+        @click="$emit('toggleMenu')"
+      >
         <i
           v-if="!isMenuOpen"
           :class="[header.textColor || 'text-blue-950', 'pi pi-bars cursor-pointer']"
           style="font-size: 1.5rem"
-        ></i>
+        />
         <i
           v-else
           :class="[header.textColor || 'text-blue-950', 'pi pi-times cursor-pointer']"
           style="font-size: 1.5rem"
-        ></i>
+        />
       </div>
 
       <!-- Logo centré -->
@@ -28,7 +31,7 @@
           <i
             :class="[header.textColor || 'text-blue-950', 'pi pi-code']"
             style="font-size: 1.8rem"
-          ></i>
+          />
           <span
             :class="[header.textColor || 'text-blue-950', 'font-bold text-xl']"
           >
@@ -39,28 +42,28 @@
 
     
 
-    <!-- Bouton backoffice + connexion/déconnexion -->
-    <div class="flex items-center gap-2">
-      <a
-        v-if="isAdmin"
-        :href="APP_CONFIG.ADMIN_URL"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <AppButton
-          variant="outline"
-          size="xs"
-          icon="pi pi-cog"
-          rounded="full"
-        />
-      </a>
-      <AuthButtonMobile />
+      <!-- Bouton backoffice + connexion/déconnexion -->
+      <div class="flex items-center gap-2">
+        <a
+          v-if="isAdmin"
+          :href="APP_CONFIG.ADMIN_URL"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <AppButton
+            variant="outline"
+            size="xs"
+            icon="pi pi-cog"
+            rounded="full"
+          />
+        </a>
+        <AuthButtonMobile />
+      </div>
     </div>
-  </div>
 
     <!-- Ligne du bas: Barre de recherche -->
     <div class="px-3    flex justify-between pt-1 pb-2">
-         <!-- Sélecteur de niveau stylisé -->
+      <!-- Sélecteur de niveau stylisé -->
       <select
         v-model="selectedLevel"
         class="w-48 h-9 px-3  bg-white border border-gray-300 rounded-lg text-sm text-gray-700
@@ -70,8 +73,8 @@
         <option
           v-for="level in levels"
           :key="level.value"
-          :value="level.value"
           ref=""
+          :value="level.value"
         >
           {{ level.name }}
         </option>
@@ -79,63 +82,56 @@
 
       <AppButton 
       
-      rounded="full"
-      variant=""
-      size="md"
-      icon="pi pi-search"
-      @click="toggleSearchPanel"
-      class="  "
-      :class="showSearch ? 'invisible': 'visible'"
+        rounded="full"
+        variant=""
+        size="md"
+        icon="pi pi-search"
+        class="  "
+        :class="showSearch ? 'invisible': 'visible'"
+        @click="toggleSearchPanel"
       />
-<Transition                                                                                                                                                                    
-    enter-active-class="transition-all duration-300 ease-out"                                                                                                                    
-    enter-from-class="opacity-0 translate-x-full"                                                                                                                                
-    enter-to-class="opacity-100 translate-x-0"                                                                                                                                   
-    leave-active-class="transition-all duration-300 ease-in"                                                                                                                     
-    leave-from-class="opacity-100 translate-x-0"                                                                                                                                 
-    leave-to-class="opacity-0 translate-x-full"                                                                                                                                  
-  >                                                                                                                                                                              
-    <div                                                                                                                                                                         
-      v-show="showSearch"                                                                                                                                                        
-      class=" bg-sky-50  w-screen  absolute right-0 min-h-screen"                                                                                                                     
-    >                                                                                                                                                                            
-      <SearchInput                                                                                                                                                               
-        :modelValue="search"                                                                                                                                                      
-        @update:modelValue="(val)=>search=val"                                                                                                                      
-        @search="launchSearch"                                                                                                                                                
-        class=" w-[80%] mt-10"                                                                                                                                                     
-      />                                                                                                                                                                         
+      <Transition                                                                                                                                                                    
+        enter-active-class="transition-all duration-300 ease-out"                                                                                                                    
+        enter-from-class="opacity-0 translate-x-full"                                                                                                                                
+        enter-to-class="opacity-100 translate-x-0"                                                                                                                                   
+        leave-active-class="transition-all duration-300 ease-in"                                                                                                                     
+        leave-from-class="opacity-100 translate-x-0"                                                                                                                                 
+        leave-to-class="opacity-0 translate-x-full"                                                                                                                                  
+      >                                                                                                                                                                              
+        <div                                                                                                                                                                         
+          v-show="showSearch"                                                                                                                                                        
+          class=" bg-sky-50  w-screen  absolute right-0 min-h-screen"                                                                                                                     
+        >                                                                                                                                                                            
+          <SearchInput                                                                                                                                                               
+            :model-value="search"                                                                                                                                                      
+            class=" w-[80%] mt-10"                                                                                                                      
+            @update:model-value="(val)=>search=val"                                                                                                                                                
+            @search="launchSearch"                                                                                                                                                     
+          />                                                                                                                                                                         
                                                                                                                                                                                  
       
 
-      <AppButton
-      class="absolute border cursor-pointer right-0 top-0"
-       size="sm"
-        textContent="X"
-         variant="danger"
-       @click="toggleSearchPanel"
-          
-           />
+          <AppButton
+            class="absolute border cursor-pointer right-0 top-0"
+            size="sm"
+            text-content="X"
+            variant="danger"
+            @click="toggleSearchPanel"
+          />
       
 
-        <!-- Résultats de recherche mobile -->
+          <!-- Résultats de recherche mobile -->
  
-        <ul class="space-y-3 mt-10  flex justify-center flex-col items-center">
-          
-      <SearchResultItem
-        v-for="result in searchResults"
-        :key="result.id || result.page?.slug"
-        :result="result"
-        @close="toggleSearchPanel"
-      />
-    </ul>
-    </div>                                                                                                                                                                       
-  </Transition>                                                                                                                                                                  
-                        
-
-
-      
-
+          <ul class="space-y-3 mt-10  flex justify-center flex-col items-center">
+            <SearchResultItem
+              v-for="result in searchResults"
+              :key="result.id || result.page?.slug"
+              :result="result"
+              @close="toggleSearchPanel"
+            />
+          </ul>
+        </div>                                                                                                                                                                       
+      </Transition>
     </div>
   </div>
 </template>

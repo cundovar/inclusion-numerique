@@ -1,13 +1,13 @@
 <template>
   <AppButton
     v-if="isAuthenticated"
-    @click="toggleFavorite"
     :disabled="loading"
     :loading="loading"
     :variant="isFavorite ? 'favorite' : 'unfavorite'"
     :icon="loading ? '' : (isFavorite ? 'pi pi-heart-fill' : 'pi pi-heart')"
     size="sm"
     :text-content="loading ? 'Chargement...' : (isFavorite ? 'Supprimer des favoris' : 'Ajouter aux favoris')"
+    @click="toggleFavorite"
   />
 </template>
 
@@ -49,16 +49,16 @@ const checkFavorite = async () => {
 // Basculer le statut de favori
 const toggleFavorite = async () => {
   if (loading.value) return
-  
+
   loading.value = true
-  
+
   try {
     const response = await axios.post(`/api/me-favorites/toggle/${props.pageId}`, {}, {
       withCredentials: true
     })
-    
+
     isFavorite.value = response.data.isFavorite
-    
+
     // Afficher un message de succès (optionnel)
     if (response.data.action === 'added') {
       // Vous pouvez ajouter une notification ici
@@ -66,10 +66,10 @@ const toggleFavorite = async () => {
     } else {
       console.log('Retiré des favoris')
     }
-    
+
   } catch (error) {
     console.error('Erreur lors de la mise à jour des favoris:', error)
-    
+
     // Gérer les erreurs spécifiques
     if (error.response?.status === 401) {
       // Rediriger vers la page de connexion

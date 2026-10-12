@@ -1,12 +1,24 @@
 <template>
   <button
-    @click="handleAuthAction"
     class="cursor-pointer p-2 text-blue-950 hover:text-red-600 transition-colors"
+    @click="handleAuthAction"
   >
-    <i v-if="user.roles && user.roles.includes('ROLE_USER')" class="text-2xl pi pi-sign-out"></i>
-    <i v-else class="text-2xl pi pi-sign-in"></i>
+    <i
+      v-if="user.roles && user.roles.includes('ROLE_USER')"
+      class="text-2xl pi pi-sign-out"
+    />
+    <i
+      v-else
+      class="text-2xl pi pi-sign-in"
+    />
   </button>
-  <p v-if="logoutError" class="text-sm text-red-600" role="alert">{{ logoutError }}</p>
+  <p
+    v-if="logoutError"
+    class="text-sm text-red-600"
+    role="alert"
+  >
+    {{ logoutError }}
+  </p>
 </template>
 
 <script setup>

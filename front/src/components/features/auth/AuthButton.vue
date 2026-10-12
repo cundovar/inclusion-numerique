@@ -1,8 +1,17 @@
 <template>
   <div class="flex items-center gap-2">
-    <p v-if="logoutError" class="text-sm text-red-600" role="alert">{{ logoutError }}</p>
+    <p
+      v-if="logoutError"
+      class="text-sm text-red-600"
+      role="alert"
+    >
+      {{ logoutError }}
+    </p>
     <!-- Bouton profil -->
-    <router-link to="/profile" v-if="user.roles.includes('ROLE_USER')">
+    <router-link
+      v-if="user.roles.includes('ROLE_USER')"
+      to="/profile"
+    >
       <AppButton
         variant="profile"
         size="sm"
@@ -13,11 +22,11 @@
 
     <!-- Bouton connexion/déconnexion -->
     <AppButton
-      @click="handleAuthAction"
       variant="auth"
       size="sm"
       :icon="user.roles.includes('ROLE_USER') ? 'pi pi-sign-out' : 'pi pi-sign-in'"
       :text-content="user.roles.includes('ROLE_USER') ? 'Déco' : 'Connect'"
+      @click="handleAuthAction"
     />
   </div>
 </template>

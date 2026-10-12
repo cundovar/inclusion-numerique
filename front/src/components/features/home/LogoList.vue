@@ -3,31 +3,46 @@
     <div class="flex flex-wrap  xl:justify-center xl:items-center shadow-xxl  p-0 gap-3 w-full justify-end items-end ">
       <!-- GitHub -->
       <div class="tech-item">
-        <a href="https://github.com/poleS-dev" target="_blank" class="tech-link">
+        <a
+          href="https://github.com/poleS-dev"
+          target="_blank"
+          class="tech-link"
+        >
           <div class="tech-icon-container github-hover">
-            <i class="pi pi-github tech-icon"></i>
+            <i class="pi pi-github tech-icon" />
           </div>
         </a>
-        <p class="tech-name">{{ capitalize("github") }}</p>
+        <p class="tech-name">
+          {{ capitalize("github") }}
+        </p>
       </div>
-      
+
       <!-- Logos des technologies -->
-      <div 
-        class="tech-item" 
-        v-for="logo in logos" 
+      <div
+        v-for="logo in logos"
         :key="logo.alt"
+        class="tech-item"
       >
-        <a :href="logo.src" target="_blank" class="tech-link">
-          <div 
-            class="tech-icon-container" 
+        <a
+          :href="logo.src"
+          target="_blank"
+          class="tech-link"
+        >
+          <div
+            class="tech-icon-container"
             :class="`${logo.name}-hover`"
             @mouseenter="setHoverColor(logo.color)"
             @mouseleave="resetHoverColor"
           >
-            <i :class="logo.icon" class="tech-icon"></i>
+            <i
+              :class="logo.icon"
+              class="tech-icon"
+            />
           </div>
         </a>
-        <p class="tech-name">{{ capitalize(logo.name) }}</p>
+        <p class="tech-name">
+          {{ capitalize(logo.name) }}
+        </p>
       </div>
     </div>
   </div>
@@ -91,10 +106,10 @@ const resetHoverColor = () => {
 }
 
 .tech-icon {
- 
+
   font-size: 2.3rem;
 
- 
+
   transition: all 0.3s ease;
 }
 .tech-icon:hover {
@@ -103,7 +118,7 @@ const resetHoverColor = () => {
 
 .tech-name {
   text-align: center;
- 
+
   font-weight: bold;
   font-size: 0.85rem;
   margin: 0;
@@ -196,11 +211,11 @@ const resetHoverColor = () => {
     width: 40px;
     height: 40px;
   }
-  
+
   .tech-icon {
     font-size: 1.5rem;
   }
-  
+
   .tech-name {
     font-size: 0.75rem;
   }

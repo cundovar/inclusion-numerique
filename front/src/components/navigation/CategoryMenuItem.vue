@@ -1,7 +1,7 @@
 <template>
   <div  
-    @click="!isXlOuPlus && $emit('openMenu', cat.name)"
     class="cursor-pointer flex relative  px-2 flex-col justify-center"
+    @click="!isXlOuPlus && $emit('openMenu', cat.name)"
     @mouseenter="isXlOuPlus && $emit('hoverCategory', cat.name)"
   >
     <!-- Titre de la catégorie -->
@@ -22,10 +22,10 @@
       <router-link
         v-if="isXlOuPlus"
         :to="`/category/${cat.name.toLowerCase()}`"
-        @click="$emit('closeMenu')"
         class="cursor-pointer text-lg hover:underline block  focus:bg-blue-500"
+        @click="$emit('closeMenu')"
       >
-       {{ cat.name }}
+        {{ cat.name }}
       </router-link>
 
       <!-- Mobile/Tablet : texte cliquable qui ouvre le menu -->
@@ -40,11 +40,14 @@
     <!-- Sous-menu déroulant -->
     <div class="xl:absolute xl:top-0 xl:-right-[26rem] xl:z-40 xl:shadow-lg max-h-[20rem] xl:pr-10 xl:pl-10 xl:w-[25rem] rounded-xl bg-gray-200 div-scrollbar overflow-y-auto">
       <!-- Bouton "Voir tous" en mobile/tablet -->
-      <div v-if="!isXlOuPlus && clickMenu === cat.name" class="p-2">
+      <div
+        v-if="!isXlOuPlus && clickMenu === cat.name"
+        class="p-2"
+      >
         <router-link
           :to="`/category/${cat.name.toLowerCase()}`"
-          @click="$emit('closeMenu')"
           class="block w-full"
+          @click="$emit('closeMenu')"
         >
           <AppButton
             variant="ghost"
@@ -58,50 +61,53 @@
 
       <!-- Menu des cours -->
 
-      <template v-for="group in menusByCategory[cat.name]" :key="group.label">
-      <div
-        class="md:gap-y-1"
-        v-if="(isXlOuPlus && hoveredCategory === cat.name) || (!isXlOuPlus && clickMenu === cat.name)"
+      <template
+        v-for="group in menusByCategory[cat.name]"
+        :key="group.label"
       >
-      
-        <div class="p-2 md:w-2/3 md:mt-1 md:border-b mb-2 md:text-start md:bg-transparent   max-md:text-center  max-md:text-sm max-md:border-t">
-          
-          <p class="font-semibold  ">{{ group.label }}</p>
-        </div>
-
-        <button
-          :class="[
-            menuGauche.menuItemBgColor,
-            menuGauche.menuItemHoverBgColor,
-            'w-full md:rounded-sm shadow-2xl border border-indigo-800 mb-2 xl:ml-2 flex flex-col gap-2 text-sm'
-          ]"
-          v-for="menu in group.items"
-          :key="menu.page.slug"
+        <div
+          v-if="(isXlOuPlus && hoveredCategory === cat.name) || (!isXlOuPlus && clickMenu === cat.name)"
+          class="md:gap-y-1"
         >
-          <router-link
-            :to="`/pages${menu.page.slug}`"
-            @click="$emit('closeMenu')"
+          <div class="p-2 md:w-2/3 md:mt-1 md:border-b mb-2 md:text-start md:bg-transparent   max-md:text-center  max-md:text-sm max-md:border-t">
+            <p class="font-semibold  ">
+              {{ group.label }}
+            </p>
+          </div>
+
+          <button
+            v-for="menu in group.items"
+            :key="menu.page.slug"
             :class="[
-              menuGauche.menuItemTextColor,
-              'focus:bg-gray-400 focus:text-white z-50 hover:text-fuchsia-900'
+              menuGauche.menuItemBgColor,
+              menuGauche.menuItemHoverBgColor,
+              'w-full md:rounded-sm shadow-2xl border border-indigo-800 mb-2 xl:ml-2 flex flex-col gap-2 text-sm'
             ]"
           >
-            <div class="p-2 flex justify-around max-md:justify-start items-center max-md:text-start">
-              <div class="flex justify-center items-center w-1/3">
-                <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600"></i>
-              </div>
+            <router-link
+              :to="`/pages${menu.page.slug}`"
+              :class="[
+                menuGauche.menuItemTextColor,
+                'focus:bg-gray-400 focus:text-white z-50 hover:text-fuchsia-900'
+              ]"
+              @click="$emit('closeMenu')"
+            >
+              <div class="p-2 flex justify-around max-md:justify-start items-center max-md:text-start">
+                <div class="flex justify-center items-center w-1/3">
+                  <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600" />
+                </div>
 
-              <div class="flex-1 text-center border-blue-300 shadow border flex justify-center items-center">
-                {{ menu.title }}
-              </div>
+                <div class="flex-1 text-center border-blue-300 shadow border flex justify-center items-center">
+                  {{ menu.title }}
+                </div>
 
-              <div class="flex justify-center items-center w-1/3">
-                <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600"></i>
+                <div class="flex justify-center items-center w-1/3">
+                  <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600" />
+                </div>
               </div>
-            </div>
-          </router-link>
-        </button>
-      </div>
+            </router-link>
+          </button>
+        </div>
       </template>
     </div>
   </div>

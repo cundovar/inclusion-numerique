@@ -13,30 +13,29 @@
           'flex gap-5 items-center rounded-lg px-4 py-2'
         ]"
       >
-
         <i
           :class="[header.textColor || 'text-blue-950', 'pi pi-code']"
           style="font-size: 1.8rem"
-        ></i>
+        />
         <span
           :class="[header.textColor || 'text-gray-800', 'font-bold text-xl']"
         >
-         {{ siteName }}
+          {{ siteName }}
         </span>
         <i
           :class="[header.textColor || 'text-blue-950', 'pi pi-code']"
           style="font-size: 1.8rem"
-        ></i>
+        />
       </div>
     </router-link>
 
     <!-- Recherche au centre -->
     <SearchInput
-      :modelValue="search"
-      @update:modelValue="$emit('update:search', $event)"
-      @search="$emit('search')"
+      :model-value="search"
       placeholder="Rechercher"
       class="w-96"
+      @update:model-value="$emit('update:search', $event)"
+      @search="$emit('search')"
     />
 
     <!-- Boutons profil admin selecte niveau et déconnexion à droite -->
