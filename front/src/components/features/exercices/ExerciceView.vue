@@ -24,10 +24,10 @@
         />
         <span class="px-2 py-1   text-gray-700 rounded text-md font-bold ">
           <span class=" py-1">
-            {{ exo.category.name }}
+            {{ exo.category.name }} 
           </span>
           <span>  ->  </span>
-          Niveau :  <span :class="exo.category.name==='css'?'text-blue-500':'text-yellow-500 p-2'"> {{ exo.exoMenu.label }} </span>
+          Niveau :  <span :class="exo.category.name==='css'?'text-blue-500':'text-yellow-500 p-2'"> {{ exo.exoMenu.label }} </span>  
         </span>
       </div>
       <h3 class="font-semibold pb-2 text-xl ">
@@ -37,10 +37,10 @@
 
       <SafeHtml
         :html="exo.code"
-        class=" ml-3 font-semibold pb-2 text-xl shadow p-3 rounded-md    mb-10"
+        class=" ml-3 font-semibold pb-2 text-xl shadow p-3 rounded-md    mb-10" 
         :class="exo.category.name==='css'?'bg-blue-50':'bg-yellow-50'"
       />
-
+  
 
       <CodeEditor
         v-if="exo.exo?.slug"

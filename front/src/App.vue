@@ -94,7 +94,6 @@
 
 <script setup>
 import { computed, onMounted,ref } from "vue";
-import pagesFrame from "./components/navigation/PagesFrame.vue";
 import navFooterMobil from "./components/navigation/NavFooterMobile.vue";
 import { useData } from "./utils/fetchDataPwa";
 import { usePageTracking } from "./composables/domain/usePageTracking.js";
@@ -107,7 +106,6 @@ import AppNavigation from "./components/layout/AppNavigation.vue";
 import MobileAppPopup from "./components/layout/MobileAppPopup.vue";
 import NotifModal from "./components/layout/NotifModal.vue";
 import SearchResults from "./components/features/search/SearchResults.vue";
-import SearchResultsMobile from "./components/features/search/SearchResultsMobile.vue";
 
 // Composables
 import { useResponsive } from "./composables/ui/useResponsive.js";
@@ -144,18 +142,16 @@ if (pageTrackingEnabled) {
 }
 
 // Composables
-const { isMobile, isMdOuPlus, islgOuPlus, isXlOuPlus, updateScreenSizes } = useResponsive();
+const { isMobile, islgOuPlus, isXlOuPlus, updateScreenSizes } = useResponsive();
 const {
   hoveredCategory,
   isMenuOpen,
   clickMenu,
   isOpenMenuGauche,
-  modalIsOpen,
   toggleMenu,
   closeMobileMenu,
   openMenu,
   toggleMenuGauche,
-  closeModal,
   openModal,
   closed
 } = useNavigation();

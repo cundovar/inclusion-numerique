@@ -52,17 +52,15 @@
 </template>
 
 <script setup>
-import SelectfunctionVocabulaire from './SelectfunctionVocabulaire.vue'
 import ButtonArrowMenu from '../ui/ButtonArrowMenu.vue'
 import { ref, computed } from 'vue'
 import { useData } from '../../utils/fetchDataPwa'
 import { useVisibilityFilter } from '../../composables/ui/useVisibilityFilter.js'
 import { useCustomization } from '../../composables/ui/useCustomization'
-import TableOfContents from '../features/pages/toc/TableOfContents.vue'
 
-const { cats, menus } = useData()
+const { cats } = useData()
 const { filterByVisibility } = useVisibilityFilter()
-const { menuDroit } = useCustomization()
+useCustomization()
 
 const isOpenMenuDroit = ref(false)
 

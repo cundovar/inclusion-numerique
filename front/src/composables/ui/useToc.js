@@ -10,7 +10,6 @@ import { ref, onMounted, onUnmounted } from 'vue'
  */
 export function useToc(contentRef, options = {}) {
   const {
-    selectors = 'h2, h3', // Sélecteurs des titres à inclure
     offsetTop = 100, // Offset pour le scroll (header fixe)
     includeH3 = false // Inclure ou non les h3
   } = options
@@ -28,8 +27,8 @@ export function useToc(contentRef, options = {}) {
       .toLowerCase()
       .trim()
       .replace(/\s+/g, '-')        // Remplacer espaces par -
-      .replace(/[^\w\-]+/g, '')    // Supprimer caractères spéciaux
-      .replace(/\-\-+/g, '-')      // Remplacer -- par -
+      .replace(/[^\w-]+/g, '')     // Supprimer caractères spéciaux
+      .replace(/-{2,}/g, '-')       // Remplacer -- par -
       .replace(/^-+/, '')          // Trim - au début
       .replace(/-+$/, '')          // Trim - à la fin
   }

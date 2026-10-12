@@ -1,17 +1,26 @@
 <template>
-  <span :class="badgeClasses" @click="handleClick">
+  <span
+    :class="badgeClasses"
+    @click="handleClick"
+  >
     <!-- Dot indicator -->
-    <span v-if="dot" :class="dotClasses"></span>
+    <span
+      v-if="dot"
+      :class="dotClasses"
+    />
 
     <!-- Icon -->
-    <i v-if="icon" :class="[icon, 'badge-icon']"></i>
+    <i
+      v-if="icon"
+      :class="[icon, 'badge-icon']"
+    />
 
     <!-- Slot pour icône personnalisée -->
-    <slot name="icon"></slot>
+    <slot name="icon" />
 
     <!-- Contenu du badge -->
     <span class="badge-content">
-      <slot></slot>
+      <slot />
     </span>
 
     <!-- Bouton remove -->
@@ -19,10 +28,10 @@
       v-if="removable"
       type="button"
       class="badge-remove"
-      @click.stop="handleRemove"
       aria-label="Remove"
+      @click.stop="handleRemove"
     >
-      <i class="fas fa-times"></i>
+      <i class="fas fa-times" />
     </button>
   </span>
 </template>

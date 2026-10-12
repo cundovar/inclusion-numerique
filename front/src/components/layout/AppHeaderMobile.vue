@@ -40,7 +40,7 @@
         </div>
       </router-link>
 
-
+    
 
       <!-- Bouton backoffice + connexion/déconnexion -->
       <div class="flex items-center gap-2">
@@ -80,8 +80,8 @@
         </option>
       </select>
 
-      <AppButton
-
+      <AppButton 
+      
         rounded="full"
         variant=""
         size="md"
@@ -90,26 +90,26 @@
         :class="showSearch ? 'invisible': 'visible'"
         @click="toggleSearchPanel"
       />
-      <Transition
-        enter-active-class="transition-all duration-300 ease-out"
-        enter-from-class="opacity-0 translate-x-full"
-        enter-to-class="opacity-100 translate-x-0"
-        leave-active-class="transition-all duration-300 ease-in"
-        leave-from-class="opacity-100 translate-x-0"
-        leave-to-class="opacity-0 translate-x-full"
-      >
-        <div
-          v-show="showSearch"
-          class=" bg-sky-50  w-screen  absolute right-0 min-h-screen"
-        >
-          <SearchInput
-            :model-value="search"
-            class=" w-[80%] mt-10"
-            @update:model-value="(val)=>search=val"
-            @search="launchSearch"
-          />
-
-
+      <Transition                                                                                                                                                                    
+        enter-active-class="transition-all duration-300 ease-out"                                                                                                                    
+        enter-from-class="opacity-0 translate-x-full"                                                                                                                                
+        enter-to-class="opacity-100 translate-x-0"                                                                                                                                   
+        leave-active-class="transition-all duration-300 ease-in"                                                                                                                     
+        leave-from-class="opacity-100 translate-x-0"                                                                                                                                 
+        leave-to-class="opacity-0 translate-x-full"                                                                                                                                  
+      >                                                                                                                                                                              
+        <div                                                                                                                                                                         
+          v-show="showSearch"                                                                                                                                                        
+          class=" bg-sky-50  w-screen  absolute right-0 min-h-screen"                                                                                                                     
+        >                                                                                                                                                                            
+          <SearchInput                                                                                                                                                               
+            :model-value="search"                                                                                                                                                      
+            class=" w-[80%] mt-10"                                                                                                                      
+            @update:model-value="(val)=>search=val"                                                                                                                                                
+            @search="launchSearch"                                                                                                                                                     
+          />                                                                                                                                                                         
+                                                                                                                                                                                 
+      
 
           <AppButton
             class="absolute border cursor-pointer right-0 top-0"
@@ -118,10 +118,10 @@
             variant="danger"
             @click="toggleSearchPanel"
           />
-
+      
 
           <!-- Résultats de recherche mobile -->
-
+ 
           <ul class="space-y-3 mt-10  flex justify-center flex-col items-center">
             <SearchResultItem
               v-for="result in searchResults"
@@ -130,7 +130,7 @@
               @close="toggleSearchPanel"
             />
           </ul>
-        </div>
+        </div>                                                                                                                                                                       
       </Transition>
     </div>
   </div>

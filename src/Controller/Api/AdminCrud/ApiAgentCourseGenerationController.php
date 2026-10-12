@@ -35,9 +35,9 @@ final class ApiAgentCourseGenerationController extends AbstractController
     {
         $requested = array_values(array_filter(array_map(
             'trim',
-            explode(',', (string) $request->query->get('status', 'pending,generating,verifying,ready'))
+            explode(',', (string) $request->query->get('status', 'pending,queued,generating,verifying,ready'))
         )));
-        $allowed = ['pending', 'generating', 'verifying', 'ready', 'succeeded', 'failed'];
+        $allowed = ['pending', 'queued', 'generating', 'verifying', 'ready', 'succeeded', 'failed'];
         foreach ($requested as $status) {
             if (!in_array($status, $allowed, true)) {
                 return new JsonResponse(['error' => 'Statut de génération invalide'], Response::HTTP_BAD_REQUEST);
@@ -68,12 +68,11 @@ final class ApiAgentCourseGenerationController extends AbstractController
 
         $existing = $this->em->getRepository(AgentCourseGeneration::class)->findOneBy(['batchId' => $batchId, 'externalId' => $externalId]);
         if ($existing) {
-            if ($this->canonical($existing->getPayload()) !== $this->canonical($payload)) {
-                if ($existing->getStatus() !== 'failed') {
-                    return new JsonResponse(['error' => 'Cette génération est déjà en cours ou terminée. Utilisez un nouveau requestId pour modifier les paramètres.', 'generationId' => $existing->getId(), 'status' => $existing->getStatus()], Response::HTTP_CONFLICT);
-                }
+            if ($existing->getStatus() === 'failed') {
                 $existing->retryWithPayload($payload);
                 $this->em->flush();
+            } elseif ($this->canonical($existing->getPayload()) !== $this->canonical($payload)) {
+                return new JsonResponse(['error' => 'Cette génération est déjà en cours ou terminée. Utilisez un nouveau requestId pour modifier les paramètres.', 'generationId' => $existing->getId(), 'status' => $existing->getStatus()], Response::HTTP_CONFLICT);
             }
             return new JsonResponse($this->map($existing), Response::HTTP_OK);
         }

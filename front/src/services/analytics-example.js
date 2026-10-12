@@ -216,7 +216,7 @@ analytics.debug();
 // Track le temps passé sur une section spécifique
 let sectionStartTime = Date.now();
 
-function trackSectionTime(sectionName) {
+export function trackSectionTime(sectionName) {
   const timeSpent = Date.now() - sectionStartTime;
   analytics.trackAction('section_time', sectionName, {
     timeSpent: timeSpent,
@@ -265,7 +265,7 @@ if (process.env.NODE_ENV === 'development') {
  */
 
 // Nettoyer les anciennes données (à faire périodiquement)
-function cleanOldAnalyticsData() {
+export function cleanOldAnalyticsData() {
   // Logique pour nettoyer les vieilles données
   // (à implémenter selon tes besoins)
 }

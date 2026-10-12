@@ -1,35 +1,53 @@
 <template>
   <div :class="cardClasses">
     <!-- Border decoratif en haut (optionnel) -->
-    <div v-if="showTopBorder" class="card-top-border"></div>
+    <div
+      v-if="showTopBorder"
+      class="card-top-border"
+    />
 
     <!-- Header -->
     <div class="card-header">
       <slot name="header">
         <div class="card-icon">
-          <i :class="icon"></i>
+          <i :class="icon" />
         </div>
-        <h3 class="card-title">{{ title }}</h3>
+        <h3 class="card-title">
+          {{ title }}
+        </h3>
       </slot>
     </div>
 
     <!-- Contenu principal -->
     <div class="card-content">
       <slot>
-        <div v-if="items && items.length > 0" class="card-items-list">
+        <div
+          v-if="items && items.length > 0"
+          class="card-items-list"
+        >
           <div
             v-for="(item, index) in items"
             :key="item.id || index"
             class="card-item"
           >
-            <slot name="item" :item="item" :index="index">
+            <slot
+              name="item"
+              :item="item"
+              :index="index"
+            >
               <!-- Contenu par défaut de l'item -->
               <div class="item-content">
                 <div class="item-info">
-                  <i v-if="item.icon" :class="[item.icon, 'item-icon']"></i>
+                  <i
+                    v-if="item.icon"
+                    :class="[item.icon, 'item-icon']"
+                  />
                   <span class="item-label">{{ item.label || item.title || item.name }}</span>
                 </div>
-                <i v-if="clickable" class="fas fa-arrow-right item-arrow"></i>
+                <i
+                  v-if="clickable"
+                  class="fas fa-arrow-right item-arrow"
+                />
               </div>
             </slot>
           </div>
@@ -38,10 +56,13 @@
     </div>
 
     <!-- Footer -->
-    <div v-if="showFooter" class="card-footer">
+    <div
+      v-if="showFooter"
+      class="card-footer"
+    >
       <slot name="footer">
         <div class="footer-count">
-          <i :class="footerIcon"></i>
+          <i :class="footerIcon" />
           <span>{{ items.length }} {{ footerText }}</span>
         </div>
       </slot>
@@ -107,8 +128,6 @@ const props = defineProps({
     default: 'border-l-pink-500'
   }
 })
-
-const emit = defineEmits(['item-click'])
 
 // Classes de la carte
 const cardClasses = computed(() => {

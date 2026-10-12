@@ -24,6 +24,16 @@ final class AgentCourseGenerationTest extends TestCase
         $generation->update('unknown', null, null, null);
     }
 
+    public function testItCanBeQueuedBeforeGenerationStarts(): void
+    {
+        $generation = new AgentCourseGeneration('batch-1', 'course-1', ['title' => 'Cours test']);
+
+        $generation->update('queued', null, null, null);
+
+        self::assertSame('queued', $generation->getStatus());
+        self::assertNull($generation->getFinishedAt());
+    }
+
     public function testFailDoesNotCountTheLastReportTwice(): void
     {
         $generation = new AgentCourseGeneration('batch-1', 'course-1', ['title' => 'Cours test']);
@@ -39,6 +49,24 @@ final class AgentCourseGenerationTest extends TestCase
         self::assertSame($report, $generation->getVerificationReport());
         self::assertNotNull($generation->getFinishedAt());
     }
+    public function testRetryResetsAFailedGenerationWithTheSamePayload(): void
+    {
+        $payload = ['title' => 'Cours test'];
+        $generation = new AgentCourseGeneration('batch-1', 'course-1', $payload);
+        $report = ['approved' => false, 'issues' => [['severity' => 'blocking']]];
+
+        $generation->update('verifying', ['codeHTML' => '<main class="principal"></main>'], $report, null);
+        $generation->fail($report, 'Vérification refusée');
+        $generation->retryWithPayload($payload);
+
+        self::assertSame('pending', $generation->getStatus());
+        self::assertSame(0, $generation->getVerificationAttempts());
+        self::assertNull($generation->getCandidate());
+        self::assertNull($generation->getVerificationReport());
+        self::assertNull($generation->getTechnicalError());
+        self::assertNull($generation->getFinishedAt());
+    }
+
     public function testItCanBecomeReadyAndReplaceItsPayload(): void
     {
         $generation = new AgentCourseGeneration('batch-1', 'course-1', ['menuId' => 92]);

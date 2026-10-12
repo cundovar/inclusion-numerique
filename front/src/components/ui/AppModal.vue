@@ -10,16 +10,26 @@
           <div
             v-if="modelValue"
             :class="modalClasses"
-            @click.stop
             role="dialog"
             aria-modal="true"
             :aria-labelledby="title ? 'modal-title' : undefined"
+            @click.stop
           >
             <!-- Header -->
-            <div v-if="showHeader" class="modal-header">
+            <div
+              v-if="showHeader"
+              class="modal-header"
+            >
               <slot name="header">
-                <h3 v-if="title" id="modal-title" class="modal-title">
-                  <i v-if="icon" :class="[icon, 'modal-icon']"></i>
+                <h3
+                  v-if="title"
+                  id="modal-title"
+                  class="modal-title"
+                >
+                  <i
+                    v-if="icon"
+                    :class="[icon, 'modal-icon']"
+                  />
                   {{ title }}
                 </h3>
               </slot>
@@ -28,20 +38,23 @@
                 v-if="closable"
                 type="button"
                 class="modal-close"
-                @click="close"
                 aria-label="Fermer"
+                @click="close"
               >
-                <i class="pi pi-times"></i>
+                <i class="pi pi-times" />
               </button>
             </div>
 
             <!-- Body -->
             <div :class="bodyClasses">
-              <slot></slot>
+              <slot />
             </div>
 
             <!-- Footer -->
-            <div v-if="showFooter || $slots.footer" class="modal-footer">
+            <div
+              v-if="showFooter || $slots.footer"
+              class="modal-footer"
+            >
               <slot name="footer">
                 <AppButton
                   v-if="showCancelButton"

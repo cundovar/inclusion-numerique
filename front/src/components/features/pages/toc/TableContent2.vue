@@ -21,30 +21,30 @@
   </Teleport>
 </template>
 <script setup>
-    import { ref } from 'vue'
+    import { ref } from 'vue' 
     import TocList from './TocList.vue'
-
+    
 
 
 
 const activeTab = ref('sommaire')
-
+    
 defineProps({
   toc: {
     type: Array,
     required: true
   },
-
+  
   activeId: {
     type: String,
     default: ''
   },
-
+  
   showProgress: {
     type: Boolean,
     default: true
   },
-
+  
   bgCategorie: {
     type: String,
     default: ''

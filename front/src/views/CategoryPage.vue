@@ -63,7 +63,6 @@ import CourseCard from '../components/features/pages/CourseCard.vue'
 import SeoHead from '../components/layout/SeoHead.vue'
 import SafeHtml from '../components/ui/SafeHtml.vue'
 import { storeToRefs } from 'pinia'
-import NiveauFilter from '../components/ui/NiveauFilter.vue'
 import { useNiveauStore } from "@/stores/niveauCoursStore";
 
 
@@ -295,23 +294,6 @@ const categoryIconClass = computed(() => {
 
 
   return  'fas fa-code'
-})
-
-const categoryDescription = computed(() => {
-  // Chercher la catégorie dans l'API par son nom
-  const currentCategory = cats.value?.find(
-    cat => cat.name.toLowerCase() === categoryName.value.toLowerCase()
-  )
-
-  // Retourner la description de l'API ou une description par défaut
-  // On enlève les balises HTML pour une description courte
-  if (currentCategory?.description) {
-    const tempDiv = document.createElement('div')
-    tempDiv.innerHTML = currentCategory.description
-    return tempDiv.textContent || tempDiv.innerText || 'Ressources de programmation'
-  }
-
-  return 'Ressources de programmation'
 })
 
 const categoryPresentation = computed(() => {

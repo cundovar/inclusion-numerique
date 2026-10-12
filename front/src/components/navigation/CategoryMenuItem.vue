@@ -1,5 +1,5 @@
 <template>
-  <div
+  <div  
     class="cursor-pointer flex relative  px-2 flex-col justify-center"
     @click="!isXlOuPlus && $emit('openMenu', cat.name)"
     @mouseenter="isXlOuPlus && $emit('hoverCategory', cat.name)"

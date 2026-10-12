@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class=" page-exo-list md:rounded-2xl mt-10 xl:mt-0 pb-96 min-h-screen w-full relative z-20">
     <div class="w-full">
@@ -98,9 +99,9 @@
   <script setup>
   import Exocard from "../components/features/exercices/ExerciceCard.vue"
   import { useData } from "../utils/fetchDataPwa"
-  import { onMounted, ref, reactive } from "vue"
+  import { onMounted, reactive } from "vue"
 
-  const { exoMenus, fetchExoMenus } = useData()
+  const { fetchExoMenus } = useData()
   const { exoContents, fetchExoContents } = useData()
 
   // État d'ouverture des sections

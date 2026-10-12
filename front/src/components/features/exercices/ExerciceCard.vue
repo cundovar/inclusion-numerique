@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   routerName: { type: String, required: true },
   items: { type: Array, default: () => [] },
   sectionTitle: { type: String, default: '' },

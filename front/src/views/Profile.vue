@@ -26,7 +26,7 @@
           <div class="flex items-center space-x-4">
             <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
               <i class="pi pi-user text-3xl text-blue-500" />
-            </div>
+            </div> 
             <div class="text-white">
               <h1 class="text-2xl font-bold">
                 {{ user.username }}
@@ -46,7 +46,7 @@
         <AppModal
           v-model="isOpen"
           size="lg"
-          title="Modifier le profile"
+          title="Modifier le profile" 
           :show-footer="true"
           @close="closeModal"
         >
@@ -57,7 +57,7 @@
                 label="Nouveau nom"
               />
             </div>
-          </form>
+          </form>        
 
           <template #footer>
             <AppButton
@@ -160,8 +160,8 @@
               v-else
               class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
             >
-              <div
-                v-for="favorite in favorites"
+              <div 
+                v-for="favorite in favorites" 
                 :key="favorite.id"
                 class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow"
               >
@@ -176,16 +176,16 @@
                     <i class="pi pi-trash" />
                   </button>
                 </div>
-
+              
                 <p class="text-gray-600 text-sm mb-2">
                   {{ favorite.category.name }}
                 </p>
-
+              
                 <div class="flex justify-between items-center">
                   <span class="text-xs text-gray-500">
                     Ajouté le {{ formatDate(favorite.createdAt) }}
                   </span>
-
+                
                   <router-link
                     :to="`/pages${favorite.page.slug}`"
                     class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors"
@@ -251,6 +251,7 @@
 
                 <div class="bg-white p-3 rounded border border-gray-200 mb-3">
                   <SafeHtml
+                    tag="p"
                     :html="note.content"
                     class="text-sm text-gray-700 whitespace-pre-wrap"
                   />
@@ -403,8 +404,8 @@
           </div>
 
         <!-- Onglet Apparence -->
-        <!---
-
+        <!--- 
+        
       <div v-if="activeTab === 'appearance'">
         <div v-if="!allowedClasses || !customSettings.header || !customSettings.body" class="text-center py-8">
             <i class="pi pi-spinner pi-spin text-2xl text-blue-500"></i>
@@ -424,7 +425,7 @@
             </router-link>
           </div>
 
-           Nom du site
+           Nom du site 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-globe mr-2 text-blue-500"></i>
@@ -442,7 +443,7 @@
             </div>
           </div>
 
-           Header
+           Header 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-window-maximize mr-2 text-blue-500"></i>
@@ -450,7 +451,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <-- Header - Couleur de fond
+              <-- Header - Couleur de fond 
               <AppSelect
                 v-model="customSettings.header.bgColor"
                 label="Couleur de fond"
@@ -458,7 +459,7 @@
                 clearable
               />
 
-              <-- Header - Couleur de texte
+              <-- Header - Couleur de texte 
               <AppSelect
                 v-model="customSettings.header.textColor"
                 label="Couleur de texte"
@@ -466,7 +467,7 @@
                 clearable
               />
 
-              <-- Header - Couleur hover
+              <-- Header - Couleur hover 
               <AppSelect
                 v-model="customSettings.header.hoverColor"
                 label="Couleur hover"
@@ -476,7 +477,7 @@
             </div>
           </div>
 
-          <-- Body
+          <-- Body 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-file mr-2 text-blue-500"></i>
@@ -484,7 +485,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <-- Body - Couleur de fond
+              <-- Body - Couleur de fond 
               <AppSelect
                 v-model="customSettings.body.bgColor"
                 label="Couleur de fond"
@@ -492,7 +493,7 @@
                 clearable
               />
 
-              <-- Body - Couleur de texte
+              <-- Body - Couleur de texte 
               <AppSelect
                 v-model="customSettings.body.textColor"
                 label="Couleur de texte"
@@ -502,7 +503,7 @@
             </div>
           </div>
 
-          <- Menu Gauche
+          <- Menu Gauche 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-bars mr-2 text-blue-500"></i>
@@ -510,7 +511,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <-- Catégorie - Couleur de fond
+              <-- Catégorie - Couleur de fond 
               <AppSelect
                 v-model="customSettings.menuGauche.categoryBgColor"
                 label="Catégorie - Couleur de fond"
@@ -534,7 +535,7 @@
                 clearable
               />
 
-              <-- Catégorie - Couleur hover
+              <-- Catégorie - Couleur hover 
               <AppSelect
                 v-model="customSettings.menuGauche.categoryHoverColor"
                 label="Catégorie - Couleur hover"
@@ -542,7 +543,7 @@
                 clearable
               />
 
-              <! Menu Item - Couleur de fond
+              <! Menu Item - Couleur de fond 
               <AppSelect
                 v-model="customSettings.menuGauche.menuItemBgColor"
                 label="Menu Item - Couleur de fond"
@@ -550,7 +551,7 @@
                 clearable
               />
 
-               Menu Item - Couleur de texte
+               Menu Item - Couleur de texte 
               <AppSelect
                 v-model="customSettings.menuGauche.menuItemTextColor"
                 label="Menu Item - Couleur de texte"
@@ -558,7 +559,7 @@
                 clearable
               />
 
-               Menu Item - Couleur hover
+               Menu Item - Couleur hover 
               <AppSelect
                 v-model="customSettings.menuGauche.menuItemHoverBgColor"
                 label="Menu Item - Couleur hover fond"
@@ -568,7 +569,7 @@
             </div>
           </div>
 
-          Menu Droit
+          Menu Droit 
           <div class="mb-8 bg-white border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-semibold mb-4 flex items-center">
               <i class="pi pi-bars mr-2 text-green-500"></i>
@@ -576,7 +577,7 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-               Catégorie - Couleur de fond
+               Catégorie - Couleur de fond 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryBgColor"
                 label="Catégorie - Couleur de fond"
@@ -584,7 +585,7 @@
                 clearable
               />
 
-               Catégorie - Couleur de texte
+               Catégorie - Couleur de texte 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryTextColor"
                 label="Catégorie - Couleur de texte"
@@ -592,7 +593,7 @@
                 clearable
               />
 
-               Catégorie - Taille de texte
+               Catégorie - Taille de texte 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryTextSize"
                 label="Catégorie - Taille de texte"
@@ -600,7 +601,7 @@
                 clearable
               />
 
-               Catégorie - Couleur hover
+               Catégorie - Couleur hover 
               <AppSelect
                 v-model="customSettings.menuDroit.categoryHoverColor"
                 label="Catégorie - Couleur hover"
@@ -610,7 +611,7 @@
             </div>
           </div>
 
-          Boutons d'action
+          Boutons d'action 
           <div class="flex gap-4">
             <AppButton
               @click="saveAppearance"
@@ -632,7 +633,7 @@
             />
           </div>
 
-           Message de succès
+           Message de succès 
           <AppAlert
             v-if="appearanceMessage"
             type="success"
@@ -690,7 +691,7 @@ const updateProfile =async () => {
 
 await axios.patch(`/api/users/${user.value.id}`, {
       username: user.value.username,
-
+     
     })
     isOpen.value = false
   }catch(error){

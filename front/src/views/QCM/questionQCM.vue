@@ -184,7 +184,7 @@
       v-else
       class="text-center pt-16 text-2xl font-bold text-gray-500"
     >
-      EN COUR DE CONSTRUCTION, IL ME FAUT AJOUTER DES QUESTIONS !!!
+      EN COUR DE CONSTRUCTION, IL ME FAUT AJOUTER DES QUESTIONS !!! 
       <div>
         <router-link
           to="/qcm"
@@ -361,7 +361,7 @@ onMounted(async () => {
 
 qcmStore.setQcms(list) // charger toutes les questions
 qcmStore.AleatoireQCM() // melanger les questions
-const dixQuestionAleatoire = qcmStore.qcms.slice(0, 10)//prendre 10 qestions
+const dixQuestionAleatoire = qcmStore.qcms.slice(0, 10)//prendre 10 qestions 
 qcmStore.setQcms(dixQuestionAleatoire)// charger les 10 questions
 qcmStore.AleatoireChoices() // melanger les choix
 

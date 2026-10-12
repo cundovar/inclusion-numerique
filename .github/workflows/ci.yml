@@ -32,7 +32,6 @@ env:
   N8N_API_KEY: REDACTED
   API_ADMIN_USER_EMAIL: ci@example.test
   VITE_ENABLE_PAGE_TRACKING: 'false'
-  VITE_AGENTS_API_URL: /api/agents-cours
 
 jobs:
   setup_variables:

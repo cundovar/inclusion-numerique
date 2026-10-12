@@ -7,16 +7,25 @@
     @click="$emit('click', $event)"
   >
     <!-- Icône de chargement -->
-    <i v-if="loading" class="pi pi-spinner pi-spin mr-2"></i>
+    <i
+      v-if="loading"
+      class="pi pi-spinner pi-spin mr-2"
+    />
 
     <!-- Icône avant le texte -->
-    <i v-else-if="icon && iconPosition === 'left'" :class="[icon, textContent ? 'mr-2' : '']"></i>
+    <i
+      v-else-if="icon && iconPosition === 'left'"
+      :class="[icon, textContent ? 'mr-2' : '']"
+    />
 
     <!-- Slot pour le contenu personnalisé ou texte par défaut -->
     <slot>{{ textContent }}</slot>
 
     <!-- Icône après le texte -->
-    <i v-if="icon && iconPosition === 'right' && !loading" :class="[icon, textContent ? 'ml-2' : '']"></i>
+    <i
+      v-if="icon && iconPosition === 'right' && !loading"
+      :class="[icon, textContent ? 'ml-2' : '']"
+    />
   </button>
 </template>
 

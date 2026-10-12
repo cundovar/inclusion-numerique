@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { openDB } from 'idb'
-import { useRouter } from 'vue-router'
 import { useVisibilityFilter } from '../composables/ui/useVisibilityFilter'
 
 // Références globales pour réactivité partagée
@@ -22,9 +21,6 @@ const clearUser = async () => {
 window.addEventListener('auth:logout', () => {
   clearUser().catch((error) => console.error('Impossible de supprimer l’utilisateur mis en cache.', error))
 })
-
-// Router (utile si besoin de redirection depuis le composable)
-const router = useRouter()
 
 // Filtre de visibilité
 const { filterByVisibility } = useVisibilityFilter()
@@ -154,7 +150,7 @@ async function fetchMenus() {
     await saveToDB('menus', menus.value)
 
     console.log("Menus (en ligne):", menus.value)
-  } catch (error) {
+  } catch {
     console.warn("Connexion échouée. Chargement hors ligne.")
     cats.value = await loadFromDB('categories')
     menus.value = await loadFromDB('menus')
@@ -178,7 +174,7 @@ async function fetchExoMenus() {
     await saveToDB('exoMenus', exoMenus.value)
 
     console.log("ExoMenus (en ligne):", exoMenus.value)
-  } catch (error) {
+  } catch {
     console.warn("Connexion échouée. Chargement hors ligne.")
     cats.value = await loadFromDB('categories')
     exoMenus.value = await loadFromDB('exoMenus')
@@ -202,7 +198,7 @@ async function fetchExoContents() {
     await saveToDB('exoContents', exoContents.value)
 
     console.log("ExoContents (en ligne):", exoContents.value)
-  } catch (error) {
+  } catch {
     console.warn("Connexion échouée. Chargement hors ligne.")
     cats.value = await loadFromDB('categories')
     exoContents.value = await loadFromDB('exoContents')
@@ -260,7 +256,7 @@ async function fetchPageContentExo(pageId) {
       return cachedData
     }
 
-    throw new Error(`Exercice ${pageId} non disponible hors ligne`)
+    throw new Error(`Exercice ${pageId} non disponible hors ligne`, { cause: error })
   }
 }
 // Fonction pour récupérer une page individuelle avec cache
@@ -295,7 +291,7 @@ async function fetchPageContent(pageId) {
       return cachedPage
     }
 
-    throw new Error(`Page ${pageId} non disponible hors ligne`)
+    throw new Error(`Page ${pageId} non disponible hors ligne`, { cause: error })
   }
 }
 
@@ -308,7 +304,7 @@ async function fetchSeoData() {
     await saveToDB('seo', seoData.value)
 
     console.log("SEO Data (en ligne):", seoData.value)
-  } catch (error) {
+  } catch {
     console.warn("Connexion échouée. Chargement SEO hors ligne.")
     seoData.value = await loadFromDB('seo')
     console.log("SEO Data (hors ligne):", seoData.value)
@@ -324,7 +320,7 @@ async function fetchDocDeCodes() {
     await saveToDB('docDeCodes', docDeCodes.value)
 
     console.log("DocDeCodes (en ligne):", docDeCodes.value)
-  } catch (error) {
+  } catch {
     console.warn("Connexion échouée. Chargement DocDeCodes hors ligne.")
     docDeCodes.value = await loadFromDB('docDeCodes')
     console.log("DocDeCodes (hors ligne):", docDeCodes.value)
@@ -352,7 +348,7 @@ async function fetchSeoByPage(pageName) {
 
     console.log(`SEO ${pageName} (en ligne):`, seoPage)
     return seoPage
-  } catch (error) {
+  } catch {
     console.warn(`Connexion échouée pour SEO ${pageName}. Chargement hors ligne.`)
 
     // Fallback vers le cache API

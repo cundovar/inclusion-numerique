@@ -180,6 +180,12 @@ class Menus
         return $this->positionMenus;
     }
 
+    public function setPositionMenus(?PositionMenus $positionMenus): static
+    {
+        $this->positionMenus = $positionMenus;
+
+        return $this;
+    }
 
     public function getNiveauCours(): ?NiveauCours
     {

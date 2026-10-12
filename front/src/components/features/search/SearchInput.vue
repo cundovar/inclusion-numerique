@@ -33,9 +33,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { onMounted } from 'vue';
-import axios from 'axios';
 import AppButton from '../../ui/AppButton.vue';
 import AppInput from '../../ui/AppInput.vue';
 
