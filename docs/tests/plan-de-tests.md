@@ -78,6 +78,12 @@ Après correction d'AN-03 (branche `fix/pwa-service-worker-registration`), en lo
 
 Non exécutés en production, faute de compte de test dédié (aucune création de compte ni écriture en production) : US-05 (exercices), US-07 (résultat de QCM), US-08 (inscription et connexion), US-09 à US-12 (espace connecté), US-15 et US-16 (administration).
 
+Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-symfony/actions/runs/38249883993) (fusion de la PR #41), en production, le 2026-10-12 :
+
+| ID | Exigence | Scénario | Résultat attendu | Résultat |
+|---|---|---|---|---|
+| R-12 | ENF-02 | Même scénario que R-11 sur `https://devdoc.varascundo.com/spa/pages/flexbox` | Service worker actif ; cours affiché hors ligne | OK : `/spa/sw.js` actif, portée `/spa/`, page contrôlée ; caches remplis (pré-cache 3, `spa-pages` 1, `build-assets` 9, `api-public` 6) ; hors ligne, cours, menus et code coloré affichés ; requête non mise en cache en échec réseau |
+
 ## 6. Résultats
 
 | Exécution | Date | Résultat |
@@ -95,7 +101,7 @@ Non exécutés en production, faute de compte de test dédié (aucune création 
 |---|---|---|---|---|
 | AN-01 | Critique | Back-office EasyAdmin servi hors de `/admin` sans authentification ; écritures API Platform anonymes sur 17 ressources, dont la modification des rôles et du mot de passe via `PATCH /api/users/{id}` | Recette HTTP en local | Corrigée (PR #39) ; couverte par `AccessControlTest` ; vérifiée en production (R-08) |
 | AN-02 | Majeure | Modification du profil impossible : le front envoie `application/json`, API Platform attend `application/merge-patch+json` (415) | Analyse lors de la correction d'AN-01 | Corrigée (PR #39) ; couverte par test fonctionnel ; non revérifiée en production (compte requis) |
-| AN-03 | Majeure | Service worker jamais enregistré en production : le front demande `/build/sw.js` (500), alors que le fichier est généré dans `/spa/sw.js`. Cause probable : `base: '/build/'` dans `front/vite.config.js` | Recette R-10 | Corrigée (branche `fix/pwa-service-worker-registration`) : `base` et `scope` `/spa/`, mise en cache des pages, des fichiers compilés et de l'API publique ; vérifiée en local (R-11) ; vérification en production après déploiement |
+| AN-03 | Majeure | Service worker jamais enregistré en production : le front demande `/build/sw.js` (500), alors que le fichier est généré dans `/spa/sw.js`. Cause probable : `base: '/build/'` dans `front/vite.config.js` | Recette R-10 | Corrigée (branche `fix/pwa-service-worker-registration`) : `base` et `scope` `/spa/`, mise en cache des pages, des fichiers compilés et de l'API publique ; vérifiée en local (R-11) puis en production (R-12) |
 | AN-04 | Mineure | `GET /api/qcm/language/{language}` renvoie 500 : `QCMApiController` appelle `ChoicesQCM::isCorrect()`, qui n'existe pas. Le front utilise `/api/q_c_ms` et n'est pas touché | Recette R-04 | Ouverte |
 | AN-05 | Mineure | En visiteur, le front appelle des routes réservées (`/user-api/me`, `/api/customization`) : 401 et erreurs dans la console | Recette, console navigateur | Ouverte |
 
