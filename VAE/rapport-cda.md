@@ -23,6 +23,7 @@
 
 - Dépendances vulnérables relevées par l'audit CI (1 alerte critique `twig/twig`, 18 élevées côté Composer ; 8 élevées côté npm) : faille critique Twig corrigée (Twig 3.30.0, validé par la CI, run `38236154178` : 0 critique, 14 élevées côté Composer), autres mises à jour à faire ; audits non bloquants à ce jour.
 
+- Contrôle d'accès : le back-office EasyAdmin était servi hors de `/admin` sans authentification, et API Platform acceptait des écritures anonymes (dont la modification des rôles d'un utilisateur). Correction vérifiée localement le 2026-10-12 par 16 tests fonctionnels (`tests/Functional/Security/AccessControlTest.php`) ; validation CI et vérification en production à faire.
 - Gestion des secrets dans les fichiers `.env`.
 - Rate limiting réellement configuré sur les endpoints sensibles.
 - Headers CSP, HSTS et protections HTTP dans l'environnement actif.
