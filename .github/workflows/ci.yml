@@ -140,6 +140,8 @@ jobs:
           cache-dependency-path: front/package-lock.json
       - name: Install Vue dependencies
         run: npm ci --prefix front
+      - name: Run Vue unit tests
+        run: npm test --prefix front
       - name: Validate Vue production build
         run: npm run check --prefix front
 

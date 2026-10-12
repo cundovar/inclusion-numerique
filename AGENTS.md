@@ -14,7 +14,7 @@
 
 ## Validation (obligatoire)
 - Pendant l'itération : `make check-fast` (syntaxe PHP, PHPStan, ESLint).
-- **Une tâche n'est terminée que si `make check` passe** (ajoute PHPUnit + build Vite).
+- **Une tâche n'est terminée que si `make check` passe** (ajoute PHPUnit, Vitest et le build Vite).
 - Ne jamais masquer un échec : le signaler avec la sortie. Les erreurs préexistantes sont nommées, pas ignorées.
 - Les conteneurs `php` et `front` doivent tourner (`docker compose ps`).
 - Hooks partagés (`.agents/hooks/`, branchés par `.claude/settings.json` et `.codex/hooks.json`) : lint automatique du fichier modifié, blocage des fichiers protégés, et rappel en fin de tâche tant que `make check` n'a pas réussi depuis la dernière modification de code.

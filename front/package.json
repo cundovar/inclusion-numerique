@@ -13,7 +13,8 @@
     "storybook:dock": "storybook dev -p 6006 --host 0.0.0.0 --no-open",
     "build-storybook": "storybook build",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
@@ -47,10 +48,12 @@
     "@vitejs/plugin-vue": "^5.2.3",
     "@vitest/browser-playwright": "^4.0.14",
     "@vitest/coverage-v8": "^4.0.14",
+    "@vue/test-utils": "^2.5.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^10.11.0",
     "eslint-plugin-vue": "^10.11.1",
     "globals": "^17.12.0",
+    "jsdom": "^29.1.1",
     "playwright": "^1.57.0",
     "postcss": "^8.5.5",
     "storybook": "^10.1.2",

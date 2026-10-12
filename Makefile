@@ -85,6 +85,10 @@ lint-front:
 	@echo "🔎 ESLint..."
 	docker compose exec -T front npm run lint
 
+test-front:
+	@echo "🧪 Vitest..."
+	docker compose exec -T front npm test
+
 build-front:
 	@echo "🏗️  Build Vite..."
 	docker compose exec -T front npm run check
@@ -92,9 +96,9 @@ build-front:
 check-fast: lint-php analyse lint-front
 	@echo "✅ check-fast terminé"
 
-check: check-fast test build-front
+check: check-fast test test-front build-front
 	@rm -f .agents/.needs-check
 	@echo "✅ check terminé"
 
 .PHONY: up down down-volumes restart logs bash front-bash composer composer-require npm-install npm-dev symfo migrate start stop dev \
-	lint-php analyse test lint-front build-front check-fast check
+	lint-php analyse test test-front lint-front build-front check-fast check
