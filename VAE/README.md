@@ -23,7 +23,8 @@ Les documents détaillés restent dans `docs/` et `documentations/`. Ils servent
 
 - [Expression des besoins](../docs/conception/besoins.md) : acteurs, user stories, cas d'utilisation, enchaînement des écrans (formalisé a posteriori).
 - [Maquettes](../docs/conception/maquettes.md) : maquettes Figma basse fidélité comparées aux écrans réalisés.
-- [Base de données](../docs/conception/base-de-donnees.md) : MCD, MLD par domaine, choix de conception et écarts modèle/base.
+- [Base de données](../docs/conception/base-de-donnees.md) : MCD, MLD par domaine, choix de conception et écarts modèle/base, stockage NoSQL client (IndexedDB).
+- [Architecture logicielle](../docs/conception/architecture.md) : vue d'ensemble, sécurité par zone, couches hexagonales, flux d'un cas d'usage, front, déploiement, choix justifiés.
 - [Audit hexagonal final](../docs/final-hexagonal-audit.md) : état réel de l'architecture hexagonale.
 - [Audit hexagonal](../docs/hexagonal-audit.md) : analyse de l'architecture actuelle et de ses limites.
 - [Migration MCP vers Symfony](../docs/migration-mcp-vers-symfony.md) : conception, migration et intégration d'un composant technique.
