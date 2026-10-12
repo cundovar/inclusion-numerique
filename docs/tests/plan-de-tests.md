@@ -8,8 +8,8 @@
 - Empêcher les régressions à chaque modification, en local avant commit et en CI avant déploiement.
 - Vérifier la production après chaque déploiement, sans modifier ses données.
 
-Dans le périmètre : le backend Symfony (domaine, application, infrastructure, HTTP), le build du frontend Vue et les parcours utilisateur publics.
-Hors périmètre à ce jour : les tests automatisés du frontend (composants, E2E) et les tests de charge (voir §8).
+Dans le périmètre : le backend Symfony (domaine, application, infrastructure, HTTP), la logique du frontend Vue (composant de sécurité, gardes du routeur, store, utilitaires), le build du frontend et les parcours utilisateur publics.
+Hors périmètre à ce jour : les tests de bout en bout du navigateur (E2E) et les tests de charge (voir §8).
 
 ## 2. Stratégie : niveaux de test
 
@@ -17,6 +17,7 @@ Hors périmètre à ce jour : les tests automatisés du frontend (composants, E2
 |---|---|---|---|---|
 | Analyse statique | Syntaxe PHP, typage et erreurs | `php -l`, PHPStan niveau 5 (`make lint-php`, `make analyse`) | Local, CI | Local oui ; CI informatif (PHPStan) |
 | Qualité front | Règles Vue et JS | ESLint (`make lint-front`) | Local | Local oui ; absent de la CI |
+| Unitaire front | Composant `SafeHtml`, gardes du routeur, store QCM, utilitaires | Vitest + Vue Test Utils + jsdom (`make test-front`, `front/tests/unit/`) | Local, CI (job « Frontend quality ») | Oui |
 | Unitaire | Entités, handlers CQRS, services | PHPUnit (`tests/Entity`, `tests/Application`, `tests/Infrastructure/Note/Service`) | Local, CI | Oui |
 | Intégration | Repository Doctrine sur une vraie base | PHPUnit + SQLite en mémoire (`tests/Infrastructure/Note/Repository`) | Local, CI | Oui |
 | Fonctionnel HTTP | Contrôles d'accès de bout en bout (routage, pare-feu, API Platform, EasyAdmin) | PHPUnit `WebTestCase` + SQLite jetable (`tests/Functional`) | Local, CI | Oui |
@@ -38,7 +39,7 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 
 ## 4. Cas de test automatisés
 
-49 tests, 121 assertions. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
+70 tests : 49 tests PHPUnit (121 assertions) et 21 tests Vitest. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
 
 | Exigence | Fichier de test | Ce qui est vérifié |
 |---|---|---|
@@ -53,6 +54,10 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 | US-15 | `tests/Entity/AgentCourseGenerationTest.php` (5) | Cycle de vie d'une génération de cours IA : file d'attente, échec, nouvel essai, validation |
 | US-13, US-14 | `tests/Functional/Security/AccessControlTest.php` (16) | Back-office réservé aux admins et absent hors de `/admin` ; écritures API refusées aux anonymes (401) et aux utilisateurs (403), autorisées aux admins ; lecture publique conservée ; un utilisateur ne modifie que son propre nom, jamais ses rôles ni son mot de passe |
 | Intégrité des données | `tests/Integration/Doctrine/MappingTest.php` (10) | Mapping Doctrine valide ; les colonnes `snake_case` créées par la migration `Version20260901103000` correspondent aux entités `CourseMedia` et `AgentCourseGeneration` |
+| ENF-03 | `front/tests/unit/components/SafeHtml.spec.js` (6) | Balises `script` et `iframe` supprimées ; gestionnaires d'événements et styles en ligne retirés ; liens `javascript:` et `data:` neutralisés ; `rel="noopener noreferrer"` sur les liens `_blank` ; contenu de cours conservé |
+| US-13, US-14 | `front/tests/unit/router/guards.spec.js` (6) | `authGuard` redirige un visiteur et mémorise la destination ; `adminGuard` refuse sans `ROLE_ADMIN` ; `guestGuard` renvoie un utilisateur connecté |
+| US-06, US-07 | `front/tests/unit/stores/qcm.spec.js` (4) | Réponses enregistrées ; questions et choix mélangés sans perte ; remise à zéro |
+| US-02, US-04 | `front/tests/unit/utils/utils.spec.js` (5) | Mélange de Fisher-Yates sans perte ; majuscule et slug ; tri des menus par numéro |
 
 ## 5. Recette fonctionnelle exécutée
 
@@ -94,6 +99,8 @@ Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-sy
 | CI [run `38246023750`](https://github.com/cundovar/vue-symfony/actions/runs/38246023750) (`8d320ed1`, fusion PR #39) | 2026-10-12 | Tous les jobs réussis ; PHPUnit `OK (39 tests, 111 assertions)` ; déploiement réussi |
 | `make check` local (`fix/doctrine-schema-drift`) | 2026-10-12 | PHPStan `[OK] No errors`, PHPUnit `OK (49 tests, 121 assertions)`, build Vite OK ; `MappingTest` : 10 échecs sur 10 sans le correctif |
 | CI [run `38252131258`](https://github.com/cundovar/vue-symfony/actions/runs/38252131258) (fusion des PR #42 à #44) | 2026-10-12 | Tous les jobs réussis ; PHPUnit `OK (49 tests, 121 assertions)` ; déploiement réussi |
+| Vitest local (`test/front-vitest`) | 2026-10-12 | `Tests 21 passed (21)` ; `make check` réussi (49 tests PHPUnit, 21 tests Vitest, build Vite) |
+| Défauts introduits volontairement dans le code front | 2026-10-12 | `authGuard` inversé : 2 tests échouent ; ajout de `rel="noopener noreferrer"` supprimé dans `SafeHtml` : 1 test échoue. Le filtre `javascript:` maison de `SafeHtml` peut être retiré sans échec, car DOMPurify bloque déjà ces liens par défaut (filtre redondant) |
 | Recette en production (§5) | 2026-10-12 | 9 OK, 1 KO |
 
 **Couverture du code** (rapports Clover des runs `38246023750` et `38252131258`) : **7,5 % des lignes** (285 sur 3 800) et 95 méthodes sur 904. Le contexte Notes est presque entièrement couvert ; contrôleurs, services et entités hors Notes le sont très peu. Au run précédent (`38236154178`, avant les tests fonctionnels), la couverture était de 4,79 %.
@@ -110,7 +117,7 @@ Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-sy
 
 ## 8. Limites et suite
 
-- **Aucun test automatisé du frontend** : ajouter Vitest pour les composants et un parcours E2E (Playwright) sur US-01, US-03, US-04 et US-06.
+- **Tests du frontend limités** : 21 tests unitaires Vitest sur la logique critique ; aucun test de bout en bout. Ajouter un parcours E2E (Playwright) sur US-01, US-03, US-04 et US-06, puis des tests de composants de pages.
 - **Recette de l'espace connecté** non exécutée : créer un compte de recette dédié pour US-08 à US-12, en local ou en préproduction.
 - **Couverture faible (7,5 %)** : prioriser les contrôleurs d'API maison (notes, favoris, historique) et `HtmlSanitizerService` (ENF-03, non testé).
 - **Contrôles non bloquants en CI** : PHPStan et les audits de dépendances sont informatifs, et ESLint est absent de la CI.
