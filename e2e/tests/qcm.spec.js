@@ -30,4 +30,6 @@ test('QCM CSS niveau basique : 10 questions puis score', async ({ page }) => {
   await expect(page).toHaveURL(/\/spa\/qcm\/result/)
   await expect(page.getByText('Votre score')).toBeVisible()
   await expect(page.locator('h2').filter({ hasText: '/ 10' })).toBeVisible()
+  // Visiteur non connecté : le résultat n'est pas enregistré, on l'invite à se connecter
+  await expect(page.getByTestId('qcm-save-status')).toHaveText(/Connectez-vous/)
 })

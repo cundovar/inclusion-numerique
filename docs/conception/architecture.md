@@ -37,11 +37,18 @@ flowchart LR
     DB[("MySQL<br/>29 entités, préfixe appy_")]
   end
 
+  subgraph VPS["VPS Netcup, Coolify (prévu)"]
+    QR["Micro-service résultats de QCM<br/>Node 22 + Fastify"]
+    MG[("MongoDB 7<br/>collection attempts")]
+    QR --> MG
+  end
+
   SW -- "HTTP JSON (cookie de session)" --> WEB
   Admin --> WEB
   Agent -- "HTTP JSON + X-API-KEY" --> WEB
   WEB --> SPAC & APIP & CTRL & ADMAPI & EA
   SPAC & APIP & CTRL & ADMAPI & EA --> DB
+  CTRL -- "HTTPS JSON + X-Api-Key" --> QR
 ```
 
 | Brique | Rôle | Preuve |
@@ -52,6 +59,7 @@ flowchart LR
 | API d'administration | CRUD des cours pour les agents IA externes, sans session, authentifié par en-tête `X-API-KEY` | `src/Controller/Api/AdminCrud/`, `src/Security/ApiKeyAuthenticator.php`, [`docs/migration-mcp-vers-symfony.md`](../migration-mcp-vers-symfony.md) |
 | Back-office | Gestion de tous les contenus, statistiques de visite | `src/Controller/Admin/` (EasyAdmin, `#[AdminDashboard]` sur `/admin`) |
 | Base de données | Source de vérité | [`base-de-donnees.md`](base-de-donnees.md) |
+| Résultats de QCM | Tentatives, progression et statistiques par question, dans un micro-service Node et MongoDB appelé uniquement par Symfony | `src/Controller/Api/QcmResultController.php`, `services/qcm-results/`, [`base-de-donnees.md` §7](base-de-donnees.md#7-stockage-nosql-côté-serveur--mongodb-résultats-de-qcm) |
 | Stockage client | Mode hors ligne et préférences | [`base-de-donnees.md` §6](base-de-donnees.md#6-stockage-nosql-côté-client--indexeddb) |
 
 ## 2. Sécurité : un pare-feu par zone
@@ -220,6 +228,29 @@ flowchart LR
 - **CI** : chaque PR passe la qualité, les tests et le build. PHPStan et les audits sont informatifs, et ESLint ne tourne qu'en local. Le déploiement ne part que d'un push sur `main`.
 - **Production** : les migrations ne sont **pas** exécutées par le déploiement ; elles se lancent à la main sur le serveur. Voir [`docs/CI_CD.md`](../CI_CD.md).
 
+### Micro-service des résultats de QCM
+
+L'hébergement mutualisé OVH ne fait tourner ni Node ni MongoDB. Le module PHP `mongodb` y est présent (1.15.3, vérifié en SSH le 2026-10-12), mais il faudrait quand même une base hébergée ailleurs. Le stockage des résultats de QCM est donc confié à un service séparé, prévu sur le VPS Netcup déjà administré avec Coolify :
+
+```mermaid
+flowchart LR
+  subgraph OVH["OVH mutualisé"]
+    C["QcmResultController<br/>/api/qcm-results"] --> H["RecordQcmAttemptHandler<br/>(correction depuis MySQL)"]
+    H --> P{{"QcmResultsGatewayInterface<br/>(port)"}}
+    C --> P
+    A["HttpQcmResultsGateway<br/>(adaptateur, timeout 3 s)"] -. implémente .-> P
+  end
+  subgraph VPS["VPS : Coolify / Traefik"]
+    N["qcm-results<br/>Fastify, schémas JSON"] --> M[("MongoDB 7<br/>sans port public")]
+  end
+  A -- "HTTPS + X-Api-Key" --> N
+```
+
+- **Confiance** : le navigateur envoie seulement ses choix. Symfony vérifie la session, recalcule la correction depuis MySQL et transmet l'identifiant utilisateur. Le service n'accepte que les appels porteurs de la clé partagée.
+- **Panne isolée** : toute erreur du service (réseau, délai, statut ≥ 300, réponse illisible) devient `QcmResultsUnavailableException`, et l'API renvoie 503. La correction du QCM reste affichée ; seuls l'enregistrement et la page « Ma progression » sont indisponibles.
+- **Accès** : `^/api/qcm-results/stats` est réservé à `ROLE_ADMIN`, le reste de `^/api/qcm-results` à `ROLE_USER` (`config/packages/security.yaml`). Chaque utilisateur ne lit et n'efface que ses propres tentatives.
+- **Tests** : handler (`tests/Application/QcmResult/`, 5 tests), adaptateur HTTP avec `MockHttpClient` (`tests/Infrastructure/QcmResult/`, 8), API HTTP avec une passerelle en mémoire (`tests/Functional/QcmResult/`, 14), service Node sur un vrai MongoDB (9).
+
 ## 6. Choix d'architecture et justification
 
 | Choix | Pourquoi | Contrepartie |
@@ -229,4 +260,5 @@ flowchart LR
 | Hexagonal sur les contextes à règles métier | Règles testables sans base (handlers testés avec des dépôts simulés) ; changement de persistance localisé | Deux styles cohabitent dans le code |
 | API d'administration à clé API, séparée | Les agents IA externes écrivent par l'API au lieu d'accéder directement à MySQL | Gestion et rotation des clés à prévoir |
 | PWA et IndexedDB | Consultation des cours sans réseau (ENF-02) | Données locales possiblement périmées (pas de purge) |
+| Micro-service Node et MongoDB pour les résultats de QCM | Données de type document, agrégations de progression, impossibles à héberger sur le mutualisé OVH ; port hexagonal côté Symfony | Une seconde infrastructure (VPS) à exploiter et sauvegarder ; pas d'intégrité référentielle entre MySQL et MongoDB |
 | Docker en local, hébergement mutualisé en production | Environnement reproductible pour le développement ; coût d'hébergement réduit | Écart de version PHP (8.3 en local, 8.2 en CI et en production) ; pas de conteneurs en production |

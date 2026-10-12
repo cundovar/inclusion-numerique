@@ -57,3 +57,27 @@ describe('store QCM', () => {
     expect(store.filterQcms).toEqual({ language: null, niveau: null })
   })
 })
+
+describe('store QCM : enregistrement de la tentative', () => {
+  beforeEach(() => setActivePinia(createPinia()))
+
+  it('mémorise que la tentative est enregistrée, jusqu\'à une nouvelle série de questions', () => {
+    const store = useQCMStore()
+    store.setQcms(structuredClone(qcms))
+
+    store.markAttemptRecorded()
+    expect(store.attemptRecorded).toBe(true)
+
+    store.setQcms(structuredClone(qcms))
+    expect(store.attemptRecorded).toBe(false)
+  })
+
+  it('remet l\'indicateur à zéro avec reset', () => {
+    const store = useQCMStore()
+    store.markAttemptRecorded()
+
+    store.reset()
+
+    expect(store.attemptRecorded).toBe(false)
+  })
+})

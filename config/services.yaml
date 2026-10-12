@@ -4,6 +4,10 @@ parameters:
     # Chemin SPA - Modifier cette valeur pour changer le préfixe
     # Note: Modifier aussi les Routes dans SpaController.php et SitemapController.php
     app.spa_path: '/spa'
+    # Résultats de QCM : sans configuration (ex. prod avant mise en service du VPS), l'adresse .invalid
+    # ne se résout jamais, et l'API répond 503 au lieu de planter
+    env(QCM_RESULTS_URL): 'http://qcm-results.invalid'
+    env(QCM_RESULTS_API_KEY): ''
 
 services:
     App\Doctrine\PrefixedNamingStrategy:
@@ -58,6 +62,9 @@ services:
     App\Infrastructure\ExoMenu\Repository\DoctrineExoMenuRepository: ~
     App\Infrastructure\Exo\Repository\DoctrineExoRepository: ~
     App\Infrastructure\QCM\Repository\DoctrineQCMRepository: ~
+
+    # Résultats de QCM : micro-service Node + MongoDB (client HTTP « qcm_results.client »)
+    App\Domain\QcmResult\QcmResultsGatewayInterface: '@App\Infrastructure\QcmResult\HttpQcmResultsGateway'
     App\Infrastructure\UserCustomization\Repository\DoctrineUserCustomizationRepository: ~
     App\Infrastructure\SiteConfiguration\Repository\DoctrineSiteConfigurationRepository: ~
     App\Infrastructure\LanguageQCM\Repository\DoctrineLanguageQCMRepository: ~

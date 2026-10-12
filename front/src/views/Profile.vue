@@ -102,6 +102,19 @@
               Mes Notes ({{ notes.length }})
             </button>
             <button
+              :class="[
+                'px-6 py-3 border-b-2 font-medium text-sm',
+                activeTab === 'progress'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              ]"
+              data-testid="tab-qcm-progress"
+              @click="activeTab = 'progress'"
+            >
+              <i class="pi pi-chart-line mr-2" />
+              Ma progression
+            </button>
+            <button
               v-if="pageTrackingEnabled"
               :class="[
                 'px-6 py-3 border-b-2 font-medium text-sm',
@@ -266,6 +279,99 @@
                     Voir le cours
                   </router-link>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Onglet Ma progression (résultats de QCM, micro-service MongoDB) -->
+          <div
+            v-if="activeTab === 'progress'"
+            data-testid="qcm-progress"
+          >
+            <div
+              v-if="loadingProgress"
+              class="text-center py-8"
+            >
+              <i class="pi pi-spinner pi-spin text-2xl text-blue-500" />
+            </div>
+            <p
+              v-else-if="progressUnavailable"
+              class="text-center py-8 text-gray-600"
+            >
+              La progression est momentanément indisponible.
+            </p>
+            <div
+              v-else-if="qcmProgress.length === 0"
+              class="text-center py-12"
+            >
+              <i class="pi pi-chart-line text-6xl text-gray-300 mb-4" />
+              <h3 class="text-xl font-semibold text-gray-600 mb-2">
+                Aucun QCM terminé
+              </h3>
+              <p class="text-gray-500">
+                Terminez un QCM pour suivre votre progression.
+              </p>
+            </div>
+            <div v-else>
+              <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">
+                        QCM
+                      </th>
+                      <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">
+                        Tentatives
+                      </th>
+                      <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">
+                        Meilleur
+                      </th>
+                      <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">
+                        Moyenne
+                      </th>
+                      <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">
+                        Dernier
+                      </th>
+                      <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">
+                        Date
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="row in qcmProgress"
+                      :key="`${row.language}-${row.level}`"
+                      class="border-t border-gray-200"
+                    >
+                      <td class="px-4 py-2 text-sm text-gray-800">
+                        {{ row.language }} · {{ row.level }}
+                      </td>
+                      <td class="px-4 py-2 text-sm text-right">
+                        {{ row.attempts }}
+                      </td>
+                      <td class="px-4 py-2 text-sm text-right font-semibold text-green-700">
+                        {{ row.bestPercent }}%
+                      </td>
+                      <td class="px-4 py-2 text-sm text-right">
+                        {{ row.averagePercent }}%
+                      </td>
+                      <td class="px-4 py-2 text-sm text-right">
+                        {{ row.lastPercent }}%
+                      </td>
+                      <td class="px-4 py-2 text-sm text-gray-600">
+                        {{ formatDateTime(row.lastAttemptAt) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mt-6 flex justify-end">
+                <AppButton
+                  variant="danger"
+                  text-content="Effacer ma progression"
+                  icon="pi pi-trash"
+                  @click="clearQcmProgress"
+                />
               </div>
             </div>
           </div>
@@ -660,6 +766,7 @@ import AppInput from '../components/ui/AppInput.vue'
 import SafeHtml from '../components/ui/SafeHtml.vue'
 import axios from 'axios'
 import { noteService } from '../services/noteService'
+import { qcmResultsService } from '../services/qcmResultsService'
 import AppModal from '../components/ui/AppModal.vue'
 
 const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true'
@@ -675,6 +782,9 @@ const loadingHistory = ref(true)
 const trackingEnabled = ref(pageTrackingEnabled)
 const notes = ref([])
 const loadingNotes = ref(true)
+const qcmProgress = ref([])
+const loadingProgress = ref(true)
+const progressUnavailable = ref(false)
 axios.defaults.withCredentials = true;
 // open modal
 const isOpen = ref(false)
@@ -872,6 +982,28 @@ const toggleTracking = async () => {
 }
 
 // Récupérer les notes de l'utilisateur
+const fetchQcmProgress = async () => {
+  loadingProgress.value = true
+  try {
+    qcmProgress.value = await qcmResultsService.getMyProgress()
+    progressUnavailable.value = false
+  } catch {
+    progressUnavailable.value = true
+  } finally {
+    loadingProgress.value = false
+  }
+}
+
+const clearQcmProgress = async () => {
+  if (!confirm('Effacer tout votre historique de QCM ?')) return
+  try {
+    await qcmResultsService.clearMyAttempts()
+    qcmProgress.value = []
+  } catch {
+    progressUnavailable.value = true
+  }
+}
+
 const fetchNotes = async () => {
   try {
     console.log('=== FETCH NOTES CALLED ===')
@@ -1037,6 +1169,7 @@ onMounted(async () => {
     trackingEnabled.value = false
   }
   fetchNotes()
+  fetchQcmProgress()
 
   // Charger la personnalisation
   const settings = await fetchCustomization()

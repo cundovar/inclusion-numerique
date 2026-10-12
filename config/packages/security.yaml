@@ -90,6 +90,9 @@ security:
          - { path: ^/api/notes, roles: ROLE_USER }
          - { path: ^/api/customization, roles: ROLE_USER }
          - { path: ^/api/proposition-ia, roles: ROLE_ADMIN }
+         # Résultats de QCM (micro-service MongoDB) : statistiques réservées aux admins, le reste à l'utilisateur connecté
+         - { path: ^/api/qcm-results/stats, roles: ROLE_ADMIN }
+         - { path: ^/api/qcm-results, roles: ROLE_USER }
          - { path: ^/user-api/me, roles: ROLE_USER }
          # Ressources API Platform : modification de son propre profil, le reste réservé aux admins
          - { path: ^/api/users, methods: [PATCH], roles: ROLE_USER }

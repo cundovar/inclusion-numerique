@@ -456,3 +456,44 @@ Le composable `useData()` (`front/src/utils/fetchDataPwa.js`) utilise ce composa
 - `fetchPageContent`, `fetchPageContentExo`, `fetchSeoData` et `fetchSeoByPage` sont exportées mais appelées par aucun composant. Les stores `pages`, `api_cache` et `seo` restent donc vides : vérifié dans le navigateur en local, après ouverture de l'accueil et de la page `flexbox`. Le hors ligne d'une page de cours repose sur le cache Workbox, pas sur IndexedDB.
 - `saveAll` ajoute ou remplace des éléments mais n'en supprime jamais. Un cours supprimé ou masqué côté serveur reste visible hors ligne jusqu'à ce que le navigateur vide le stockage.
 - Aucune limite de taille ni de purge n'est appliquée ; le navigateur gère seul le quota.
+
+## 7. Stockage NoSQL côté serveur : MongoDB (résultats de QCM)
+
+### Pourquoi MongoDB pour ces données
+
+Avant ce changement, un QCM terminé n'était conservé nulle part : le score n'existait que dans le store Pinia. Les tentatives ont des caractéristiques qui conviennent à une base de documents :
+- **un document par tentative**, avec ses réponses imbriquées, écrit une fois puis seulement lu : pas de mise à jour, pas de jointure à l'écriture ;
+- **un volume qui croît** avec l'usage, sans rapport avec le modèle relationnel des contenus ;
+- **des lectures d'agrégation** (progression par langage et niveau, réussite par question), que le pipeline d'agrégation MongoDB exprime directement.
+
+MySQL reste la source de vérité des questions et de la bonne réponse. MongoDB ne stocke que des faits datés, qui renvoient aux identifiants MySQL (`userId`, `questionId`, `choiceId`) sans contrainte d'intégrité entre les deux bases : c'est la contrepartie du choix.
+
+### Modèle de document
+
+Collection `attempts` (base `devdoc`) :
+
+| Champ | Type | Origine |
+|---|---|---|
+| `_id` | ObjectId | MongoDB |
+| `userId` | entier | `appy_user.id`, transmis par Symfony depuis la session |
+| `language`, `level` | chaîne | filtres du QCM (`LanguageQCM.name`, `NiveauQCM.titre`) |
+| `answers[]` | `{questionId, choiceId, correct}` | choix de l'utilisateur ; `correct` calculé par Symfony depuis `ChoicesQCM.isCorrect` |
+| `score`, `total` | entier | calculés par le micro-service à l'insertion |
+| `createdAt` | date | micro-service |
+
+Index : `user_history` `{userId: 1, createdAt: -1}` sert l'historique et la progression d'un utilisateur ; `question_stats` `{language: 1, level: 1, "answers.questionId": 1}` sert les statistiques par question.
+
+### Composant d'accès aux données
+
+- `services/qcm-results/src/attempts.js` : insertion, historique (projection sans les réponses), progression (`$group` par langage et niveau, `$round` des pourcentages), statistiques (`$unwind` des réponses, `$group` par question, tri par taux de réussite), suppression.
+- Côté Symfony, le port `App\Domain\QcmResult\QcmResultsGatewayInterface` et son adaptateur HTTP `App\Infrastructure\QcmResult\HttpQcmResultsGateway` : Symfony ne connaît pas MongoDB, seulement l'API du micro-service. Voir [`architecture.md`](architecture.md) et [`services/qcm-results/README.md`](../../services/qcm-results/README.md).
+
+### Tests
+
+- `services/qcm-results/test/app.test.js` : 9 tests `node:test` sur un vrai MongoDB, dans une base jetable supprimée en fin de test. Ils couvrent la clé d'API, la validation des corps, le calcul du score, l'historique limité à l'utilisateur, la progression, les statistiques par question, la suppression et la création des index.
+- Vérifié de bout en bout en local le 2026-10-12, de Symfony au micro-service puis à MongoDB : enregistrement, progression, statistiques et suppression.
+
+### Limites (2026-10-12)
+
+- Pas encore déployé : la base MongoDB et le service sont prévus sur le VPS Netcup avec Coolify, mais pas encore créés.
+- Pas de suppression automatique des tentatives quand un compte ou une question est supprimé dans MySQL ; l'utilisateur peut effacer son historique depuis son profil.
