@@ -68,7 +68,13 @@ Production (`https://devdoc.varascundo.com`), 2026-10-12, après le déploiement
 | R-07 | US-14 | `GET /admin`, `/admin/category/new` | Redirection vers `/login` | OK : 302 vers `/login` |
 | R-08 | Sécurité | `GET /category/new` ; `POST /api/pages` ; `PATCH /api/users/999999` ; `DELETE /api/pages/999999` ; `GET /api/users` | 404 puis 401 partout | OK après déploiement ; KO avant (voir AN-01) |
 | R-09 | ENF-01 | Cours sur mobile (390 × 844) | Pas de défilement horizontal ; barre QCM / Exos | OK : largeur de page = 390 px |
-| R-10 | ENF-02 | Vérifier l'enregistrement du service worker | Service worker actif sur `/spa/` | **KO** (AN-03) |
+| R-10 | ENF-02 | Vérifier l'enregistrement du service worker | Service worker actif sur `/spa/` | **KO** (AN-03) ; corrigé, voir R-11 |
+
+Après correction d'AN-03 (branche `fix/pwa-service-worker-registration`), en local avec les fichiers compilés comme en CI (service `front-build`), le 2026-10-12 :
+
+| ID | Exigence | Scénario | Résultat attendu | Résultat |
+|---|---|---|---|---|
+| R-11 | ENF-02 | Charger `/spa/pages/flexbox` en ligne, puis couper le réseau (Chrome DevTools, mode hors ligne) et recharger | Service worker `/spa/sw.js` actif ; cours affiché depuis le cache ; une URL non mise en cache échoue | OK : caches `spa-pages`, `build-assets`, `api-public` et pré-cache remplis ; cours, menus et code coloré affichés hors ligne ; requête non mise en cache en échec réseau. Limite : panneau Sommaire non affiché hors ligne |
 
 Non exécutés en production, faute de compte de test dédié (aucune création de compte ni écriture en production) : US-05 (exercices), US-07 (résultat de QCM), US-08 (inscription et connexion), US-09 à US-12 (espace connecté), US-15 et US-16 (administration).
 
@@ -89,7 +95,7 @@ Non exécutés en production, faute de compte de test dédié (aucune création 
 |---|---|---|---|---|
 | AN-01 | Critique | Back-office EasyAdmin servi hors de `/admin` sans authentification ; écritures API Platform anonymes sur 17 ressources, dont la modification des rôles et du mot de passe via `PATCH /api/users/{id}` | Recette HTTP en local | Corrigée (PR #39) ; couverte par `AccessControlTest` ; vérifiée en production (R-08) |
 | AN-02 | Majeure | Modification du profil impossible : le front envoie `application/json`, API Platform attend `application/merge-patch+json` (415) | Analyse lors de la correction d'AN-01 | Corrigée (PR #39) ; couverte par test fonctionnel ; non revérifiée en production (compte requis) |
-| AN-03 | Majeure | Service worker jamais enregistré en production : le front demande `/build/sw.js` (500), alors que le fichier est généré dans `/spa/sw.js`. Cause probable : `base: '/build/'` dans `front/vite.config.js` | Recette R-10 | Ouverte ; ENF-02 (hors ligne) non satisfaite |
+| AN-03 | Majeure | Service worker jamais enregistré en production : le front demande `/build/sw.js` (500), alors que le fichier est généré dans `/spa/sw.js`. Cause probable : `base: '/build/'` dans `front/vite.config.js` | Recette R-10 | Corrigée (branche `fix/pwa-service-worker-registration`) : `base` et `scope` `/spa/`, mise en cache des pages, des fichiers compilés et de l'API publique ; vérifiée en local (R-11) ; vérification en production après déploiement |
 | AN-04 | Mineure | `GET /api/qcm/language/{language}` renvoie 500 : `QCMApiController` appelle `ChoicesQCM::isCorrect()`, qui n'existe pas. Le front utilise `/api/q_c_ms` et n'est pas touché | Recette R-04 | Ouverte |
 | AN-05 | Mineure | En visiteur, le front appelle des routes réservées (`/user-api/me`, `/api/customization`) : 401 et erreurs dans la console | Recette, console navigateur | Ouverte |
 
