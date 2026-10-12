@@ -32,6 +32,7 @@ Les documents détaillés restent dans `docs/` et `documentations/`. Ils servent
 ### Bloc 3 — Déploiement et qualité
 
 - [CI/CD](../docs/CI_CD.md) : CI, tests, build frontend et déploiement.
+- [Plan de tests](../docs/tests/plan-de-tests.md) : stratégie, cas de test, recette exécutée, résultats et anomalies.
 
 ## Document historique
 
