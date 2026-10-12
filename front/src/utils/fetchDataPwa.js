@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import axios from 'axios'
-import { openDB } from 'idb'
+import { createOfflineDb } from './offlineDb'
 import { useVisibilityFilter } from '../composables/ui/useVisibilityFilter'
 
 // Références globales pour réactivité partagée
@@ -14,8 +14,7 @@ const docDeCodes = ref([])
 
 const clearUser = async () => {
   user.value = { username: '', roles: [] }
-  const db = await dbPromise
-  await db.clear('user')
+  await offlineDb.clearUser()
 }
 
 window.addEventListener('auth:logout', () => {
@@ -25,112 +24,16 @@ window.addEventListener('auth:logout', () => {
 // Filtre de visibilité
 const { filterByVisibility } = useVisibilityFilter()
 
-// Création/connexion à la base IndexedDB
-const dbPromise = openDB('spa-db', 5, {
-  upgrade(db, oldVersion) {
-    if (oldVersion < 1) {
-      db.createObjectStore('menus', { keyPath: 'id' })
-      db.createObjectStore('categories', { keyPath: 'id' })
-      db.createObjectStore('user', { keyPath: 'username' })
-    }
-    if (oldVersion < 2) {
-      db.createObjectStore('pages', { keyPath: 'id' })
-      db.createObjectStore('api_cache', { keyPath: 'url' })
-    }
-    if (oldVersion < 3) {
-      db.createObjectStore('exoMenus', { keyPath: 'id' })
-      db.createObjectStore('exoContents', { keyPath: 'id' })
-    }
-    if (oldVersion < 4) {
-      db.createObjectStore('seo', { keyPath: 'id' })
-    }
-    if (oldVersion < 5) {
-      db.createObjectStore('docDeCodes', { keyPath: 'id' })
-    }
-  }
-})
-
-// ----------- Fonctions utilitaires de stockage local -----------
-
-// Sauvegarder un tableau dans un store donné
-async function saveToDB(store, array) {
-  const db = await dbPromise
-  const tx = db.transaction(store, 'readwrite')
-  array.forEach(item => tx.store.put(JSON.parse(JSON.stringify(item))))
-  await tx.done
-}
-
-// Lire tous les éléments depuis un store
-async function loadFromDB(store) {
-  const db = await dbPromise
-  return db.getAll(store)
-}
-
-// Sauvegarder l'utilisateur dans IndexedDB
-async function saveUserToDB(userData) {
-  const db = await dbPromise
-  const tx = db.transaction('user', 'readwrite')
-  tx.store.put(JSON.parse(JSON.stringify(userData)))
-  await tx.done
-}
-
-
-
-
-
-
-    
-
-// Charger l'utilisateur depuis IndexedDB
-async function loadUserFromDB() {
-  const db = await dbPromise
-  // Ici on suppose que l'utilisateur est stocké avec son `username` comme clé
-  const allUsers = await db.getAll('user')
-  return allUsers.length > 0 ? allUsers[0] : null
-}
-
-// Sauvegarder une page individuelle
-async function savePageToDB(pageData) {
-  const db = await dbPromise
-  const tx = db.transaction('pages', 'readwrite')
-  tx.store.put({
-    id: pageData.id,
-    slug: pageData.slug,
-    title: pageData.title,
-    content: pageData.content,
-    cached_at: Date.now()
-  })
-  await tx.done
-}
-
-// Charger une page depuis IndexedDB
-async function loadPageFromDB(pageId) {
-  const db = await dbPromise
-  return await db.get('pages', pageId)
-}
-
-// Cache générique pour les appels API
-async function cacheApiResponse(url, data) {
-  const db = await dbPromise
-  const tx = db.transaction('api_cache', 'readwrite')
-  tx.store.put({
-    url: url,
-    data: data,
-    cached_at: Date.now()
-  })
-  await tx.done
-}
-
-// Récupérer une réponse API depuis le cache
-async function getCachedApiResponse(url) {
-  const db = await dbPromise
-  const cached = await db.get('api_cache', url)
-  // Cache valide pendant 1 heure
-  if (cached && (Date.now() - cached.cached_at) < 3600000) {
-    return cached.data
-  }
-  return null
-}
+// Accès à la base IndexedDB (voir offlineDb.js)
+const offlineDb = createOfflineDb()
+const saveToDB = offlineDb.saveAll
+const loadFromDB = offlineDb.loadAll
+const saveUserToDB = offlineDb.saveUser
+const loadUserFromDB = offlineDb.loadUser
+const savePageToDB = offlineDb.savePage
+const loadPageFromDB = offlineDb.loadPage
+const cacheApiResponse = offlineDb.cacheApiResponse
+const getCachedApiResponse = offlineDb.getCachedApiResponse
 
 // ----------- Fonctions de récupération API + fallback offline -----------
 
@@ -249,8 +152,8 @@ async function fetchPageContentExo(pageId) {
   } catch (error) {
     console.warn(`Connexion échouée pour l'exercice ${pageId}. Chargement hors ligne.`)
 
-    // Fallback vers le cache API
-    const cachedData = await getCachedApiResponse(url)
+    // Fallback vers le cache API, même expiré
+    const cachedData = await getCachedApiResponse(url, Infinity)
     if (cachedData) {
       console.log(`ExoPage ${pageId} (hors ligne):`, cachedData)
       return cachedData
@@ -351,8 +254,8 @@ async function fetchSeoByPage(pageName) {
   } catch {
     console.warn(`Connexion échouée pour SEO ${pageName}. Chargement hors ligne.`)
 
-    // Fallback vers le cache API
-    const cachedData = await getCachedApiResponse(url)
+    // Fallback vers le cache API, même expiré
+    const cachedData = await getCachedApiResponse(url, Infinity)
     if (cachedData) {
       console.log(`SEO ${pageName} (hors ligne):`, cachedData)
       return cachedData
