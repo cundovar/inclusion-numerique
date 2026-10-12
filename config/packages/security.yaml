@@ -54,9 +54,15 @@ security:
             custom_authenticators:
                 - App\Security\ApiKeyAuthenticator
 
+        # Lecture publique, mais session partagée avec `main` pour que access_control
+        # et les règles `security` d'API Platform connaissent l'utilisateur connecté.
         api_public:
             pattern: ^/api
-            security: false
+            lazy: true
+            stateless: false
+            provider: app_user_provider
+            context: main
+            entry_point: App\Security\ApiAuthenticationEntryPoint
             
         main:
             lazy: true
@@ -85,6 +91,10 @@ security:
          - { path: ^/api/customization, roles: ROLE_USER }
          - { path: ^/api/proposition-ia, roles: ROLE_ADMIN }
          - { path: ^/user-api/me, roles: ROLE_USER }
+         # Ressources API Platform : modification de son propre profil, le reste réservé aux admins
+         - { path: ^/api/users, methods: [PATCH], roles: ROLE_USER }
+         - { path: ^/api/users, roles: ROLE_ADMIN }
+         - { path: ^/api, methods: [POST, PUT, PATCH, DELETE], roles: ROLE_ADMIN }
         #  - { path: ^/spa, roles: ROLE_USER }
 
 when@test:

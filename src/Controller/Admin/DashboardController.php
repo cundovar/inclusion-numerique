@@ -22,6 +22,7 @@ use App\Entity\ChoicesQCM;
 use App\Entity\User;
 use App\Entity\UserPageVisit;
 use Symfony\Component\Routing\Attribute\Route;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -38,6 +39,9 @@ use App\Entity\NiveauCours;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+// AdminDashboard fixe le préfixe des routes CRUD générées par EasyAdmin : sans lui, elles
+// sont dérivées de la route de index() et exposées hors de /admin (donc hors access_control).
+#[AdminDashboard(routePath: '/admin', routeName: 'dashboard')]
 #[Route('/admin')]
 class DashboardController extends AbstractDashboardController
 {
@@ -69,7 +73,6 @@ class DashboardController extends AbstractDashboardController
         return $this->redirect($url);
     }
 
-    #[Route('/', name: 'dashboard')]
     public function index(): Response
     {
         // Récupérer les statistiques

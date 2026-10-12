@@ -691,7 +691,9 @@ const updateProfile =async () => {
 
 await axios.patch(`/api/users/${user.value.id}`, {
       username: user.value.username,
-     
+    }, {
+      // API Platform n'accepte que le format JSON Merge Patch pour PATCH
+      headers: { 'Content-Type': 'application/merge-patch+json' },
     })
     isOpen.value = false
   }catch(error){
