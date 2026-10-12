@@ -26,7 +26,7 @@ class AgentCourseGeneration
     #[ORM\Column(length: 20)]
     private string $status = 'pending';
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(name: 'verification_attempts', type: Types::INTEGER)]
     private int $verificationAttempts = 0;
 
     #[ORM\Column(type: Types::JSON)]
@@ -35,23 +35,23 @@ class AgentCourseGeneration
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $candidate = null;
 
-    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[ORM\Column(name: 'verification_report', type: Types::JSON, nullable: true)]
     private ?array $verificationReport = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(name: 'technical_error', type: Types::TEXT, nullable: true)]
     private ?string $technicalError = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?PageContent $course = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(name: 'updated_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $updatedAt;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(name: 'finished_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $finishedAt = null;
 
     public function __construct(string $batchId, string $externalId, array $payload)
