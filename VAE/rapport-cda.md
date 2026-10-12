@@ -52,7 +52,7 @@ L'ancien dossier `src/Repository/` a été supprimé (commit `954d9e45`) : les r
 
 - La présence d'un workflow ne prouve pas un déploiement réussi.
 - La couverture réelle et les résultats CI doivent être documentés à partir d'exécutions vérifiables.
-- Boucle locale `make check` ajoutée ; au 2026-10-12, PHPUnit et le build Vite passent, PHPStan échoue sur 4 erreurs réelles (voir [preuves.md](preuves.md)).
+- Boucle locale `make check` ajoutée ; au 2026-10-12, elle passe de bout en bout (PHPStan sans erreur, 23 tests PHPUnit sur `main`, build Vite) après correction d'un setter Doctrine supprimé par erreur, couverte par un test de régression (voir [preuves.md](preuves.md)). Non encore confirmé par la CI.
 - Aucun niveau de production ne doit être affirmé sans preuve de validation ou de déploiement.
 
 ## Positionnement du dossier

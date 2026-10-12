@@ -14,3 +14,4 @@
 - Premiers résultats d'exécution datés dans le registre : PHPUnit 19 tests OK, build Vite OK, ESLint 0 erreur ; PHPStan en échec (4 erreurs réelles sur `Menus::setPositionMenus()`).
 - Correction d'une affirmation obsolète : l'ancien `src/Repository/` n'existe plus (supprimé au commit `954d9e45`).
 - `make down` ne supprime plus les volumes Docker ; l'ancien comportement est isolé dans `make down-volumes`.
+- Correction de `Menus::setPositionMenus()` (supprimé par erreur lors de la réparation d'un conflit au commit `2e9227b1`) avec test de régression `tests/Entity/PositionMenusTest.php` vérifié en échec sans le correctif ; `make check` réussi de bout en bout pour la première fois (PHPStan 0 erreur ; 23 tests sur `main`).

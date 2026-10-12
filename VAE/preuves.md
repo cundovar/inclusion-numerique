@@ -12,11 +12,11 @@ Une preuve doit être reliée à un fichier, une classe, une méthode, un test, 
 | 2 | CQRS Notes | `src/Application/Note/Handler/` | Présent dans le code | Tests exécutés |
 | 2 | Accès aux données | `src/Infrastructure/Note/Repository/` et migrations | Présent dans le code | Vérification des requêtes critiques |
 | 3 | CI/CD | `.github/workflows/ci.yml` | Présent dans le dépôt | Dernier run CI réussi |
-| 3 | Tests backend | `tests/`, `make test` (`composer test` dans le conteneur `php`) | Vérifié localement — 2026-10-12, `OK (19 tests, 72 assertions)` sur `93a22763` + modifications non commitées | Validation CI datée sur un commit propre |
-| 3 | Build frontend | `front/package.json`, `make build-front`, workflow CI | Vérifié localement — 2026-10-12, build Vite réussi sur `93a22763` + modifications non commitées | Validation CI datée sur un commit propre |
-| 3 | Analyse statique PHP | `phpstan.dist.neon` (niveau 5 + baseline), `make analyse` | Point de vigilance — 2026-10-12 : 4 erreurs `Menus::setPositionMenus()` inexistante (`ApiMenuController.php`, `PositionMenus.php`) | Correction du bug ; PHPStan informatif en CI |
+| 3 | Tests backend | `tests/`, `make test` (`composer test` dans le conteneur `php`) | Vérifié localement — 2026-10-12, `OK (23 tests, 86 assertions)` sur `main` (`3169a627`) + test de régression (dont `tests/Entity/PositionMenusTest.php`, test de régression qui échoue sans le correctif) | Validation CI datée sur un commit propre |
+| 3 | Build frontend | `front/package.json`, `make build-front`, workflow CI | Vérifié localement — 2026-10-12, build Vite réussi sur `3110284d` + modifications non commitées | Validation CI datée sur un commit propre |
+| 3 | Analyse statique PHP | `phpstan.dist.neon` (niveau 5 + baseline), `make analyse` | Vérifié localement — 2026-10-12 : `[OK] No errors` sur `main` (`3169a627`), après restauration de `Menus::setPositionMenus()` (commit `c111d030`, supprimé par erreur au commit `2e9227b1`) | Rendre PHPStan bloquant en CI (`continue-on-error`) |
 | 3 | Lint frontend | `front/eslint.config.js`, `make lint-front` | Vérifié localement — 2026-10-12 : 0 erreur, 1698 avertissements | ESLint absent de la CI ; réduire les avertissements |
-| 3 | Boucle de validation locale | `Makefile` : `make check-fast` / `make check` (syntaxe PHP, PHPStan, ESLint, PHPUnit, build Vite dans Docker) | Présent dans le code | `make check` vert de bout en bout (bloqué par PHPStan) |
+| 3 | Boucle de validation locale | `Makefile` : `make check-fast` / `make check` (syntaxe PHP, PHPStan, ESLint, PHPUnit, build Vite dans Docker) | Vérifié localement — 2026-10-12 : `make check` réussi de bout en bout sur `3110284d` + modifications non commitées | Validation CI datée sur un commit propre |
 | 3 | PWA | `manifest.webmanifest`, `front/public/spa/sw.js` | Présent dans le dépôt | Test mobile ou Lighthouse |
 
 ## Documents techniques rattachés
