@@ -22,12 +22,13 @@ The heavier gate: `make check`. Clears `.agents/.needs-check` only when everythi
 | ----- | ------------------ | ------------------------------ |
 | 1     | `make check-fast`  | The fast gate above            |
 | 2     | `make test`        | PHPUnit (`tests/`)             |
-| 3     | `make build-front` | Vite production build and PWA  |
+| 3     | `make test-front`  | Vitest (`front/tests/unit/`)   |
+| 4     | `make build-front` | Vite production build and PWA  |
 
 ## Gotchas
 
 - Never add entries to `phpstan-baseline.neon` to make `make analyse` pass.
-- CI (`.github/workflows/ci.yml`) runs PHPStan as informational and has no ESLint step; locally both are blocking.
+- CI (`.github/workflows/ci.yml`) runs PHPStan as informational and has no ESLint step; locally both are blocking. Vitest runs in the CI job « Frontend quality ».
 - A failure that predates the change is reported by name, never hidden.
 
 ## Behavior

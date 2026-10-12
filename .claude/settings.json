@@ -7,6 +7,7 @@
       "Bash(make lint-front)",
       "Bash(make analyse)",
       "Bash(make test)",
+      "Bash(make test-front)",
       "Bash(make build-front)",
       "Bash(make up)",
       "Bash(make dev)",
