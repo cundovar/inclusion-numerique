@@ -14,6 +14,7 @@
 /.env
 /documentations/
 /mysql_data/
+/backups/
 !.claude/
 .claude/*
 !.claude/settings.json

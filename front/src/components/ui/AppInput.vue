@@ -1,9 +1,16 @@
 <template>
   <div class="app-input-wrapper">
     <!-- Label (optionnel) -->
-    <label v-if="label" :for="inputId" :class="labelClass">
+    <label
+      v-if="label"
+      :for="inputId"
+      :class="labelClass"
+    >
       {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
+      <span
+        v-if="required"
+        class="text-red-500"
+      >*</span>
     </label>
 
     <!-- Input texte -->
@@ -72,19 +79,25 @@
     </el-select>
 
     <!-- Message d'erreur -->
-    <div v-if="error" class="text-red-500 text-sm mt-1">
+    <div
+      v-if="error"
+      class="text-red-500 text-sm mt-1"
+    >
       {{ error }}
     </div>
 
     <!-- Message d'aide -->
-    <div v-if="helpText && !error" class="text-gray-500 text-sm mt-1">
+    <div
+      v-if="helpText && !error"
+      class="text-gray-500 text-sm mt-1"
+    >
       {{ helpText }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   // v-model

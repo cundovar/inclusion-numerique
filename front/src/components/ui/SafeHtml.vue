@@ -1,9 +1,10 @@
 <template>
-
-
-<div class="class" v-html="clean" ></div>
-
-
+  <!-- eslint-disable vue/no-v-html -- contenu nettoyé par DOMPurify -->
+  <div
+    class="class"
+    v-html="clean"
+  />
+  <!-- eslint-enable vue/no-v-html -->
 </template>
 
 <script setup>
@@ -13,8 +14,10 @@
 
 
     const props=defineProps({
-        html:{type:String, defaulf:""},
-        class:{type:String,defaulf:""}
+        html: {
+          type: String,
+          default: ''
+        }
     })
 
     //securisation des liens 

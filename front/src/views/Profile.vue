@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <section  class="transition-all duration-500"
     :class="sectionSize ? 'playground-fullscreen z-[60] ' : 'playground'">
@@ -569,9 +570,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useData } from '../utils/fetchDataPwa'
 import { useCustomization } from '../composables/ui/useCustomization'
 import AppButton from '../components/ui/AppButton.vue'
-import AppAlert from '../components/ui/AppAlert.vue'
 import AppInput from '../components/ui/AppInput.vue'
-import AppSelect from '../components/ui/AppSelect.vue'
 import axios from 'axios'
 import { noteService } from '../services/noteService'
 import AppModal from '../components/ui/AppModal.vue'
@@ -616,8 +615,6 @@ await axios.patch(`/api/users/${user.value.id}`, {
 
 // Customization
 const {
-  customization,
-  allowedClasses,
   fetchCustomization,
   fetchAllowedClasses,
   saveCustomization,
@@ -873,6 +870,7 @@ const categoryStats = computed(() => {
 })
 
 // Sauvegarder l'apparence
+// eslint-disable-next-line no-unused-vars -- utilisé dans le template Vue
 const saveAppearance = async () => {
   savingAppearance.value = true
   appearanceMessage.value = ''
@@ -903,6 +901,7 @@ const saveAppearance = async () => {
 }
 
 // Réinitialiser l'apparence aux valeurs par défaut
+// eslint-disable-next-line no-unused-vars -- utilisé dans le template Vue
 const resetAppearance = async () => {
   if (!confirm('Êtes-vous sûr de vouloir réinitialiser l\'apparence aux valeurs par défaut ?')) {
     return

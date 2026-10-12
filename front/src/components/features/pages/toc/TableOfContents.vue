@@ -247,9 +247,6 @@ const switchTab = (tab) => {
   }
 }
 
-const closeMobileToc = () => {
-  // Fermer sur mobile
-}
 
 const handleScrollTo = (id) => {
   emit('scroll-to', id)

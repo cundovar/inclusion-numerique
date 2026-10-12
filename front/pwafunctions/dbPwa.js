@@ -7,7 +7,7 @@ const dbPromise = openDB('spa-db', 1, {
       db.createObjectStore('user', { keyPath: 'username' });
     }
   });
-  async function saveMenusToDB(menusArray) {
+  export async function saveMenusToDB(menusArray) {
     const db = await dbPromise;
     const tx = db.transaction('menus', 'readwrite');
     
@@ -21,7 +21,7 @@ const dbPromise = openDB('spa-db', 1, {
   
   
   
-  async function saveCatsToDB(catsArray) {
+  export async function saveCatsToDB(catsArray) {
     const db = await dbPromise;
     const tx = db.transaction('categories', 'readwrite');
     // convertion en données json
@@ -33,7 +33,7 @@ const dbPromise = openDB('spa-db', 1, {
     await tx.done;
   }
   
-  async function saveUserToDB(user) {
+  export async function saveUserToDB(user) {
     const db = await dbPromise;
     // convertion en données json
     const tx = db.transaction('user', 'readwrite');
@@ -44,18 +44,18 @@ const dbPromise = openDB('spa-db', 1, {
   
   // --- Chargement user dans IndexedDB pour le offline ---
   
-  async function loadUserFromDB() {
+  export async function loadUserFromDB() {
     const db = await dbPromise;
     const user = await db.get('user', 1);
     return user;
   }
   
-  async function loadMenusFromDB() {
+  export async function loadMenusFromDB() {
     const db = await dbPromise;
     return db.getAll('menus');
   }
   
-  async function loadCatsFromDB() {
+  export async function loadCatsFromDB() {
     const db = await dbPromise;
     return db.getAll('categories');
   }

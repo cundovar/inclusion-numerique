@@ -94,7 +94,6 @@ import { useCustomization } from '../../composables/ui/useCustomization';
 import AppButton from '../ui/AppButton.vue';
 import { useData } from '../../utils/fetchDataPwa';
 import { APP_CONFIG } from '../../config/app.js';
-import AppSelect from '../ui/AppSelect.vue';
 
 // =============================================================================
 // STORE NIVEAU - Connexion au filtre global

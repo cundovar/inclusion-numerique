@@ -245,18 +245,6 @@ watch(
   { deep: true, immediate: true }
 );
 
-// Recommencer le QCM
-const recommencer = () => {
-  router.push({
-    name: "questionQCM",
-    params: { index: 0 },
-    query: {
-      language: qcmStore.filterQcms.language,
-      niveau: qcmStore.filterQcms.niveau,
-    },
-  });
-};
-
 // Retour à l'accueil
 const retourAccueil = () => {
   qcmStore.$reset();

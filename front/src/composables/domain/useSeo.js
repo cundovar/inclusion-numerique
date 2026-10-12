@@ -1,13 +1,9 @@
-import { watch } from 'vue'
-import { useRoute } from 'vue-router'
 
 /**
  * Composable pour gérer les meta tags SEO côté client
  * Met à jour dynamiquement le titre et la description lors de la navigation
  */
 export function useSeo() {
-  const route = useRoute()
-
   /**
    * Met à jour les meta tags de la page
    * @param {Object} seoData - Les données SEO à appliquer

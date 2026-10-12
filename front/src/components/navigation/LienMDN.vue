@@ -6,11 +6,10 @@
     <p class="font-bold text-amber-200 max-md:text-xl p-2">documentations</p>
   </button>
 
+  <template v-for="logo in logos" :key="logo.alt">
   <div
     v-if="isLienMDNOpen"
     class="border bg-gray-200 z-50"
-    v-for="logo in logos"
-    :key="logo.alt"
   >
   <button class="w-full p-2 focus:bg-gray-600">
     <a
@@ -24,6 +23,7 @@
     </a>
   </button>
   </div>
+  </template>
 </template>
 
 <script setup>

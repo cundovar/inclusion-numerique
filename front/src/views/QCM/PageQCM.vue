@@ -118,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, watch } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { useQCMStore } from '../../stores/qcm'
@@ -133,8 +133,6 @@ const error = ref(null);
 const qcms = ref([]);
 const niveau_qcms = ref([]);
 const language_qcms = ref([]);
-const selectedAnswers = reactive({});
-const results = reactive({});
 const selected_niveau = ref(null);
 const selected_language = ref(null);
 

@@ -7,13 +7,16 @@
     <div class="flex items-start">
       <!-- Icône -->
       <div class="flex-shrink-0">
-        <i :class="iconClass"></i>
+        <i :class="iconClass" />
       </div>
 
       <!-- Contenu -->
       <div class="ml-3 flex-1">
         <!-- Titre (optionnel) -->
-        <h3 v-if="title" :class="titleClass">
+        <h3
+          v-if="title"
+          :class="titleClass"
+        >
           {{ title }}
         </h3>
 
@@ -26,11 +29,11 @@
       <!-- Bouton de fermeture (optionnel) -->
       <button
         v-if="dismissible"
-        @click="close"
         type="button"
         :class="closeButtonClass"
+        @click="close"
       >
-        <i class="pi pi-times"></i>
+        <i class="pi pi-times" />
       </button>
     </div>
   </div>
