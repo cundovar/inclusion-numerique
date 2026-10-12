@@ -1,0 +1,91 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make check)",
+      "Bash(make check-fast)",
+      "Bash(make lint-php)",
+      "Bash(make lint-front)",
+      "Bash(make analyse)",
+      "Bash(make test)",
+      "Bash(make build-front)",
+      "Bash(make up)",
+      "Bash(make dev)",
+      "Bash(make start)",
+      "Bash(make stop)",
+      "Bash(make logs)",
+      "Bash(make -n *)",
+      "Bash(docker compose ps *)",
+      "Bash(docker compose logs *)",
+      "Bash(docker compose exec *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git check-ignore *)",
+      "Bash(ls *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(wc *)",
+      "Bash(cat *)"
+    ],
+    "ask": [
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh pr *)",
+      "Bash(make migrate)",
+      "Bash(make down)",
+      "Bash(make restart)",
+      "Bash(rm *)"
+    ],
+    "deny": [
+      "Read(./.env.local)",
+      "Read(./.env.prod)",
+      "Read(./.env.local.php)",
+      "Read(./backup*.sql)",
+      "Read(./backups/**)",
+      "Read(./mysql_data/**)",
+      "Bash(sudo rm *)",
+      "Bash(docker compose down -v*)",
+      "Bash(docker-compose down -v*)",
+      "Bash(make down-volumes)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.agents/hooks/protect-files.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.agents/hooks/lint-file.sh",
+            "timeout": 60,
+            "statusMessage": "Lint du fichier modifié..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.agents/hooks/stop-check.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
