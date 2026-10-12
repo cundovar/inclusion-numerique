@@ -1,5 +1,6 @@
 <template>
   <div class="flex items-center gap-2">
+    <p v-if="logoutError" class="text-sm text-red-600" role="alert">{{ logoutError }}</p>
     <!-- Bouton profil -->
     <router-link to="/profile" v-if="user.roles.includes('ROLE_USER')">
       <AppButton
@@ -26,15 +27,13 @@
 
 
 <script setup>
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import axios from 'axios';
-import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import AppButton from '../../ui/AppButton.vue';
-
-const router = useRouter();
+import { LOGOUT_EVENT, logout as logoutRequest } from '../../../services/auth.js';
 
 const user = ref({ username: '', roles: [] });
+const logoutError = ref('');
 
 const handleAuthAction = () => {
   if (user.value.roles && user.value.roles.includes('ROLE_USER')) {
@@ -47,14 +46,20 @@ const handleAuthAction = () => {
 };
 
 const logout = async () => {
+  logoutError.value = '';
+
   try {
-    await axios.post('/logout');
-    // Naviguer vers l'accueil puis recharger pour mettre à jour l'état
-    await router.push('/');
-    window.location.reload();
+    await logoutRequest();
+    user.value = { username: '', roles: [] };
+    window.location.assign('/login');
   } catch (error) {
     console.error('Erreur lors de la déconnexion', error);
+    logoutError.value = 'La déconnexion a échoué. Vous êtes toujours connecté.';
   }
+};
+
+const clearUser = () => {
+  user.value = { username: '', roles: [] };
 };
 
 const fetchUser = async () => {
@@ -69,7 +74,11 @@ const fetchUser = async () => {
 
 onMounted(() => {
   fetchUser();
- 
+  window.addEventListener(LOGOUT_EVENT, clearUser);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener(LOGOUT_EVENT, clearUser);
 });
 
 </script>

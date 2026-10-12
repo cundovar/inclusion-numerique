@@ -6,7 +6,11 @@ up:
 	docker compose up -d --build
 
 down:
-	@echo "🛑 Arrêt et suppression des conteneurs..."
+	@echo "🛑 Arrêt et suppression des conteneurs (volumes conservés)..."
+	docker compose down --remove-orphans
+
+down-volumes:
+	@echo "⚠️  Arrêt et suppression des conteneurs ET des volumes (base MySQL incluse)..."
 	docker compose down -v --remove-orphans
 
 restart:
@@ -62,3 +66,35 @@ dev:
 	@echo "🔥 Démarrage en mode dev..."
 	docker compose up -d && docker compose restart nginx
 
+
+# --- Validation (mêmes contrôles que la CI) ---
+
+lint-php:
+	@echo "🔎 Syntaxe PHP..."
+	docker compose exec -T php sh -c "find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null"
+
+analyse:
+	@echo "🔬 PHPStan..."
+	docker compose exec -T php composer analyse -- --memory-limit=1G
+
+test:
+	@echo "🧪 PHPUnit..."
+	docker compose exec -T php composer test
+
+lint-front:
+	@echo "🔎 ESLint..."
+	docker compose exec -T front npm run lint
+
+build-front:
+	@echo "🏗️  Build Vite..."
+	docker compose exec -T front npm run check
+
+check-fast: lint-php analyse lint-front
+	@echo "✅ check-fast terminé"
+
+check: check-fast test build-front
+	@rm -f .agents/.needs-check
+	@echo "✅ check terminé"
+
+.PHONY: up down down-volumes restart logs bash front-bash composer composer-require npm-install npm-dev symfo migrate start stop dev \
+	lint-php analyse test lint-front build-front check-fast check

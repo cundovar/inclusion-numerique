@@ -14,7 +14,13 @@
 /.env
 /documentations/
 /mysql_data/
-.claude/
+!.claude/
+.claude/*
+!.claude/settings.json
+.agents/.needs-check
+!.claude/skills/
+!.claude/skills/vae-documentation-sync/
+!.claude/skills/vae-documentation-sync/SKILL.md
 
 .vscode/
 ###< symfony/framework-bundle ###

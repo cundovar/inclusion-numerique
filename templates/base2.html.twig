@@ -5,6 +5,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8">
+    <meta name="logout-csrf-token" content="{{ csrf_token('logout') }}">
 
     {# SEO: Title #}
     <title>{% block title %}{{ seo.title|default('Vue + Symfony') }}{% endblock %}</title>

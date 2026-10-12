@@ -13,6 +13,16 @@ const exoContents = ref([])
 const seoData = ref([])
 const docDeCodes = ref([])
 
+const clearUser = async () => {
+  user.value = { username: '', roles: [] }
+  const db = await dbPromise
+  await db.clear('user')
+}
+
+window.addEventListener('auth:logout', () => {
+  clearUser().catch((error) => console.error('Impossible de supprimer l’utilisateur mis en cache.', error))
+})
+
 // Router (utile si besoin de redirection depuis le composable)
 const router = useRouter()
 
@@ -213,8 +223,7 @@ async function fetchUser() {
       user.value = await loadUserFromDB()
       console.log("Utilisateur (hors ligne):", user.value)
     } else if (error.response.status === 401) {
-      console.error("Non authentifié — redirection.")
-      router.push("/login")
+      await clearUser()
     } else {
       console.error("Erreur inattendue:", error)
     }

@@ -30,6 +30,12 @@ npm ci --prefix front
 npm run check --prefix front
 ```
 
+Avec Docker (conteneurs `php` et `front` démarrés), le `Makefile` regroupe les
+mêmes contrôles, plus ESLint : `make check-fast` (syntaxe PHP, PHPStan, ESLint)
+et `make check` (ajoute PHPUnit et le build Vite). En local, ces cibles sont
+bloquantes, PHPStan compris. Le conteneur `php` utilise PHP 8.3 (`Dockerfile`)
+alors que la CI et la release utilisent PHP 8.2.
+
 PHPStan utilise `phpstan-baseline.neon` pour representer la dette existante. Les
 nouvelles erreurs restent visibles dans le job informatif. La baseline ne doit
 etre regeneree qu'apres revue des erreurs supprimees ou acceptees.
