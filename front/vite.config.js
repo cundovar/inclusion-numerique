@@ -63,6 +63,10 @@ export default defineConfig(() => {
         // Injection automatique du registre du service worker
         outDir: PWA_OUTPUT_DIR,
         // Où mettre le service worker et le manifest (dans le repo)
+        base: `${PWA_PATH}/`,
+        scope: `${PWA_PATH}/`,
+        // Enregistre /spa/sw.js avec la portée /spa/ : sans cela, le plugin reprend la base
+        // Vite (/build/) et demande /build/sw.js, qui n'existe pas
         manifest: {
           // Contenu du manifest PWA
           name: 'SPA Hybride Vue Symfony',
@@ -118,11 +122,42 @@ export default defineConfig(() => {
           // Configuration de Workbox pour gérer le cache
           globDirectory: PWA_OUTPUT_DIR,
           // Où chercher les fichiers à mettre en cache (aligné avec outDir)
-          globPatterns: ['**/*.{js,css,html,png,svg}'],
-          // Quels types de fichiers à inclure
-          globIgnores: ['manifest.webmanifest', 'workbox-*.js', 'sw.js'],
+          globPatterns: ['**/*.{png,svg}'],
+          // Seules les icônes vivent dans /spa ; le JS et le CSS sont dans /build (cache à l'exécution)
+          globIgnores: ['manifest.webmanifest', 'workbox-*.js', 'sw.js', 'screenshot.png'],
           // Quels fichiers ignorer
+          // Pas de page HTML statique : la SPA est rendue par Symfony, on ne sert donc pas index.html
+          navigateFallback: null,
           runtimeCaching: [{
+            // Pages de la SPA : réseau d'abord, dernière version en cache si hors ligne.
+            // Chemin en dur : Workbox copie la fonction dans sw.js, où PWA_PATH n'existe pas.
+            urlPattern: ({ request, url }) => request.mode === 'navigate' && url.pathname.startsWith('/spa/'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'spa-pages',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 50 }
+            }
+          }, {
+            // JS et CSS compilés : noms hachés, donc immuables
+            urlPattern: ({ url }) => url.pathname.startsWith('/build/assets/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'build-assets',
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 }
+            }
+          }, {
+            // Lecture de l'API publique (cours, menus, QCM) ; jamais les données personnelles
+            urlPattern: ({ request, url }) => request.method === 'GET'
+              && url.pathname.startsWith('/api/')
+              && !/^\/api\/(admin|notes|me-favorites|page-visits|customization|proposition-ia|users)/.test(url.pathname),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-public',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 }
+            }
+          }, {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
