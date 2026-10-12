@@ -21,6 +21,8 @@
 
 ### Points à vérifier ou améliorer
 
+- Dépendances vulnérables relevées par l'audit CI (1 alerte critique `twig/twig`, 18 élevées côté Composer ; 8 élevées côté npm) : faille critique Twig corrigée (Twig 3.30.0), autres mises à jour à faire ; audits non bloquants à ce jour.
+
 - Gestion des secrets dans les fichiers `.env`.
 - Rate limiting réellement configuré sur les endpoints sensibles.
 - Headers CSP, HSTS et protections HTTP dans l'environnement actif.
@@ -52,8 +54,8 @@ L'ancien dossier `src/Repository/` a été supprimé (commit `954d9e45`) : les r
 
 - La présence d'un workflow ne prouve pas un déploiement réussi.
 - La couverture réelle et les résultats CI doivent être documentés à partir d'exécutions vérifiables.
-- Boucle locale `make check` ajoutée ; au 2026-10-12, elle passe de bout en bout (PHPStan sans erreur, 23 tests PHPUnit sur `main`, build Vite) après correction d'un setter Doctrine supprimé par erreur, couverte par un test de régression (voir [preuves.md](preuves.md)). Non encore confirmé par la CI.
-- Aucun niveau de production ne doit être affirmé sans preuve de validation ou de déploiement.
+- Boucle locale `make check` ajoutée ; au 2026-10-12, elle passe de bout en bout (PHPStan sans erreur, 23 tests PHPUnit sur `main`, build Vite) après correction d'un setter Doctrine supprimé par erreur, couverte par un test de régression (voir [preuves.md](preuves.md)). Confirmé par la CI ([run `38231755068`](https://github.com/cundovar/vue-symfony/actions/runs/38231755068)).
+- Déploiement en production prouvé par la CI ([run `38231755068`](https://github.com/cundovar/vue-symfony/actions/runs/38231755068), `c29ce7b5`), mais aucun test fonctionnel post-déploiement : le fonctionnement en production n'est pas vérifié.
 
 ## Positionnement du dossier
 
