@@ -369,13 +369,20 @@ erDiagram
 - **Données sensibles** : le contenu des notes (`appy_Note.content`) est stocké chiffré (`NoteEncryptionService`, testé). Le mot de passe est stocké haché (`password_hashers: auto`).
 - **Données semi-structurées en JSON** dans la base relationnelle : rôles utilisateur, préférences d'affichage (`UserCustomization.settings`), configuration du site, contenus et rapports de génération IA.
 
-## 5. Écarts entre le modèle et la base (constat du 2026-10-12, base locale)
+## 5. Écarts entre le modèle et la base (constat du 2026-10-12, base locale) et corrections
 
-| Écart | Conséquence | Correction proposée |
+| Écart | Conséquence | Correction appliquée (PR #44) |
 |---|---|---|
-| La table `revision` (entité `AgentCourseRevision`) n'existe pas : aucune migration ne la crée | Toute lecture ou écriture de révision échoue | Nouvelle migration `CREATE TABLE revision` |
-| Mapping `Seo` ↔ `Page` invalide : `Seo::$pageEntity` déclare `mappedBy: "seo"`, mais `Page::$seo` n'a pas `inversedBy: "pageEntity"` | `doctrine:schema:validate` en échec ; association bidirectionnelle incohérente | Ajouter `inversedBy` côté `Page` |
-| `course_media` et `agent_course_generation` ont des colonnes en `snake_case` (`mime_type`, `created_at`…) créées par la migration `Version20260901103000`, écrite à la main, alors que la stratégie de nommage attend le nom des propriétés (`mimeType`, `createdAt`…) | Requêtes Doctrine sur ces tables en échec sur une base construite par les migrations | Nommer explicitement les colonnes dans les entités (`#[ORM\Column(name: 'mime_type')]`), ou migration de renommage |
-| `appy_NiveauCours.ordre` : valeur par défaut absente en base (`DEFAULT 0` dans le mapping) | Mineure | Inclure dans la prochaine migration |
+| La table `revision` (entité `AgentCourseRevision`) n'existe pas : aucune migration ne la crée | Toute lecture ou écriture de révision échoue | Migration `Version20261012124537` : `CREATE TABLE revision` |
+| Mapping `Seo` ↔ `Page` invalide : `Seo::$pageEntity` déclare `mappedBy: "seo"`, mais `Page::$seo` n'a pas `inversedBy: "pageEntity"` | `doctrine:schema:validate` en échec ; association bidirectionnelle incohérente | `inversedBy: 'pageEntity'` ajouté sur `Page::$seo` |
+| `course_media` et `agent_course_generation` ont des colonnes en `snake_case` (`mime_type`, `created_at`…) créées par la migration `Version20260901103000`, écrite à la main, alors que la stratégie de nommage attend le nom des propriétés (`mimeType`, `createdAt`…) | Requêtes Doctrine sur ces tables en échec sur une base construite par les migrations | Noms de colonnes explicites dans les entités (`#[ORM\Column(name: 'mime_type')]`…) : le code s'aligne sur les tables existantes, qui ne sont pas modifiées |
+| `appy_NiveauCours.ordre` : valeur par défaut absente en base (`DEFAULT 0` dans le mapping) | Mineure | Même migration : `ordre INT DEFAULT 0 NOT NULL` |
 
-Ces écarts n'ont pas été vérifiés sur la base de production (aucun accès).
+Vérification après correction, en local, le 2026-10-12 :
+- base sauvegardée avant la migration ;
+- `doctrine:migrations:migrate` réussi ;
+- `doctrine:schema:validate` : `[OK] The mapping files are correct` et `[OK] The database schema is in sync with the mapping files` ;
+- aller-retour `down()` puis `up()` vérifié ;
+- non-régression couverte par `tests/Integration/Doctrine/MappingTest.php` (validité du mapping et noms des 9 colonnes migrées), qui échoue sans le correctif.
+
+**Production** : le déploiement n'exécute pas les migrations. `Version20261012124537` doit être lancée à la main sur le serveur, après sauvegarde. Son exécution et `doctrine:schema:validate` en production ne sont pas vérifiés à ce jour (aucun accès à la base de production).

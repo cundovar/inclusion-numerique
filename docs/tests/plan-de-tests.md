@@ -38,7 +38,7 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 
 ## 4. Cas de test automatisés
 
-39 tests, 111 assertions. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
+49 tests, 121 assertions. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
 
 | Exigence | Fichier de test | Ce qui est vérifié |
 |---|---|---|
@@ -52,6 +52,7 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 | US-02, US-14 | `tests/Entity/PositionMenusTest.php` (2) | Cohérence des deux côtés de la relation menu ↔ position (test de régression) |
 | US-15 | `tests/Entity/AgentCourseGenerationTest.php` (5) | Cycle de vie d'une génération de cours IA : file d'attente, échec, nouvel essai, validation |
 | US-13, US-14 | `tests/Functional/Security/AccessControlTest.php` (16) | Back-office réservé aux admins et absent hors de `/admin` ; écritures API refusées aux anonymes (401) et aux utilisateurs (403), autorisées aux admins ; lecture publique conservée ; un utilisateur ne modifie que son propre nom, jamais ses rôles ni son mot de passe |
+| Intégrité des données | `tests/Integration/Doctrine/MappingTest.php` (10) | Mapping Doctrine valide ; les colonnes `snake_case` créées par la migration `Version20260901103000` correspondent aux entités `CourseMedia` et `AgentCourseGeneration` |
 
 ## 5. Recette fonctionnelle exécutée
 
@@ -91,9 +92,11 @@ Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-sy
 | `make check` local (`fix/secure-admin-and-api`) | 2026-10-12 | Syntaxe PHP OK, PHPStan `[OK] No errors`, ESLint 0 erreur, PHPUnit `OK (39 tests, 111 assertions)`, build Vite OK |
 | Tests fonctionnels sans le correctif de sécurité | 2026-10-12 | 9 échecs sur 16 : les tests détectent bien la faille |
 | CI [run `38246023750`](https://github.com/cundovar/vue-symfony/actions/runs/38246023750) (`8d320ed1`, fusion PR #39) | 2026-10-12 | Tous les jobs réussis ; PHPUnit `OK (39 tests, 111 assertions)` ; déploiement réussi |
+| `make check` local (`fix/doctrine-schema-drift`) | 2026-10-12 | PHPStan `[OK] No errors`, PHPUnit `OK (49 tests, 121 assertions)`, build Vite OK ; `MappingTest` : 10 échecs sur 10 sans le correctif |
+| CI [run `38252131258`](https://github.com/cundovar/vue-symfony/actions/runs/38252131258) (fusion des PR #42 à #44) | 2026-10-12 | Tous les jobs réussis ; PHPUnit `OK (49 tests, 121 assertions)` ; déploiement réussi |
 | Recette en production (§5) | 2026-10-12 | 9 OK, 1 KO |
 
-**Couverture du code** (rapport Clover du run `38246023750`) : **7,5 % des lignes** (285 sur 3 800) et 95 méthodes sur 904. Le contexte Notes est presque entièrement couvert ; contrôleurs, services et entités hors Notes le sont très peu. Au run précédent (`38236154178`, avant les tests fonctionnels), la couverture était de 4,79 %.
+**Couverture du code** (rapports Clover des runs `38246023750` et `38252131258`) : **7,5 % des lignes** (285 sur 3 800) et 95 méthodes sur 904. Le contexte Notes est presque entièrement couvert ; contrôleurs, services et entités hors Notes le sont très peu. Au run précédent (`38236154178`, avant les tests fonctionnels), la couverture était de 4,79 %.
 
 ## 7. Anomalies
 
