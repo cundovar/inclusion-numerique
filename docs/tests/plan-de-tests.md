@@ -17,7 +17,7 @@ Hors périmètre à ce jour : les tests de bout en bout du navigateur (E2E) et l
 |---|---|---|---|---|
 | Analyse statique | Syntaxe PHP, typage et erreurs | `php -l`, PHPStan niveau 5 (`make lint-php`, `make analyse`) | Local, CI | Local oui ; CI informatif (PHPStan) |
 | Qualité front | Règles Vue et JS | ESLint (`make lint-front`) | Local | Local oui ; absent de la CI |
-| Unitaire front | Composant `SafeHtml`, gardes du routeur, store QCM, utilitaires | Vitest + Vue Test Utils + jsdom (`make test-front`, `front/tests/unit/`) | Local, CI (job « Frontend quality ») | Oui |
+| Unitaire front | Composant `SafeHtml`, gardes du routeur, store QCM, utilitaires, accès IndexedDB | Vitest + Vue Test Utils + jsdom (`make test-front`, `front/tests/unit/`) | Local, CI (job « Frontend quality ») | Oui |
 | Unitaire | Entités, handlers CQRS, services | PHPUnit (`tests/Entity`, `tests/Application`, `tests/Infrastructure/Note/Service`) | Local, CI | Oui |
 | Intégration | Repository Doctrine sur une vraie base | PHPUnit + SQLite en mémoire (`tests/Infrastructure/Note/Repository`) | Local, CI | Oui |
 | Fonctionnel HTTP | Contrôles d'accès de bout en bout (routage, pare-feu, API Platform, EasyAdmin) | PHPUnit `WebTestCase` + SQLite jetable (`tests/Functional`) | Local, CI | Oui |
@@ -39,7 +39,7 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 
 ## 4. Cas de test automatisés
 
-70 tests : 49 tests PHPUnit (121 assertions) et 21 tests Vitest. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
+85 tests : 49 tests PHPUnit (121 assertions) et 36 tests Vitest. Le nombre de tests de chaque ligne figure entre parenthèses après le nom du fichier.
 
 | Exigence | Fichier de test | Ce qui est vérifié |
 |---|---|---|
@@ -58,6 +58,8 @@ Critère de sortie d'une livraison : `make check` vert, CI verte, aucune anomali
 | US-13, US-14 | `front/tests/unit/router/guards.spec.js` (6) | `authGuard` redirige un visiteur et mémorise la destination ; `adminGuard` refuse sans `ROLE_ADMIN` ; `guestGuard` renvoie un utilisateur connecté |
 | US-06, US-07 | `front/tests/unit/stores/qcm.spec.js` (4) | Réponses enregistrées ; questions et choix mélangés sans perte ; remise à zéro |
 | US-02, US-04 | `front/tests/unit/utils/utils.spec.js` (5) | Mélange de Fisher-Yates sans perte ; majuscule et slug ; tri des menus par numéro |
+| ENF-02 | `front/tests/unit/utils/offlineDb.spec.js` (12) | Base IndexedDB `spa-db` (simulée par `fake-indexeddb`) : stores et clés ; migration depuis les versions 1 à 4 sans perte ; insertion ou remplacement par clé ; objets réactifs Vue ; effacement de l'utilisateur ; expiration du cache API à 1 heure |
+| ENF-02, US-13 | `front/tests/unit/utils/fetchDataPwa.spec.js` (3) | Repli hors ligne : menus visibles copiés en ligne puis relus sans réseau après redémarrage ; utilisateur restauré hors ligne ; effacé sur réponse 401 |
 
 ## 5. Recette fonctionnelle exécutée
 
@@ -100,6 +102,8 @@ Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-sy
 | `make check` local (`fix/doctrine-schema-drift`) | 2026-10-12 | PHPStan `[OK] No errors`, PHPUnit `OK (49 tests, 121 assertions)`, build Vite OK ; `MappingTest` : 10 échecs sur 10 sans le correctif |
 | CI [run `38252131258`](https://github.com/cundovar/vue-symfony/actions/runs/38252131258) (fusion des PR #42 à #44) | 2026-10-12 | Tous les jobs réussis ; PHPUnit `OK (49 tests, 121 assertions)` ; déploiement réussi |
 | Vitest local (`test/front-vitest`) | 2026-10-12 | `Tests 21 passed (21)` ; `make check` réussi (49 tests PHPUnit, 21 tests Vitest, build Vite) |
+| Vitest local (`feat/nosql-indexeddb`) | 2026-10-12 | `Tests 36 passed (36)` ; `make check` réussi (49 tests PHPUnit, 36 tests Vitest, build Vite) ; dans le navigateur en local, `spa-db` v5 remplie par l'application (281 menus, 22 catégories, 42 exercices) |
+| Défauts introduits volontairement dans `offlineDb.js` et `fetchDataPwa.js` | 2026-10-12 | Conversion des objets réactifs retirée : 2 tests échouent ; expiration du cache décalée : 1 test échoue ; création de `docDeCodes` avancée en version 4 : 1 test échoue (non détecté avant l'ajout des migrations depuis chaque version) ; copie des menus retirée : 1 test échoue ; effacement sur 401 retiré : 1 test échoue |
 | Défauts introduits volontairement dans le code front | 2026-10-12 | `authGuard` inversé : 2 tests échouent ; ajout de `rel="noopener noreferrer"` supprimé dans `SafeHtml` : 1 test échoue. Le filtre `javascript:` maison de `SafeHtml` peut être retiré sans échec, car DOMPurify bloque déjà ces liens par défaut (filtre redondant) |
 | Recette en production (§5) | 2026-10-12 | 9 OK, 1 KO |
 
@@ -117,7 +121,7 @@ Après le déploiement du run [`38249883993`](https://github.com/cundovar/vue-sy
 
 ## 8. Limites et suite
 
-- **Tests du frontend limités** : 21 tests unitaires Vitest sur la logique critique ; aucun test de bout en bout. Ajouter un parcours E2E (Playwright) sur US-01, US-03, US-04 et US-06, puis des tests de composants de pages.
+- **Tests du frontend limités** : 36 tests unitaires Vitest sur la logique critique et l'accès IndexedDB ; aucun test de bout en bout. Ajouter un parcours E2E (Playwright) sur US-01, US-03, US-04 et US-06, puis des tests de composants de pages.
 - **Recette de l'espace connecté** non exécutée : créer un compte de recette dédié pour US-08 à US-12, en local ou en préproduction.
 - **Couverture faible (7,5 %)** : prioriser les contrôleurs d'API maison (notes, favoris, historique) et `HtmlSanitizerService` (ENF-03, non testé).
 - **Contrôles non bloquants en CI** : PHPStan et les audits de dépendances sont informatifs, et ESLint est absent de la CI.
