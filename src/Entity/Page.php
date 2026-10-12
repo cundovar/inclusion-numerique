@@ -39,7 +39,7 @@ class Page
     #[ORM\OneToMany(mappedBy: 'page', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
-    #[ORM\OneToOne(targetEntity: Seo::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Seo::class, inversedBy: 'pageEntity', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?Seo $seo = null;
