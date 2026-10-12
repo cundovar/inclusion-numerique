@@ -43,7 +43,7 @@ Ce n'est pas nécessaire pour considérer cette base comme hexagonale au sens Sy
 
 ### 2. Listener Doctrine ciblé
 
-[`src/EventListener/PageContentSanitizerListener.php`](/home/cundo/Bureau/perso/symfoy_projets/symfo_vue/devdoc-local/src/EventListener/PageContentSanitizerListener.php) dépend encore de:
+[`src/EventListener/PageContentSanitizerListener.php`](../src/EventListener/PageContentSanitizerListener.php) dépend encore de:
 
 - `Doctrine\ORM\Events`
 - `PrePersistEventArgs`

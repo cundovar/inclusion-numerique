@@ -1,2 +1,6 @@
 # Micro-service déployé sur le VPS (Coolify), pas sur l’hébergement OVH
 services/ export-ignore
+# Outillage de la documentation (site VitePress), inutile en production
+docs/.vitepress/ export-ignore
+docs/package.json export-ignore
+docs/package-lock.json export-ignore

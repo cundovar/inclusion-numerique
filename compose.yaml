@@ -69,6 +69,19 @@ services:
       - qcm_mongo_data:/data/db
     networks: [connectPerso]
 
+  # Documentation technique (VitePress) : `make docs-dev` sur http://localhost:5174, hors du démarrage normal
+  docs:
+    image: node:22.21.0-bookworm
+    working_dir: /app/docs
+    profiles: [docs]
+    volumes:
+      - ./:/app
+      - docs_node_modules:/app/docs/node_modules
+    ports:
+      - "5174:5174"
+    # git sert à la date « Mis à jour » de chaque page ; le dépôt monté appartient à un autre utilisateur
+    command: sh -c "git config --global --add safe.directory /app && npm ci --no-audit --no-fund && npx vitepress dev --host 0.0.0.0 --port 5174"
+
   # Tests de bout en bout (Playwright) : `make test-e2e`, hors du démarrage normal (profil e2e)
   e2e:
     image: mcr.microsoft.com/playwright:v1.63.0-noble
@@ -156,5 +169,6 @@ volumes:
   mysql_data:
   front_node_modules:
   e2e_node_modules:
+  docs_node_modules:
   qcm_results_node_modules:
   qcm_mongo_data:
