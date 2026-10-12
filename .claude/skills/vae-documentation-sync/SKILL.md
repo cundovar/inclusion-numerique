@@ -1,6 +1,6 @@
 ---
 name: vae-documentation-sync
-description: Synchronize the VAE CDA documentation with verified code, test, Git, and deployment changes. Use after completing a feature, fix, refactor, security change, test, CI/CD change, or architecture change that may alter the project's evidence for the VAE dossier.
+description: Synchronize the VAE CDA documentation and the VitePress documentation site (docs/) with verified code, test, Git, and deployment changes. Use after completing a feature, fix, refactor, security change, test, CI/CD change, or architecture change that may alter the project's evidence for the VAE dossier.
 ---
 
 # Synchroniser la documentation VAE
@@ -18,6 +18,7 @@ Utiliser ce skill à la fin d'une tâche technique terminée, après les tests e
 - `documentations/doc-pour-portfolio.md` : présentation fonctionnelle et technique.
 - `docs/CI_CD.md` : qualité, CI et déploiement.
 - `documentations/architecture/` : décisions et plans d'architecture.
+- Site VitePress `docs/` : pages par thème (`fonctionnalites/`, `api/`, `donnees/`, `conception/`, `decisions/`, `demarrer/`) ; table « Où écrire » dans `AGENTS.md`.
 
 ## Procédure
 
@@ -32,7 +33,8 @@ Utiliser ce skill à la fin d'une tâche technique terminée, après les tests e
    - validé par la CI ;
    - déployé ou vérifié en production.
 7. Signaler les informations impossibles à vérifier au lieu de les inventer.
-8. Relire le diff documentaire et résumer les documents changés, les preuves ajoutées et les points restant à vérifier.
+8. Reporter le changement dans le site VitePress quand il modifie ce que le site décrit (voir la section « Documentation VitePress » de `AGENTS.md`), puis lancer `make docs-build`.
+9. Relire le diff documentaire et résumer les documents changés, les preuves ajoutées et les points restant à vérifier.
 
 ## Règles VAE
 
@@ -47,7 +49,8 @@ Utiliser ce skill à la fin d'une tâche technique terminée, après les tests e
 
 Terminer par un court bilan :
 
-- documents synchronisés ;
+- documents synchronisés, pages VitePress comprises (ou raison de ne pas en modifier) ;
+- résultat de `make docs-build` ;
 - preuves vérifiées ;
 - éléments devenus obsolètes corrigés ;
 - éléments non vérifiables ou restant à traiter ;

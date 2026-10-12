@@ -30,6 +30,26 @@
 - `make down-volumes` / `docker compose down -v` : supprime la base MySQL.
 - `git push` et migrations sans accord explicite.
 
+# Documentation VitePress (`docs/`)
+
+Toute modification ou implémentation **validée** (`make check` réussi) est reportée dans le site de documentation si elle change ce qu'il décrit : une fonctionnalité, un écran ou un parcours, une route d'API ou ses règles d'accès, une entité ou un schéma de données, l'architecture, une intégration (MCP, micro-service), les tests, la CI ou le déploiement. Un refactoring interne sans effet visible ni changement de structure n'en a pas besoin : le dire explicitement dans le compte rendu.
+
+- Où écrire :
+
+  | Changement | Page |
+  |---|---|
+  | Fonctionnalité nouvelle ou modifiée | `docs/fonctionnalites/<nom>.md`, au plan de `qcm.md`, et sa ligne dans `docs/fonctionnalites/index.md` |
+  | Route, rôle, code de retour | `docs/api/index.md` et la fiche de la fonctionnalité |
+  | Entité, migration, base NoSQL | `docs/conception/base-de-donnees.md`, `docs/donnees/index.md` |
+  | Couches, micro-service, sécurité | `docs/conception/architecture.md` ; choix structurant : `docs/decisions/index.md` |
+  | Tests, CI/CD, déploiement | `docs/tests/plan-de-tests.md`, `docs/CI_CD.md` |
+  | Commande ou service local | `docs/demarrer/local.md` ; terme nouveau : `docs/demarrer/glossaire.md` |
+
+- Nouvelle page : l'ajouter à la barre latérale (`docs/.vitepress/config.mjs`).
+- Liens vers le code en chemins relatifs (réécrits vers GitHub au build) ; ancres au format GitHub.
+- Badges `<Status is="code|local|ci|prod|prevu" />` fidèles à la preuve réelle, comme dans `VAE/preuves.md` : pas de « En production » sans vérification en production.
+- Vérifier avec `make docs-build` (échoue sur un lien mort) et rapporter le résultat.
+
 # Règle documentaire du projet
 
 À la fin de toute tâche technique terminée, utiliser le skill
