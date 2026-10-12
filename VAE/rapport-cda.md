@@ -21,7 +21,7 @@
 
 ### Points à vérifier ou améliorer
 
-- Dépendances vulnérables relevées par l'audit CI (1 alerte critique `twig/twig`, 18 élevées côté Composer ; 8 élevées côté npm) : faille critique Twig corrigée (Twig 3.30.0), autres mises à jour à faire ; audits non bloquants à ce jour.
+- Dépendances vulnérables relevées par l'audit CI (1 alerte critique `twig/twig`, 18 élevées côté Composer ; 8 élevées côté npm) : faille critique Twig corrigée (Twig 3.30.0, validé par la CI, run `38236154178` : 0 critique, 14 élevées côté Composer), autres mises à jour à faire ; audits non bloquants à ce jour.
 
 - Gestion des secrets dans les fichiers `.env`.
 - Rate limiting réellement configuré sur les endpoints sensibles.
@@ -58,5 +58,7 @@ L'ancien dossier `src/Repository/` a été supprimé (commit `954d9e45`) : les r
 - Déploiement en production prouvé par la CI ([run `38231755068`](https://github.com/cundovar/vue-symfony/actions/runs/38231755068), `c29ce7b5`), mais aucun test fonctionnel post-déploiement : le fonctionnement en production n'est pas vérifié.
 
 ## Positionnement du dossier
+
+La couverture des 11 compétences du référentiel RNCP37873 est suivie dans [preuves.md](preuves.md#couverture-du-référentiel-cda). Au 2026-10-12 : 4 compétences couvertes, 6 partielles. La seule lacune complète est l'analyse des besoins et le maquettage (BC02). Les autres manques principaux sont un plan de tests formalisé, la conception documentée de la base de données et l'accès aux données NoSQL.
 
 Le registre [preuves.md](preuves.md) est la source de vérité pour les fichiers, tests, commits et statuts. Ce rapport ne doit contenir que des synthèses renvoyant à ce registre.
