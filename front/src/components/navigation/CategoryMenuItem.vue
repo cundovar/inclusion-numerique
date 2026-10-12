@@ -58,11 +58,10 @@
 
       <!-- Menu des cours -->
 
+      <template v-for="group in menusByCategory[cat.name]" :key="group.label">
       <div
         class="md:gap-y-1"
         v-if="(isXlOuPlus && hoveredCategory === cat.name) || (!isXlOuPlus && clickMenu === cat.name)"
-        v-for="group in menusByCategory[cat.name]"
-        :key="group.label"
       >
       
         <div class="p-2 md:w-2/3 md:mt-1 md:border-b mb-2 md:text-start md:bg-transparent   max-md:text-center  max-md:text-sm max-md:border-t">
@@ -103,12 +102,12 @@
           </router-link>
         </button>
       </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { capitalize } from '../../utils/stringsUtlis';
 import { useCustomization } from '../../composables/ui/useCustomization';
 import AppButton from '../ui/AppButton.vue';
 

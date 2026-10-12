@@ -15,7 +15,7 @@
         <AppBadge variant="default" size="xl" rounded="sm">
          categorie : {{ result.category?.name || result.category || 'Non catégorisé' }}
         </AppBadge>
-        <AppBadge v-if="result.menu?.label" " size="xl" rounded="sm">
+        <AppBadge v-if="result.menu?.label" size="xl" rounded="sm">
         chapitre:  {{ result.menu.label }}
         </AppBadge>
         <AppBadge v-if="result.hasCode" size="xl" rounded="sm" icon="pi pi-code">

@@ -149,7 +149,6 @@ import { useCustomization } from '../../composables/ui/useCustomization';
 import AppButton from '../ui/AppButton.vue';
 import { useData } from '../../utils/fetchDataPwa';
 import { APP_CONFIG } from '../../config/app.js';
-import SearchResults from '../features/search/SearchResultsMobile.vue';
 import SearchResultItem from '../features/search/SearchResultItem.vue';
 
 // =============================================================================
@@ -165,8 +164,8 @@ import { useResponsive } from '@/composables/ui/useResponsive';
 
 const { user,menus } = useData();
 const { isMobile } = useResponsive()
-const {openModal,closeModal,modalIsOpen} = useNavigation()
-const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile, openModal);
+const { openModal } = useNavigation()
+const { search, searchResults, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile, openModal);
 // Initialisation du store
 const niveauStore = useNiveauStore()
 
@@ -234,8 +233,6 @@ watch(levels, (newLevels) => {
 }, { immediate: true })
 
 const { siteName, header } = useCustomization();
-const {toggleMenu}=useNavigation()
-const { menu } = useData();
 const isAdmin = computed(() => user.value?.roles?.includes('ROLE_ADMIN'));
 
 defineProps({

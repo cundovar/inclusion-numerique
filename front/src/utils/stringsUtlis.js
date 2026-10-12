@@ -8,8 +8,8 @@ export function capitalize(str) {
       .normalize('NFD')                   // remove accents
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+/g, '-')               // spaces to -
-      .replace(/[^\w\-]+/g, '')           // remove non-words
-      .replace(/\-\-+/g, '-')             // collapse --
+      .replace(/[^\w-]+/g, '')            // remove non-words
+      .replace(/-{2,}/g, '-')              // collapse --
       .replace(/^-+/, '')                 // trim -
       .replace(/-+$/, '');                // trim -
   }

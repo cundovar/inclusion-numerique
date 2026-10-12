@@ -1,9 +1,16 @@
 <template>
   <div class="app-select-wrapper">
     <!-- Label (optionnel) -->
-    <label v-if="label" :for="selectId" :class="labelClass">
+    <label
+      v-if="label"
+      :for="selectId"
+      :class="labelClass"
+    >
       {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
+      <span
+        v-if="required"
+        class="text-red-500"
+      >*</span>
     </label>
 
     <!-- Select simple/multiple -->
@@ -19,10 +26,10 @@
       :size="size"
       :collapse-tags="collapseTags"
       :collapse-tags-tooltip="collapseTagsTooltip"
+      class="w-full"
       @change="handleChange"
       @blur="handleBlur"
       @focus="handleFocus"
-      class="w-full"
     >
       <el-option
         v-for="option in options"
@@ -46,19 +53,25 @@
       :filterable="filterable"
       :size="size"
       :show-all-levels="showAllLevels"
+      class="w-full"
       @change="handleChange"
       @blur="handleBlur"
       @focus="handleFocus"
-      class="w-full"
     />
 
     <!-- Message d'erreur -->
-    <div v-if="error" class="text-red-500 text-sm mt-1">
+    <div
+      v-if="error"
+      class="text-red-500 text-sm mt-1"
+    >
       {{ error }}
     </div>
 
     <!-- Message d'aide -->
-    <div v-if="helpText && !error" class="text-gray-500 text-sm mt-1">
+    <div
+      v-if="helpText && !error"
+      class="text-gray-500 text-sm mt-1"
+    >
       {{ helpText }}
     </div>
   </div>

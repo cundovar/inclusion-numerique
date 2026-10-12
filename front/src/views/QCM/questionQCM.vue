@@ -12,10 +12,9 @@
       <!-- Choix de réponses -->
       <div v-if="currentQcm.choicesQCMs && currentQcm.choicesQCMs.length" class="space-y-3 mb-6">
         <transition-group name="fade-slide" tag="div" class="space-y-3">
+          <template v-for="(choice, index) in currentQcm.choicesQCMs" :key="'choice-' + choice.id">
           <div
             v-if="!soumissionBouton"
-            v-for="(choice, index) in currentQcm.choicesQCMs"
-            :key="'choice-' + choice.id"
             :style="{ transitionDelay: `${index * 50}ms` }"
             class="border border-gray-300 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
             @click="selectAnswer(choice.id)"
@@ -24,6 +23,7 @@
               <span v-html="choice.question"></span>
             </el-radio>
           </div>
+          </template>
         </transition-group>
 
       
@@ -52,8 +52,8 @@
           <div v-else class="bg-red-100 border-2 border-red-500 rounded-lg p-1 text-center shake">
             <i class="fas fa-times-circle text-red-500 text-xl"></i>
             <div v-if="currentQcm.choicesQCMs && !isQuestionIsCorrect">
-              <span v-for="(CorrectChoice ,index) in currentQcm.choicesQCMs">
-                <div v-if="CorrectChoice.isCorrect" :key="index">
+              <span v-for="CorrectChoice in currentQcm.choicesQCMs" :key="'correct-' + CorrectChoice.id">
+                <div v-if="CorrectChoice.isCorrect">
                   la bonne reponse est :
                   <p class="text-green-500 font-bold" v-html="CorrectChoice.question"></p>
                   <div class="border mr-2 ml-2 mt-2 mb-2 rounded-xl p-5">

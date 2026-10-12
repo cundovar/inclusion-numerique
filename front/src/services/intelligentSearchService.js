@@ -60,7 +60,7 @@ class IntelligentSearchService {
     try {
       const response = await fetch(`${BASE_URL}/search/health`);
       return response.ok;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

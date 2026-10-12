@@ -29,8 +29,7 @@ const PWA_OUTPUT_DIR = process.env.PWA_OUTPUT_DIR || `public${PWA_PATH}`;
 // Détecte si on est dans le contexte Storybook
 const isStorybook = process.env.npm_lifecycle_script?.includes('storybook') || false;
 
-export default defineConfig(({ mode }) => {
-  const isProdBuild = mode === 'production';
+export default defineConfig(() => {
   const viteDevOrigin = process.env.VITE_DEV_ORIGIN || 'http://localhost:8092';
   const viteDevUrl = new URL(viteDevOrigin);
 
@@ -204,7 +203,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         // Options supplémentaires pour le bundler Rollup
         input: {
-          main: resolve(__dirname, 'src/main.js') // Point d'entrée principal de l'application
+          main: resolve(dirname, 'src/main.js') // Point d'entrée principal de l'application
         }
       }
     },

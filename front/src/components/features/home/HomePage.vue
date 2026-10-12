@@ -149,7 +149,7 @@ import { useNiveauStore } from "@/stores/niveauCoursStore";
 const filteredCategories = ["wordpress", "vue", "react"];
 
 // Données depuis l'API
-const { fetchMenus, cats, menus, fetchExoContents, exoContents } = useData();
+const { fetchMenus, menus, fetchExoContents, exoContents } = useData();
 
 // Connexion au store niveau
 // selectedNiveau: le niveau sélectionné dans le header (ex: "Junior" ou null)
@@ -253,6 +253,7 @@ const filteredMenusByCategory = computed(() => {
 });
 
 // Exercices groupés par catégorie
+// eslint-disable-next-line no-unused-vars -- utilisé dans le template Vue
 const exoByCategory = computed(() => {
   const result = {};
   const uniqueCategories = new Set();
@@ -803,6 +804,7 @@ const getCategoryBgClass = (category) => {
 };
 
 // Couleurs spécifiques pour les exercices (tons verts/émeraude)
+// eslint-disable-next-line no-unused-vars -- utilisé dans le template Vue
 const getExoCategoryBgClass = (category) => {
   const exoBgClasses = {
     // Langages de programmation - tons verts

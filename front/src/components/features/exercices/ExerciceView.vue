@@ -21,7 +21,8 @@
 
 
         <SafeHtml :html="exo.code" class=" ml-3 font-semibold pb-2 text-xl shadow p-3 rounded-md    mb-10" 
-        :class="exo.category.name==='css'?'bg-blue-50':'bg-yellow-50'" </SafeHtml>
+        :class="exo.category.name==='css'?'bg-blue-50':'bg-yellow-50'"
+      />
   
 
       <CodeEditor

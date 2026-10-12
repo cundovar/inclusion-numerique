@@ -35,9 +35,8 @@
 
 
 const activeTab = ref('sommaire')
-    const toc = ref([])
     
-const props = defineProps({
+defineProps({
   toc: {
     type: Array,
     required: true

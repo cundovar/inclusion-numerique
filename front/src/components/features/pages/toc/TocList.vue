@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   toc: {
@@ -75,12 +75,6 @@ const props = defineProps({
 const emit = defineEmits(['scroll-to', 'close-mobile'])
 
 const readingProgress = ref(0)
-
-// Style dynamique pour la barre de progression
-const progressBarStyle = computed(() => ({
-  width: readingProgress.value + '%',
-  background: props.bgCategorie || '#f97316'
-}))
 
 const handleClick = (id) => {
   emit('scroll-to', id)

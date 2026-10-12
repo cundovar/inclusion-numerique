@@ -15,7 +15,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
 // primsjs Charge les langages dont tu as besoin
-import Prism from 'prismjs';
+import 'prismjs'; // cœur de Prism, requis avant les composants de langage
 import 'prismjs/themes/prism-okaidia.css';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-css';
@@ -45,4 +45,3 @@ registerSW({
   window.addEventListener('online', () => {
     console.log('✅ Connexion rétablie.');
   });
-
