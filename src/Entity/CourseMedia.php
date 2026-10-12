@@ -19,7 +19,7 @@ class CourseMedia
     #[ORM\Column(length: 255, unique: true)]
     private string $filename;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'mime_type', length: 100)]
     private string $mimeType;
 
     #[ORM\Column(type: Types::INTEGER)]
@@ -31,7 +31,7 @@ class CourseMedia
     #[ORM\Column(length: 64)]
     private string $checksum;
 
-    #[ORM\Column(length: 500)]
+    #[ORM\Column(name: 'alt_text', length: 500)]
     private string $altText;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -48,7 +48,7 @@ class CourseMedia
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?AgentCourseGeneration $generation = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
     public function __construct(string $filename, string $mimeType, int $width, int $height, string $checksum, string $altText)
