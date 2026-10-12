@@ -23,7 +23,7 @@
 
 - Dépendances vulnérables relevées par l'audit CI (1 alerte critique `twig/twig`, 18 élevées côté Composer ; 8 élevées côté npm) : faille critique Twig corrigée (Twig 3.30.0, validé par la CI, run `38236154178` : 0 critique, 14 élevées côté Composer), autres mises à jour à faire ; audits non bloquants à ce jour.
 
-- Contrôle d'accès : le back-office EasyAdmin était servi hors de `/admin` sans authentification, et API Platform acceptait des écritures anonymes (dont la modification des rôles d'un utilisateur). Correction vérifiée localement le 2026-10-12 par 16 tests fonctionnels (`tests/Functional/Security/AccessControlTest.php`) ; validation CI et vérification en production à faire.
+- Contrôle d'accès : le back-office EasyAdmin était servi hors de `/admin` sans authentification, et API Platform acceptait des écritures anonymes (dont la modification des rôles d'un utilisateur). Correction couverte par 16 tests fonctionnels (`tests/Functional/Security/AccessControlTest.php`), validée par la CI et vérifiée en production le 2026-10-12.
 - Gestion des secrets dans les fichiers `.env`.
 - Rate limiting réellement configuré sur les endpoints sensibles.
 - Headers CSP, HSTS et protections HTTP dans l'environnement actif.
@@ -60,6 +60,6 @@ L'ancien dossier `src/Repository/` a été supprimé (commit `954d9e45`) : les r
 
 ## Positionnement du dossier
 
-La couverture des 11 compétences du référentiel RNCP37873 est suivie dans [preuves.md](preuves.md#couverture-du-référentiel-cda). Au 2026-10-12 : 4 compétences couvertes, 7 partielles, aucune lacune complète. L'analyse des besoins et le maquettage (BC02) sont désormais documentés dans [`docs/conception/`](../docs/conception/besoins.md), mais formalisés a posteriori. Les autres manques principaux sont un plan de tests formalisé, la conception documentée de la base de données et l'accès aux données NoSQL.
+La couverture des 11 compétences du référentiel RNCP37873 est suivie dans [preuves.md](preuves.md#couverture-du-référentiel-cda). Au 2026-10-12 : 5 compétences couvertes, 6 partielles, aucune lacune complète. Le plan de tests (BC03) est rédigé et exécuté dans [`docs/tests/plan-de-tests.md`](../docs/tests/plan-de-tests.md). L'analyse des besoins et le maquettage (BC02) sont désormais documentés dans [`docs/conception/`](../docs/conception/besoins.md), mais formalisés a posteriori. Les autres manques principaux sont la conception documentée de la base de données et l'accès aux données NoSQL.
 
 Le registre [preuves.md](preuves.md) est la source de vérité pour les fichiers, tests, commits et statuts. Ce rapport ne doit contenir que des synthèses renvoyant à ce registre.
