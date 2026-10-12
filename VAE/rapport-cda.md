@@ -59,6 +59,6 @@ L'ancien dossier `src/Repository/` a été supprimé (commit `954d9e45`) : les r
 
 ## Positionnement du dossier
 
-La couverture des 11 compétences du référentiel RNCP37873 est suivie dans [preuves.md](preuves.md#couverture-du-référentiel-cda). Au 2026-10-12 : 4 compétences couvertes, 6 partielles. La seule lacune complète est l'analyse des besoins et le maquettage (BC02). Les autres manques principaux sont un plan de tests formalisé, la conception documentée de la base de données et l'accès aux données NoSQL.
+La couverture des 11 compétences du référentiel RNCP37873 est suivie dans [preuves.md](preuves.md#couverture-du-référentiel-cda). Au 2026-10-12 : 4 compétences couvertes, 7 partielles, aucune lacune complète. L'analyse des besoins et le maquettage (BC02) sont désormais documentés dans [`docs/conception/`](../docs/conception/besoins.md), mais formalisés a posteriori. Les autres manques principaux sont un plan de tests formalisé, la conception documentée de la base de données et l'accès aux données NoSQL.
 
 Le registre [preuves.md](preuves.md) est la source de vérité pour les fichiers, tests, commits et statuts. Ce rapport ne doit contenir que des synthèses renvoyant à ce registre.
