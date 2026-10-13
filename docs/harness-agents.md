@@ -1,7 +1,6 @@
-# Harness agents IA — Claude Code, Codex et AIDD
+# Carte complète du harness
 
-Architecture du harness du projet : ce que chaque agent charge, le socle partagé,
-la boucle de validation, la méthode AIDD et le dossier VAE.
+Toutes les pièces du harness et leurs liens sur un seul schéma. Pour l'explication pièce par pièce, voir [Harness des agents IA](harness/index.md).
 
 ```mermaid
 ---
@@ -34,7 +33,7 @@ flowchart LR
         subgraph Hooks[".agents/hooks"]
             HookLib["lib.sh : chemins Claude et apply_patch"]
             HookProtect["protect-files.sh : refuse .env, migrations commitées, VAE figé"]
-            HookLint["lint-file.sh : php -l ou ESLint du fichier"]
+            HookLint["lint-file.sh : php -l ou ESLint du fichier, marqueur"]
             HookStop["stop-check.sh : exige make check"]
         end
         Marker[".agents/.needs-check"]
@@ -55,6 +54,8 @@ flowchart LR
         PhpStan["PHPStan niveau 5"]
         EsLint["ESLint"]
         PhpUnit["PHPUnit"]
+        VitestNode["Vitest"]
+        QcmTests["Tests micro-service Node + MongoDB"]
         ViteBuild["Build Vite"]
     end
 
@@ -113,6 +114,8 @@ flowchart LR
     MakeFast --> PhpStan
     MakeFast --> EsLint
     MakeCheck --> PhpUnit
+    MakeCheck --> VitestNode
+    MakeCheck --> QcmTests
     MakeCheck --> ViteBuild
     LintPhp --> PhpContainer
     PhpStan --> PhpContainer
@@ -145,4 +148,4 @@ flowchart LR
 
 ## Documentation à jour après chaque changement validé
 
-`AGENTS.md` impose à Claude Code et à Codex de reporter dans le site VitePress toute modification validée par `make check` qui change ce que le site décrit (fonctionnalité, API, données, architecture, tests, CI, déploiement), selon une table « changement → page ». Le rappel de fin de tâche (`stop-check.sh`) et le skill `vae-documentation-sync` le redemandent ; `make docs-build` vérifie que le site compile sans lien mort.
+Détail : [Méthode et documentation](harness/methode.md). En bref, `AGENTS.md` impose à Claude Code et à Codex de reporter dans le site VitePress toute modification validée par `make check` qui change ce que le site décrit (fonctionnalité, API, données, architecture, tests, CI, déploiement), selon une table « changement → page ». Le rappel de fin de tâche (`stop-check.sh`) et le skill `vae-documentation-sync` le redemandent ; `make docs-build` vérifie que le site compile sans lien mort.

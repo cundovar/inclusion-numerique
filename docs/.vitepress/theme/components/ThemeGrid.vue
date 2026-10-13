@@ -9,6 +9,7 @@ const themes = [
   { icon: '🗄️', title: 'Données', text: 'MySQL, IndexedDB hors ligne, MongoDB.', link: '/donnees/' },
   { icon: '🔌', title: 'API', text: 'Toutes les routes, leurs rôles et leurs codes de retour.', link: '/api/' },
   { icon: '🤖', title: 'Intégrations', text: 'Agents de cours IA (MCP), clé d\'API.', link: '/migration-mcp-vers-symfony' },
+  { icon: '🛡️', title: 'Harness IA', text: 'Règles, garde-fous et validation des agents Claude Code et Codex.', link: '/harness/' },
   { icon: '✅', title: 'Qualité', text: 'Tests, make check, CI/CD et déploiement.', link: '/tests/plan-de-tests' },
   { icon: '🧭', title: 'Projet', text: 'Besoins, maquettes, gestion de projet, décisions.', link: '/decisions/' }
 ]

@@ -107,8 +107,20 @@ const sidebar = [
     collapsed: false,
     items: [
       { text: 'Architecture logicielle', link: '/conception/architecture' },
-      { text: 'Harness des agents IA', link: '/harness-agents' },
       { text: 'Audit hexagonal', link: '/final-hexagonal-audit' }
+    ]
+  },
+  {
+    text: 'Harness des agents IA',
+    collapsed: false,
+    items: [
+      { text: 'Vue d\'ensemble', link: '/harness/' },
+      { text: 'Consignes', link: '/harness/consignes' },
+      { text: 'Permissions', link: '/harness/permissions' },
+      { text: 'Hooks', link: '/harness/hooks' },
+      { text: 'Validation', link: '/harness/validation' },
+      { text: 'Méthode et documentation', link: '/harness/methode' },
+      { text: 'Carte complète', link: '/harness-agents' }
     ]
   },
   {

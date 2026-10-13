@@ -5,7 +5,7 @@
 ## Stack
 - Backend : Symfony 6.4, Doctrine ORM, API Platform, MySQL (`src/`, `config/`, `migrations/`).
 - Frontend : Vue 3, Pinia, Vue Router, Vite, Tailwind 4, PWA (`front/`).
-- Exécution : Docker Compose (`compose.yaml`). Services utiles : `php`, `front`, `nginx`, `db`.
+- Exécution : Docker Compose (`compose.yaml`). Services utiles : `php`, `front`, `nginx`, `db` ; `qcm-results` et `qcm-mongo` (micro-service Node + MongoDB, `services/qcm-results/`) ; `docs` (site VitePress, profil `docs`).
 
 ## Lancer l'app
 - `make up` (build + démarrage) ou `make dev`.
@@ -44,6 +44,7 @@ Toute modification ou implémentation **validée** (`make check` réussi) est re
   | Couches, micro-service, sécurité | `docs/conception/architecture.md` ; choix structurant : `docs/decisions/index.md` |
   | Tests, CI/CD, déploiement | `docs/tests/plan-de-tests.md`, `docs/CI_CD.md` |
   | Commande ou service local | `docs/demarrer/local.md` ; terme nouveau : `docs/demarrer/glossaire.md` |
+  | Harness des agents (consignes, permissions, hooks, skills, cibles `make`) | `docs/harness/` |
 
 - Nouvelle page : l'ajouter à la barre latérale (`docs/.vitepress/config.mjs`).
 - Liens vers le code en chemins relatifs (réécrits vers GitHub au build) ; ancres au format GitHub.
