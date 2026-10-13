@@ -37,7 +37,20 @@ Réponses au format JSON-LD (`member`, `@id`). Le filtre de `q_c_ms` porte sur `
 
 ## API d'administration
 
-CRUD des contenus pour les agents de cours IA, sans navigateur : catégories, pages, contenus de page, menus, niveaux de cours, contenus d'exercice, et cours générés avec leurs révisions (`/api/admin/agent-cours`). Authentification par [`ApiKeyAuthenticator`](../../src/Security/ApiKeyAuthenticator.php). Voir [Intégrations](../migration-mcp-vers-symfony.md).
+Sans navigateur, pour les agents de cours IA : authentification par en-tête `X-API-KEY` ([`ApiKeyAuthenticator`](../../src/Security/ApiKeyAuthenticator.php)), contrôleurs de [`src/Controller/Api/AdminCrud/`](../../src/Controller/Api/AdminCrud/ApiAgentCourseController.php).
+
+| Préfixe | Opérations |
+|---|---|
+| `/api/admin/categories` | Liste, détail, création, modification, suppression ; contenus et menus d'une catégorie |
+| `/api/admin/pages`, `/api/admin/page-contents` | CRUD ; contenus par page, par catégorie |
+| `/api/admin/menus`, `/api/admin/positions-menus`, `/api/admin/super-menus` | CRUD de la navigation |
+| `/api/admin/niveau-cours` | CRUD des niveaux |
+| `/api/admin/exo-contents` | CRUD ; par exercice, par catégorie |
+| `/api/admin/course-media` | Liste, détail, envoi, suppression de médias |
+| `/api/admin/agent-cours` | Création, lecture, modification de cours générés ; révisions et application |
+| `/api/admin/agent-cours/generations` | Suivi d'une génération, finalisation, échec |
+
+Détail du circuit : [Propositions de cours IA](../fonctionnalites/propositions-ia.md).
 
 ## Codes de retour
 

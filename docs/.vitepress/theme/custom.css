@@ -12,8 +12,10 @@
   --vp-c-brand-soft: rgba(167, 139, 250, 0.16);
 }
 
-/* Tableaux de fiches : pleine largeur, lisibles */
-.vp-doc table { display: table; width: 100%; }
+/* Tableaux de fiches : pleine largeur sur grand écran ; sur mobile, VitePress les fait défiler horizontalement */
+@media (min-width: 960px) {
+  .vp-doc table { display: table; width: 100%; }
+}
 .vp-doc td code { white-space: nowrap; }
 
 /* Schémas Mermaid centrés et défilables sur mobile */

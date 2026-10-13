@@ -9,17 +9,30 @@ const SRC_DIR = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '')
 const REPO_ROOT = path.resolve(SRC_DIR, '..')
 const GITHUB_BLOB = 'https://github.com/cundovar/vue-symfony/blob/main/'
 
+// Brouillons et anciennes notes de travail : hors du site, mais toujours lisibles sur GitHub
+const EXCLUDED = ['application-plan/', 'test/', 'roadmap-100-hexagonal.md', 'hexagonal-audit.md',
+  'architecture-hexagonale-option1.md', 'architecture-hexagonale-option2.md',
+  'mcp-agents-cours-vers-symfony-checklist.md', 'filtrage-niveau-cours.md']
+
 /**
  * Un lien qui pointe vers le code (hors de docs/) ou vers un dossier sans page
- * (ex. docs/conception/captures/) est réécrit vers GitHub au lieu de donner une page morte.
+ * (ex. docs/conception/captures/), vers un fichier qui n'est pas une page (image liée)
+ * ou vers une page exclue du site est réécrit vers GitHub au lieu de donner une page morte.
  */
 function toGithub(target) {
   if (!target.startsWith(REPO_ROOT + path.sep)) return null
-  const inDocs = target.startsWith(SRC_DIR + path.sep)
-  const isFolderWithoutPage = fs.existsSync(target) && fs.statSync(target).isDirectory()
+  const rel = path.relative(REPO_ROOT, target)
+  if (!target.startsWith(SRC_DIR + path.sep)) return GITHUB_BLOB + rel
+
+  const relDocs = path.relative(SRC_DIR, target)
+  const asPage = /\.[a-z0-9]+$/i.test(relDocs) ? relDocs : `${relDocs}.md`
+  const exists = fs.existsSync(target)
+  const isFolderWithoutPage = exists && fs.statSync(target).isDirectory()
     && !fs.existsSync(path.join(target, 'index.md'))
-  if (inDocs && !isFolderWithoutPage) return null
-  return GITHUB_BLOB + path.relative(REPO_ROOT, target)
+  const isFileNotPage = exists && fs.statSync(target).isFile() && !target.endsWith('.md')
+  const isExcluded = EXCLUDED.some((entry) => asPage === entry || asPage.startsWith(entry))
+  if (!isFolderWithoutPage && !isFileNotPage && !isExcluded) return null
+  return GITHUB_BLOB + (isExcluded && !exists ? path.relative(REPO_ROOT, path.join(SRC_DIR, asPage)) : rel)
 }
 
 function codeLinksToGithub(md) {
@@ -63,7 +76,30 @@ const sidebar = [
     text: 'Fonctionnalités',
     items: [
       { text: 'Vue d\'ensemble', link: '/fonctionnalites/' },
-      { text: 'QCM et progression', link: '/fonctionnalites/qcm' }
+      { text: 'Cours', link: '/fonctionnalites/cours' },
+      { text: 'Recherche', link: '/fonctionnalites/recherche' },
+      { text: 'Exercices', link: '/fonctionnalites/exercices' },
+      { text: 'QCM et progression', link: '/fonctionnalites/qcm' },
+      { text: 'Hors ligne (PWA)', link: '/fonctionnalites/hors-ligne' },
+      {
+        text: 'Espace personnel',
+        collapsed: false,
+        items: [
+          { text: 'Compte et connexion', link: '/fonctionnalites/compte' },
+          { text: 'Notes chiffrées', link: '/fonctionnalites/notes' },
+          { text: 'Favoris', link: '/fonctionnalites/favoris' },
+          { text: 'Historique de visite', link: '/fonctionnalites/historique' },
+          { text: 'Personnalisation', link: '/fonctionnalites/personnalisation' }
+        ]
+      },
+      {
+        text: 'Administration',
+        collapsed: false,
+        items: [
+          { text: 'Back-office', link: '/fonctionnalites/back-office' },
+          { text: 'Propositions de cours IA', link: '/fonctionnalites/propositions-ia' }
+        ]
+      }
     ]
   },
   {
@@ -115,9 +151,7 @@ const sidebar = [
 
 export default withMermaid(defineConfig({
   // Brouillons et anciennes notes de travail, hors du site
-  srcExclude: ['application-plan/**', 'test/**', 'roadmap-100-hexagonal.md', 'hexagonal-audit.md',
-    'architecture-hexagonale-option1.md', 'architecture-hexagonale-option2.md',
-    'mcp-agents-cours-vers-symfony-checklist.md', 'filtrage-niveau-cours.md'],
+  srcExclude: EXCLUDED.map((entry) => (entry.endsWith('/') ? `${entry}**` : entry)),
   lang: 'fr-FR',
   title: 'DevDoc',
   description: 'Fonctionnement de DevDoc : fonctionnalités, architecture, données, API et exploitation',
@@ -128,8 +162,7 @@ export default withMermaid(defineConfig({
     // Mermaid 11 importe fastdom (CommonJS) : en dev, il doit être pré-compilé pour fournir un export par défaut
     optimizeDeps: { include: ['mermaid > fastdom', 'mermaid > fastdom/extensions/fastdom-promised.js'] }
   },
-  // Liens vers des pages exclues du site : signalés par la vérification, sauf ceux-ci
-  ignoreDeadLinks: [/^https?:\/\/localhost/, /hexagonal-audit$/, /architecture-hexagonale-option[12]$/, /roadmap-100-hexagonal$/],
+  ignoreDeadLinks: [/^https?:\/\/localhost/],
   themeConfig: {
     nav: [
       { text: 'Fonctionnalités', link: '/fonctionnalites/' },
