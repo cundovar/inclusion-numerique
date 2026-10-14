@@ -54,3 +54,6 @@ front/public/build/.vite/
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+# Penpot local : clé secrète générée par make design-up
+/tools/penpot/penpot.local.env

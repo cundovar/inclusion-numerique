@@ -155,6 +155,7 @@ const sidebar = [
     items: [
       { text: 'Besoins', link: '/conception/besoins' },
       { text: 'Maquettes', link: '/conception/maquettes' },
+      { text: 'Design system', link: '/conception/design-system' },
       { text: 'Gestion de projet', link: '/gestion-de-projet' },
       { text: 'Décisions d\'architecture', link: '/decisions/' }
     ]

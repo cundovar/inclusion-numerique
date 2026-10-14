@@ -17,3 +17,6 @@
 | **Micro-service** | Service séparé, déployé indépendamment, avec sa propre base | [`services/qcm-results/`](../../services/qcm-results/README.md) |
 | **Coolify** | Plateforme auto-hébergée de déploiement de conteneurs, avec Traefik et TLS | VPS Netcup |
 | **Rôles** | `ROLE_USER` (connecté), `ROLE_ADMIN` (administrateur) | [`security.yaml`](../../config/packages/security.yaml) |
+| **Design system** | Ensemble de tokens et de composants réutilisables qui décrit l'interface | [Design system](../conception/design-system.md), fichier Penpot local |
+| **Design token** | Valeur de design nommée (couleur, espacement, rayon…) ; un token *sémantique* est un alias par usage d'un token *primitif* | Sets Penpot `primitives` et `semantic` (ex. `sem.qcm.surface` → `purple-300`) |
+| **Penpot** | Outil de design open source, auto-hébergeable, avec un serveur MCP pour les agents IA | `make design-up`, http://localhost:9001 |

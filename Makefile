@@ -105,6 +105,17 @@ docs-build:
 	@echo "📚 Build de la documentation (liens morts compris)..."
 	docker compose --profile docs run --rm --no-deps -T docs sh -c "git config --global --add safe.directory /app && npm ci --no-audit --no-fund && npx vitepress build"
 
+design-up:
+	@test -f tools/penpot/penpot.local.env || echo "PENPOT_SECRET_KEY=$$(python3 -c 'import secrets; print(secrets.token_urlsafe(64))')" > tools/penpot/penpot.local.env
+	docker compose -f tools/penpot/compose.yaml up -d
+	@echo "🎨 Penpot sur http://localhost:9001 (premier démarrage : 1 à 2 minutes)"
+
+design-down:
+	docker compose -f tools/penpot/compose.yaml down
+
+design-logs:
+	docker compose -f tools/penpot/compose.yaml logs -f --tail=100
+
 build-front:
 	@echo "🏗️  Build Vite..."
 	docker compose exec -T front npm run check
@@ -117,4 +128,4 @@ check: check-fast test test-front test-qcm-results build-front
 	@echo "✅ check terminé"
 
 .PHONY: up down down-volumes restart logs bash front-bash composer composer-require npm-install npm-dev symfo migrate start stop dev \
-	lint-php analyse test test-front test-qcm-results test-e2e docs-dev docs-build lint-front build-front check-fast check
+	lint-php analyse test test-front test-qcm-results test-e2e docs-dev docs-build design-up design-down design-logs lint-front build-front check-fast check

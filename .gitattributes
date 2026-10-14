@@ -4,3 +4,5 @@ services/ export-ignore
 docs/.vitepress/ export-ignore
 docs/package.json export-ignore
 docs/package-lock.json export-ignore
+# Outil de maquettage local (Penpot), inutile en production
+tools/ export-ignore
