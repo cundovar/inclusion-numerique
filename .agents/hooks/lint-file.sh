@@ -24,6 +24,10 @@ while IFS= read -r rel; do
       running front || continue
       out=$(docker compose exec -T front npx eslint --quiet "${rel#front/}" 2>&1) || errors+="ESLint a trouvé des erreurs dans $rel :"$'\n'"$out"$'\n'
       ;;
+    services/*)
+      # Micro-service Node : ses tests tournent dans `make check` (make test-qcm-results)
+      touch .agents/.needs-check
+      ;;
     config/*|.github/*|compose*.yaml|Dockerfile|nginx*.conf|front/vite.config.js|front/package.json|composer.json)
       touch .agents/.needs-check
       ;;

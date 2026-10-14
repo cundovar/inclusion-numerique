@@ -7,6 +7,8 @@ export const useQCMStore = defineStore('qcm', {
     state: () => ({
         qcms: [],
         answers: [],
+        // Tentative déjà envoyée au serveur (évite un double enregistrement si la page de résultats est rouverte)
+        attemptRecorded: false,
         filterQcms: {
             language: null,
             niveau: null,
@@ -15,9 +17,14 @@ export const useQCMStore = defineStore('qcm', {
     actions: {
         setQcms(qcms) {
             this.qcms = qcms
+            // Nouvelle série de questions : nouvelle tentative à enregistrer
+            this.attemptRecorded = false
         },
         setAnswer(key, val) {
             this.answers[key] = val },
+        markAttemptRecorded() {
+            this.attemptRecorded = true
+        },
         setFilterQcms(filterQcms) {
             this.filterQcms = filterQcms
         },
@@ -37,6 +44,7 @@ export const useQCMStore = defineStore('qcm', {
         reset(){
             this.qcms = []
             this.answers = []
+            this.attemptRecorded = false
             this.filterQcms = {
                 language: null,
                 niveau: null,
@@ -47,6 +55,6 @@ export const useQCMStore = defineStore('qcm', {
      // Options de persistance
   persist: {
     storage: sessionStorage,
-    paths: ['answers', 'filterQcms'] // on ne persiste que ces clés
+    paths: ['answers', 'filterQcms', 'attemptRecorded'] // on ne persiste que ces clés
   },
 })

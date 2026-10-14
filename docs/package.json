@@ -1,0 +1,16 @@
+{
+  "name": "devdoc-docs-site",
+  "private": true,
+  "type": "module",
+  "description": "Documentation technique de DevDoc (VitePress), source dans ../docs",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "mermaid": "11.17.2",
+    "vitepress": "1.6.4",
+    "vitepress-plugin-mermaid": "2.0.17"
+  }
+}

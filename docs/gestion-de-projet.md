@@ -55,7 +55,7 @@ flowchart LR
 | Intégration et déploiement continus | GitHub Actions → hébergement OVH (rsync sur SSH) |
 | Environnement reproductible | Docker Compose, `Makefile` |
 | Planification des tâches complexes | Plans AIDD en Markdown (`aidd_docs/tasks/`) |
-| Assistance au développement | Agents IA (Claude Code, Codex) encadrés par des consignes, des permissions et des hooks communs ([`harness-agents.md`](harness-agents.md)) |
+| Assistance au développement | Agents IA (Claude Code, Codex) encadrés par des consignes, des permissions et des hooks communs ([Harness des agents IA](harness/index.md)) |
 | Conception | Figma (maquettes), Mermaid (diagrammes versionnés avec le code) |
 | Suivi des preuves et des décisions | [`VAE/journal.md`](../VAE/journal.md), [`VAE/preuves.md`](../VAE/preuves.md) |
 

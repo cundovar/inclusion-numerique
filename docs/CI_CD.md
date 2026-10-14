@@ -6,6 +6,12 @@ tests et securite s'executent en parallele apres l'installation des dependances.
 Une couverture Clover et les assets de production sont conserves 14 jours dans
 les artifacts GitHub Actions.
 
+Le job `QCM results service` installe le micro-service `services/qcm-results`
+et lance ses tests contre un conteneur de service MongoDB 7.0.25. Il est bloquant
+(verifie par le rapport). Le dossier `services/` est exclu de l'archive de
+production (`.gitattributes`, `export-ignore`) : ce service se deploie sur le
+VPS, pas sur OVH.
+
 Le build Vite produit les assets Vue dans `public/build` et la PWA dans
 `public/spa`. Ces chemins correspondent a la configuration Twig/Pentatrion de
 Symfony.
@@ -32,7 +38,9 @@ npm run check --prefix front
 
 Avec Docker (conteneurs `php` et `front` démarrés), le `Makefile` regroupe les
 mêmes contrôles, plus ESLint : `make check-fast` (syntaxe PHP, PHPStan, ESLint)
-et `make check` (ajoute PHPUnit et le build Vite). En local, ces cibles sont
+et `make check` (ajoute PHPUnit, Vitest, les tests du micro-service
+`qcm-results` et le build Vite ; conteneurs `qcm-results` et `qcm-mongo`
+demarres par `make up`). En local, ces cibles sont
 bloquantes, PHPStan compris. Le conteneur `php` utilise PHP 8.3 (`Dockerfile`)
 alors que la CI et la release utilisent PHP 8.2.
 

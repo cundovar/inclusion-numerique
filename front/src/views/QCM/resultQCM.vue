@@ -35,6 +35,16 @@
 
           <!-- Barre de progression -->
         </div>
+
+        <!-- Enregistrement dans la progression (micro-service résultats de QCM) -->
+        <p
+          v-if="saveMessage"
+          class="mt-4 text-center text-sm"
+          :class="saveStatus === 'saved' ? 'text-green-700' : 'text-gray-600'"
+          data-testid="qcm-save-status"
+        >
+          {{ saveMessage }}
+        </p>
       </div>
 
       <!-- Détails des questions -->
@@ -148,9 +158,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUpdated, nextTick, watch } from "vue";
+import { computed, onMounted, onUpdated, nextTick, ref, watch } from "vue";
 import { useQCMStore } from "../../stores/qcm";
 import { useRouter } from "vue-router";
+import { useData } from "../../utils/fetchDataPwa";
+import { buildAttemptPayload, qcmResultsService } from "../../services/qcmResultsService";
 import Prism from "prismjs";
 import AppButton from "../../components/ui/AppButton.vue";
 import SafeHtml from "../../components/ui/SafeHtml.vue";
@@ -167,6 +179,38 @@ import "prismjs/components/prism-sql";
 
 const qcmStore = useQCMStore();
 const router = useRouter();
+const { user } = useData();
+
+// État de l'enregistrement : 'anonymous' | 'saving' | 'saved' | 'unavailable'
+const saveStatus = ref(null);
+const saveMessages = {
+  anonymous: "Connectez-vous pour enregistrer ce résultat dans votre progression.",
+  saving: "Enregistrement du résultat…",
+  saved: "Résultat enregistré dans votre progression.",
+  unavailable: "Le résultat n'a pas pu être enregistré pour le moment.",
+};
+const saveMessage = computed(() => saveMessages[saveStatus.value] ?? "");
+
+const recordAttempt = async () => {
+  if (qcmStore.attemptRecorded || qcmStore.qcms.length === 0) return;
+  if (!user.value?.username) {
+    saveStatus.value = "anonymous";
+    return;
+  }
+
+  const payload = buildAttemptPayload(qcmStore.qcms, qcmStore.answers, qcmStore.filterQcms);
+  if (payload.answers.length === 0) return;
+
+  saveStatus.value = "saving";
+  try {
+    await qcmResultsService.recordAttempt(payload);
+    qcmStore.markAttemptRecorded();
+    saveStatus.value = "saved";
+  } catch {
+    // Le service des résultats est indépendant : son absence n'empêche pas d'afficher la correction
+    saveStatus.value = "unavailable";
+  }
+};
 
 console.log("=== DEBUG QCM SOLUTION ===");
 console.log("Nombre de QCMs:", qcmStore.qcms.length);
@@ -259,6 +303,7 @@ const applyPrismHighlight = async () => {
 // Appliquer Prism après le montage du composant
 onMounted(() => {
   applyPrismHighlight();
+  recordAttempt();
 });
 
 // Réappliquer Prism à chaque mise à jour du DOM

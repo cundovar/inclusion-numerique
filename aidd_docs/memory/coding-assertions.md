@@ -23,8 +23,10 @@ The heavier gate: `make check`. Clears `.agents/.needs-check` only when everythi
 | 1     | `make check-fast`  | The fast gate above            |
 | 2     | `make test`        | PHPUnit (`tests/`)             |
 | 3     | `make test-front`  | Vitest (`front/tests/unit/`)   |
-| 4     | `make build-front` | Vite production build and PWA  |
-| 5     | `make test-e2e`    | Playwright user journeys (`e2e/`), on the built local app; only when a user journey changed |
+| 4     | `make test-qcm-results` | Node microservice `services/qcm-results` against MongoDB |
+| 5     | `make build-front` | Vite production build and PWA  |
+| 6     | `make docs-build`  | VitePress site (`docs/`) builds without dead links; only when docs changed (outside `make check`) |
+| 7     | `make test-e2e`    | Playwright user journeys (`e2e/`), on the built local app; only when a user journey changed |
 
 ## Gotchas
 

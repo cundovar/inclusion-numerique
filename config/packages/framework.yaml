@@ -17,6 +17,14 @@ framework:
     php_errors:
         log: true
 
+    # Micro-service des résultats de QCM (Node + MongoDB, services/qcm-results)
+    http_client:
+        scoped_clients:
+            qcm_results.client:
+                base_uri: '%env(QCM_RESULTS_URL)%'
+                headers:
+                    X-Api-Key: '%env(QCM_RESULTS_API_KEY)%'
+
 when@test:
     framework:
         test: true

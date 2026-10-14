@@ -145,6 +145,32 @@ jobs:
       - name: Validate Vue production build
         run: npm run check --prefix front
 
+  qcm_results_service:
+    name: QCM results service
+    needs: dependencies
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7.0.25
+        ports:
+          - 27017:27017
+    defaults:
+      run:
+        working-directory: services/qcm-results
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: services/qcm-results/package-lock.json
+      - name: Install service dependencies
+        run: npm ci
+      - name: Run service tests against MongoDB
+        env:
+          MONGODB_URL: mongodb://localhost:27017
+        run: npm test
+
   unit_tests:
     name: Unit tests
     needs: dependencies
@@ -293,7 +319,7 @@ jobs:
   report:
     name: Report
     if: always()
-    needs: [php_quality, frontend_quality, unit_tests, security, coverage, build]
+    needs: [php_quality, frontend_quality, unit_tests, qcm_results_service, security, coverage, build]
     runs-on: ubuntu-latest
     steps:
       - name: Publish pipeline summary
@@ -302,6 +328,7 @@ jobs:
           PHPSTAN: ${{ needs.php_quality.outputs.phpstan }}
           FRONTEND_QUALITY: ${{ needs.frontend_quality.result }}
           UNIT_TESTS: ${{ needs.unit_tests.result }}
+          QCM_RESULTS_SERVICE: ${{ needs.qcm_results_service.result }}
           SECURITY: ${{ needs.security.result }}
           COMPOSER_AUDIT: ${{ needs.security.outputs.composer_audit }}
           FRONT_NPM_AUDIT: ${{ needs.security.outputs.front_npm_audit }}
@@ -316,6 +343,7 @@ jobs:
             echo "| PHPStan (informational) | $PHPSTAN |"
             echo "| Frontend quality | $FRONTEND_QUALITY |"
             echo "| Unit tests | $UNIT_TESTS |"
+            echo "| QCM results service | $QCM_RESULTS_SERVICE |"
             echo "| Security | $SECURITY |"
             echo "| Composer audit (informational) | $COMPOSER_AUDIT |"
             echo "| Vue npm audit (informational) | $FRONT_NPM_AUDIT |"
@@ -326,6 +354,7 @@ jobs:
           [[ "$PHP_QUALITY" == "success" ]]
           [[ "$FRONTEND_QUALITY" == "success" ]]
           [[ "$UNIT_TESTS" == "success" ]]
+          [[ "$QCM_RESULTS_SERVICE" == "success" ]]
           [[ "$SECURITY" == "success" ]]
           [[ "$COVERAGE" == "success" ]]
           [[ "$BUILD" == "success" ]]

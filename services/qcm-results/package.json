@@ -1,0 +1,15 @@
+{
+  "name": "devdoc-qcm-results",
+  "private": true,
+  "description": "Micro-service DevDoc : résultats de QCM stockés dans MongoDB",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test --test-concurrency=1 'test/*.test.js'"
+  },
+  "dependencies": {
+    "fastify": "5.12.5",
+    "mongodb": "7.6.0"
+  }
+}
