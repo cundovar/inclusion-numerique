@@ -6,6 +6,13 @@
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteRule ^ - [L]
 
+    # VitePress génère des fichiers .html derrière des URLs propres.
+    RewriteCond %{REQUEST_URI} ^/docs/ [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.html -f
+    RewriteRule ^docs/(.+)/?$ docs/$1.html [L]
+
     # Ignore files and directories
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d

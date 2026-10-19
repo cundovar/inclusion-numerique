@@ -301,6 +301,8 @@ jobs:
           BUILD_OUTPUT_DIR: ../public/build
           PWA_OUTPUT_DIR: ../public/spa
         run: npm ci --prefix front && npm run build --prefix front
+      - name: Build VitePress documentation
+        run: npm ci --prefix docs && npm run build --prefix docs
       - name: Assemble production release
         run: |
           mkdir -p /tmp/production-release
@@ -309,6 +311,8 @@ jobs:
           rm -rf /tmp/production-release/public/build /tmp/production-release/public/spa
           cp -a public/build /tmp/production-release/public/build
           cp -a public/spa /tmp/production-release/public/spa
+          mkdir -p /tmp/production-release/public/docs
+          cp -a docs/.vitepress/dist/. /tmp/production-release/public/docs/
           tar -C /tmp/production-release -czf /tmp/production-release.tar.gz .
       - uses: actions/upload-artifact@v7
         with:

@@ -168,6 +168,7 @@ export default withMermaid(defineConfig({
   lang: 'fr-FR',
   title: 'DevDoc',
   description: 'Fonctionnement de DevDoc : fonctionnalités, architecture, données, API et exploitation',
+  base: '/docs/',
   cleanUrls: true,
   lastUpdated: true,
   markdown: { config: codeLinksToGithub, anchor: { slugify: githubSlug } },

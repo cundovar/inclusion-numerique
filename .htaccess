@@ -5,7 +5,8 @@
     RewriteRule ^(vendor|var|config|src|templates|migrations)/ - [F,L]
 
     # Si le fichier existe dans public, on le sert
-    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -d
     RewriteRule ^(.*)$ public/$1 [L]
 
     # Sinon, on passe par le front controller Symfony
