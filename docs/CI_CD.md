@@ -13,8 +13,12 @@ production (`.gitattributes`, `export-ignore`) : ce service se deploie sur le
 VPS, pas sur OVH.
 
 Le build Vite produit les assets Vue dans `public/build` et la PWA dans
-`public/spa`. Ces chemins correspondent a la configuration Twig/Pentatrion de
-Symfony.
+`public/spa`. Le build VitePress compile `docs/` puis ajoute le site statique
+dans `public/docs` ; après déploiement de cette configuration, il sera
+accessible à l'adresse
+[`https://devdoc.varascundo.com/docs/`](https://devdoc.varascundo.com/docs/).
+Le préfixe `/docs/` est défini dans `docs/.vitepress/config.mjs` et le `.htaccess`
+du projet transmet les chemins de fichiers et de dossiers publics à `public/`.
 
 La syntaxe PHP, PHPUnit et les builds sont bloquants. PHPStan et les audits de
 securite sont informatifs pendant la remise a niveau de la codebase :
@@ -58,7 +62,7 @@ validation obligatoire. Ajouter un seul secret a cet environnement :
 | `OVH_SSH_PASSWORD` | Mot de passe SSH du compte OVH `egflbug` |
 
 GitHub construit la release complete avec PHP 8.2, Composer et Node 22. Il envoie
-ensuite le code, `vendor`, `public/build` et `public/spa` par rsync/SSH vers
+ensuite le code, `vendor`, `public/build`, `public/spa` et `public/docs` par rsync/SSH vers
 `/home/egflbug/devdoc/prod`. La synchronisation conserve les fichiers `.env`,
 `.ovhconfig`, `var`, `backups`, `.git` et `public/uploads` deja presents sur OVH.
 Le cache Symfony de production est vide apres la synchronisation.
