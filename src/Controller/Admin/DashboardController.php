@@ -9,6 +9,9 @@ use App\Domain\SiteConfiguration\Repository\SiteConfigurationRepositoryInterface
 use App\Domain\User\Repository\UserRepositoryInterface;
 use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use App\Entity\Category;
+use App\Entity\CourseMedia;
+use App\Entity\Diaporama;
+use App\Entity\QcmDraft;
 use App\Entity\Menus;
 use App\Entity\Page;
 use App\Entity\PageContent;
@@ -117,6 +120,10 @@ class DashboardController extends AbstractDashboardController
     
         yield MenuItem::section('📚 Cours');
         yield MenuItem::linkToCrud('PageContents', 'fa fa-bars', PageContent::class);
+        // Production du connecteur de rédaction (MCP) : images des cours, diaporamas et brouillons de QCM
+        yield MenuItem::linkToCrud('Captures', 'fa fa-image', CourseMedia::class);
+        yield MenuItem::linkToCrud('Diaporamas', 'fa fa-person-chalkboard', Diaporama::class);
+        yield MenuItem::linkToCrud('Brouillons de QCM du connecteur', 'fa fa-file-circle-question', QcmDraft::class);
 
         yield MenuItem::section('📝 Exercices');
         yield MenuItem::linkToCrud('ExoContents', 'fa fa-book', ExoContent::class);

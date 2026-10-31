@@ -1,0 +1,7 @@
+{# Action de la fiche d'un diaporama envoyée en POST, avec un jeton CSRF propre à l'action et au diaporama (DiaporamaCrudController). #}
+<form method="post" action="{{ action.linkUrl }}" class="d-inline">
+    <input type="hidden" name="_token" value="{{ csrf_token('diaporama-' ~ action.name ~ '-' ~ ea().entity.primaryKeyValue) }}">
+    <button type="submit" class="btn btn-outline-secondary {{ action.cssClass }}" data-action-name="{{ action.name }}">
+        {% if action.icon %}<i class="action-icon {{ action.icon }}" aria-hidden="true"></i> {% endif %}<span class="action-label">{{ action.label|trans }}</span>
+    </button>
+</form>

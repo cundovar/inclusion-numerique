@@ -23,7 +23,8 @@ flowchart LR
   end
 
   Admin["Administrateur<br/>(navigateur)"]
-  Agent["Agents de cours IA<br/>(serveur MCP externe)"]
+  Agent["Agents de cours IA<br/>(serveur MCP externe, n8n)"]
+  Conn["Claude, ChatGPT<br/>(connecteurs MCP)"]
 
   subgraph Serveur
     WEB["Serveur web<br/>(nginx en local)"]
@@ -32,6 +33,7 @@ flowchart LR
       APIP["API Platform<br/>20 ressources"]
       CTRL["Contrôleurs API maison<br/>notes, favoris, visites…"]
       ADMAPI["API d'administration<br/>/api/admin (clé API)"]
+      MCP["Serveurs MCP<br/>/mcp, /mcp/apprenant (OAuth)"]
       EA["Back-office EasyAdmin<br/>/admin"]
     end
     DB[("MySQL<br/>29 entités, préfixe appy_")]
@@ -46,8 +48,9 @@ flowchart LR
   SW -- "HTTP JSON (cookie de session)" --> WEB
   Admin --> WEB
   Agent -- "HTTP JSON + X-API-KEY" --> WEB
-  WEB --> SPAC & APIP & CTRL & ADMAPI & EA
-  SPAC & APIP & CTRL & ADMAPI & EA --> DB
+  Conn -- "JSON-RPC + jeton OAuth" --> WEB
+  WEB --> SPAC & APIP & CTRL & ADMAPI & MCP & EA
+  SPAC & APIP & CTRL & ADMAPI & MCP & EA --> DB
   CTRL -- "HTTPS JSON + X-Api-Key" --> QR
 ```
 
@@ -57,6 +60,7 @@ flowchart LR
 | API REST générique | Lecture publique et écriture réservée aux administrateurs des contenus (pages, catégories, QCM…) | Attribut `#[ApiResource]` sur 20 entités de `src/Entity/` ; `config/packages/security.yaml` |
 | API métier | Notes chiffrées, favoris, historique de visites, personnalisation, propositions IA | `src/Controller/Api/`, `src/Controller/*Controller.php` |
 | API d'administration | CRUD des cours pour les agents IA externes, sans session, authentifié par en-tête `X-API-KEY` | `src/Controller/Api/AdminCrud/`, `src/Security/ApiKeyAuthenticator.php`, [`docs/migration-mcp-vers-symfony.md`](../migration-mcp-vers-symfony.md) |
+| Connecteurs MCP | Rédaction (brouillons, relecture par un autre connecteur, publication) et lecture apprenant, en Streamable HTTP, autorisés par le serveur OAuth du site | `src/Mcp/`, `src/Controller/McpController.php`, `src/Controller/OAuthController.php`, [fiche](../fonctionnalites/connecteur-mcp.md) |
 | Back-office | Gestion de tous les contenus, statistiques de visite | `src/Controller/Admin/` (EasyAdmin, `#[AdminDashboard]` sur `/admin`) |
 | Base de données | Source de vérité | [`base-de-donnees.md`](base-de-donnees.md) |
 | Résultats de QCM | Tentatives, progression et statistiques par question, dans un micro-service Node et MongoDB appelé uniquement par Symfony | `src/Controller/Api/QcmResultController.php`, `services/qcm-results/`, [`base-de-donnees.md` §7](base-de-donnees.md#7-stockage-nosql-côté-serveur--mongodb-résultats-de-qcm) |
@@ -67,6 +71,8 @@ flowchart LR
 | Zone (préfixe) | Pare-feu | Authentification | Accès |
 |---|---|---|---|
 | `/api/me-favorites`, `/api/page-visits`, `/api/notes`, `/api/customization`, `/api/proposition-ia` | Un pare-feu dédié par préfixe | Session (cookie) | Utilisateur connecté |
+| `/mcp/apprenant` | `mcp_learner`, sans état | Jeton OAuth, portée `apprenant.read` | Connecteur d'un compte connecté |
+| `/mcp` | `mcp`, sans état | Jeton OAuth, portée `redaction` | Connecteur autorisé par un administrateur |
 | `/api/admin` | `api_admin`, sans état | Clé API (`X-API-KEY`) | Agents IA autorisés |
 | `/api` (le reste) | `api_public`, qui partage le contexte `main` | Session si présente | Lecture publique ; écriture réservée aux administrateurs (`access_control`) ; `/api/users` limité |
 | `/admin` | `main` | Formulaire de connexion (`AuthAuthenticator`) | `ROLE_ADMIN` |

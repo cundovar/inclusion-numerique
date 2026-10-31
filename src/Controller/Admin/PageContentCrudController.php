@@ -4,7 +4,12 @@ namespace App\Controller\Admin;
 
 use App\Entity\PageContent;
 use App\Form\ContentBlockTypeForm;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -13,7 +18,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 
 
 class PageContentCrudController extends AbstractCrudController
@@ -21,6 +25,17 @@ class PageContentCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return PageContent::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->setDefaultSort(['id' => 'DESC']);
+    }
+
+    // « En revue » : cours soumis par un connecteur MCP, à relire puis publier ici
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters->add(ChoiceFilter::new('status', 'Statut')->setChoices(PageContent::STATUS_LABELS));
     }
 
 
@@ -34,8 +49,21 @@ class PageContentCrudController extends AbstractCrudController
 
             TextField::new('title'),
 
-            BooleanField::new('visible', 'Visible')
-                ->setHelp('Si décoché, le contenu ne sera pas affiché sur le site'),
+            ChoiceField::new('status', 'Statut')
+                ->setChoices(PageContent::STATUS_LABELS)
+                ->renderAsBadges([
+                    PageContent::STATUS_DRAFT => 'secondary',
+                    PageContent::STATUS_IN_REVIEW => 'info',
+                    PageContent::STATUS_PUBLISHED => 'success',
+                    PageContent::STATUS_TO_REVISE => 'warning',
+                ])
+                ->setHelp('Seul un cours « Publié » est affiché sur le site.'),
+            TextField::new('author', 'Préparé par')
+                ->setHelp('« connecteur:… » pour un brouillon préparé par un connecteur MCP.')
+                ->hideOnIndex(),
+            UrlField::new('sourceUrl', 'Documentation de référence')->hideOnIndex(),
+            DateField::new('verifiedAt', 'Vérifié le')->hideOnIndex(),
+            TextareaField::new('reviewSummary', 'Relecture par un connecteur')->onlyOnDetail(),
 
             CodeEditorField::new('code'),
 

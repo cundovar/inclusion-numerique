@@ -1,0 +1,15 @@
+{% set diaporama = entity.instance %}
+{% set rapport = field.value %}
+{% if rapport is empty %}
+    Pas de relecture en cours.
+{% else %}
+    <p><strong>Avis {{ rapport.avis }}</strong> de {{ diaporama.reviewedBy }}{% if diaporama.reviewedAt %}, le {{ diaporama.reviewedAt|date('d/m/Y H:i') }}{% endif %}</p>
+    <p>{{ rapport.resume }}</p>
+    {% if rapport.points is not empty %}
+        <ul>
+            {% for point in rapport.points %}
+                <li>{% if point.regle %}{{ point.regle }} : {% endif %}{{ point.constat }}{% if point.suggestion ?? null %} — {{ point.suggestion }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}

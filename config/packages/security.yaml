@@ -11,7 +11,23 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-            
+
+        # Connecteur MCP apprenant : jeton OAuth propre, sans session, lecture des seuls cours publiés.
+        mcp_learner:
+            pattern: ^/mcp/apprenant
+            stateless: true
+            custom_authenticators:
+                - App\Security\OAuthBearerAuthenticator
+            entry_point: App\Security\OAuthBearerAuthenticator
+
+        # Connecteur MCP de rédaction : jeton OAuth donné par un administrateur, sans session
+        mcp:
+            pattern: ^/mcp
+            stateless: true
+            custom_authenticators:
+                - App\Security\OAuthBearerAuthenticator
+            entry_point: App\Security\OAuthBearerAuthenticator
+
         api_favorites:
             pattern: ^/api/me-favorites
             stateless: false
@@ -83,6 +99,10 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+         - { path: ^/mcp/apprenant, roles: ROLE_AGENT_APPRENANT }
+         - { path: ^/mcp, roles: ROLE_AGENT_REDACTION }
+         # Consentement OAuth : tout compte autorise le connecteur apprenant ; rédaction réservée aux admins (OAuthServer).
+         - { path: ^/oauth/authorize, roles: ROLE_USER }
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/api/admin, roles: ROLE_ADMIN }
          - { path: ^/api/me-favorites, roles: ROLE_USER }

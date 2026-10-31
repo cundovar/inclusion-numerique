@@ -62,7 +62,12 @@ final class ApiCourseMediaController extends AbstractController
         $directory = $this->parameters->get('kernel.project_dir') . '/public/uploads/course-media';
         if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) return new JsonResponse(['error' => 'Impossible de préparer le stockage'], Response::HTTP_INTERNAL_SERVER_ERROR);
         $file->move($directory, $filename);
-        $media = new CourseMedia($filename, $mime, (int) $dimensions[0], (int) $dimensions[1], hash_file('sha256', $directory . '/' . $filename), $alt);
+        // Image générée par un agent : une illustration, sans page officielle à citer
+        $media = (new CourseMedia())
+            ->setKind(CourseMedia::KIND_ILLUSTRATION)
+            ->setFilename($filename)
+            ->describeFile($mime, (int) $dimensions[0], (int) $dimensions[1], (string) hash_file('sha256', $directory . '/' . $filename))
+            ->setAltText($alt);
         $media->setCaption($request->request->get('caption'));
         $media->setPrompt($request->request->get('prompt'));
         if ($request->request->has('generationId')) {
@@ -80,7 +85,7 @@ final class ApiCourseMediaController extends AbstractController
         $media = $this->em->find(CourseMedia::class, $id);
         if (!$media) return new JsonResponse(['error' => 'Média non trouvé'], Response::HTTP_NOT_FOUND);
         if ($media->getCourse()) return new JsonResponse(['error' => 'Impossible de supprimer un média associé à un cours'], Response::HTTP_CONFLICT);
-        $file = $this->parameters->get('kernel.project_dir') . '/public' . $media->getPublicPath();
+        $file = $this->parameters->get('kernel.project_dir') . '/public' . $media->getUrl();
         if (is_file($file)) @unlink($file);
         $this->em->remove($media); $this->em->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -88,6 +93,6 @@ final class ApiCourseMediaController extends AbstractController
 
     private function map(CourseMedia $item): array
     {
-        return ['id' => $item->getId(), 'url' => $item->getPublicPath(), 'mimeType' => $item->getMimeType(), 'width' => $item->getWidth(), 'height' => $item->getHeight(), 'checksum' => $item->getChecksum(), 'altText' => $item->getAltText(), 'caption' => $item->getCaption(), 'prompt' => $item->getPrompt(), 'courseId' => $item->getCourse()?->getId(), 'generationId' => $item->getGeneration()?->getId(), 'createdAt' => $item->getCreatedAt()->format(DATE_ATOM)];
+        return ['id' => $item->getId(), 'url' => $item->getUrl(), 'mimeType' => $item->getMimeType(), 'width' => $item->getWidth(), 'height' => $item->getHeight(), 'checksum' => $item->getChecksum(), 'altText' => $item->getAltText(), 'caption' => $item->getCaption(), 'prompt' => $item->getPrompt(), 'courseId' => $item->getCourse()?->getId(), 'generationId' => $item->getGeneration()?->getId(), 'createdAt' => $item->getCreatedAt()->format(DATE_ATOM)];
     }
 }

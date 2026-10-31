@@ -173,7 +173,8 @@ class Menus
     public function getPagesCount(): int { return $this->pages->count(); }
 
     #[Groups(['menu:read', 'menu:list'])]
-    public function getCoursCount(): int { return $this->pageContents->count(); }
+    // Seuls les cours publics comptent : brouillons et cours personnalisés ne sont pas annoncés à tous
+    public function getCoursCount(): int { return $this->pageContents->filter(static fn (PageContent $content) => $content->isPublic())->count(); }
 
     public function getPositionMenus(): ?PositionMenus
     {

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\PageContent;
 use App\Domain\Category\Repository\CategoryRepositoryInterface;
 use App\Domain\Page\Repository\PageRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,9 +33,12 @@ class SitemapController extends AbstractController
             'lastmod' => (new \DateTime())->format('Y-m-d')
         ];
 
-        // Pages dynamiques (pages/:slug)
+        // Pages de cours (pages/:slug) : seulement celles qui ont un contenu publié et ouvert à tous
         $pages = $this->pageRepository->findAll();
         foreach ($pages as $page) {
+            if (!$page->getPageContents()->exists(static fn ($key, PageContent $content) => $content->isPublic())) {
+                continue;
+            }
             $slug = ltrim($page->getSlug(), '/');
             $urls[] = [
                 'loc' => $hostname . $spaPath . '/pages/' . $slug,
@@ -47,6 +51,9 @@ class SitemapController extends AbstractController
         // Catégories
         $categories = $this->categoryRepository->findAll();
         foreach ($categories as $category) {
+            if ($category->isVisible() === false || $category->isReserve()) {
+                continue;
+            }
             $urls[] = [
                 'loc' => $hostname . $spaPath . '/category/' . $category->getName(),
                 'changefreq' => 'weekly',

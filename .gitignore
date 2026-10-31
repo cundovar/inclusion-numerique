@@ -57,3 +57,7 @@ phpstan.neon
 
 # Penpot local : clé secrète générée par make design-up
 /tools/penpot/penpot.local.env
+
+# Dépendances du moteur de capture du connecteur MCP, et images déposées depuis le back-office ou le connecteur
+/capture/node_modules/
+/public/uploads/

@@ -36,6 +36,13 @@ interface PageContentRepositoryInterface
      */
     public function findByCriteria(array $criteria, array $orderBy = []): array;
 
+    /**
+     * Cours dont le contenu contient le marqueur [capture:ID].
+     *
+     * @return PageContent[]
+     */
+    public function findUsingCapture(int $captureId): array;
+
     public function save(PageContent $pageContent): void;
 
     public function delete(PageContent $pageContent): void;

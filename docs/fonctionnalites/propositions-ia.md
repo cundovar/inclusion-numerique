@@ -2,6 +2,10 @@
 
 Des agents IA externes (serveur MCP, n8n) créent et révisent des cours en passant par l'API d'administration de Symfony, authentifiés par une clé, au lieu d'écrire directement dans MySQL.
 
+::: tip Remplacement en cours
+Les [connecteurs MCP](connecteur-mcp.md) intégrés à Symfony (OAuth, relecture par un autre connecteur) remplacent ce circuit. L'API par clé reste en place tant que le workflow n8n `50-devdoc-course-batch` l'utilise.
+:::
+
 | Partie | État |
 |---|---|
 | API d'administration par clé | <Status is="code" /> |

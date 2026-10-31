@@ -11,7 +11,7 @@ L'administrateur gère tout le contenu du site sans toucher au code, dans un bac
 
 | Section du menu | Entités |
 |---|---|
-| Cours | Contenus de page (`PageContent`) |
+| Cours | Contenus de page (`PageContent`) ; production du [connecteur de rédaction](connecteur-mcp.md) : captures (`CourseMedia`), diaporamas, brouillons de QCM |
 | Exercices | Contenus d'exercice, exercices, menus d'exercice |
 | QCM | Questions, langages, niveaux, choix |
 | Navigation | Catégories, pages, menus, positions, super-menus |

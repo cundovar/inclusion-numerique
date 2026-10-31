@@ -20,7 +20,7 @@ flowchart LR
 
 | Base | Type | Contient | Source de vérité ? | Détail |
 |---|---|---|---|---|
-| **MySQL** | Relationnelle | Cours, menus, exercices, QCM, comptes, notes chiffrées, favoris, visites, personnalisation, propositions IA | Oui | [MCD et MLD](../conception/base-de-donnees.md#2-modèle-conceptuel-mcd--associations-et-cardinalités) |
+| **MySQL** | Relationnelle | Cours (avec leur statut éditorial), menus, exercices, QCM et brouillons de QCM, diaporamas, captures, contenus réservés, passages indexés pour l'assistant apprenant, comptes, accès OAuth des connecteurs MCP, notes chiffrées, favoris, visites, personnalisation, propositions IA | Oui | [MCD et MLD](../conception/base-de-donnees.md#2-modèle-conceptuel-mcd--associations-et-cardinalités) |
 | **IndexedDB** `spa-db` | NoSQL clé / documents, dans le navigateur | Copie des contenus déjà consultés, pour le hors ligne | Non, copie | [§6](../conception/base-de-donnees.md#6-stockage-nosql-côté-client--indexeddb) |
 | **MongoDB** | NoSQL documents | Une tentative de QCM par document, avec ses réponses | Oui, pour les tentatives | [§7](../conception/base-de-donnees.md#7-stockage-nosql-côté-serveur--mongodb-résultats-de-qcm) |
 

@@ -15,6 +15,10 @@ make up
 | phpMyAdmin | http://localhost:8091 | Consultation de la base |
 | `qcm-results`, `qcm-mongo` | — | Micro-service des résultats de QCM et sa base, joignables seulement par le réseau Docker |
 
+## Connecteurs MCP en local
+
+Après `make migrate`, `http://localhost:8092/.well-known/oauth-authorization-server` répond en JSON. Les connecteurs de claude.ai et ChatGPT ne peuvent pas joindre `localhost` : en local, on les teste par PHPUnit (`tests/Functional/Mcp`) ou avec un client MCP local (Claude Code : `claude mcp add --transport http devdoc http://localhost:8092/mcp`, puis connexion avec un compte administrateur). Son retour OAuth se fait sur `http://localhost` : ajouter `localhost` à `OAUTH_REDIRECT_HOSTS` dans `.env.local` (`claude.ai,claude.com,chatgpt.com,localhost`), jamais en production. `bin/console app:connecteurs` liste les connecteurs autorisés et révoque un accès. La capture automatique (`capturer_page`) demande le moteur Playwright de `capture/` (`cd capture && npm install`, avec Node sur la machine qui exécute PHP) ou un service distant (`CAPTURE_SERVICE_URL`) ; sans eux, l'outil répond que la capture est indisponible. Détail : [Connecteurs MCP](../fonctionnalites/connecteur-mcp.md).
+
 ## Valider une modification
 
 | Commande | Contrôles |

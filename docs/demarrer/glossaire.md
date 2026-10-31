@@ -13,7 +13,10 @@
 | **CQRS** | Séparer les commandes (écrire) des requêtes (lire), chacune traitée par un handler | `src/Application/*/Command`, `Query`, `Handler` |
 | **Handler** | Classe qui exécute un cas d'usage | `RecordQcmAttemptHandler` |
 | **EasyAdmin** | Back-office généré pour les entités | `/admin` |
-| **MCP** | Model Context Protocol : protocole qui donne des outils à un agent IA | Agents de cours, voir [Intégrations](../migration-mcp-vers-symfony.md) |
+| **MCP** | Model Context Protocol : protocole qui donne des outils à un agent IA | [Connecteurs MCP](../fonctionnalites/connecteur-mcp.md) ; ancien circuit : [Intégrations](../migration-mcp-vers-symfony.md) |
+| **Connecteur** | Serveur MCP ajouté dans Claude ou ChatGPT, autorisé par OAuth au nom d'un compte du site ; chaque connecteur est un agent distinct (`connecteur:Claude#…`) | `/mcp`, `/mcp/apprenant` |
+| **Relecture croisée** | Un brouillon rédigé par un connecteur est relu par un autre avant publication ; toute modification efface la relecture | `enregistrer_relecture`, `regles/` |
+| **OAuth 2.1 / PKCE** | Autorisation déléguée par code, avec preuve (`code_challenge` S256) que le client qui échange le code est celui qui l'a demandé | [`OAuthServer`](../../src/Service/OAuth/OAuthServer.php) |
 | **Micro-service** | Service séparé, déployé indépendamment, avec sa propre base | [`services/qcm-results/`](../../services/qcm-results/README.md) |
 | **Coolify** | Plateforme auto-hébergée de déploiement de conteneurs, avec Traefik et TLS | VPS Netcup |
 | **Rôles** | `ROLE_USER` (connecté), `ROLE_ADMIN` (administrateur) | [`security.yaml`](../../config/packages/security.yaml) |

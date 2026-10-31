@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,8 +27,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 'niveauQCM.titre' => 'iexact',
 
 ])]
+// Série « Mes QCM » : ?reserve=true ne renvoie que les QCM personnalisés de la personne connectée
+#[ApiFilter(BooleanFilter::class, properties: ['reserve'])]
 class QCM
 {
+    use AccesReserve;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -56,9 +61,19 @@ class QCM
     #[Groups(['qcm:read'])]
     private Collection $choicesQCMs;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: 'acces_qcm')]
+    #[ORM\JoinColumn(name: 'qcm_id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'user_id', onDelete: 'CASCADE')]
+    private Collection $destinataires;
+
     public function __construct()
     {
         $this->choicesQCMs = new ArrayCollection();
+        $this->destinataires = new ArrayCollection();
     }
 
 

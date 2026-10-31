@@ -1,0 +1,49 @@
+{# Aperçu des diapositives dans le back-office : le contenu, sans le thème du site (front/src/diaporamas/). #}
+{% set diaporama = entity.instance %}
+<style>
+    .diapo-apercu { display: grid; gap: 12px; max-width: 900px; }
+    .diapo-apercu .diapo { border: 1px solid #d6dbe4; border-radius: 8px; background: #f7f9fc; padding: 12px 16px; }
+    .diapo-apercu .diapo-entete { font-size: .8rem; color: #4a5568; margin-bottom: 4px; }
+    .diapo-apercu h4 { font-size: 1.05rem; margin: 0 0 6px; }
+    .diapo-apercu ul { margin: 0 0 6px; padding-left: 20px; }
+    .diapo-apercu .colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .diapo-apercu .notes { background: #fff; border-left: 3px solid #b8c7e0; padding: 6px 10px; margin-top: 6px; font-size: .9rem; white-space: pre-line; }
+</style>
+<div class="diapo-apercu">
+    {% for diapo in field.value %}
+        <section class="diapo" aria-label="Diapositive {{ loop.index }}">
+            <div class="diapo-entete">Diapositive {{ loop.index }} · {{ diapo.modele ?? '?' }}{% if diapo.duree is defined %} · {{ diapo.duree }} min{% endif %}</div>
+            {% if (diapo.modele ?? '') == 'titre' %}
+                <h4>{{ diaporama.titre }}</h4>
+                <p>{{ diaporama.sousTitre }}</p>
+            {% elseif (diapo.titre ?? '') is not empty %}
+                <h4>{{ diapo.titre }}</h4>
+            {% endif %}
+            {% if diapo.consigne is defined %}<p><strong>Consigne :</strong> {{ diapo.consigne }}</p>{% endif %}
+            {% if diapo.question is defined %}<p><strong>Question :</strong> {{ diapo.question }}</p>{% endif %}
+            {% if diapo.capture is defined %}<p><strong>Capture :</strong> [capture:{{ diapo.capture }}]</p>{% endif %}
+            {% for liste in ['points', 'reponses'] %}
+                {% if diapo[liste] is defined and diapo[liste] is iterable %}
+                    <ul>{% for point in diapo[liste] %}<li>{{ point }}</li>{% endfor %}</ul>
+                {% endif %}
+            {% endfor %}
+            {% if diapo.colonnes is defined and diapo.colonnes is iterable %}
+                <div class="colonnes">
+                    {% for colonne in diapo.colonnes %}
+                        <div>
+                            <strong>{{ colonne.titre ?? '' }}</strong>
+                            <ul>{% for point in colonne.points ?? [] %}<li>{{ point }}</li>{% endfor %}</ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if diapo.sources is defined and diapo.sources is iterable %}
+                <ul>{% for source in diapo.sources %}<li>{{ source.libelle ?? '' }} — {{ source.url ?? '' }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% if diapo.lien is defined %}<p>{{ diapo.lien }}</p>{% endif %}
+            {% if (diapo.notes ?? '') is not empty %}
+                <div class="notes"><strong>Notes :</strong> {{ diapo.notes }}</div>
+            {% endif %}
+        </section>
+    {% endfor %}
+</div>

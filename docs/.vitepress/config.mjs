@@ -97,6 +97,7 @@ const sidebar = [
         collapsed: false,
         items: [
           { text: 'Back-office', link: '/fonctionnalites/back-office' },
+          { text: 'Connecteurs MCP', link: '/fonctionnalites/connecteur-mcp' },
           { text: 'Propositions de cours IA', link: '/fonctionnalites/propositions-ia' }
         ]
       }

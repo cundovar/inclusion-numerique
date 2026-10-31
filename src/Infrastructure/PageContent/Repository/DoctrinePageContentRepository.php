@@ -46,6 +46,18 @@ final class DoctrinePageContentRepository implements PageContentRepositoryInterf
         return $this->em->getRepository(PageContent::class)->findBy($criteria, $orderBy);
     }
 
+    public function findUsingCapture(int $captureId): array
+    {
+        $marker = '%'.addcslashes(sprintf('[capture:%d]', $captureId), '%_').'%';
+
+        return $this->em->getRepository(PageContent::class)->createQueryBuilder('c')
+            ->where('c.code LIKE :marker OR c.content LIKE :marker')
+            ->setParameter('marker', $marker)
+            ->orderBy('c.title')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function save(PageContent $pageContent): void
     {
         $this->em->persist($pageContent);

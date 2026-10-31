@@ -8,6 +8,23 @@ parameters:
     # ne se résout jamais, et l'API répond 503 au lieu de planter
     env(QCM_RESULTS_URL): 'http://qcm-results.invalid'
     env(QCM_RESULTS_API_KEY): ''
+    # Connecteurs MCP (docs/fonctionnalites/connecteur-mcp.md) : adresse publique du site et hôtes de retour OAuth autorisés
+    env(MCP_PUBLIC_URL): ''
+    app.oauth.redirect_hosts: '%env(csv:OAUTH_REDIRECT_HOSTS)%'
+    env(OAUTH_REDIRECT_HOSTS): 'claude.ai,claude.com,chatgpt.com'
+    # Captures du connecteur : moteur Playwright local (Node) ou service distant si CAPTURE_SERVICE_URL est rempli
+    env(CAPTURE_NODE_BINARY): 'node'
+    env(CAPTURE_CHROMIUM_PATH): ''
+    env(CAPTURE_NO_SANDBOX): '0'
+    env(CAPTURE_HOME): ''
+    env(CAPTURE_SERVICE_URL): ''
+    env(CAPTURE_SERVICE_TOKEN): ''
+    # Recherche vectorielle de l'assistant apprenant : sans adresse, la recherche reste textuelle
+    env(RAG_VECTOR_URL): ''
+    env(RAG_VECTOR_TOKEN): ''
+    # Module laboratoires du gabarit de formation : désactivé dans DevDoc
+    env(APP_MODULE_LABORATOIRES): '0'
+    app.module_laboratoires: '%env(bool:APP_MODULE_LABORATOIRES)%'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:
@@ -110,3 +127,7 @@ services:
     App\Domain\Shared\Persistence\PersistenceFlusherInterface: '@App\Infrastructure\Persistence\DoctrinePersistenceFlusher'
     App\Domain\Shared\Persistence\TransactionalExecutorInterface: '@App\Infrastructure\Persistence\DoctrineTransactionalExecutor'
     App\Domain\AgentCourseRevision\Repository\AgentCourseRevisionRepositoryInterface: '@App\Infrastructure\AgentCourseRevision\Repository\DoctrineAgentCourseRevisionRepository'
+    App\Domain\CourseMedia\Repository\CourseMediaRepositoryInterface: '@App\Infrastructure\CourseMedia\Repository\DoctrineCourseMediaRepository'
+
+    # Connecteur de rédaction : captures automatiques (voir docs/fonctionnalites/connecteur-mcp.md)
+    App\Service\Capture\CaptureRunnerInterface: '@App\Service\Capture\ConfiguredCaptureRunner'

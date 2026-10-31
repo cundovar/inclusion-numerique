@@ -1,0 +1,17 @@
+{
+  "name": "devdoc-capture",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Moteur de capture des pages publiques en HTTPS, repères numérotés",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "lint": "node --check src/*.js test/*.js"
+  },
+  "dependencies": {
+    "playwright-core": "1.57.0"
+  }
+}

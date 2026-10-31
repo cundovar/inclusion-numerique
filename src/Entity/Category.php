@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ApiResource(
     normalizationContext: ['groups' => ['page_content:read']],
@@ -16,6 +17,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class Category
 {
+    use AccesReserve;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -83,8 +86,29 @@ class Category
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?NiveauCours $niveauCours = null;
 
+    // Rang du parcours dans son catalogue (1, 2, 3…) ; sans rang, il passe après les autres, par ordre alphabétique
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?int $ordre = null;
+
+    // Miniature affichée sur la carte du parcours : une illustration du back-office (CourseMedia)
+    #[ORM\ManyToOne(targetEntity: CourseMedia::class)]
+    #[ORM\JoinColumn(name: 'illustration_id', nullable: true, onDelete: 'SET NULL')]
+    private ?CourseMedia $illustration = null;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: 'acces_parcours')]
+    #[ORM\JoinColumn(name: 'category_id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'user_id', onDelete: 'CASCADE')]
+    private Collection $destinataires;
+
     public function __construct()
     {
+        $this->destinataires = new ArrayCollection();
         $this->menus = new ArrayCollection();
         $this->pageContents = new ArrayCollection();
         $this->exoMenus = new ArrayCollection();
@@ -346,5 +370,43 @@ class Category
         $this->niveauCours = $niveauCours;
 
         return $this;
+    }
+
+    public function getOrdre(): ?int
+    {
+        return $this->ordre;
+    }
+
+    public function setOrdre(?int $ordre): static
+    {
+        $this->ordre = $ordre;
+
+        return $this;
+    }
+
+    public function getIllustration(): ?CourseMedia
+    {
+        return $this->illustration;
+    }
+
+    public function setIllustration(?CourseMedia $illustration): static
+    {
+        $this->illustration = $illustration;
+
+        return $this;
+    }
+
+    #[Groups(['page_content:read'])]
+    #[ApiProperty(description: 'Adresse publique de la miniature du parcours')]
+    public function getIllustrationUrl(): ?string
+    {
+        return $this->illustration?->getUrl();
+    }
+
+    #[Groups(['page_content:read'])]
+    #[ApiProperty(description: 'Description de la miniature pour les personnes qui ne la voient pas')]
+    public function getIllustrationAlt(): ?string
+    {
+        return $this->illustration?->getAltText();
     }
 }

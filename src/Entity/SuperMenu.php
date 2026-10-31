@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ApiResource(
@@ -24,6 +25,12 @@ class SuperMenu
     #[ORM\Column(length: 255)]
     #[Groups(['supermenu:read', 'supermenu:write', 'page_content:read'])]
     private ?string $name = null;
+
+    // Rang de la rubrique sur l'accueil et dans le menu (1, 2, 3…) ; sans rang, elle passe après les autres, par nom
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
+    #[Groups(['supermenu:read', 'supermenu:write', 'page_content:read'])]
+    private ?int $ordre = null;
 
     /**
      * @var Collection<int, Category>
@@ -54,6 +61,18 @@ class SuperMenu
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getOrdre(): ?int
+    {
+        return $this->ordre;
+    }
+
+    public function setOrdre(?int $ordre): static
+    {
+        $this->ordre = $ordre;
 
         return $this;
     }

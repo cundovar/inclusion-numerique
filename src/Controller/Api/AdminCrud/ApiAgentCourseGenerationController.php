@@ -161,7 +161,7 @@ final class ApiAgentCourseGenerationController extends AbstractController
         $data = $this->payload($request);
         $generation->fail(isset($data['verificationReport']) && is_array($data['verificationReport']) ? $data['verificationReport'] : null, isset($data['technicalError']) ? (string) $data['technicalError'] : null);
         foreach ($this->em->getRepository(CourseMedia::class)->findBy(['generation' => $generation]) as $media) {
-            $file = $this->parameters->get('kernel.project_dir') . '/public' . $media->getPublicPath();
+            $file = $this->parameters->get('kernel.project_dir') . '/public' . $media->getUrl();
             if (is_file($file)) unlink($file);
             $this->em->remove($media);
         }

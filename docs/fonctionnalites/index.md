@@ -15,6 +15,7 @@ Chaque fonctionnalité est décrite de l'écran jusqu'aux données, sur le même
 | Personnalisation | En-tête et fond ; onglet « Apparence » du profil (contenu désactivé) | `/api/customization` | Défauts : tous ; réglages : connecté | [Fiche](personnalisation.md) |
 | Hors ligne (PWA) | Toute la SPA | Cache Workbox, IndexedDB `spa-db` | Public | [Fiche](hors-ligne.md) |
 | Back-office | `/admin` (EasyAdmin) | — | Administrateur | [Fiche](back-office.md) |
+| **Connecteurs MCP** | Claude, ChatGPT (connecteur personnalisé) ; back-office : filtre « En revue », captures, diaporamas, brouillons de QCM | `/mcp`, `/mcp/apprenant`, `/oauth/*`, `/depot-image/{jeton}`, `/api/captures`, `/api/diaporamas` | Rédaction : administrateur ; apprenant : connecté | [Fiche](connecteur-mcp.md) |
 | Propositions de cours IA | Aucun écran | `/api/proposition-ia`, `/api/admin/agent-cours` | Administrateur, agents par clé | [Fiche](propositions-ia.md) |
 
 Les routes de la SPA sont déclarées dans [`front/src/router/index.js`](../../front/src/router/index.js), les règles d'accès dans [`config/packages/security.yaml`](../../config/packages/security.yaml).

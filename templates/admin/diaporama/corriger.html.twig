@@ -1,0 +1,23 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block page_title %}Corriger le diaporama « {{ diaporama.titre }} »{% endblock %}
+
+{% block main %}
+    <p>{{ diaporama.libelleCible }}. Les mêmes contrôles que pour l'assistant de rédaction s'appliquent : une correction qui ajoute un contrôle bloquant n'est pas enregistrée. Le statut et la relecture ne changent pas.</p>
+
+    {% if errors is not empty %}
+        <div class="alert alert-danger" role="alert">
+            <p><strong>Correction non enregistrée :</strong></p>
+            <ul class="mb-0">
+                {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-outline-primary">Enregistrer la correction</button>
+        <a href="{{ detailUrl }}" class="btn btn-outline-secondary">Annuler</a>
+    {{ form_end(form) }}
+{% endblock %}

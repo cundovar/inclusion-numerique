@@ -5,7 +5,7 @@
 ## 1. Méthode
 
 - Les **29 entités** mappées par Doctrine ont été lues depuis le gestionnaire d'entités Symfony (tables, colonnes, types, clés, relations et côté propriétaire). `src/Entity/ExoCategorie.php` n'est pas une entité mappée.
-- Les tables portent le préfixe `appy_` : stratégie de nommage `App\Doctrine\PrefixedNamingStrategy`, déclarée dans `config/services.yaml`. Les tables nommées explicitement font exception (`agent_course_generation`, `course_media`, `revision`, `appy_favorite`).
+- Les tables portent le préfixe `appy_` : stratégie de nommage `App\Doctrine\PrefixedNamingStrategy`, déclarée dans `config/services.yaml`. Les tables nommées explicitement font exception (`agent_course_generation`, `course_media`, `revision`, `appy_favorite`, `oauth_client`, `oauth_authorization_code`, `oauth_grant`, `qcm_draft`).
 - Le schéma évolue uniquement par migrations Doctrine (`migrations/`, 17 migrations), jamais par SQL manuel.
 - Écart entre modèle et base contrôlé par `doctrine:schema:validate` et `doctrine:schema:update --dump-sql` (lecture seule, aucun SQL exécuté) : voir §5.
 
@@ -119,6 +119,14 @@ erDiagram
         text code
         varchar duration
         bool visible
+        varchar status
+        varchar source_url
+        varchar author
+        date verified_at
+        json review_report
+        varchar reviewed_by
+        datetime reviewed_at
+        int ordre
         int page_id FK
         int category_id FK
         int menu_id FK
@@ -339,6 +347,68 @@ erDiagram
         datetime createdAt
     }
 ```
+
+### Connecteurs MCP et OAuth
+
+Ajoutées par [`Version20261030224418`](../../migrations/Version20261030224418.php) (voir [Connecteurs MCP](../fonctionnalites/connecteur-mcp.md)), qui ne fait qu'ajouter des tables et des colonnes. La même migration ajoute :
+
+- à `appy_PageContent` le cycle éditorial : `status` (`brouillon`, `en_revue`, `publie`, `a_reviser`, défaut `publie`), la relecture (`review_report`, `reviewed_by`, `reviewed_at`), la source (`source_url`, `verified_at`), l'auteur, le rang (`ordre`) et `reserve`. `visible` est conservé et suit le statut : un cours masqué devient un brouillon ;
+- à `appy_Category` le rang (`ordre`), la miniature (`illustration_id` vers `course_media`) et `reserve` ; à `appy_QCM` `reserve` ; à `appy_SuperMenu` le rang ;
+- à `course_media` la fiche d'une capture : `kind` (`capture` ou `illustration`), `service`, `source_url`, `captured_at`, `author`, `next_review_at`, `updated_at`. Les images existantes des agents deviennent des illustrations ;
+- les tables de liaison `acces_cours`, `acces_parcours` et `acces_qcm` (contenu réservé à certains comptes), `diaporama` (synthèse d'un cours ou d'un chapitre) et `rag_passage` (passages des cours, index plein texte, pour l'assistant apprenant).
+
+```mermaid
+erDiagram
+    OAuthAuthorizationCode }o--|| OAuthClient : "client"
+    OAuthAuthorizationCode }o--|| User : "user"
+    OAuthGrant }o--|| OAuthClient : "client"
+    OAuthGrant }o--|| User : "user"
+    OAuthGrant }o--o| OAuthAuthorizationCode : "authorizationCode"
+    QcmDraft }o--o| LanguageQCM : "theme"
+    QcmDraft }o--o| NiveauQCM : "level"
+    QcmDraft }o--o| QCM : "publishedQcm"
+    OAuthClient {
+        int id PK
+        varchar client_id UK
+        varchar name
+        json redirect_uris
+        datetime created_at
+        datetime last_used_at
+    }
+    OAuthAuthorizationCode {
+        int id PK
+        varchar code_hash UK
+        varchar redirect_uri
+        varchar code_challenge
+        varchar resource
+        varchar scope
+        datetime expires_at
+        datetime used_at
+    }
+    OAuthGrant {
+        int id PK
+        varchar resource
+        varchar scope
+        varchar access_token_hash UK
+        datetime access_expires_at
+        varchar refresh_token_hash UK
+        datetime refresh_expires_at
+        datetime revoked_at
+    }
+    QcmDraft {
+        int id PK
+        varchar question
+        text explanation
+        json answers
+        varchar status
+        varchar author
+        json review_report
+        varchar reviewed_by
+        datetime published_at
+    }
+```
+
+Les jetons et codes ne sont stockés que sous forme d'empreinte SHA-256.
 
 ### Configuration
 
