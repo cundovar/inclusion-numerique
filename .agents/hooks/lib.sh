@@ -4,10 +4,14 @@
 
 read_payload() { PAYLOAD=$(cat); }
 
-# Racine du dépôt : variable Claude, sinon racine git depuis le cwd de la session.
+# Racine du dépôt : racine git du cwd de la session, sinon variable Claude.
+# Le cwd passe en premier : dans un worktree, CLAUDE_PROJECT_DIR désigne le dépôt principal,
+# et les chemins du worktree (.claude/worktrees/…) n'y correspondraient à aucune règle.
 project_root() {
+  local cwd; cwd=$(jq -r '.cwd // empty' <<<"$PAYLOAD")
+  if [ -n "$cwd" ] && git -C "$cwd" rev-parse --show-toplevel 2>/dev/null; then return; fi
   if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then echo "$CLAUDE_PROJECT_DIR"; return; fi
-  local cwd; cwd=$(jq -r '.cwd // empty' <<<"$PAYLOAD"); cwd=${cwd:-$PWD}
+  cwd=${cwd:-$PWD}
   git -C "$cwd" rev-parse --show-toplevel 2>/dev/null || echo "$cwd"
 }
 

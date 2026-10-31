@@ -12,7 +12,9 @@ Branchement : `Write|Edit|NotebookEdit` pour Claude Code ([`.claude/settings.jso
 
 ## `lib.sh` : un seul code pour deux outils
 
-Les deux outils n'envoient pas la même chose. Claude Code donne le chemin du fichier (`tool_input.file_path`) ; Codex envoie un patch (`apply_patch`) dont il faut lire les en-têtes `*** Update File: …`. `target_files()` extrait les fichiers visés dans les deux cas, et `project_root()` retrouve la racine du dépôt (`$CLAUDE_PROJECT_DIR`, sinon `git rev-parse`).
+Les deux outils n'envoient pas la même chose. Claude Code donne le chemin du fichier (`tool_input.file_path`) ; Codex envoie un patch (`apply_patch`) dont il faut lire les en-têtes `*** Update File: …`. `target_files()` extrait les fichiers visés dans les deux cas, et `project_root()` retrouve la racine du dépôt : `git rev-parse` depuis le dossier de la session (`cwd`), sinon `$CLAUDE_PROJECT_DIR`.
+
+Le dossier de la session passe en premier à cause des worktrees (`.claude/worktrees/…`). Dans un worktree, `$CLAUDE_PROJECT_DIR` désigne le dépôt principal. Avec lui comme racine, le chemin d'un fichier du worktree commence par `.claude/worktrees/<nom>/` et ne correspond à aucune règle : les fichiers protégés n'étaient pas bloqués, le lint ne s'appliquait pas, et le rappel de fin de tâche lisait le marqueur du dépôt principal, qu'un `make check` lancé dans le worktree n'efface pas.
 
 ## `protect-files.sh`
 
@@ -65,10 +67,21 @@ Le 2026-10-13, en envoyant aux scripts les mêmes entrées JSON que les outils :
 | Arrêt avec marqueur | `block` |
 | Arrêt avec `stop_hook_active: true` | Aucune sortie : arrêt autorisé |
 
+Le 2026-10-31, depuis un worktree, avec `CLAUDE_PROJECT_DIR` sur le dépôt principal (scripts avant et après correction) :
+
+| Cas | Avant | Après |
+|---|---|---|
+| Écrire `.env.local` du worktree | Autorisé | `deny` |
+| Écrire une migration commitée du worktree | Autorisé | `deny` |
+| Écrire `.env.local` depuis le dépôt principal | `deny` | `deny` |
+| Fichier PHP du worktree | Marqueur non posé | `php -l`, marqueur posé dans le worktree |
+| Arrêt, marqueur seulement dans le dépôt principal | `block` | Aucune sortie : arrêt autorisé |
+
 ## Limites
 
 ::: warning
 - Le lint ne couvre ni le JavaScript du micro-service Node ni la documentation : seuls `make check` et `make docs-build` les contrôlent.
 - Une modification faite **hors des outils d'écriture** (par exemple `sed` ou `python` dans un terminal) ne déclenche aucun hook : ni protection, ni marqueur.
 - Les scripts ont besoin de `jq`, `git` et `docker` sur la machine.
+- Les outils lancent les scripts du **dépôt principal** (`$CLAUDE_PROJECT_DIR/.agents/hooks/`) : une correction des hooks faite dans un worktree ne s'applique qu'une fois présente dans le dépôt principal.
 :::
