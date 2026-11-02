@@ -1,87 +1,120 @@
-# Harness des agents IA
+# Harness Codex et Claude Code
 
-Le code de DevDoc est en grande partie écrit avec des agents IA : **Claude Code** et **Codex**. Le *harness* est l'ensemble des fichiers qui encadrent ce travail, pour que les deux agents suivent les mêmes règles, ne puissent pas casser ce qui compte et ne déclarent pas une tâche terminée sans preuve.
+Ce projet reprend la structure du harness de DevDoc, adaptée à un dépôt indépendant : consignes partagées, protections automatiques et boucle de validation. Il ne réutilise pas les règles VAE de DevDoc. Le code applicatif a été repris de DevDoc puis allégé (voir [la reprise de DevDoc](../conception/reprise-devdoc.md)).
 
-| Garantie | Comment | Page |
+## 1. Consignes partagées
+
+- `AGENTS.md` définit le périmètre, les priorités, les règles de contenu et les preuves attendues.
+- `CLAUDE.md` importe `@AGENTS.md` ; les deux assistants reçoivent les mêmes consignes.
+- `PLAN_APP_FORMATION_MEDIATEUR_NUMERIQUE.md` garde les décisions produit détaillées.
+
+## 2. Protections automatiques
+
+| Hook | Moment | Effet |
 |---|---|---|
-| Les deux agents ont les **mêmes consignes** | Un seul fichier `AGENTS.md`, lu par Codex et importé par Claude Code | [Consignes](consignes.md) |
-| Ils **ne peuvent pas détruire** la base, lire les secrets ou pousser seuls | Permissions Claude et règles Codex : autorisé, à confirmer, interdit | [Permissions](permissions.md) |
-| Ils **ne peuvent pas modifier** les fichiers protégés | Hook avant écriture, commun aux deux agents | [Hooks](hooks.md) |
-| Une erreur de syntaxe est **signalée tout de suite** | Hook après écriture : `php -l` ou ESLint dans Docker | [Hooks](hooks.md) |
-| Une tâche **n'est pas finie** sans `make check` réussi | Marqueur posé à chaque modification, rappel en fin de tâche | [Validation](validation.md) |
-| La **documentation suit** le code | Règle VitePress, skill de synchronisation VAE | [Méthode et documentation](methode.md) |
+| `.agents/hooks/lib.sh` | — | Extrait les fichiers ciblés des appels `Write`, `Edit`, `NotebookEdit` et `apply_patch` |
+| `.agents/hooks/protect-files.sh` | Avant écriture | Refuse un `.env` réel, une sauvegarde, une base locale, un chemin hors du projet, une migration déjà commitée et une preuve archivée `VAE/evidence/` ; les exemples `.env.example` restent autorisés |
+| `.agents/hooks/lint-file.sh` | Après écriture | `php -l` (conteneur `php`) ou ESLint (conteneur `front`) sur le fichier modifié, si le conteneur tourne ; pose le marqueur `.agents/.needs-check` pour tout changement de code ou de configuration |
+| `.agents/hooks/stop-check.sh` | Fin de tâche | Tant que le marqueur existe, demande `make check`, la mise à jour de `docs/` et, si la preuve VAE change, le skill `vae-documentation-sync` |
 
-## Les trois couches
+`make check` efface le marqueur seulement si tous ses contrôles réussissent (fichier ignoré par Git).
 
-```mermaid
-flowchart TB
-  subgraph C1["1. Consignes : ce que l'agent doit faire"]
-    A["AGENTS.md (+ src/, front/)"]
-    M["aidd_docs/memory/coding-assertions.md"]
-  end
-  subgraph C2["2. Garde-fous : ce que l'agent ne peut pas faire"]
-    P["Permissions Claude / règles Codex"]
-    H1["protect-files.sh (avant écriture)"]
-  end
-  subgraph C3["3. Boucle de preuve : ce que l'agent doit démontrer"]
-    H2["lint-file.sh (après écriture)"]
-    H3["stop-check.sh (fin de tâche)"]
-    K["make check"]
-    D["Documentation VitePress et VAE"]
-  end
-  C1 --> C2 --> C3
-  H2 -- "pose .needs-check" --> H3
-  H3 -- "exige" --> K
-  K -- "efface .needs-check" --> H3
-  K --> D
+- `.claude/settings.json` active les trois hooks côté Claude Code, autorise les cibles de contrôle (`make check`, `make docs-build`…) et bloque la lecture des fichiers sensibles, `docker compose down -v` et `make down-volumes`. `.codex/hooks.json` active les mêmes scripts côté Codex.
+- `.codex/rules/project.rules` autorise les cibles de contrôle et encadre les commandes à risque. Ces règles ne remplacent pas les autorisations de l'environnement d'exécution.
+
+## Skill documentaire
+
+`.claude/skills/vae-documentation-sync/SKILL.md`, exposé à Codex par le lien symbolique `.agents/skills/vae-documentation-sync`. À la fin d'une tâche technique validée, il fait vérifier les pages `docs/` et les fichiers `VAE/` touchés par le changement, avec des niveaux de preuve (`code`, `local`, `ci`, `prod`, `prevu`) qui ne montent qu'avec la commande, le run CI ou le contrôle de production correspondant. Voir la section « Documentation VitePress et dossier VAE » de `AGENTS.md`.
+
+Ces hooks ciblent les outils d'édition indiqués dans leur configuration. Ils ne protègent pas les écritures indirectes exécutées par un shell, un connecteur ou un programme. Les secrets restent exclus du dépôt par `.gitignore` et ne doivent jamais être copiés depuis DevDoc.
+
+## 3. Boucle de validation
+
+À chaque tâche : constater les fichiers et l'état Git disponibles, modifier le périmètre demandé, contrôler les fichiers touchés et expliquer les preuves obtenues.
+
+### Configuration locale
+
+Symfony exige un fichier `.env` à la racine. Le modèle est `docs/env.example` (`cp docs/env.example .env`). Il n'est pas à la racine parce que les règles de `.claude/settings.json` interdisent aux agents de lire `./.env.*`. Les agents ne créent pas le `.env` du projet : ils vérifient dans une copie de travail, comme la CI qui écrit son propre `.env` de test.
+
+### Démarrage
+
+Avec Docker (ports choisis pour ne pas entrer en conflit avec DevDoc) :
+
+```bash
+make up && make composer && make npm-install && make migrate
+docker compose exec php php bin/console app:create-admin <nom>   # compte du back-office
 ```
 
-## Une tâche, du début à la fin
+Assistant de rédaction : connecteur MCP sur `/mcp`, à ajouter dans claude.ai ou ChatGPT avec un compte administrateur (voir [le connecteur](../fonctionnalites/connecteur.md)) ; `php bin/console app:connecteurs` liste et coupe les accès.
 
-```mermaid
-sequenceDiagram
-  actor U as Utilisateur
-  participant A as Agent (Claude Code ou Codex)
-  participant P as protect-files.sh
-  participant L as lint-file.sh
-  participant S as stop-check.sh
-  participant K as make check
-  U->>A: demande
-  A->>A: lit AGENTS.md (+ src/ ou front/)
-  A->>P: écriture d'un fichier
-  alt fichier protégé (.env.local, migration commitée, VAE figé…)
-    P-->>A: refus et raison
-  else autorisé
-    P-->>A: ok
-    A->>L: fichier écrit
-    L->>L: pose .agents/.needs-check, php -l ou ESLint
-    L-->>A: erreurs éventuelles (bloquant)
-  end
-  A->>S: veut s'arrêter
-  S-->>A: bloqué : lance make check
-  A->>K: make check
-  K-->>A: succès, marqueur effacé
-  A->>A: doc VitePress (make docs-build), preuves VAE si besoin
-  A-->>U: compte rendu avec les résultats réels
-  Note over A,U: commit et push : toujours sur confirmation
+Site : <http://localhost:8094/spa> ; back-office : <http://localhost:8094/admin> ; phpMyAdmin : <http://localhost:8095> ; MySQL hôte : `localhost:3310`.
+
+Sans Docker, avec PHP 8.2+ et SQLite (`DATABASE_URL` SQLite dans `.env`) :
+
+```bash
+composer install && npm ci --prefix front
+php bin/console doctrine:schema:create      # ou doctrine:migrations:migrate sur MySQL
+php bin/console app:create-admin <nom>
+./build-assets.sh                           # build Vite dans public/build et public/spa
+php -S 127.0.0.1:8000 -t public             # le serveur intégré a besoin d'un routeur vers public/index.php pour /spa
 ```
 
-## Claude Code et Codex côte à côte
+### Contrôles
 
-| Pièce | Claude Code | Codex | Partagé |
-|---|---|---|---|
-| Consignes | `CLAUDE.md` → `@AGENTS.md` | `AGENTS.md` lu directement | `AGENTS.md`, `src/AGENTS.md`, `front/AGENTS.md` |
-| Commandes | `.claude/settings.json` (`permissions`) | `.codex/rules/project.rules` | Mêmes décisions |
-| Hooks | `.claude/settings.json` (`hooks`) | `.codex/hooks.json` | Scripts `.agents/hooks/` |
-| Skills | `.claude/skills/` | `.agents/skills/` (lien symbolique) | `vae-documentation-sync` |
+| Contrôle | Commande | Make (Docker) |
+| --- | --- | --- |
+| Syntaxe PHP | `find src tests migrations -name '*.php' -print0 \| xargs -0 -n1 php -l` | `make lint-php` |
+| Conteneur, Twig, YAML | `php bin/console lint:container`, `lint:twig templates`, `lint:yaml config` | — |
+| PHPStan (niveau 5, baseline) | `composer analyse` | `make analyse` |
+| PHPUnit (SQLite jetable) | `composer test` | `make test` |
+| Migrations MySQL | `doctrine:migrations:migrate`, puis `doctrine:schema:validate` | `make migrate` |
+| ESLint | `npm run lint --prefix front` | `make lint-front` |
+| Vitest | `npm test --prefix front` | `make test-front` |
+| Build Vite | `npm run check --prefix front` | `make build-front` |
+| Connecteur MCP | inclus dans PHPUnit (`tests/Functional/Mcp/`) | `make test` |
+| Moteur de capture | `npm ci --prefix capture && npm run lint --prefix capture && npm test --prefix capture` | — |
+| Documentation VitePress | `npm ci --prefix docs && npm run build --prefix docs` | `make docs-build` |
 
-La carte détaillée de toutes les pièces est dans [Carte complète](../harness-agents.md).
+`make check-fast` enchaîne syntaxe PHP, PHPStan et ESLint ; `make check` y ajoute PHPUnit, Vitest et le build, puis efface le marqueur `.agents/.needs-check`. La CI (`.github/workflows/ci.yml`) exécute les mêmes contrôles, plus les migrations sur un MySQL 8.0 (montée, validation du schéma, retour arrière et remontée), le moteur de capture et le build de la documentation.
 
-## Limites
+`make docs-dev` sert la documentation sur <http://localhost:5176/docs/> (service Docker `docs`, profil `docs`, port `HOST_DOCS_PORT`). `make docs-build` échoue sur un lien interne mort.
 
-::: warning
-- **Rien n'oblige à mettre la doc à jour** : la règle est rappelée, pas vérifiée. Seul `make docs-build` détecte un lien cassé.
-- **Le rappel peut être ignoré** : `stop-check.sh` bloque une seule fois (il laisse passer si l'agent s'est déjà arrêté une fois après le rappel), et un agent peut répondre que la tâche est volontairement intermédiaire.
-- Les hooks de lint ne vérifient pas les fichiers du micro-service Node ni la documentation : seul `make check` (ou `make docs-build`) les contrôle.
-- Le harness protège le dépôt local ; la CI reste le contrôle indépendant, et PHPStan y est encore informatif.
-:::
+### Moteur de capture
+
+`capture/` (Node, `playwright-core`) est exécuté sur Netcup par `capture-service/`, dans un conteneur séparé de l'application OVH. Le site lui envoie une demande HTTPS authentifiée avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`, puis enregistre lui-même le JPEG et ses métadonnées. En développement, laisser `CAPTURE_SERVICE_URL` vide utilise encore le moteur local. Réglages : `docs/env.example` (`CAPTURE_SERVICE_URL`, `CAPTURE_SERVICE_TOKEN`, `CAPTURE_CHROMIUM_PATH`, `CAPTURE_NO_SANDBOX`, `CAPTURE_HOME`).
+
+Les tests du moteur ouvrent un site local et utilisent `CAPTURE_CHROMIUM_PATH` (ou `/opt/pw-browsers/chromium`) ; en CI, `npx --prefix capture playwright-core install --with-deps chromium`. PHPUnit remplace le moteur par un double, sauf `tests/Service/NodeCaptureRunnerTest.php`, ignoré si `capture/node_modules` manque.
+
+Pour un parcours public, compléter par un essai dans le navigateur sur ordinateur et mobile, et en mode hors ligne. Ne pas présenter les tests de DevDoc comme une validation de cette application.
+
+Dans un environnement où le proxy refuse les archives GitHub, `composer install --prefer-source` fonctionne, sauf PHPStan, qui n'est distribué qu'en archive ; le cloner alors en profondeur 1 depuis `github.com/phpstan/phpstan` au tag du `composer.lock` (le clone complet est trop lourd pour certains proxys).
+
+Le connecteur MCP est testé par PHPUnit : appels JSON-RPC réels sur `/mcp` (`tests/Functional/Mcp/`) et parcours OAuth complet (`tests/Functional/OAuthFlowTest.php`). Pour un essai manuel avec un client MCP, ajouter `localhost` à `OAUTH_REDIRECT_HOSTS` et utiliser par exemple MCP Inspector (`npx @modelcontextprotocol/inspector`) sur `http://localhost:8094/mcp`.
+
+### Déploiement en production
+
+`.github/workflows/ci.yml` (« CI/CD ») déploie à chaque push sur `main`, une fois tous les contrôles verts :
+
+1. `build` assemble l'archive : `composer install --no-dev`, build Vue dans `public/build` et `public/spa`, documentation VitePress dans `public/docs`, sans les dossiers de développement (`tests`, `docs`, `VAE`, `front`, configuration des agents…). Détail : [déploiement et CI](../deploiement/index.md).
+2. `deploy` (environnement GitHub `production`) l'envoie sur l'hébergement OVH par `rsync --delete`, en gardant sur le serveur `.env`, `var/` et `public/uploads/` (captures déposées), puis lance `doctrine:migrations:migrate`, puis supprime `var/cache/prod` et le reconstruit avec `cache:warmup`.
+
+Le mot de passe SSH est le secret `OVH_SSH_PASSWORD` ; l'empreinte du serveur est dans `.github/ovh_known_hosts`. Le `.env` de production se crée et se modifie directement sur le serveur, jamais dans le dépôt.
+
+Un merge sur `main` passe donc en production, migrations comprises : vérifier les migrations sur MySQL (job `migrations`) avant de fusionner.
+
+L'hébergement mutualisé OVH n'a ni Node ni Chromium ; il n'exécute donc jamais Playwright. Le service `deploy/netcup-capture/` est déployé sur Netcup, où Docker et le proxy Traefik sont présents. L'enregistrement DNS `A capture.mediateur.varascundo.com → 152.53.114.87` doit répondre avant le premier démarrage. Générer un jeton avec `openssl rand -hex 32`, le placer dans le `.env` Netcup, puis renseigner la même valeur et `CAPTURE_SERVICE_URL=https://capture.mediateur.varascundo.com` dans le `.env` OVH. Vérifier ensuite `GET /health` et une capture réelle, sans publier de données d'usager. Le `.env` de production doit aussi fixer `MCP_PUBLIC_URL` (adresse https du site) pour le connecteur.
+
+Contrôles du harness lui-même :
+
+```bash
+jq empty .claude/settings.json .codex/hooks.json
+bash -n .agents/hooks/*.sh
+codex execpolicy check --pretty --rules .codex/rules/project.rules -- git push origin main
+codex execpolicy check --pretty --rules .codex/rules/project.rules -- make docs-build
+# Simuler un appel d'outil : le hook doit refuser l'écriture (permissionDecision "deny")
+echo '{"cwd":"'"$PWD"'","tool_input":{"file_path":"VAE/evidence/x.md"}}' | bash .agents/hooks/protect-files.sh
+```
+
+## Activation
+
+Ouvrir le dépôt comme projet de confiance dans chaque outil, puis redémarrer la session pour charger ses réglages. Dans Claude Code, vérifier les fichiers chargés avec `/context`. Pour Codex, vérifier que les hooks et règles du projet sont effectivement pris en compte. La présence des fichiers seule ne prouve pas leur activation.

@@ -41,11 +41,6 @@ class PageContent
         'À réviser' => self::STATUS_TO_REVISE,
     ];
 
-    public const REVIEW_FAVORABLE = 'favorable';
-    public const REVIEW_RESERVES = 'reserves';
-    public const REVIEW_UNFAVORABLE = 'defavorable';
-    public const REVIEW_OPINIONS = [self::REVIEW_FAVORABLE, self::REVIEW_RESERVES, self::REVIEW_UNFAVORABLE];
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -97,37 +92,32 @@ class PageContent
     #[Groups(['page_content:read', 'page_content:write'])]
     private Collection $pageBlocks;
 
-    #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['default' => true])]
-    #[Groups(['page_content:read', 'page_content:write'])]
-    private ?bool $visible = true;
-
-    // Cycle éditorial des connecteurs MCP ; `visible` suit le statut (vrai seulement si « publié »).
-    // Un cours créé dans le back-office est publié, comme avant ; le connecteur crée des brouillons.
-    // Le défaut SQL (brouillon) est celui de la base partagée avec mediateur ; seul le défaut PHP publie.
+    // Cycle éditorial : seul un cours « publié » est servi par l'API publique
     #[ORM\Column(length: 20, options: ['default' => self::STATUS_DRAFT])]
     #[Assert\Choice(choices: self::STATUSES)]
     #[Groups(['page_content:read'])]
-    private string $status = self::STATUS_PUBLISHED;
+    private string $status = self::STATUS_DRAFT;
 
-    // Documentation officielle de référence (Symfony, Vue…)
+    // Page officielle de référence pour un cours sur un service (CAF, France Travail…)
     #[ORM\Column(name: 'source_url', length: 500, nullable: true)]
     #[Assert\Url]
     #[Assert\Length(max: 500)]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?string $sourceUrl = null;
 
-    // Qui a préparé le cours : « connecteur:<nom> » pour l'assistant de rédaction (suivi interne, non publié)
+    // Qui a préparé le cours : « agent:<nom> » pour l'assistant de rédaction (suivi interne, non publié)
     #[ORM\Column(length: 100, nullable: true)]
     #[Assert\Length(max: 100)]
     private ?string $author = null;
 
-    // Dernière vérification du contenu auprès de la documentation officielle
+    // Dernière vérification du contenu auprès de la source officielle
     #[ORM\Column(name: 'verified_at', type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[Groups(['page_content:read', 'page_content:write'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?\DateTimeImmutable $verifiedAt = null;
 
-    // Relecture par un autre connecteur (ou une personne) : avis, résumé et constats rattachés aux règles.
-    // Effacée à chaque modification du contenu ; exigée pour publier par le connecteur.
+    // Relecture par un second agent (ou une personne) : avis, résumé et constats rattachés aux règles.
+    // Effacée à chaque modification du contenu ; exigée pour soumettre un brouillon par l'API de rédaction.
     #[ORM\Column(name: 'review_report', type: Types::JSON, nullable: true)]
     private ?array $reviewReport = null;
 
@@ -137,15 +127,15 @@ class PageContent
     #[ORM\Column(name: 'reviewed_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $reviewedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'pageContents')]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?NiveauCours $niveauCours = null;
+
     // Rang du cours dans son module (1, 2, 3…) ; sans rang, le cours passe après les autres, par ancienneté
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?int $ordre = null;
-
-    #[ORM\ManyToOne(inversedBy: 'pageContents')]
-    #[Groups(['page_content:read', 'page_content:write'])]
-    private ?NiveauCours $niveauCours = null;
 
     /**
      * @var Collection<int, User>
@@ -160,7 +150,6 @@ class PageContent
     {
         $this->pageBlocks = new ArrayCollection();
         $this->destinataires = new ArrayCollection();
-        $this->visible = true;
     }
 
     public function getId(): ?int { return $this->id; }
@@ -261,23 +250,6 @@ class PageContent
         return $this;
     }
 
-    public function isVisible(): ?bool
-    {
-        return $this->visible ?? true;
-    }
-
-    // Bascule du back-office : visible publie, masqué repasse en brouillon
-    public function setVisible(?bool $visible): static
-    {
-        $this->visible = $visible;
-        if ($visible === false && $this->status === self::STATUS_PUBLISHED) {
-            $this->status = self::STATUS_DRAFT;
-        } elseif ($visible !== false) {
-            $this->status = self::STATUS_PUBLISHED;
-        }
-        return $this;
-    }
-
     public function getStatus(): string
     {
         return $this->status;
@@ -286,7 +258,6 @@ class PageContent
     public function setStatus(string $status): static
     {
         $this->status = $status;
-        $this->visible = $status === self::STATUS_PUBLISHED;
         return $this;
     }
 
@@ -311,6 +282,11 @@ class PageContent
         $this->author = $author;
         return $this;
     }
+
+    public const REVIEW_FAVORABLE = 'favorable';
+    public const REVIEW_RESERVES = 'reserves';
+    public const REVIEW_UNFAVORABLE = 'defavorable';
+    public const REVIEW_OPINIONS = [self::REVIEW_FAVORABLE, self::REVIEW_RESERVES, self::REVIEW_UNFAVORABLE];
 
     /**
      * @param array{avis: string, resume: string, points: list<array{regle: ?string, constat: string, suggestion: ?string}>} $report
@@ -384,17 +360,6 @@ class PageContent
         return $this;
     }
 
-    public function getOrdre(): ?int
-    {
-        return $this->ordre;
-    }
-
-    public function setOrdre(?int $ordre): static
-    {
-        $this->ordre = $ordre;
-        return $this;
-    }
-
     public function getNiveauCours(): ?NiveauCours
     {
         return $this->niveauCours;
@@ -403,6 +368,18 @@ class PageContent
     public function setNiveauCours(?NiveauCours $niveauCours): static
     {
         $this->niveauCours = $niveauCours;
+
+        return $this;
+    }
+
+    public function getOrdre(): ?int
+    {
+        return $this->ordre;
+    }
+
+    public function setOrdre(?int $ordre): static
+    {
+        $this->ordre = $ordre;
 
         return $this;
     }

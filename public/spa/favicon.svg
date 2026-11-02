@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Médiation numérique</title>
+  <path fill="#0b2f6b" d="M20 56c36-8 72 0 108 27v143c-34-26-70-35-108-25V56Z"/>
+  <path fill="#2f9cf4" d="M34 72c30-4 56 3 82 21v105c-25-15-52-20-82-14V72Z"/>
+  <path fill="#fff" d="M45 79c26-1 49 7 71 24v79c-22-11-46-15-71-10V79Z"/>
+  <path fill="#0b2f6b" d="M128 83c36-27 72-35 108-27v145c-38-10-74-1-108 25V83Z"/>
+  <path fill="#2f9cf4" d="M140 93c26-18 52-25 82-21v112c-30-6-57-1-82 14V93Z"/>
+  <path fill="#fff" d="M140 103c22-17 45-25 71-24v93c-25-5-49-1-71 10v-79Z"/>
+  <path fill="none" stroke="#ff7a00" stroke-linecap="round" stroke-width="12" d="M177 52V30m25 31 16-16m-57 16-16-16"/>
+  <path fill="#0b2f6b" stroke="#fff" stroke-linejoin="round" stroke-width="9" d="m145 117 74 43-31 8 20 35-25 15-20-36-22 23 4-88Z"/>
+</svg>

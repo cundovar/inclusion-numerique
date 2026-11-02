@@ -7,7 +7,7 @@ namespace App\Service\Redaction;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
- * Référentiel `regles/` : fichiers, règles indexées par identifiant (RED-01…) et gabarits de cours.
+ * Référentiel `regles/` : fichiers, règles indexées par identifiant (POS-01…) et gabarits de cours.
  */
 final class Regles
 {

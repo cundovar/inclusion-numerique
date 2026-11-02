@@ -15,9 +15,12 @@
         <ini name="memory_limit" value="512M" />
         <server name="APP_ENV" value="test" force="true" />
         <env name="APP_ENV" value="test" force="true" />
+        <server name="KERNEL_CLASS" value="App\Kernel" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
         <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
+        <!-- Échec sur une dépréciation de notre code ou de nos appels directs ; celles internes aux bibliothèques (API Platform, Doctrine, EasyAdmin) sont seulement comptées -->
+        <server name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0&amp;max[direct]=0&amp;quiet[]=indirect" />
         <!-- Base SQLite jetable : les tests fonctionnels ne touchent jamais la base MySQL -->
         <env name="DATABASE_URL" value="sqlite:///%kernel.project_dir%/var/test.db" force="true" />
     </php>

@@ -8,7 +8,7 @@
     <meta name="logout-csrf-token" content="{{ csrf_token('logout') }}">
 
     {# SEO: Title #}
-    <title>{% block title %}{{ seo.title|default('Vue + Symfony') }}{% endblock %}</title>
+    <title>{% block title %}{{ seo.title|default(site_name) }}{% endblock %}</title>
 
     {# SEO: Meta Description #}
     <meta name="description" content="{{ seo.metaDescription|default('Plateforme de formation et de cours en ligne') }}">
@@ -29,7 +29,7 @@
     {% endif %}
 
     {# Open Graph #}
-    <meta property="og:title" content="{{ seo.ogTitle|default(seo.title|default('Vue + Symfony')) }}">
+    <meta property="og:title" content="{{ seo.ogTitle|default(seo.title|default(site_name)) }}">
     <meta property="og:description" content="{{ seo.ogDescription|default(seo.metaDescription|default('Plateforme de formation')) }}">
     <meta property="og:type" content="website">
     {% if seo.ogImage %}
@@ -38,7 +38,7 @@
 
     {# Twitter Card #}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ seo.ogTitle|default(seo.title|default('Vue + Symfony')) }}">
+    <meta name="twitter:title" content="{{ seo.ogTitle|default(seo.title|default(site_name)) }}">
     <meta name="twitter:description" content="{{ seo.ogDescription|default(seo.metaDescription|default('Plateforme de formation')) }}">
     {% if seo.ogImage %}
     <meta name="twitter:image" content="{{ seo.ogImage }}">
@@ -56,14 +56,13 @@
 <link rel="manifest" href="{{ pwaPath }}/manifest.webmanifest" />
 {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
     <meta name="theme-color" content="#42b983" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🔵</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="{{ pwaPath }}/favicon.svg">
     <!-- Meta tags pour iOS et PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="spaVueSymfo">
+    <meta name="apple-mobile-web-app-title" content="{{ site_name }}">
     
     <!-- Icônes Apple -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ pwaPath }}/pwa1.png">
@@ -75,18 +74,8 @@
     <link rel="apple-touch-startup-image" href="{{ pwaPath }}/pwa1.png">
 
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RBCFWF684Q"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RBCFWF684Q');
-</script>
 
 
-<script src="https://kit.fontawesome.com/c84dd1bc80.js" crossorigin="anonymous"></script>
 
 
                                                                                                                                                                 

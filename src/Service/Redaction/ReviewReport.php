@@ -41,7 +41,7 @@ final class ReviewReport
             $finding = \is_array($point) ? trim((string) ($point['constat'] ?? '')) : '';
             $suggestion = \is_array($point) ? trim((string) ($point['suggestion'] ?? '')) : '';
             if ($rule !== null && preg_match('/^[A-Z]{3}-\d{2}$/', (string) $rule) !== 1) {
-                $errors[] = ['champ' => "points[$index].regle", 'message' => 'Identifiant de règle attendu, par exemple RED-01.'];
+                $errors[] = ['champ' => "points[$index].regle", 'message' => 'Identifiant de règle attendu, par exemple POS-01.'];
             }
             if ($finding === '' || mb_strlen($finding) > 1000 || mb_strlen($suggestion) > 1000) {
                 $errors[] = ['champ' => "points[$index].constat", 'message' => 'Constat attendu (1 000 caractères au plus).'];

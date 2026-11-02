@@ -54,7 +54,7 @@ class CourseMedia
     #[Groups(['capture:read'])]
     private string $kind = self::KIND_CAPTURE;
 
-    // Service représenté, par exemple « ChatGPT »
+    // Service représenté, par exemple « CAF »
     #[ORM\Column(length: 100, nullable: true)]
     #[Assert\Length(max: 100)]
     #[Groups(['capture:read'])]
@@ -115,18 +115,6 @@ class CourseMedia
 
     #[ORM\Column(name: 'updated_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $updatedAt;
-
-    // Champs des agents de génération de cours (ancien pont DevDoc) : prompt de l'image, cours et génération liés
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $prompt = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?PageContent $course = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?AgentCourseGeneration $generation = null;
 
     public function __construct()
     {
@@ -232,18 +220,6 @@ class CourseMedia
 
         return $this;
     }
-
-    public function getPrompt(): ?string { return $this->prompt; }
-
-    public function setPrompt(?string $prompt): static { $this->prompt = $prompt; return $this; }
-
-    public function getCourse(): ?PageContent { return $this->course; }
-
-    public function setCourse(?PageContent $course): static { $this->course = $course; return $this; }
-
-    public function getGeneration(): ?AgentCourseGeneration { return $this->generation; }
-
-    public function setGeneration(?AgentCourseGeneration $generation): static { $this->generation = $generation; return $this; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 

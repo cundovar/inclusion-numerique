@@ -23,7 +23,7 @@ final class ConnectorUser implements UserInterface
     }
 
     /**
-     * Identité de l'agent enregistrée comme auteur ou relecteur : un connecteur par assistant (claude.ai, ChatGPT…).
+     * Identité de l'agent enregistrée comme auteur ou relecteur : un connecteur par outil d'IA.
      */
     public function getAgentLabel(): string
     {

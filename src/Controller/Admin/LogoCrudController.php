@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Logo;
-use App\Controller\Admin\DocDeCodeCrudController;
 use App\Controller\Admin\CategoryCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -23,12 +22,9 @@ class LogoCrudController extends AbstractCrudController
         return [
             TextField::new('titre'),
             TextField::new('logo'),
-            AssociationField::new('docDeCode', 'Doc de code')
-                ->setCrudController(DocDeCodeCrudController::class)
+            AssociationField::new('category', 'Catégorie')
+                ->setCrudController(CategoryCrudController::class)
                 ->autocomplete(),
-                AssociationField::new('category', 'Catégorie')
-                    ->setCrudController(CategoryCrudController::class)
-                    ->autocomplete(),
         ];
     }
     

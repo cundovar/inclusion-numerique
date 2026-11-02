@@ -7,6 +7,7 @@ namespace App\Tests\Functional\Mcp;
 use App\Entity\Category;
 use App\Entity\CourseMedia;
 use App\Entity\Menus;
+use App\Entity\NiveauCours;
 use App\Entity\PageContent;
 
 /**
@@ -21,7 +22,7 @@ final class CourseClassificationConnectorTest extends McpTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->parcours = (new Category())->setName('Premiers gestes numériques');
+        $this->parcours = (new Category())->setName('Premiers gestes numériques')->setAudience(Category::AUDIENCE_APPRENDRE);
         $this->ordinateur = (new Menus())->setLabel('Ordinateur : premiers gestes')->setCategory($this->parcours);
         $this->entityManager->persist($this->parcours);
         $this->entityManager->persist($this->ordinateur);
@@ -32,7 +33,7 @@ final class CourseClassificationConnectorTest extends McpTestCase
     {
         $souris = $this->createCourse('souris', PageContent::STATUS_PUBLISHED);
         $clavier = $this->createCourse('clavier', PageContent::STATUS_DRAFT);
-        $other = (new Category())->setName('Accompagner');
+        $other = (new Category())->setName('Accompagner')->setAudience(Category::AUDIENCE_ACCOMPAGNER);
         $foreign = (new Menus())->setLabel('Posture')->setCategory($other);
         $this->entityManager->persist($other);
         $this->entityManager->persist($foreign);
@@ -89,8 +90,8 @@ final class CourseClassificationConnectorTest extends McpTestCase
 
     public function testParcoursAreOrderedByTheOrderOfTheIds(): void
     {
-        $protection = (new Category())->setName('Se protéger sur Internet');
-        $demarches = (new Category())->setName('Faire des démarches en ligne');
+        $protection = (new Category())->setName('Se protéger sur Internet')->setAudience(Category::AUDIENCE_APPRENDRE);
+        $demarches = (new Category())->setName('Faire des démarches en ligne')->setAudience(Category::AUDIENCE_APPRENDRE);
         $this->entityManager->persist($protection);
         $this->entityManager->persist($demarches);
         $this->entityManager->flush();
@@ -174,6 +175,32 @@ final class CourseClassificationConnectorTest extends McpTestCase
 
         $inReview = $this->createCourse('en-revue', PageContent::STATUS_IN_REVIEW, sprintf('<p>[capture:%d]</p>', $old->getId()));
         self::assertStringContainsString('relecture humaine', $this->tool(self::CLAUDE, 'remplacer_capture', ['coursId' => $inReview, 'ancienneCaptureId' => $old->getId(), 'nouvelleCaptureId' => $new->getId()])['text']);
+    }
+
+    public function testPublishedCoursesGetALevelWithoutLosingTheirReview(): void
+    {
+        $souris = $this->createCourse('souris', PageContent::STATUS_PUBLISHED);
+        $decouvre = (new NiveauCours())->setName('Je découvre')->setOrdre(1);
+        $this->entityManager->persist($decouvre);
+        $this->entityManager->flush();
+
+        $result = $this->tool(self::CLAUDE, 'classer_niveau', ['coursIds' => [$souris, 999999], 'niveauId' => $decouvre->getId()]);
+        self::assertFalse($result['error'], $result['text']);
+        self::assertSame('Je découvre', $result['data']['niveau']['nom']);
+        self::assertSame([$souris], array_column($result['data']['classes'], 'id'));
+        self::assertNull($result['data']['classes'][0]['ancienNiveauId']);
+        self::assertSame([['id' => 999999, 'raison' => 'Cours introuvable.']], $result['data']['refus']);
+
+        $this->entityManager->clear();
+        $course = $this->entityManager->find(PageContent::class, $souris);
+        self::assertSame($decouvre->getId(), $course->getNiveauCours()?->getId());
+        self::assertSame([PageContent::STATUS_PUBLISHED, '<p>Texte</p>', 'favorable'], [$course->getStatus(), $course->getCode(), $course->getReviewReport()['avis'] ?? null]);
+
+        // Une seconde demande ne change rien ; null retire le niveau ; un niveau inconnu est refusé
+        self::assertSame([$souris], $this->tool(self::CLAUDE, 'classer_niveau', ['coursIds' => [$souris], 'niveauId' => $decouvre->getId()])['data']['dejaACeNiveau']);
+        $removed = $this->tool(self::CLAUDE, 'classer_niveau', ['coursIds' => [$souris], 'niveauId' => null])['data'];
+        self::assertSame($decouvre->getId(), $removed['classes'][0]['ancienNiveauId']);
+        self::assertTrue($this->tool(self::CLAUDE, 'classer_niveau', ['coursIds' => [$souris], 'niveauId' => 999999])['error']);
     }
 
     /**

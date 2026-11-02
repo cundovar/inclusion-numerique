@@ -1,5 +1,5 @@
 # Nom du projet (facultatif mais pratique pour l'affichage)
-PROJECT_NAME=symfony_vue_docker
+PROJECT_NAME=mediateur_numerique
 
 up:
 	@echo "🚀 Lancement du projet $(PROJECT_NAME)..."
@@ -66,7 +66,6 @@ dev:
 	@echo "🔥 Démarrage en mode dev..."
 	docker compose up -d && docker compose restart nginx
 
-
 # --- Validation (mêmes contrôles que la CI) ---
 
 lint-php:
@@ -89,33 +88,6 @@ test-front:
 	@echo "🧪 Vitest..."
 	docker compose exec -T front npm test
 
-test-qcm-results:
-	@echo "🍃 Micro-service résultats de QCM (Node + MongoDB)..."
-	docker compose exec -T qcm-results npm test
-
-test-e2e:
-	@echo "🎭 Playwright (application locale démarrée et compilée requise)..."
-	docker compose run --rm e2e
-
-docs-dev:
-	@echo "📚 Documentation sur http://localhost:5174 (Ctrl+C pour arrêter)"
-	docker compose --profile docs up docs
-
-docs-build:
-	@echo "📚 Build de la documentation (liens morts compris)..."
-	docker compose --profile docs run --rm --no-deps -T docs sh -c "git config --global --add safe.directory /app && npm ci --no-audit --no-fund && npx vitepress build"
-
-design-up:
-	@test -f tools/penpot/penpot.local.env || echo "PENPOT_SECRET_KEY=$$(python3 -c 'import secrets; print(secrets.token_urlsafe(64))')" > tools/penpot/penpot.local.env
-	docker compose -f tools/penpot/compose.yaml up -d
-	@echo "🎨 Penpot sur http://localhost:9001 (premier démarrage : 1 à 2 minutes)"
-
-design-down:
-	docker compose -f tools/penpot/compose.yaml down
-
-design-logs:
-	docker compose -f tools/penpot/compose.yaml logs -f --tail=100
-
 build-front:
 	@echo "🏗️  Build Vite..."
 	docker compose exec -T front npm run check
@@ -123,9 +95,20 @@ build-front:
 check-fast: lint-php analyse lint-front
 	@echo "✅ check-fast terminé"
 
-check: check-fast test test-front test-qcm-results build-front
+check: check-fast test test-front build-front
 	@rm -f .agents/.needs-check
 	@echo "✅ check terminé"
 
+# --- Documentation VitePress (docs/) ---
+
+docs-dev:
+	@echo "📚 Documentation sur http://localhost:$${HOST_DOCS_PORT:-5176}/docs/"
+	docker compose --profile docs up docs
+
+# Échoue sur un lien interne mort
+docs-build:
+	@echo "📚 Build VitePress..."
+	docker compose --profile docs run --rm --no-deps -T docs sh -c "git config --global --add safe.directory /app && npm ci --no-audit --no-fund && npx vitepress build"
+
 .PHONY: up down down-volumes restart logs bash front-bash composer composer-require npm-install npm-dev symfo migrate start stop dev \
-	lint-php analyse test test-front test-qcm-results test-e2e docs-dev docs-build design-up design-down design-logs lint-front build-front check-fast check
+	lint-php analyse test test-front lint-front build-front check-fast check docs-dev docs-build

@@ -147,11 +147,11 @@ class SeoService
     public function getDefaultSeo(): array
     {
         return [
-            'title' => 'Mon Site - Formation et Cours en ligne',
-            'metaDescription' => 'Plateforme de formation et de cours en ligne pour apprendre la programmation et le développement web',
-            'metaKeywords' => 'formation, cours, programmation, développement web, tutoriels',
-            'ogTitle' => 'Mon Site - Formation et Cours',
-            'ogDescription' => 'Plateforme de formation et de cours en ligne pour apprendre la programmation',
+            'title' => 'Inclusion numérique - Formations libres et gratuites',
+            'metaDescription' => "Cours gratuits et sans inscription pour apprendre à utiliser le numérique, ou pour accompagner les personnes qui l'apprennent.",
+            'metaKeywords' => 'numérique, médiation numérique, formation, débutants, seniors, accompagnement, démarches en ligne',
+            'ogTitle' => 'Inclusion numérique - Formations libres et gratuites',
+            'ogDescription' => "Apprendre le numérique pas à pas, ou apprendre à accompagner : cours gratuits, sans inscription.",
             'ogImage' => null,
             'canonicalUrl' => null,
             'noIndex' => false,

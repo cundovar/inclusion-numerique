@@ -60,6 +60,16 @@ export function createOfflineDb({ name = DB_NAME, now = () => Date.now() } = {})
       await tx.done
     },
 
+    // Remplacer tout le contenu d'un store : les éléments absents de la nouvelle liste disparaissent
+    // (un cours personnalisé retiré ou réservé à un autre compte ne reste pas en cache)
+    async replaceAll(store, array) {
+      const db = await dbPromise
+      const tx = db.transaction(store, 'readwrite')
+      await tx.store.clear()
+      array.forEach(item => tx.store.put(toPlain(item)))
+      await tx.done
+    },
+
     // Lire tous les éléments d'un store
     async loadAll(store) {
       const db = await dbPromise
@@ -81,6 +91,15 @@ export function createOfflineDb({ name = DB_NAME, now = () => Date.now() } = {})
     async clearUser() {
       const db = await dbPromise
       await db.clear('user')
+    },
+
+    // À la déconnexion : l'utilisateur et tout contenu qui a pu lui être réservé (catalogue, pages, réponses API).
+    // Sur un poste partagé, la personne suivante ne retrouve pas hors ligne les cours personnalisés de la précédente.
+    async clearPersonalData() {
+      const db = await dbPromise
+      const stores = ['user', 'menus', 'categories', 'pages', 'api_cache']
+      const tx = db.transaction(stores, 'readwrite')
+      await Promise.all([...stores.map(store => tx.objectStore(store).clear()), tx.done])
     },
 
     // Page de cours individuelle (champs utiles à l'affichage hors ligne)

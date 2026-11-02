@@ -40,15 +40,10 @@ class PageContentSanitizerListener
     }
 
     /**
-     * Nettoie les champs HTML de l'entité
-     * Les contenus générés par l'agent IA sont exclus du sanitizer
+     * Nettoie les champs HTML de l'entité, quelle que soit son origine (back-office ou assistant de rédaction)
      */
     private function sanitizeEntity(PageContent $entity): void
     {
-        if ($entity->getType() === 'agent-cours') {
-            return;
-        }
-
         // Nettoyer le champ 'code' (contenu HTML principal)
         if ($entity->getCode() !== null) {
             $entity->setCode(

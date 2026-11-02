@@ -196,7 +196,7 @@ final class QcmDraftService
     /**
      * Publie le QCM si aucun contrôle ne bloque et si un autre agent l'a relu avec un avis favorable.
      * Le QCM et toutes ses réponses sont créés ensemble, ou rien n'est créé.
-     * Avec des destinataires, le QCM est publié directement réservé à ces comptes (QCM personnalisé) :
+     * Avec des destinataires, le QCM est publié directement réservé à ces comptes (exercice personnalisé) :
      * il n'est jamais servi à tous, même un instant.
      *
      * @param list<User> $destinataires

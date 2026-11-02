@@ -265,7 +265,7 @@ const nextQuestion = () => {
     router.push({
       name: 'questionQCM',
       params: { index: next },
-      query: { language: language.value, niveau: niveau.value },
+      query: seriesQuery.value,
     })
   } else {
     // Fin du quiz - naviguer vers les résultats
@@ -283,6 +283,9 @@ const nextQuestion = () => {
 const currentIndex = computed(() => Number(route.params.index || 0))
 const language = computed(() => route.query.language ?? qcmStore.filterQcms?.language ?? null)
 const niveau   = computed(() => route.query.niveau   ?? qcmStore.filterQcms?.niveau   ?? null)
+// « Mes exercices » (espace personnel) : la série est faite des QCM réservés à la personne connectée
+const perso = computed(() => route.query.perso === '1')
+const seriesQuery = computed(() => perso.value ? { perso: '1' } : { language: language.value, niveau: niveau.value })
 
 // Question actuelle
 const currentQcm = computed(() => {
@@ -326,7 +329,7 @@ onMounted(async () => {
   // qcmStore.load?.()
 
   // Si pas de filtres, on ne peut pas fetch
-  if (!language.value || !niveau.value) {
+  if (!perso.value && (!language.value || !niveau.value)) {
     console.log("❌ Pas de filtres, impossible de fetch")
     // Option : rediriger vers la page de sélection
     // router.replace({ name: 'qcm-form' })
@@ -344,12 +347,14 @@ onMounted(async () => {
   error.value = null
   try {
     const { data } = await axios.get('/api/q_c_ms', {
-      params: {
-        'languageQCM.name': language.value,
-        'niveauQCM.titre':  niveau.value,
-        page: 1,
-        itemsPerPage: 100, // ajuste si besoin
-      },
+      params: perso.value
+        ? { reserve: true, page: 1, itemsPerPage: 100 }
+        : {
+            'languageQCM.name': language.value,
+            'niveauQCM.titre':  niveau.value,
+            page: 1,
+            itemsPerPage: 100, // ajuste si besoin
+          },
     })
     const list = data['hydra:member'] ?? data.member ?? data
 
@@ -369,7 +374,9 @@ qcmStore.AleatoireChoices() // melanger les choix
     console.log("🎯 Question actuelle (index 0):", qcmStore.qcms[0])
 
     // garde aussi les filtres en store pour persister
-    qcmStore.setFilterQcms({ language: language.value, niveau: niveau.value })
+    if (!perso.value) {
+      qcmStore.setFilterQcms({ language: language.value, niveau: niveau.value })
+    }
   } catch (e) {
     error.value = e
     console.error('Fetch QCM failed:', e)
@@ -382,7 +389,7 @@ qcmStore.AleatoireChoices() // melanger les choix
     router.replace({
       name: 'questionQCM',
       params: { index: 0 },
-      query: { language: language.value, niveau: niveau.value },
+      query: seriesQuery.value,
     })
   }
 })

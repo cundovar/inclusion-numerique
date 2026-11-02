@@ -5,14 +5,9 @@
   <MobileAppPopup
     v-if="showMobileAppPopup"
     :current-origin="currentOrigin"
+    :instructions="instructions"
     @close="closeMobileAppPopup"
     @install="installPWA"
-  />
-
-  <!-- Pop-up de notification -->
-  <NotifModal
-    v-if="showNotifModal"
-    @close="closeNotifModal"
   />
 
   <div
@@ -65,46 +60,32 @@
     />
 
     <!-- Contenu principal -->
-    <main :class="sectionSize ? 'w-full min-h-screen z-[60] mt-0 pt-0 absolute ' : ' relative xl:p-20 max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden'">
-      <div
-        v-if="!$route.path.includes('/exercices') && !$route.path.includes('/pages') && !$route.path.includes('/profile') && !$route.path.includes('/qcm') && !$route.path.includes('/category') && $route.path !== '/'"
-        class="max-xl:hidden absolute top-15 z-70 right-50"
-      >
-        <AppButton
-          v-if="sectionSize "
-          variant="danger"
-          text-content="fermer"
-          type="button"
-          @click="toggleSectionSize"
-        />
-        <AppButton
-          v-else
-          variant="danger"
-          text-content="agrandir"
-          type="button"
-          @click="toggleSectionSize"
-        />
-      </div>
+    <main class="relative xl:p-20 max-md:z-10 max-md:w-full h-auto xl:w-4/5 xl:ml-16 xl:self-center right-0 overflow-hidden">
       <router-view />
     </main>
 
+    <!-- Liens légaux en bas de chaque page -->
+    <AppFooter />
+
     <navFooterMobil @click="closed" />
+
+    <!-- Information sur les cookies, affichée une fois -->
+    <CookieNotice />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted,ref } from "vue";
+import { computed, onMounted } from "vue";
 import navFooterMobil from "./components/navigation/NavFooterMobile.vue";
 import { useData } from "./utils/fetchDataPwa";
-import { usePageTracking } from "./composables/domain/usePageTracking.js";
-const pageTrackingEnabled = import.meta.env.VITE_ENABLE_PAGE_TRACKING === 'true';
 
 // Composants importés
 import AppHeader from "./components/layout/AppHeader.vue";
 import AppHeaderMobile from "./components/layout/AppHeaderMobile.vue";
 import AppNavigation from "./components/layout/AppNavigation.vue";
 import MobileAppPopup from "./components/layout/MobileAppPopup.vue";
-import NotifModal from "./components/layout/NotifModal.vue";
+import CookieNotice from "./components/layout/CookieNotice.vue";
+import AppFooter from "./components/layout/AppFooter.vue";
 import SearchResults from "./components/features/search/SearchResults.vue";
 
 // Composables
@@ -112,10 +93,8 @@ import { useResponsive } from "./composables/ui/useResponsive.js";
 import { useNavigation } from "./composables/ui/useNavigation.js";
 import { useSearch } from "./composables/domain/useSearch.js";
 import { usePWA } from "./composables/api/usePWA.js";
-import { useNotifModal } from "./composables/ui/useNotifModal.js";
 import { useVisibilityFilter } from "./composables/ui/useVisibilityFilter.js";
 import { useCustomization } from "./composables/ui/useCustomization.js";
-import AppButton from "./components/ui/AppButton.vue";
 
 // =============================================================================
 // STORE NIVEAU - Filtrage global par niveau de cours (Junior, Senior, etc.)
@@ -136,11 +115,6 @@ const { selectedNiveau } = storeToRefs(niveauStore)
 // Données globales
 const { menus, user, cats, fetchMenus, fetchUser } = useData();
 
-// Initialiser le tracking des visites de pages
-if (pageTrackingEnabled) {
-  usePageTracking();
-}
-
 // Composables
 const { isMobile, islgOuPlus, isXlOuPlus, updateScreenSizes } = useResponsive();
 const {
@@ -157,15 +131,9 @@ const {
 } = useNavigation();
 
 const { search, searchResults, searchAnalysis, launchSearch, closeSearchResults } = useSearch(menus, user, isMobile, openModal);
-const { showMobileAppPopup, currentOrigin, checkMobileAppPopup, closeMobileAppPopup, installPWA } = usePWA();
-const { showNotifModal, closeNotifModal } = useNotifModal();
+const { showMobileAppPopup, currentOrigin, instructions, checkMobileAppPopup, closeMobileAppPopup, installPWA } = usePWA();
 const { filterByVisibility } = useVisibilityFilter();
 const { body, initCustomization } = useCustomization();
-
-const sectionSize= ref(false)
-const toggleSectionSize = () => {
-  sectionSize.value = !sectionSize.value
-}
 
 // =============================================================================
 // COMPUTED: catsMenuGauche - Catégories filtrées pour le menu de navigation
@@ -261,7 +229,7 @@ const menusByCategory = computed(() => {
 
 
     menusForCat.forEach((menu) => {
-      const label = menu.menu.label;
+      const label = menu.menu?.label?.trim() || 'Cours';
 
 
       if (!grouped[label]) {

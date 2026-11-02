@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,7 +15,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity]
 #[ORM\Table(name: '`appy_User`')] // Pour éviter les conflits avec les mots-clés SQL
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', columns: ['username'])]
-#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
+#[UniqueEntity(fields: ['username'], message: 'Ce pseudo est déjà pris : choisissez-en un autre.')]
+#[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cette adresse : connectez-vous.')]
 // Seul le nom d'utilisateur est exposé et modifiable (par son propriétaire ou un admin) :
 // rôles et mot de passe ne passent jamais par l'API.
 #[ApiResource(
@@ -41,34 +40,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private ?string $username = null;
 
-    // Adresse des comptes mediateur (réinitialisation du mot de passe), dont la base est partagée
-    // avec inclusion-numerique : mappée pour que Doctrine ne la supprime pas, DevDoc ne s'en sert pas
-    #[ORM\Column(length: 180, unique: true, nullable: true)]
-    private ?string $email = null;
-
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true)]
-    private Collection $favorites;
+    // Adresse de connexion d'un apprenant (les comptes du back-office peuvent ne pas en avoir).
+    // Elle ne sort ni par l'API ni par le connecteur : le pseudo suffit pour attribuer un contenu.
+    #[ORM\Column(length: 180, unique: true, nullable: true)]
+    private ?string $email = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserPageVisit::class, orphanRemoval: true)]
-    private Collection $pageVisits;
 
-    #[ORM\Column(type: 'boolean', options: ['default' => true])]
-    private bool $trackPageVisits = true;
 
-    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private ?UserCustomization $customization = null;
 
-    public function __construct()
-    {
-        $this->favorites = new ArrayCollection();
-        $this->pageVisits = new ArrayCollection();
-    }
+
 
     public function getId(): ?int
     {
@@ -89,6 +75,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getEmail(): ?string
     {
         return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email === null ? null : mb_strtolower(trim($email));
+        return $this;
     }
 
     public function getUserIdentifier(): string
@@ -125,96 +117,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    /**
-     * @return Collection<int, Favorite>
-     */
-    public function getFavorites(): Collection
-    {
-        return $this->favorites;
-    }
 
-    public function addFavorite(Favorite $favorite): static
-    {
-        if (!$this->favorites->contains($favorite)) {
-            $this->favorites[] = $favorite;
-            $favorite->setUser($this);
-        }
 
-        return $this;
-    }
 
-    public function removeFavorite(Favorite $favorite): static
-    {
-        if ($this->favorites->removeElement($favorite)) {
-            if ($favorite->getUser() === $this) {
-                $favorite->setUser(null);
-            }
-        }
 
-        return $this;
-    }
 
-    /**
-     * @return Collection<int, UserPageVisit>
-     */
-    public function getPageVisits(): Collection
-    {
-        return $this->pageVisits;
-    }
 
-    public function addPageVisit(UserPageVisit $pageVisit): static
-    {
-        if (!$this->pageVisits->contains($pageVisit)) {
-            $this->pageVisits->add($pageVisit);
-            $pageVisit->setUser($this);
-        }
 
-        return $this;
-    }
 
-    public function removePageVisit(UserPageVisit $pageVisit): static
-    {
-        if ($this->pageVisits->removeElement($pageVisit)) {
-            if ($pageVisit->getUser() === $this) {
-                $pageVisit->setUser(null);
-            }
-        }
 
-        return $this;
-    }
-
-    public function isTrackPageVisits(): bool
-    {
-        return $this->trackPageVisits;
-    }
-
-    public function setTrackPageVisits(bool $trackPageVisits): static
-    {
-        $this->trackPageVisits = $trackPageVisits;
-        return $this;
-    }
-
-    public function getCustomization(): ?UserCustomization
-    {
-        return $this->customization;
-    }
-
-    public function setCustomization(?UserCustomization $customization): static
-    {
-        // Unset the owning side of the relation if necessary
-        if ($customization === null && $this->customization !== null) {
-            $this->customization->setUser(null);
-        }
-
-        // Set the owning side of the relation if necessary
-        if ($customization !== null && $customization->getUser() !== $this) {
-            $customization->setUser($this);
-        }
-
-        $this->customization = $customization;
-
-        return $this;
-    }
 
     public function __toString(): string
     {

@@ -4,9 +4,15 @@
     # Empêche l'accès direct aux fichiers sensibles
     RewriteRule ^(vendor|var|config|src|templates|migrations)/ - [F,L]
 
+    # Documentation VitePress servie depuis public/docs/ (cleanUrls) : dossier → index.html, page → .html
+    RewriteRule ^docs$ /docs/ [R=301,L]
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI}index.html -f
+    RewriteRule ^(docs/(?:.*/)?)$ public/$1index.html [L]
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI}.html -f
+    RewriteRule ^(docs/.+)$ public/$1.html [L]
+
     # Si le fichier existe dans public, on le sert
-    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f [OR]
-    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -d
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
     RewriteRule ^(.*)$ public/$1 [L]
 
     # Sinon, on passe par le front controller Symfony

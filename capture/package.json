@@ -1,5 +1,5 @@
 {
-  "name": "devdoc-capture",
+  "name": "mediation-numerique-capture",
   "version": "0.1.0",
   "private": true,
   "description": "Moteur de capture des pages publiques en HTTPS, repères numérotés",

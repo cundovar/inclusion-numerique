@@ -10,14 +10,20 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity]
 #[ApiResource(
-    normalizationContext: ['groups' => ['page_content:read']],
+    normalizationContext: ['groups' => ['page_content:read'], 'skip_null_values' => false],
     denormalizationContext: ['groups' => ['page_content:write']]
 )]
 class Category
 {
     use AccesReserve;
+
+    // Les deux entrées publiques du site : un parcours s'adresse à l'une ou à l'autre
+    public const AUDIENCE_APPRENDRE = 'apprendre';
+    public const AUDIENCE_ACCOMPAGNER = 'accompagner';
+    public const AUDIENCES = [self::AUDIENCE_APPRENDRE, self::AUDIENCE_ACCOMPAGNER];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -41,17 +47,7 @@ class Category
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'category')]
     private Collection $pageContents;
 
-    /**
-     * @var Collection<int, ExoMenu>
-     */
-    #[ORM\OneToMany(targetEntity: ExoMenu::class, mappedBy: 'category')]
-    private Collection $exoMenus;
 
-    /**
-     * @var Collection<int, ExoContent>
-     */
-    #[ORM\OneToMany(targetEntity: ExoContent::class, mappedBy: 'category')]
-    private Collection $exoContents;
 
     #[ORM\ManyToOne(inversedBy: 'categorie')]
     #[Groups(['page_content:read', 'page_content:write'])]
@@ -86,16 +82,17 @@ class Category
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?NiveauCours $niveauCours = null;
 
+    // Public visé ; sans valeur, le parcours n'apparaît dans aucune des deux entrées de l'accueil
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Choice(choices: self::AUDIENCES)]
+    #[Groups(['page_content:read', 'page_content:write'])]
+    private ?string $audience = null;
+
     // Rang du parcours dans son catalogue (1, 2, 3…) ; sans rang, il passe après les autres, par ordre alphabétique
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?int $ordre = null;
-
-    // Public visé par les parcours mediateur (apprendre / former), dont la base est partagée avec
-    // inclusion-numerique : mappé pour que Doctrine ne le supprime pas, DevDoc ne s'en sert pas
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $audience = null;
 
     // Miniature affichée sur la carte du parcours : une illustration du back-office (CourseMedia)
     #[ORM\ManyToOne(targetEntity: CourseMedia::class)]
@@ -113,11 +110,9 @@ class Category
 
     public function __construct()
     {
-        $this->destinataires = new ArrayCollection();
         $this->menus = new ArrayCollection();
         $this->pageContents = new ArrayCollection();
-        $this->exoMenus = new ArrayCollection();
-        $this->exoContents = new ArrayCollection();
+        $this->destinataires = new ArrayCollection();
         $this->visible = true;
     }
 
@@ -198,63 +193,11 @@ class Category
         return $this;
     }
 
-    /**
-     * @return Collection<int, ExoMenu>
-     */
-    public function getExoMenus(): Collection
-    {
-        return $this->exoMenus;
-    }
 
-    public function addExoMenu(ExoMenu $exoMenu): static
-    {
-        if (!$this->exoMenus->contains($exoMenu)) {
-            $this->exoMenus->add($exoMenu);
-            $exoMenu->setCategory($this);
-        }
 
-        return $this;
-    }
 
-    public function removeExoMenu(ExoMenu $exoMenu): static
-    {
-        if ($this->exoMenus->removeElement($exoMenu)) {
-            if ($exoMenu->getCategory() === $this) {
-                $exoMenu->setCategory(null);
-            }
-        }
 
-        return $this;
-    }
 
-    /**
-     * @return Collection<int, ExoContent>
-     */
-    public function getExoContents(): Collection
-    {
-        return $this->exoContents;
-    }
-
-    public function addExoContent(ExoContent $exoContent): static
-    {
-        if (!$this->exoContents->contains($exoContent)) {
-            $this->exoContents->add($exoContent);
-            $exoContent->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeExoContent(ExoContent $exoContent): static
-    {
-        if ($this->exoContents->removeElement($exoContent)) {
-            if ($exoContent->getCategory() === $this) {
-                $exoContent->setCategory(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function __toString(): string
     {
@@ -377,14 +320,21 @@ class Category
         return $this;
     }
 
-    public function getOrdre(): ?int
-    {
-        return $this->ordre;
-    }
-
     public function getAudience(): ?string
     {
         return $this->audience;
+    }
+
+    public function setAudience(?string $audience): static
+    {
+        $this->audience = $audience;
+
+        return $this;
+    }
+
+    public function getOrdre(): ?int
+    {
+        return $this->ordre;
     }
 
     public function setOrdre(?int $ordre): static

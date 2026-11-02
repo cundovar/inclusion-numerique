@@ -5,7 +5,7 @@
       'hidden xl:flex xl:w-full xl:fixed xl:top-0 xl:right-0 xl:z-50 xl:justify-between xl:items-center xl:px-8 py-4'
     ]"
   >
-    <!-- Logo DevDoc -->
+    <!-- Nom du site, lien vers l'accueil -->
     <router-link to="/">
       <div
         :class="[
@@ -14,18 +14,15 @@
         ]"
       >
         <i
-          :class="[header.textColor || 'text-blue-950', 'pi pi-code']"
-          style="font-size: 1.8rem"
+          :class="[header.textColor || 'text-blue-950', 'fas fa-laptop']"
+          style="font-size: 1.6rem"
+          aria-hidden="true"
         />
         <span
           :class="[header.textColor || 'text-gray-800', 'font-bold text-xl']"
         >
           {{ siteName }}
         </span>
-        <i
-          :class="[header.textColor || 'text-blue-950', 'pi pi-code']"
-          style="font-size: 1.8rem"
-        />
       </div>
     </router-link>
 
@@ -53,6 +50,7 @@
       -->
       <!-- Sélecteur de niveau stylisé -->
       <select
+        v-if="FILTRE_NIVEAU_VISIBLE"
         v-model="selectedLevel"
         class="w-48 h-9 px-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
@@ -88,16 +86,16 @@
 <script setup>
 import { computed, onMounted, watch } from 'vue';
 import SearchInput from '../features/search/SearchInput.vue';
-import AuthButton from '../features/auth/AuthButton.vue';
 import { useCustomization } from '../../composables/ui/useCustomization';
 import AppButton from '../ui/AppButton.vue';
+import AuthButton from '../features/auth/AuthButton.vue';
 import { useData } from '../../utils/fetchDataPwa';
 import { APP_CONFIG } from '../../config/app.js';
 
 // =============================================================================
 // STORE NIVEAU - Connexion au filtre global
 // =============================================================================
-import { useNiveauStore } from '@/stores/niveauCoursStore';
+import { FILTRE_NIVEAU_VISIBLE, useNiveauStore } from '@/stores/niveauCoursStore';
 import { storeToRefs } from 'pinia';
 
 // Initialisation du store
@@ -137,6 +135,8 @@ const selectedLevel = computed({
 // Note: fetchNiveaux() ne fait rien si les niveaux sont déjà chargés (optimisation)
 onMounted(() => {
   niveauStore.fetchNiveaux()
+  // Filtre masqué : on retire un niveau gardé d'une visite précédente, invisible et impossible à changer
+  if (!FILTRE_NIVEAU_VISIBLE) niveauStore.resetNiveau()
 })
 
 // Watch: Réinitialiser selectedNiveau si la valeur persistée n'existe pas dans les options

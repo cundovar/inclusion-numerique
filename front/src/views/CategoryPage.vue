@@ -11,6 +11,17 @@
   >
     <div class="">
       <div class="header-section">
+        <router-link
+          v-if="audience"
+          :to="audience.path"
+          class="back-link"
+        >
+          <i
+            class="fas fa-arrow-left"
+            aria-hidden="true"
+          />
+          {{ audience.title }}
+        </router-link>
         <div class="tech-header">
           <i :class="categoryIconClass + ' tech-icon'" />
           <h1 class="tech-title">
@@ -25,6 +36,25 @@
           :html="categoryPresentation"
           class="framework-presentation"
         />
+
+        <!-- Premier cours du niveau le plus simple, pour qui ne sait pas par où commencer -->
+        <router-link
+          v-if="startCourse"
+          :to="`/pages${startCourse.page.slug}`"
+          class="start-link"
+        >
+          <i
+            class="fas fa-flag"
+            aria-hidden="true"
+          />
+          Par où commencer ? {{ startCourse.title }}
+        </router-link>
+
+        <!-- Sens des marches affichées à côté de chaque cours -->
+        <NiveauLegend
+          v-if="startCourse"
+          :niveaux="niveaux"
+        />
       </div>
 
       <div class="flex flex-wrap justify-center items-start">
@@ -33,6 +63,8 @@
           :key="group.label"
           :title="group.label"
           :menus="group.items"
+          :niveaux="niveaux"
+          :module-id="group.items[0]?.menu?.id ?? null"
           :icon-class="getGroupIconClass(group.label)"
         />
       </div>
@@ -42,7 +74,7 @@
         class="text-center py-12"
       >
         <p class="text-gray-500 text-lg">
-          Aucun menu disponible pour cette catégorie
+          Ce parcours ne contient pas encore de cours.
         </p>
         <router-link
           to="/"
@@ -62,8 +94,11 @@ import { useData } from '../utils/fetchDataPwa'
 import CourseCard from '../components/features/pages/CourseCard.vue'
 import SeoHead from '../components/layout/SeoHead.vue'
 import SafeHtml from '../components/ui/SafeHtml.vue'
+import NiveauLegend from '../components/ui/NiveauLegend.vue'
 import { storeToRefs } from 'pinia'
 import { useNiveauStore } from "@/stores/niveauCoursStore";
+import { getAudience } from '@/config/audiences'
+import { compareCourses, firstCourseToStart } from '@/utils/niveaux'
 
 
 
@@ -72,9 +107,17 @@ const { fetchMenus, menus, cats } = useData()
 
 //const pour les bouton selected niveaux
 const niveauStore = useNiveauStore()
-const { selectedNiveau } = storeToRefs(niveauStore)
+const { selectedNiveau, niveaux } = storeToRefs(niveauStore)
    console.log("localstorage",selectedNiveau.value)
 const categoryName = computed(() => route.params.category)
+
+// Entrée de l'accueil à laquelle appartient ce parcours, pour le lien de retour
+const audience = computed(() => {
+  const currentCategory = cats.value?.find(
+    cat => cat.name?.toLowerCase() === categoryName.value.toLowerCase()
+  )
+  return getAudience(currentCategory?.audience)
+})
 
 // Récupérer les données SEO directement depuis la catégorie
 const seoData = computed(() => {
@@ -90,14 +133,14 @@ const seoData = computed(() => {
   // Sinon, générer un SEO par défaut depuis les données de la catégorie
   if (currentCategory) {
     return {
-      title: `${categoryDisplayName.value} - Cours et Tutoriels`,
+      title: `${categoryDisplayName.value} - Parcours`,
       metaDescription: currentCategory.description ?
         currentCategory.description.replace(/<[^>]*>/g, '').substring(0, 160) :
-        `Découvrez nos cours et tutoriels sur ${categoryDisplayName.value}`,
-      ogTitle: `${categoryDisplayName.value} - Formation`,
+        `Les cours du parcours ${categoryDisplayName.value}`,
+      ogTitle: `${categoryDisplayName.value} - Parcours`,
       ogDescription: currentCategory.description ?
         currentCategory.description.replace(/<[^>]*>/g, '').substring(0, 200) :
-        `Apprenez ${categoryDisplayName.value} avec nos cours complets`
+        `Les cours du parcours ${categoryDisplayName.value}`
     }
   }
 
@@ -106,169 +149,7 @@ const seoData = computed(() => {
 
 const categoryDisplayName = computed(() => {
   const name = categoryName.value
-  const displayNames = {
-    // Langages de programmation
-    'javascript': 'JavaScript',
-    'php': 'PHP',
-    'python': 'Python',
-    'java': 'Java',
-    'csharp': 'C#',
-    'BDD': 'Base de données',
-    'c': 'C',
-    'ruby': 'Ruby',
-    'go': 'Go',
-    'rust': 'Rust',
-    'swift': 'Swift',
-    'kotlin': 'Kotlin',
-    'scala': 'Scala',
-    'perl': 'Perl',
-    'lua': 'Lua',
-    'dart': 'Dart',
-    'typescript': 'TypeScript',
-    'r': 'R',
-    'matlab': 'MATLAB',
-    'julia': 'Julia',
-    'elixir': 'Elixir',
-    'erlang': 'Erlang',
-    'haskell': 'Haskell',
-    'clojure': 'Clojure',
-    'fsharp': 'F#',
-
-    // Technologies web
-    'html': 'HTML',
-    'css': 'CSS',
-    'sass': 'Sass',
-    'scss': 'SCSS',
-    'less': 'Less',
-    'tailwind': 'Tailwind CSS',
-    'bootstrap': 'Bootstrap',
-
-    // Frameworks JavaScript
-    'react': 'React',
-    'vue': 'Vue.js',
-    'angular': 'Angular',
-    'svelte': 'Svelte',
-    'nextjs': 'Next.js',
-    'nuxtjs': 'Nuxt.js',
-    'gatsby': 'Gatsby',
-    'ember': 'Ember.js',
-    'backbone': 'Backbone.js',
-    'jquery': 'jQuery',
-    'express': 'Express.js',
-    'nestjs': 'NestJS',
-    'fastify': 'Fastify',
-
-    // Frameworks backend
-    'symfony': 'Symfony',
-    'laravel': 'Laravel',
-    'codeigniter': 'CodeIgniter',
-    'cakephp': 'CakePHP',
-    'zend': 'Zend',
-    'django': 'Django',
-    'flask': 'Flask',
-    'fastapi': 'FastAPI',
-    'spring': 'Spring',
-    'springboot': 'Spring Boot',
-    'dotnet': '.NET',
-    'aspnet': 'ASP.NET',
-    'rails': 'Ruby on Rails',
-    'sinatra': 'Sinatra',
-    'gin': 'Gin',
-    'fiber': 'Fiber',
-    'echo': 'Echo',
-
-    // Bases de données
-    'sql': 'SQL',
-    'mysql': 'MySQL',
-    'postgresql': 'PostgreSQL',
-    'sqlite': 'SQLite',
-    'mongodb': 'MongoDB',
-    'redis': 'Redis',
-    'elasticsearch': 'Elasticsearch',
-    'cassandra': 'Cassandra',
-    'neo4j': 'Neo4j',
-    'mariadb': 'MariaDB',
-    'oracle': 'Oracle',
-    'sqlserver': 'SQL Server',
-
-    // Outils et technologies
-    'git': 'Git',
-    'docker': 'Docker',
-    'kubernetes': 'Kubernetes',
-    'jenkins': 'Jenkins',
-    'gitlab': 'GitLab',
-    'github': 'GitHub',
-    'bitbucket': 'Bitbucket',
-    'terraform': 'Terraform',
-    'ansible': 'Ansible',
-    'vagrant': 'Vagrant',
-    'webpack': 'Webpack',
-    'vite': 'Vite',
-    'rollup': 'Rollup',
-    'gulp': 'Gulp',
-    'grunt': 'Grunt',
-    'npm': 'NPM',
-    'yarn': 'Yarn',
-    'pnpm': 'PNPM',
-    'composer': 'Composer',
-    'pip': 'Pip',
-
-    // Cloud et services
-    'aws': 'AWS',
-    'azure': 'Azure',
-    'gcp': 'Google Cloud',
-    'firebase': 'Firebase',
-    'netlify': 'Netlify',
-    'vercel': 'Vercel',
-    'heroku': 'Heroku',
-    'digitalocean': 'DigitalOcean',
-
-    // Mobile
-    'android': 'Android',
-    'ios': 'iOS',
-    'reactnative': 'React Native',
-    'flutter': 'Flutter',
-    'ionic': 'Ionic',
-    'xamarin': 'Xamarin',
-    'cordova': 'Cordova',
-
-    // Testing
-    'jest': 'Jest',
-    'mocha': 'Mocha',
-    'chai': 'Chai',
-    'jasmine': 'Jasmine',
-    'cypress': 'Cypress',
-    'selenium': 'Selenium',
-    'puppeteer': 'Puppeteer',
-    'playwright': 'Playwright',
-
-    // CMS
-    'wordpress': 'WordPress',
-    'drupal': 'Drupal',
-    'joomla': 'Joomla',
-    'strapi': 'Strapi',
-    'contentful': 'Contentful',
-    'sanity': 'Sanity',
-
-    // Autres technologies
-    'graphql': 'GraphQL',
-    'rest': 'REST API',
-    'websockets': 'WebSockets',
-    'grpc': 'gRPC',
-    'microservices': 'Microservices',
-    'serverless': 'Serverless',
-    'jamstack': 'JAMstack',
-    'pwa': 'PWA',
-    'webassembly': 'WebAssembly',
-    'blockchain': 'Blockchain',
-    'ai': 'Intelligence Artificielle',
-    'ml': 'Machine Learning',
-    'dl': 'Deep Learning',
-    'iot': 'IoT',
-    'ar': 'Réalité Augmentée',
-    'vr': 'Réalité Virtuelle'
-  }
-  return displayNames[name] || name.charAt(0).toUpperCase() + name.slice(1)
+  return name.charAt(0).toUpperCase() + name.slice(1)
 })
 
 const categoryBgClass = computed(() => {
@@ -292,8 +173,7 @@ const categoryIconClass = computed(() => {
     return currentCategory.logo.logo
   }
 
-
-  return  'fas fa-code'
+  return 'fas fa-book-open'
 })
 
 const categoryPresentation = computed(() => {
@@ -308,7 +188,7 @@ const categoryPresentation = computed(() => {
 
   }
 
-  return '<div>Découvrez les ressources disponibles pour cette technologie.</div>'
+  return '<div>Les cours de ce parcours, à suivre dans l\'ordre ou selon vos besoins.</div>'
 })
 
 const categoryMenus = computed(() => {
@@ -362,7 +242,7 @@ if(selectedNiveau.value){
 }
   // Étape 3: Regrouper par label
   filteredMenus.forEach((menu) => {
-    const label = menu.menu.label
+    const label = menu.menu?.label?.trim() || 'Cours'
 
     if (!grouped[label]) {
       grouped[label] = {
@@ -375,30 +255,16 @@ if(selectedNiveau.value){
     grouped[label].items.push(menu)
   })
 
+  // Dans chaque module, du niveau le plus simple au plus avancé, puis dans l'ordre pédagogique (rang)
+  Object.values(grouped).forEach((group) => group.items.sort(compareCourses))
+
   return Object.values(grouped)
 })
 
-const getGroupIconClass = (groupLabel) => {
-  const label = groupLabel.toLowerCase()
+const startCourse = computed(() => firstCourseToStart(categoryMenus.value))
 
-  if (label.includes('intro') || label.includes('base')) return 'fas fa-graduation-cap'
-  if (label.includes('api')) return 'fas fa-plug'
-  if (label.includes('form')) return 'fas fa-wpforms'
-  if (label.includes('security')) return 'fas fa-shield-alt'
-  if (label.includes('bdd') || label.includes('bdd')) return 'fas fa-database'
-  if (label.includes('controller')) return 'fas fa-cogs'
-  if (label.includes('view') || label.includes('template')) return 'fas fa-eye'
-  if (label.includes('model')) return 'fas fa-layer-group'
-  if (label.includes('command')) return 'fas fa-terminal'
-  if (label.includes('repository')) return 'fas fa-folder-open'
-  if (label.includes('css')) return 'fab fa-css3-alt'
-  if (label.includes('html')) return 'fab fa-html5'
-  if (label.includes('function')) return 'fas fa-code'
-  if (label.includes('object')) return 'fas fa-cube'
-  if (label.includes('array')) return 'fas fa-list'
-
-  return 'fas fa-book'
-}
+// Icône commune à tous les modules d'un parcours
+const getGroupIconClass = () => 'fas fa-book'
 
 onMounted(() => {
   fetchMenus()
@@ -407,6 +273,35 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.start-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #14532d;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.start-link:hover { background: #bbf7d0; }
+.start-link:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e3a8a;
+  text-decoration: underline;
+}
+
 .symfony-container {
   min-height: 100vh;
   background-color: #f5f5f5;
@@ -456,7 +351,6 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #326ce5;
 }
 
 .framework-presentation p {

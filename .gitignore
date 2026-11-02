@@ -1,63 +1,49 @@
-###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.local.exemple
-/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
-/.env.prod
-/.env/
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Dependencies and generated output
+node_modules/
+vendor/
+dist/
+build/
+public/build/
+coverage/
+.cache/
+
+# Symfony
 /var/
-/MCP/
-/vendor/
-/backoffice/
-/microservice/
-/.env
-/documentations/
-/mysql_data/
-/backups/
-!.claude/
-.claude/*
-!.claude/settings.json
-.agents/.needs-check
-!.claude/skills/
-!.claude/skills/vae-documentation-sync/
-!.claude/skills/vae-documentation-sync/SKILL.md
-
-.vscode/
-###< symfony/framework-bundle ###
-
-###> phpunit/phpunit ###
+/public/bundles/
+/config/secrets/prod/prod.decrypt.private.php
 /phpunit.xml
 .phpunit.result.cache
-###< phpunit/phpunit ###
-
-###> symfony/phpunit-bridge ###
-.phpunit.result.cache
-/phpunit.xml
-###< symfony/phpunit-bridge ###
-/front/node_modules
-/front/dist/
-/front/public/build/
-/front/storybook-static/
-
-# MySQL data directory
-mysql_data/
-
-# Ignore env du microservice
-microservice/ia-service/.env
-
-
-# Ignore les fichiers de build
-backoffice/
-front/build-output
-front/public/build/.vite/
-###> phpstan/phpstan ###
 phpstan.neon
-###< phpstan/phpstan ###
 
-# Penpot local : clé secrète générée par make design-up
-/tools/penpot/penpot.local.env
+# Frontend generated output (service worker and manifest are rebuilt by Vite)
+/front/storybook-static/
+/front/public/
+/public/spa/sw.js
+/public/spa/workbox-*.js
+/public/spa/manifest.webmanifest
 
-# Dépendances du moteur de capture du connecteur MCP, et images déposées depuis le back-office ou le connecteur
-/capture/node_modules/
+# VitePress documentation output (built in CI and copied into the release under public/docs/)
+/docs/.vitepress/cache/
+/docs/.vitepress/dist/
+/public/docs/
+
+# Agent harness marker: set after a code change, cleared by a successful `make check`
+/.agents/.needs-check
+
+# Uploaded media (course captures are managed in the back-office)
 /public/uploads/
+
+# Local data and backups
+backups/
+mysql_data/
+*.sqlite
+*.sqlite3
+*.sql.gz

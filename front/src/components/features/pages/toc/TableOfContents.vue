@@ -40,7 +40,7 @@
         class="transition-all duration-300 ease-in-out"
         :class="closed ? 'hidden' : 'transition-all duration-300 ease-in-out'"
       >
-        <!-- Header avec onglets Sommaire et Notes -->
+        <!-- Header avec onglets du sommaire -->
         <div class="toc-tabs">
           <button
             class="toc-tab"
@@ -48,14 +48,6 @@
             @click="switchTab('sommaire')"
           >
             Sommaire
-          </button>
-          <button
-            v-if="isUserAuthenticated"
-            class="toc-tab"
-            :class="{ active: activeTab === 'notes' }"
-            @click="switchTab('notes')"
-          >
-            Notes
           </button>
         </div>
 
@@ -74,16 +66,6 @@
             @scroll-to="handleScrollTo"
             @close-mobile="toggleClosed"
           />
-
-          <!-- Onglet Notes -->
-          <NoteEditor
-            v-if="activeTab === 'notes' && isUserAuthenticated"
-            :page-id="pageId"
-            :initial-content="noteContent"
-            :bg-categorie="bgCategorie"
-            :bg-hover="bgHover"
-            @save="handleNoteSave"
-          />
         </div>
       </div>
     </nav>
@@ -91,18 +73,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useDraggable } from '@vueuse/core'
 import TocList from './TocList.vue'
-import NoteEditor from '../../notes/NoteEditor.vue'
 import AppButton from '../../../ui/AppButton.vue'
-import { useData } from '../../../../utils/fetchDataPwa'
-import { noteService } from '../../../../services/noteService'
 
-// Récupérer l'état de l'utilisateur
-const { user } = useData()
 
-const props = defineProps({
+defineProps({
   toc: {
     type: Array,
     required: true
@@ -135,7 +112,7 @@ const props = defineProps({
 
 const emit = defineEmits(['scroll-to'])
 
-// Onglet actif : 'sommaire' ou 'notes'
+// Onglet actif : 'sommaire'
 const activeTab = ref('sommaire')
 const showHint = ref(false)
 
@@ -144,22 +121,9 @@ const toggleClosed = () => {
   closed.value = !closed.value
 }
 
-// Vérifier si l'utilisateur est authentifié
-const isUserAuthenticated = computed(() => {
-  return user.value && user.value.username && user.value.username.trim() !== ''
-})
 
 // Observer les changements d'authentification
-watch(isUserAuthenticated, (isAuth) => {
-  // Si l'utilisateur se déconnecte alors qu'il est sur l'onglet Notes,
-  // le ramener à l'onglet Sommaire
-  if (!isAuth && activeTab.value === 'notes') {
-    activeTab.value = 'sommaire'
-  }
-})
 
-// Note editor
-const noteContent = ref('')
 // Drag and drop avec VueUse
 const tocElement = ref(null)
 const dragHandle = ref(null)
@@ -245,9 +209,6 @@ onMounted(() => {
 // Changer d'onglet
 const switchTab = (tab) => {
   activeTab.value = tab
-  if (tab === 'notes' && props.pageId) {
-    loadNote()
-  }
 }
 
 
@@ -255,28 +216,8 @@ const handleScrollTo = (id) => {
   emit('scroll-to', id)
 }
 
-const loadNote = async () => {
-  if (!props.pageId) return
 
-  try {
-    const data = await noteService.getNoteByPage(props.pageId)
-    noteContent.value = data?.content || ''
-  } catch (error) {
-    console.error('Erreur lors du chargement de la note:', error)
-  }
-}
 
-const handleNoteSave = (content) => {
-  noteContent.value = content
-  console.log('Note sauvegardée:', content)
-}
-
-// Charger la note si le pageId change
-watch(() => props.pageId, (newPageId) => {
-  if (newPageId && activeTab.value === 'notes') {
-    loadNote()
-  }
-})
 </script>
 
 <style scoped>

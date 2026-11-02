@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Doctrine;
 
-use App\Entity\AgentCourseGeneration;
 use App\Entity\CourseMedia;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaValidator;
@@ -51,11 +50,5 @@ final class MappingTest extends KernelTestCase
         yield 'CourseMedia::mimeType' => [CourseMedia::class, 'mimeType', 'mime_type'];
         yield 'CourseMedia::altText' => [CourseMedia::class, 'altText', 'alt_text'];
         yield 'CourseMedia::createdAt' => [CourseMedia::class, 'createdAt', 'created_at'];
-        yield 'AgentCourseGeneration::verificationAttempts' => [AgentCourseGeneration::class, 'verificationAttempts', 'verification_attempts'];
-        yield 'AgentCourseGeneration::verificationReport' => [AgentCourseGeneration::class, 'verificationReport', 'verification_report'];
-        yield 'AgentCourseGeneration::technicalError' => [AgentCourseGeneration::class, 'technicalError', 'technical_error'];
-        yield 'AgentCourseGeneration::createdAt' => [AgentCourseGeneration::class, 'createdAt', 'created_at'];
-        yield 'AgentCourseGeneration::updatedAt' => [AgentCourseGeneration::class, 'updatedAt', 'updated_at'];
-        yield 'AgentCourseGeneration::finishedAt' => [AgentCourseGeneration::class, 'finishedAt', 'finished_at'];
     }
 }

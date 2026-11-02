@@ -43,6 +43,12 @@ interface PageContentRepositoryInterface
      */
     public function findUsingCapture(int $captureId): array;
 
+    /**
+     * @param list<string> $statuses
+     * @return PageContent[]
+     */
+    public function findByStatuses(array $statuses): array;
+
     public function save(PageContent $pageContent): void;
 
     public function delete(PageContent $pageContent): void;

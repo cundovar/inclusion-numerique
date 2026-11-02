@@ -9,6 +9,10 @@ import axios from 'axios'
 
 // Font Awesome
 import '@fortawesome/fontawesome-free/css/all.css'
+import 'primeicons/primeicons.css'
+// Police des cours (basse vision), servie par le site : pas d'appel externe, disponible hors ligne
+import '@fontsource/atkinson-hyperlegible/latin-400.css'
+import '@fontsource/atkinson-hyperlegible/latin-700.css'
 
 // Element Plus
 import ElementPlus from 'element-plus'

@@ -21,9 +21,9 @@ final class UnpublishConnectorTest extends McpTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->parcours = (new Category())->setName('Bien démarrer avec l\'IA');
-        $this->module = (new Menus())->setLabel('Écrire une consigne')->setCategory($this->parcours);
-        $this->autreModule = (new Menus())->setLabel('Vérifier une réponse')->setCategory($this->parcours);
+        $this->parcours = (new Category())->setName('Premiers gestes numériques')->setAudience(Category::AUDIENCE_APPRENDRE);
+        $this->module = (new Menus())->setLabel('Ordinateur : premiers gestes')->setCategory($this->parcours);
+        $this->autreModule = (new Menus())->setLabel('Internet : premiers pas')->setCategory($this->parcours);
         $this->entityManager->persist($this->parcours);
         $this->entityManager->persist($this->module);
         $this->entityManager->persist($this->autreModule);
@@ -32,7 +32,7 @@ final class UnpublishConnectorTest extends McpTestCase
 
     public function testACourseIsTakenOfflineAndCanBeRepublishedUnchanged(): void
     {
-        $id = $this->createCourse('consigne-claire', PageContent::STATUS_PUBLISHED, $this->module);
+        $id = $this->createCourse('utiliser-la-souris', PageContent::STATUS_PUBLISHED, $this->module);
         self::assertSame(1, $this->publicCourseCount());
 
         $result = $this->tool(self::CLAUDE, 'mettre_en_brouillon', ['type' => 'cours', 'id' => $id]);
@@ -78,6 +78,32 @@ final class UnpublishConnectorTest extends McpTestCase
         self::assertStringContainsString('Parcours introuvable', $this->tool(self::CLAUDE, 'mettre_en_brouillon', ['type' => 'parcours', 'id' => 999999])['text']);
         self::assertTrue($this->tool(self::CLAUDE, 'mettre_en_brouillon', ['type' => 'cours', 'id' => 999999])['error']);
         self::assertTrue($this->tool(self::CLAUDE, 'mettre_en_brouillon', ['type' => 'qcm', 'id' => 1])['error']);
+    }
+
+    public function testAModuleIsDeletedOnlyOnceEmptyAndNeverWithItsCourses(): void
+    {
+        $brouillon = $this->createCourse('utiliser-la-souris', PageContent::STATUS_DRAFT, $this->module);
+        $moduleId = $this->module->getId();
+
+        // Un cours, même en brouillon, bloque la suppression : refus avec la liste, rien ne change
+        $refused = $this->tool(self::CLAUDE, 'supprimer_module', ['moduleId' => $moduleId]);
+        self::assertTrue($refused['error']);
+        self::assertStringContainsString('pas vide', $refused['text']);
+        self::assertStringContainsString('Cours utiliser-la-souris', $refused['text']);
+        $this->entityManager->clear();
+        self::assertNotNull($this->entityManager->find(Menus::class, $moduleId));
+        self::assertSame($moduleId, $this->entityManager->find(PageContent::class, $brouillon)->getMenu()?->getId());
+
+        // Une fois le cours déplacé, le module vide est supprimé et le cours reste intact
+        self::assertFalse($this->tool(self::CLAUDE, 'classer_cours', ['coursIds' => [$brouillon], 'moduleId' => $this->autreModule->getId()])['error']);
+        $deleted = $this->tool(self::CLAUDE, 'supprimer_module', ['moduleId' => $moduleId]);
+        self::assertFalse($deleted['error'], $deleted['text']);
+        self::assertSame(['id' => $moduleId, 'nom' => 'Ordinateur : premiers gestes', 'parcoursId' => $this->parcours->getId()], $deleted['data']['supprime']);
+
+        $this->entityManager->clear();
+        self::assertNull($this->entityManager->find(Menus::class, $moduleId));
+        self::assertSame(PageContent::STATUS_DRAFT, $this->entityManager->find(PageContent::class, $brouillon)->getStatus());
+        self::assertStringContainsString('Module introuvable', $this->tool(self::CLAUDE, 'supprimer_module', ['moduleId' => $moduleId])['text']);
     }
 
     private function createCourse(string $slug, string $status, Menus $module): int

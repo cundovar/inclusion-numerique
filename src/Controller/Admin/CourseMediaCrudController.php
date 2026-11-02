@@ -83,7 +83,7 @@ class CourseMediaCrudController extends AbstractCrudController
         yield ChoiceField::new('kind', 'Type')
             ->setChoices(self::KIND_LABELS)
             ->setHelp("Les écrans d'un compte personnel ne sont jamais capturés : utilisez une illustration fictive, signalée comme telle sur le site.");
-        yield TextField::new('service', 'Service')->setHelp('Par exemple : ChatGPT, Claude, Le Chat, Gemini.');
+        yield TextField::new('service', 'Service')->setHelp('Par exemple : CAF, France Travail, Ameli.');
         yield TextareaField::new('caption', 'Légende')->setHelp('Ce que la personne doit repérer, en une ou deux phrases.');
         yield TextareaField::new('altText', 'Texte alternatif')
             ->setHelp("Décrit l'image pour les personnes qui ne la voient pas : où se trouve l'élément à repérer et ce qu'il indique.")

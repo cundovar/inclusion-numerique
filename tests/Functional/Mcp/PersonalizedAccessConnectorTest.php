@@ -26,7 +26,7 @@ final class PersonalizedAccessConnectorTest extends McpTestCase
         parent::setUp();
         $this->alice = (new User())->setUsername('alice')->setPassword('inutilise');
         $this->bruno = (new User())->setUsername('bruno')->setPassword('inutilise');
-        $this->parcours = (new Category())->setName('Premiers pas');
+        $this->parcours = (new Category())->setName('Premiers pas')->setAudience(Category::AUDIENCE_APPRENDRE);
         foreach ([$this->alice, $this->bruno, $this->parcours] as $entity) {
             $this->entityManager->persist($entity);
         }

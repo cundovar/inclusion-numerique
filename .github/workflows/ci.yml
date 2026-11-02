@@ -2,15 +2,10 @@ name: CI/CD
 
 on:
   pull_request:
-    branches: [main, deploy, main2]
   push:
-    branches: [main, deploy, main2]
+    # Dépôt DevDoc : seule main2 (inclusion-numerique) porte ce workflow
+    branches: [main2]
   workflow_dispatch:
-    inputs:
-      deploy:
-        description: Deploy the selected branch (main or main2) to its site
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -22,126 +17,136 @@ concurrency:
 env:
   PHP_VERSION: '8.2'
   NODE_VERSION: '22'
-  APP_ENV: test
-  APP_SECRET: REDACTED
-  DATABASE_URL: sqlite:///%kernel.project_dir%/var/ci.db
-  MAILER_DSN: null://null
-  MESSENGER_TRANSPORT_DSN: sync://
-  CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
-  USER_PAGE_VISIT_ENABLED: 'false'
-  N8N_API_KEY: REDACTED
-  API_ADMIN_USER_EMAIL: ci@example.test
-  VITE_ENABLE_PAGE_TRACKING: 'false'
 
 jobs:
-  setup_variables:
-    name: Setup variables
+  php:
+    name: PHP (syntaxe, PHPStan, PHPUnit)
     runs-on: ubuntu-latest
-    outputs:
-      deploy: ${{ steps.context.outputs.deploy }}
-      environment: ${{ steps.context.outputs.environment }}
-      ovh_path: ${{ steps.context.outputs.ovh_path }}
-    steps:
-      - id: context
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          REF_NAME: ${{ github.ref_name }}
-          MANUAL_DEPLOY: ${{ inputs.deploy }}
-        run: |
-          # Une branche = un site : main -> devdoc.varascundo.com, main2 -> inclusion-numerique.varascundo.com
-          case "$REF_NAME" in
-            main)  environment=production;          ovh_path=/home/egflbug/devdoc/prod ;;
-            main2) environment=inclusion-numerique; ovh_path=/home/egflbug/inclusion-numerique ;;
-            *)     environment="";                  ovh_path="" ;;
-          esac
-          deploy=false
-          if [[ -n "$environment" && "$EVENT_NAME" == "push" ]]; then
-            deploy=true
-          elif [[ -n "$environment" && "$EVENT_NAME" == "workflow_dispatch" && "$MANUAL_DEPLOY" == "true" ]]; then
-            deploy=true
-          fi
-          {
-            echo "deploy=$deploy"
-            echo "environment=$environment"
-            echo "ovh_path=$ovh_path"
-          } >> "$GITHUB_OUTPUT"
-
-  dependencies:
-    name: Dependencies
-    needs: setup_variables
-    runs-on: ubuntu-latest
+    env:
+      APP_ENV: test
+      APP_SECRET: REDACTED
+      DATABASE_URL: sqlite:///%kernel.project_dir%/var/ci.db
+      MAILER_DSN: null://null
+      MESSENGER_TRANSPORT_DSN: sync://
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+      # Les dépréciations des dépendances (Doctrine, API Platform, Twig) sont affichées
+      # mais ne font plus échouer PHPUnit : seuls les vrais échecs de tests bloquent.
+      SYMFONY_DEPRECATIONS_HELPER: 'max[total]=999999'
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
+          extensions: ctype, gd, iconv, intl, pdo_mysql, pdo_sqlite
           coverage: none
           tools: composer:v2
+      # Symfony exige un fichier .env : celui-ci ne contient que des valeurs de CI
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+          } > .env
+      - name: Validate Composer files
+        run: composer validate --no-check-publish
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Check PHP syntax
+        run: find src tests migrations -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Lint container, Twig and YAML
+        run: |
+          php bin/console lint:container
+          php bin/console lint:twig templates
+          php bin/console lint:yaml config
+      - name: Run PHPStan
+        run: composer analyse
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      # Le test de liaison PHP → moteur Node n'ouvre aucune page : pas besoin de navigateur
+      - name: Install capture engine
+        run: npm ci --prefix capture
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      - name: Run PHPUnit
+        run: composer test
+
+  migrations:
+    name: Migrations MySQL
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: mediation_numerique
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      APP_ENV: dev
+      APP_SECRET: REDACTED
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/mediation_numerique?serverVersion=8.0.32&charset=utf8mb4
+      MAILER_DSN: null://null
+      MESSENGER_TRANSPORT_DSN: sync://
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, gd, iconv, intl, pdo_mysql
+          coverage: none
+          tools: composer:v2
+      - name: Create CI .env
+        run: |
+          {
+            echo "APP_ENV=$APP_ENV"
+            echo "APP_SECRET=$APP_SECRET"
+            echo "DATABASE_URL=$DATABASE_URL"
+            echo "MAILER_DSN=$MAILER_DSN"
+            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
+            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
+          } > .env
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      # Les migrations doivent produire exactement le schéma des entités, et pouvoir être annulées
+      - name: Migrate, validate, roll back and migrate again
+        run: |
+          php bin/console doctrine:migrations:migrate --no-interaction
+          php bin/console doctrine:schema:validate
+          php bin/console doctrine:migrations:migrate first --no-interaction
+          php bin/console doctrine:migrations:migrate --no-interaction
+
+  capture:
+    name: Moteur de capture (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: front/package-lock.json
-      - name: Create CI .env
-        run: |
-          {
-            echo "APP_ENV=$APP_ENV"
-            echo "APP_SECRET=$APP_SECRET"
-            echo "DATABASE_URL=$DATABASE_URL"
-            echo "MAILER_DSN=$MAILER_DSN"
-            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
-            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
-            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
-            echo "N8N_API_KEY=$N8N_API_KEY"
-            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
-          } > .env
-      - name: Validate Composer files
-        run: composer validate --no-check-publish
-      - name: Install PHP dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
-      - name: Install Vue dependencies
-        run: npm ci --ignore-scripts --prefix front
+          cache-dependency-path: capture/package-lock.json
+      - name: Install capture dependencies
+        run: npm ci --prefix capture
+      - name: Install Chromium for Playwright
+        run: npx --prefix capture playwright-core install --with-deps chromium
+      - name: Check syntax
+        run: npm run lint --prefix capture
+      - name: Run capture tests (local test site, no external network)
+        run: npm test --prefix capture
 
-  php_quality:
-    name: PHP quality
-    needs: dependencies
-    runs-on: ubuntu-latest
-    outputs:
-      phpstan: ${{ steps.phpstan.outcome }}
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
-          coverage: none
-          tools: composer:v2
-      - name: Create CI .env
-        run: |
-          {
-            echo "APP_ENV=$APP_ENV"
-            echo "APP_SECRET=$APP_SECRET"
-            echo "DATABASE_URL=$DATABASE_URL"
-            echo "MAILER_DSN=$MAILER_DSN"
-            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
-            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
-            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
-            echo "N8N_API_KEY=$N8N_API_KEY"
-            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
-          } > .env
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
-      - name: Check PHP syntax
-        run: find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-      - name: Run PHPStan (informational)
-        id: phpstan
-        continue-on-error: true
-        run: composer analyse
-
-  frontend_quality:
-    name: Frontend quality
-    needs: dependencies
+  front:
+    name: Front Vue (ESLint, Vitest, build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -152,138 +157,43 @@ jobs:
           cache-dependency-path: front/package-lock.json
       - name: Install Vue dependencies
         run: npm ci --prefix front
+      - name: Run ESLint
+        run: npm run lint --prefix front
       - name: Run Vue unit tests
         run: npm test --prefix front
       - name: Validate Vue production build
         run: npm run check --prefix front
 
-  qcm_results_service:
-    name: QCM results service
-    needs: dependencies
+  # Bloque une documentation cassée (lien interne mort) dès la pull request
+  docs:
+    name: Documentation VitePress
     runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:7.0.25
-        ports:
-          - 27017:27017
-    defaults:
-      run:
-        working-directory: services/qcm-results
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # dates « Mis à jour » tirées de l'historique Git
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: services/qcm-results/package-lock.json
-      - name: Install service dependencies
-        run: npm ci
-      - name: Run service tests against MongoDB
-        env:
-          MONGODB_URL: mongodb://localhost:27017
-        run: npm test
+          cache-dependency-path: docs/package-lock.json
+      - name: Install documentation dependencies
+        run: npm ci --prefix docs
+      - name: Build documentation (fails on dead internal links)
+        run: npm run build --prefix docs
 
-  unit_tests:
-    name: Unit tests
-    needs: dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
-          coverage: none
-          tools: composer:v2
-      - name: Create CI .env
-        run: |
-          {
-            echo "APP_ENV=$APP_ENV"
-            echo "APP_SECRET=$APP_SECRET"
-            echo "DATABASE_URL=$DATABASE_URL"
-            echo "MAILER_DSN=$MAILER_DSN"
-            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
-            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
-            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
-            echo "N8N_API_KEY=$N8N_API_KEY"
-            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
-          } > .env
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
-      - name: Run PHPUnit
-        run: composer test
-
-  security:
-    name: Security audit
-    needs: dependencies
-    runs-on: ubuntu-latest
-    outputs:
-      composer_audit: ${{ steps.composer_audit.outcome }}
-      front_npm_audit: ${{ steps.front_npm_audit.outcome }}
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          coverage: none
-          tools: composer:v2
-      - uses: actions/setup-node@v7
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Audit production PHP dependencies (informational)
-        id: composer_audit
-        continue-on-error: true
-        run: composer audit --locked --no-dev
-      - name: Audit Vue production dependencies (informational)
-        id: front_npm_audit
-        continue-on-error: true
-        run: npm audit --omit=dev --audit-level=high --prefix front
-
-  coverage:
-    name: Save coverage
-    needs: unit_tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: ctype, iconv, intl, pdo_mysql, pdo_sqlite
-          coverage: pcov
-          tools: composer:v2
-      - name: Create CI .env
-        run: |
-          {
-            echo "APP_ENV=$APP_ENV"
-            echo "APP_SECRET=$APP_SECRET"
-            echo "DATABASE_URL=$DATABASE_URL"
-            echo "MAILER_DSN=$MAILER_DSN"
-            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
-            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
-            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
-            echo "N8N_API_KEY=$N8N_API_KEY"
-            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
-          } > .env
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
-      - name: Generate coverage report
-        run: mkdir -p var/coverage && composer test:coverage
-      - uses: actions/upload-artifact@v7
-        with:
-          name: php-coverage
-          path: var/coverage/clover.xml
-          retention-days: 14
-
+  # Construit l'archive de production (vendor sans dev + build Vue + documentation) uniquement sur push vers main
   build:
     name: Build release
-    needs: [php_quality, frontend_quality, unit_tests, security]
+    needs: [php, migrations, capture, front, docs]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main2'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: ctype, iconv, intl, pdo_mysql
+          extensions: ctype, gd, iconv, intl, pdo_mysql
           coverage: none
           tools: composer:v2
       - uses: actions/setup-node@v7
@@ -291,18 +201,16 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: front/package-lock.json
-      - name: Create CI .env
+      # .env de build uniquement (jamais envoyé sur le serveur) pour que les scripts Symfony tournent
+      - name: Create build .env
         run: |
           {
             echo "APP_ENV=prod"
-            echo "APP_SECRET=$APP_SECRET"
-            echo "DATABASE_URL=$DATABASE_URL"
-            echo "MAILER_DSN=$MAILER_DSN"
-            echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN"
-            echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN"
-            echo "USER_PAGE_VISIT_ENABLED=$USER_PAGE_VISIT_ENABLED"
-            echo "N8N_API_KEY=$N8N_API_KEY"
-            echo "API_ADMIN_USER_EMAIL=$API_ADMIN_USER_EMAIL"
+            echo "APP_SECRET=REDACTED
+            echo "DATABASE_URL=sqlite:///%kernel.project_dir%/var/build.db"
+            echo "MAILER_DSN=null://null"
+            echo "MESSENGER_TRANSPORT_DSN=sync://"
+            echo "CORS_ALLOW_ORIGIN=^https?://localhost$"
           } > .env
       - name: Install production PHP dependencies
         env:
@@ -313,7 +221,8 @@ jobs:
           BUILD_OUTPUT_DIR: ../public/build
           PWA_OUTPUT_DIR: ../public/spa
         run: npm ci --prefix front && npm run build --prefix front
-      - name: Build VitePress documentation
+      # Servie sous /docs/ (base VitePress), voir les règles /docs/ des .htaccess
+      - name: Build documentation
         run: npm ci --prefix docs && npm run build --prefix docs
       - name: Assemble production release
         run: |
@@ -322,9 +231,13 @@ jobs:
           cp -a vendor /tmp/production-release/vendor
           rm -rf /tmp/production-release/public/build /tmp/production-release/public/spa
           cp -a public/build /tmp/production-release/public/build
-          cp -a public/spa /tmp/production-release/public/spa
+          if [ -d public/spa ]; then cp -a public/spa /tmp/production-release/public/spa; fi
+          # Assets des bundles (EasyAdmin, API Platform…) générés par assets:install
+          if [ -d public/bundles ]; then cp -aL public/bundles /tmp/production-release/public/bundles; fi
           mkdir -p /tmp/production-release/public/docs
           cp -a docs/.vitepress/dist/. /tmp/production-release/public/docs/
+          # Fichiers inutiles en production (les sources docs/ sont remplacées par public/docs/)
+          rm -rf /tmp/production-release/{.agents,.claude,.codex,.github,tests,docs,VAE,front,nginx,php-fpm.d}
           tar -C /tmp/production-release -czf /tmp/production-release.tar.gz .
       - uses: actions/upload-artifact@v7
         with:
@@ -332,60 +245,16 @@ jobs:
           path: /tmp/production-release.tar.gz
           retention-days: 14
 
-  report:
-    name: Report
-    if: always()
-    needs: [php_quality, frontend_quality, unit_tests, qcm_results_service, security, coverage, build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Publish pipeline summary
-        env:
-          PHP_QUALITY: ${{ needs.php_quality.result }}
-          PHPSTAN: ${{ needs.php_quality.outputs.phpstan }}
-          FRONTEND_QUALITY: ${{ needs.frontend_quality.result }}
-          UNIT_TESTS: ${{ needs.unit_tests.result }}
-          QCM_RESULTS_SERVICE: ${{ needs.qcm_results_service.result }}
-          SECURITY: ${{ needs.security.result }}
-          COMPOSER_AUDIT: ${{ needs.security.outputs.composer_audit }}
-          FRONT_NPM_AUDIT: ${{ needs.security.outputs.front_npm_audit }}
-          COVERAGE: ${{ needs.coverage.result }}
-          BUILD: ${{ needs.build.result }}
-        run: |
-          {
-            echo '## CI/CD report'
-            echo '| Check | Result |'
-            echo '| --- | --- |'
-            echo "| PHP quality | $PHP_QUALITY |"
-            echo "| PHPStan (informational) | $PHPSTAN |"
-            echo "| Frontend quality | $FRONTEND_QUALITY |"
-            echo "| Unit tests | $UNIT_TESTS |"
-            echo "| QCM results service | $QCM_RESULTS_SERVICE |"
-            echo "| Security | $SECURITY |"
-            echo "| Composer audit (informational) | $COMPOSER_AUDIT |"
-            echo "| Vue npm audit (informational) | $FRONT_NPM_AUDIT |"
-            echo "| Coverage | $COVERAGE |"
-            echo "| Build | $BUILD |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          [[ "$PHP_QUALITY" == "success" ]]
-          [[ "$FRONTEND_QUALITY" == "success" ]]
-          [[ "$UNIT_TESTS" == "success" ]]
-          [[ "$QCM_RESULTS_SERVICE" == "success" ]]
-          [[ "$SECURITY" == "success" ]]
-          [[ "$COVERAGE" == "success" ]]
-          [[ "$BUILD" == "success" ]]
-
   deploy:
-    name: Deploy ${{ needs.setup_variables.outputs.environment }}
-    needs: [setup_variables, report]
-    if: needs.setup_variables.outputs.deploy == 'true'
+    name: Deploy inclusion-numerique (OVH)
+    needs: build
     runs-on: ubuntu-latest
-    environment: ${{ needs.setup_variables.outputs.environment }}
-    concurrency: ${{ needs.setup_variables.outputs.environment }}
+    environment: inclusion-numerique
+    concurrency: inclusion-numerique
     env:
       OVH_HOST: ssh.cluster130.hosting.ovh.net
       OVH_USER: egflbug
-      OVH_PATH: ${{ needs.setup_variables.outputs.ovh_path }}
+      OVH_PATH: /home/egflbug/inclusion-numerique
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
@@ -404,24 +273,26 @@ jobs:
         env:
           SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
         run: |
-          # --delete vide le dossier cible : refuser tout chemin hors des deux sites connus
-          case "$OVH_PATH" in
-            /home/egflbug/devdoc/prod|/home/egflbug/inclusion-numerique) ;;
-            *) echo "Chemin de déploiement inattendu : '$OVH_PATH'"; exit 1 ;;
-          esac
+          # --delete vide le dossier cible : refuser tout autre chemin
+          [[ "$OVH_PATH" == /home/egflbug/inclusion-numerique ]] || { echo "Chemin inattendu : '$OVH_PATH'"; exit 1; }
           sshpass -e rsync -az --delete --delay-updates \
             --exclude='.env' \
             --exclude='.env.*' \
             --exclude='.git/' \
             --exclude='.ovhconfig' \
             --exclude='var/' \
-            --exclude='backups/' \
             --exclude='public/uploads/' \
             -e 'ssh -o StrictHostKeyChecking=yes' \
             /tmp/release/ "$OVH_USER@$OVH_HOST:$OVH_PATH/"
-      - name: Clear Symfony production cache
+      # cache:clear renomme var/cache/prod, ce qui échoue parfois sur le disque partagé d'OVH
+      # (« Cannot rename… already exists ») : on supprime l'ancien cache puis on le reconstruit.
+      # Pas de migration ici : la base egflbugcundo6 est celle de mediateur, qui la fait évoluer
+      # par son propre déploiement ; inclusion-numerique ne fait que reconstruire son cache.
+      - name: Rebuild Symfony cache
         env:
           SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=yes "$OVH_USER@$OVH_HOST" \
-            "cd '$OVH_PATH' && mkdir -p var/cache var/log && php bin/console cache:clear --env=prod --no-debug"
+            "cd '$OVH_PATH' && mkdir -p var/cache var/log \
+             && rm -rf var/cache/prod var/cache/pro~ \
+             && php bin/console cache:warmup --env=prod --no-debug"

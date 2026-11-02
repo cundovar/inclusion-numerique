@@ -1,7 +1,12 @@
 <template>
+  <!--
+    Colonne fixe : exactement la hauteur visible sous l'en-tête, avec une barre de défilement seulement si le menu
+    est plus long. Sans débordement, la molette fait défiler la page même quand la souris est sur la colonne.
+    La colonne laisse passer la souris (pointer-events-none) : seul le menu lui-même capte clics et molette.
+  -->
   <div
     :class="[
-      'xl:z-30 scroll-gauche   xl:top-20 min-h-screen fixed border-blue-950 overflow-y-scroll div-scrollbar transition-all duration-500 ease-in-out',
+      'xl:z-30 scroll-gauche xl:top-20 h-[calc(100vh-7rem)] xl:h-[calc(100vh-5rem)] fixed border-blue-950 overflow-y-auto pointer-events-none div-scrollbar transition-all duration-500 ease-in-out',
       isXlOuPlus ? '' : isMenuOpen ? 'max-xl:w-full md:w-2/3 z-40 top-28 ' : 'w-full -translate-x-full top-28',
       hoveredCategory ? 'z-40 w-1/2 ' : 'z-0 w-[20rem]',
       isOpenMenuGauche ? '-translate-x-[80%]' : 'translate-x-0',
@@ -9,7 +14,7 @@
   >
     <nav
       :class="[
-        'md:p-5  gap-y-2 relative 2xl:top-1 float-left z-50 h-screen max-md:z-50 transition-transform duration-300 ease-in-out',
+        'md:p-5 gap-y-2 relative float-left z-50 min-h-full pointer-events-auto max-md:z-50 transition-transform duration-300 ease-in-out',
         isXlOuPlus
           ? 'flex xl:w-[16rem] 2xl:w-[20rem] flex-col translate-x-0'
           : isMenuOpen
@@ -26,18 +31,6 @@
         />
       </div>
 
-      <a
-        class="md:hidden border max-xl:border-b-gray-50 bg-gray-500 gap-2 flex items-center justify-start p-1 hover:bg-gray-600"
-        href="https://github.com/poleS-dev"
-        target="_blank"
-      >
-        <i
-          class="pi pi-github cursor-pointer text-amber-200 right-1/2 top-5"
-          style="font-size:2rem"
-        />
-        <p class="text-amber-200 font-bold">GITHUB</p>
-      </a>
-
       <!-- Menu des catégories -->
       <CategoryMenu
         :cats="cats"
@@ -51,6 +44,32 @@
         @hover-category="$emit('hoverCategory', $event)"
         @close-menu="$emit('closeMenu')"
       />
+      <!-- Les deux entrées de l'accueil -->
+      <router-link
+        v-for="audience in AUDIENCES"
+        :key="audience.key"
+        :to="audience.path"
+        :class="[
+          audience.key === 'apprendre' ? 'bg-blue-200 hover:bg-blue-300' : 'bg-emerald-200 hover:bg-emerald-300',
+          'max-xl:hidden xl:w-full min-h-[3rem] cursor-pointer shadow-neutral-600 p-2 text-gray-900 font-bold hover:underline flex items-center gap-2'
+        ]"
+      >
+        <i
+          :class="audience.icon"
+          aria-hidden="true"
+        />
+        {{ audience.title }}
+      </router-link>
+      <router-link
+        to="/exercices"
+        class="max-xl:hidden xl:w-full min-h-[3rem] cursor-pointer shadow-neutral-600 bg-amber-200 p-2 hover:bg-amber-300 text-gray-900 font-bold hover:underline flex items-center gap-2"
+      >
+        <i
+          class="fas fa-puzzle-piece"
+          aria-hidden="true"
+        />
+        Exercices
+      </router-link>
       <router-link
         to="/qcm"
         class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-purple-300 p-2 hover:bg-purple-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
@@ -59,17 +78,9 @@
         QCM
       </router-link>
 
-      <router-link
-        to="/exercices"
-        class=" max-xl:hidden xl:w-full h-[3rem] max-xl:w-[14rem] max-xl:ml-20 cursor-pointer shadow-neutral-600 bg-green-300 p-2 hover:bg-green-400 text-gray-600 font-bold hover:underline flex items-center gap-2"
-      >
-        <i class="pi pi-book" />
-        EXERCICES
-      </router-link>
 
-      <SelectfunctionVocabulaire class="max-xl:hidden" />
 
-      <!-- Liens QCM, Exercices, Documentation -->
+      <!-- Liens QCM -->
       <MenuLinks @close-menu="$emit('closeMenu')" />
     </nav>
   </div>
@@ -79,7 +90,7 @@
 import ButtonArrowMenu from '../ui/ButtonArrowMenu.vue';
 import CategoryMenu from '../navigation/CategoryMenu.vue';
 import MenuLinks from '../navigation/MenuLinks.vue';
-import SelectfunctionVocabulaire from '../navigation/SelectfunctionVocabulaire.vue';
+import { AUDIENCES } from '@/config/audiences';
 defineProps({
   cats: {
     type: Array,

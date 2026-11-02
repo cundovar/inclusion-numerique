@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+{% import 'terms/_macros.html.twig' as legal_ui %}
+
+{% block title %}Mentions légales{% endblock %}
+
+{% block body %}
+<style>
+    .legal-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        line-height: 1.6;
+        color: #1f2937;
+    }
+    .legal-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    .legal-section {
+        margin-bottom: 25px;
+    }
+    .legal-section h2 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #1e3a8a;
+    }
+    .legal-section p {
+        margin-bottom: 10px;
+    }
+    .legal-section dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 6px 16px;
+        margin: 0;
+    }
+    .legal-section dt {
+        font-weight: 600;
+    }
+    .legal-section dd {
+        margin: 0;
+        white-space: pre-line;
+    }
+    @media (max-width: 600px) {
+        .legal-section dl {
+            grid-template-columns: 1fr;
+        }
+        .legal-section dd {
+            margin-bottom: 8px;
+        }
+    }
+</style>
+
+<div class="legal-container">
+    <h1 class="legal-title">Mentions légales</h1>
+
+    <div class="legal-section">
+        <h2>1. Éditeur du site</h2>
+        <p>Le site « {{ legal.siteName }} » est édité par :</p>
+        <dl>
+            <dt>Nom</dt>
+            <dd>{{ legal_ui.value(legal.editeur) }}</dd>
+            <dt>Adresse</dt>
+            <dd>{{ legal_ui.value(legal.adresse) }}</dd>
+            {% if legal.identifiant %}
+                <dt>SIRET ou RNA</dt>
+                <dd>{{ legal.identifiant }}</dd>
+            {% endif %}
+            <dt>Contact</dt>
+            <dd>{{ legal_ui.email(legal.email) }}</dd>
+        </dl>
+    </div>
+
+    <div class="legal-section">
+        <h2>2. Directeur·rice de la publication</h2>
+        <p>{{ legal_ui.value(legal.directeurPublication) }}</p>
+    </div>
+
+    <div class="legal-section">
+        <h2>3. Hébergement</h2>
+        <dl>
+            <dt>Hébergeur</dt>
+            <dd>{{ legal.hebergeur.nom }}</dd>
+            <dt>Adresse</dt>
+            <dd>{{ legal.hebergeur.adresse }}</dd>
+            <dt>Site</dt>
+            <dd><a href="{{ legal.hebergeur.site }}">{{ legal.hebergeur.site }}</a></dd>
+        </dl>
+    </div>
+
+    <div class="legal-section">
+        <h2>4. Nature du site</h2>
+        <p>Ce site propose des formations gratuites au numérique. Ce n'est pas un site officiel : il n'est pas celui de la CAF, de France Travail ou d'une administration. Les cours renvoient vers les sites officiels des services présentés.</p>
+        <p>Les captures d'écran montrent des pages publiques ou des exemples fictifs. Elles ne contiennent les données d'aucune personne réelle.</p>
+    </div>
+
+    <div class="legal-section">
+        <h2>5. Données personnelles et cookies</h2>
+        <p>Pour savoir quelles données sont enregistrées, quels cookies sont utilisés et comment exercer vos droits, lisez la <a href="{{ path('app_privacy') }}">politique de confidentialité</a>.</p>
+    </div>
+
+    {% include 'terms/_bas_de_page.html.twig' %}
+</div>
+{% endblock %}

@@ -30,7 +30,7 @@
           v-if="result.hasCode"
           size="xl"
           rounded="sm"
-          icon="pi pi-code"
+          icon="pi pi-book"
         >
           Code
         </AppBadge>

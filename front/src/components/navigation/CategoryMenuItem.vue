@@ -94,7 +94,7 @@
             >
               <div class="p-2 flex justify-around max-md:justify-start items-center max-md:text-start">
                 <div class="flex justify-center items-center w-1/3">
-                  <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600" />
+                  <i class="pi pi-book max-md:text-blue-600 md:text-yellow-600" />
                 </div>
 
                 <div class="flex-1 text-center border-blue-300 shadow border flex justify-center items-center">
@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="flex justify-center items-center w-1/3">
-                  <i class="pi pi-code max-md:text-blue-600 md:text-yellow-600" />
+                  <i class="pi pi-book max-md:text-blue-600 md:text-yellow-600" />
                 </div>
               </div>
             </router-link>

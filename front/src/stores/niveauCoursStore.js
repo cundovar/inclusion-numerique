@@ -2,6 +2,10 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useNIveauCourApi } from "../composables/api/useNiveauCoursApi";
 
+// Déroulant « niveau » de l'en-tête masqué pour le moment.
+// Tant qu'il est masqué, aucun filtre de niveau ne doit rester actif (voir les en-têtes).
+export const FILTRE_NIVEAU_VISIBLE = false
+
 export const useNiveauStore=defineStore('niveau',()=>{
     const niveaux=ref([])
     const selectedNiveau=ref(null)

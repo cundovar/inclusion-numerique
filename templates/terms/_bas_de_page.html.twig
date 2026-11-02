@@ -1,0 +1,58 @@
+{# Bas commun des pages légales : date des textes et retour au site (page précédente du site, sinon l'accueil) #}
+{% import 'terms/_macros.html.twig' as legal_ui %}
+<style>
+    .a-completer {
+        display: inline-block;
+        padding: 0 6px;
+        border: 1px dashed #b45309;
+        border-radius: 4px;
+        background: #fef3c7;
+        color: #78350f;
+        font-weight: 600;
+    }
+    .legal-pied {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #e5e7eb;
+    }
+    .legal-pied p {
+        margin: 0;
+    }
+    .legal-retour {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 8px 16px;
+        border: 1px solid #93c5fd;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .legal-retour:hover {
+        background: #dbeafe;
+    }
+    .legal-retour:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+    }
+</style>
+<div class="legal-pied">
+    <p><strong>Dernière mise à jour :</strong> {% if legal.miseAJour %}{{ legal.miseAJour|date('d/m/Y') }}{% else %}{{ legal_ui.value(null) }}{% endif %}</p>
+    <a href="{{ path('spa_app') }}" class="legal-retour" data-retour-site>← Retour au site</a>
+</div>
+<script>
+    // Venu d'une page du site (un cours, le bandeau cookies…) : on y revient au lieu de repartir de l'accueil
+    document.querySelector('[data-retour-site]').addEventListener('click', function (event) {
+        if (document.referrer.indexOf(window.location.origin + '/') === 0 && window.history.length > 1) {
+            event.preventDefault();
+            window.history.back();
+        }
+    });
+</script>

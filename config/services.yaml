@@ -1,35 +1,26 @@
 parameters:
     app.url: 'http://localhost:8080'
-    app.user_page_visit.enabled: '%env(bool:USER_PAGE_VISIT_ENABLED)%'
     # Chemin SPA - Modifier cette valeur pour changer le préfixe
     # Note: Modifier aussi les Routes dans SpaController.php et SitemapController.php
     app.spa_path: '/spa'
-    # Résultats de QCM : sans configuration (ex. prod avant mise en service du VPS), l'adresse .invalid
-    # ne se résout jamais, et l'API répond 503 au lieu de planter
-    env(QCM_RESULTS_URL): 'http://qcm-results.invalid'
-    env(QCM_RESULTS_API_KEY): ''
-    # Connecteurs MCP (docs/fonctionnalites/connecteur-mcp.md) : adresse publique du site et hôtes de retour OAuth autorisés
-    env(MCP_PUBLIC_URL): ''
-    app.oauth.redirect_hosts: '%env(csv:OAUTH_REDIRECT_HOSTS)%'
-    env(OAUTH_REDIRECT_HOSTS): 'claude.ai,claude.com,chatgpt.com'
-    # Captures du connecteur : moteur Playwright local (Node) ou service distant si CAPTURE_SERVICE_URL est rempli
     env(CAPTURE_NODE_BINARY): 'node'
+    # Expéditeur des e-mails du site (mot de passe oublié)
+    env(MAILER_FROM): 'ne-pas-repondre@localhost'
     env(CAPTURE_CHROMIUM_PATH): ''
     env(CAPTURE_NO_SANDBOX): '0'
     env(CAPTURE_HOME): ''
+    # Service Playwright isolé sur Netcup. Laisser l'URL vide en développement pour utiliser le moteur local.
     env(CAPTURE_SERVICE_URL): ''
     env(CAPTURE_SERVICE_TOKEN): ''
-    # Recherche vectorielle de l'assistant apprenant : sans adresse, la recherche reste textuelle
-    env(RAG_VECTOR_URL): ''
-    env(RAG_VECTOR_TOKEN): ''
-    # Base partagée avec mediateur (inclusion-numerique) : historique de migrations séparé et tables
-    # de mediateur hors du schéma. Sur ce site : MIGRATIONS_TABLE=doctrine_migration_versions_inclusion
-    # et DOCTRINE_SCHEMA_FILTER='~^(?!(password_reset_token|doctrine_migration_versions)$)~'
-    env(MIGRATIONS_TABLE): 'doctrine_migration_versions'
-    env(DOCTRINE_SCHEMA_FILTER): '~^(?!password_reset_token$)~'
-    # Module laboratoires du gabarit de formation : désactivé dans DevDoc
-    env(APP_MODULE_LABORATOIRES): '0'
-    app.module_laboratoires: '%env(bool:APP_MODULE_LABORATOIRES)%'
+    # Connecteur MCP (docs/fonctionnalites/connecteur.md) : adresse publique du site et hôtes de retour OAuth autorisés
+    env(MCP_PUBLIC_URL): ''
+    # Base egflbugcundo6 partagée entre mediateur et inclusion-numerique : tables DevDoc à ignorer
+    env(DOCTRINE_SCHEMA_FILTER): '~^(?!(appy_Exo|appy_ExoBlock|appy_ExoContent|appy_ExoMenu|appy_DocDeCode|appy_favorite|appy_Note|appy_PropositionIA|appy_UserCustomization|appy_UserPageVisit|revision|agent_course_generation|diaporama|rag_passage|doctrine_migration_versions_inclusion)$)~'
+    # Nom du site : la configuration en base est partagée avec mediateur, le nom vient donc de l'environnement
+    env(SITE_NAME): 'Inclusion numérique'
+    app.site_name: '%env(SITE_NAME)%'
+    app.oauth.redirect_hosts: '%env(csv:OAUTH_REDIRECT_HOSTS)%'
+    env(OAUTH_REDIRECT_HOSTS): 'claude.ai,claude.com,chatgpt.com'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:
@@ -47,92 +38,55 @@ services:
             - '../src/Kernel.php'
             - '../src/Doctrine/'
 
-    # Listener pour nettoyer automatiquement les anciennes visites
-    App\EventListener\UserPageVisitListener:
-        tags:
-            - { name: doctrine.event_listener, event: postPersist }
 
-    # Service de chiffrement des notes (legacy - à supprimer après migration complète)
-    App\Service\NoteEncryptionService:
-        arguments:
-            $appSecret: '%kernel.secret%'
 
     # ===== ARCHITECTURE HEXAGONALE =====
 
     # Infrastructure Services (doit être défini AVANT les bindings)
-    App\Infrastructure\Note\Service\NoteEncryptionService:
-        arguments:
-            $appSecret: '%kernel.secret%'
 
-    App\Infrastructure\Note\Repository\DoctrineNoteRepository: ~
 
-    # Domain -> Infrastructure bindings (Note)
-    App\Domain\Note\Repository\NoteRepositoryInterface: '@App\Infrastructure\Note\Repository\DoctrineNoteRepository'
-    App\Domain\Note\Service\NoteEncryptionInterface: '@App\Infrastructure\Note\Service\NoteEncryptionService'
 
     # Infrastructure Services (Favorite)
-    App\Infrastructure\Favorite\Repository\DoctrineFavoriteRepository: ~
     App\Infrastructure\Page\Repository\DoctrinePageRepository: ~
     App\Infrastructure\Category\Repository\DoctrineCategoryRepository: ~
-    App\Infrastructure\UserPageVisit\Repository\DoctrineUserPageVisitRepository: ~
     App\Infrastructure\Menu\Repository\DoctrineMenuRepository: ~
     App\Infrastructure\Seo\Repository\DoctrineSeoRepository: ~
     App\Infrastructure\PositionMenu\Repository\DoctrinePositionMenuRepository: ~
     App\Infrastructure\CourseLevel\Repository\DoctrineCourseLevelRepository: ~
     App\Infrastructure\PageContent\Repository\DoctrinePageContentRepository: ~
-    App\Infrastructure\ExoContent\Repository\DoctrineExoContentRepository: ~
-    App\Infrastructure\ExoMenu\Repository\DoctrineExoMenuRepository: ~
-    App\Infrastructure\Exo\Repository\DoctrineExoRepository: ~
     App\Infrastructure\QCM\Repository\DoctrineQCMRepository: ~
 
-    # Résultats de QCM : micro-service Node + MongoDB (client HTTP « qcm_results.client »)
-    App\Domain\QcmResult\QcmResultsGatewayInterface: '@App\Infrastructure\QcmResult\HttpQcmResultsGateway'
-    App\Infrastructure\UserCustomization\Repository\DoctrineUserCustomizationRepository: ~
     App\Infrastructure\SiteConfiguration\Repository\DoctrineSiteConfigurationRepository: ~
     App\Infrastructure\LanguageQCM\Repository\DoctrineLanguageQCMRepository: ~
     App\Infrastructure\NiveauQCM\Repository\DoctrineNiveauQCMRepository: ~
     App\Infrastructure\ChoicesQCM\Repository\DoctrineChoicesQCMRepository: ~
-    App\Infrastructure\PropositionIA\Repository\DoctrinePropositionIARepository: ~
     App\Infrastructure\User\Repository\DoctrineUserRepository: ~
     App\Infrastructure\PageBlock\Repository\DoctrinePageBlockRepository: ~
-    App\Infrastructure\ExoBlock\Repository\DoctrineExoBlockRepository: ~
     App\Infrastructure\SuperMenu\Repository\DoctrineSuperMenuRepository: ~
-    App\Infrastructure\DocDeCode\Repository\DoctrineDocDeCodeRepository: ~
     App\Infrastructure\Logo\Repository\DoctrineLogoRepository: ~
+    App\Infrastructure\CourseMedia\Repository\DoctrineCourseMediaRepository: ~
     App\Infrastructure\Persistence\DoctrinePersistenceFlusher: ~
     App\Infrastructure\Persistence\DoctrineTransactionalExecutor: ~
-    App\Infrastructure\AgentCourseRevision\Repository\DoctrineAgentCourseRevisionRepository: ~
 
     # Domain -> Infrastructure bindings (Favorite)
-    App\Domain\Favorite\Repository\FavoriteRepositoryInterface: '@App\Infrastructure\Favorite\Repository\DoctrineFavoriteRepository'
     App\Domain\Page\Repository\PageRepositoryInterface: '@App\Infrastructure\Page\Repository\DoctrinePageRepository'
     App\Domain\Category\Repository\CategoryRepositoryInterface: '@App\Infrastructure\Category\Repository\DoctrineCategoryRepository'
-    App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface: '@App\Infrastructure\UserPageVisit\Repository\DoctrineUserPageVisitRepository'
     App\Domain\Menu\Repository\MenuRepositoryInterface: '@App\Infrastructure\Menu\Repository\DoctrineMenuRepository'
     App\Domain\Seo\Repository\SeoRepositoryInterface: '@App\Infrastructure\Seo\Repository\DoctrineSeoRepository'
     App\Domain\PositionMenu\Repository\PositionMenuRepositoryInterface: '@App\Infrastructure\PositionMenu\Repository\DoctrinePositionMenuRepository'
     App\Domain\CourseLevel\Repository\CourseLevelRepositoryInterface: '@App\Infrastructure\CourseLevel\Repository\DoctrineCourseLevelRepository'
     App\Domain\PageContent\Repository\PageContentRepositoryInterface: '@App\Infrastructure\PageContent\Repository\DoctrinePageContentRepository'
-    App\Domain\ExoContent\Repository\ExoContentRepositoryInterface: '@App\Infrastructure\ExoContent\Repository\DoctrineExoContentRepository'
-    App\Domain\ExoMenu\Repository\ExoMenuRepositoryInterface: '@App\Infrastructure\ExoMenu\Repository\DoctrineExoMenuRepository'
-    App\Domain\Exo\Repository\ExoRepositoryInterface: '@App\Infrastructure\Exo\Repository\DoctrineExoRepository'
     App\Domain\QCM\Repository\QCMRepositoryInterface: '@App\Infrastructure\QCM\Repository\DoctrineQCMRepository'
-    App\Domain\UserCustomization\Repository\UserCustomizationRepositoryInterface: '@App\Infrastructure\UserCustomization\Repository\DoctrineUserCustomizationRepository'
     App\Domain\SiteConfiguration\Repository\SiteConfigurationRepositoryInterface: '@App\Infrastructure\SiteConfiguration\Repository\DoctrineSiteConfigurationRepository'
     App\Domain\LanguageQCM\Repository\LanguageQCMRepositoryInterface: '@App\Infrastructure\LanguageQCM\Repository\DoctrineLanguageQCMRepository'
     App\Domain\NiveauQCM\Repository\NiveauQCMRepositoryInterface: '@App\Infrastructure\NiveauQCM\Repository\DoctrineNiveauQCMRepository'
     App\Domain\ChoicesQCM\Repository\ChoicesQCMRepositoryInterface: '@App\Infrastructure\ChoicesQCM\Repository\DoctrineChoicesQCMRepository'
-    App\Domain\PropositionIA\Repository\PropositionIARepositoryInterface: '@App\Infrastructure\PropositionIA\Repository\DoctrinePropositionIARepository'
     App\Domain\User\Repository\UserRepositoryInterface: '@App\Infrastructure\User\Repository\DoctrineUserRepository'
     App\Domain\PageBlock\Repository\PageBlockRepositoryInterface: '@App\Infrastructure\PageBlock\Repository\DoctrinePageBlockRepository'
-    App\Domain\ExoBlock\Repository\ExoBlockRepositoryInterface: '@App\Infrastructure\ExoBlock\Repository\DoctrineExoBlockRepository'
     App\Domain\SuperMenu\Repository\SuperMenuRepositoryInterface: '@App\Infrastructure\SuperMenu\Repository\DoctrineSuperMenuRepository'
-    App\Domain\DocDeCode\Repository\DocDeCodeRepositoryInterface: '@App\Infrastructure\DocDeCode\Repository\DoctrineDocDeCodeRepository'
     App\Domain\Logo\Repository\LogoRepositoryInterface: '@App\Infrastructure\Logo\Repository\DoctrineLogoRepository'
+    App\Domain\CourseMedia\Repository\CourseMediaRepositoryInterface: '@App\Infrastructure\CourseMedia\Repository\DoctrineCourseMediaRepository'
     App\Domain\Shared\Persistence\PersistenceFlusherInterface: '@App\Infrastructure\Persistence\DoctrinePersistenceFlusher'
     App\Domain\Shared\Persistence\TransactionalExecutorInterface: '@App\Infrastructure\Persistence\DoctrineTransactionalExecutor'
-    App\Domain\AgentCourseRevision\Repository\AgentCourseRevisionRepositoryInterface: '@App\Infrastructure\AgentCourseRevision\Repository\DoctrineAgentCourseRevisionRepository'
-    App\Domain\CourseMedia\Repository\CourseMediaRepositoryInterface: '@App\Infrastructure\CourseMedia\Repository\DoctrineCourseMediaRepository'
 
-    # Connecteur de rédaction : captures automatiques (voir docs/fonctionnalites/connecteur-mcp.md)
     App\Service\Capture\CaptureRunnerInterface: '@App\Service\Capture\ConfiguredCaptureRunner'

@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class SiteConfiguration
 {
+    public const LEGAL = 'legal';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -26,7 +28,7 @@ class SiteConfiguration
     {
         $this->updatedAt = new \DateTimeImmutable();
         $this->settings = [
-            'siteName' => 'DevDoc',
+            'siteName' => 'Médiation numérique',
             'header' => [
                 'bgColor' => '',
                 'textColor' => '',
@@ -82,19 +84,90 @@ class SiteConfiguration
         return $this;
     }
 
+    // Les informations légales ont leurs propres champs dans le back-office : elles ne passent pas par le JSON,
+    // pour qu'une modification de l'un n'efface jamais l'autre
     public function getSettingsJson(): string
     {
-        return json_encode($this->settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $settings = $this->settings;
+        unset($settings[self::LEGAL]);
+
+        return json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
     public function setSettingsJson(string $json): static
     {
         $decoded = json_decode($json, true);
         if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            unset($decoded[self::LEGAL]);
+            if (isset($this->settings[self::LEGAL])) {
+                $decoded[self::LEGAL] = $this->settings[self::LEGAL];
+            }
             $this->settings = $decoded;
             $this->updatedAt = new \DateTimeImmutable();
         }
         return $this;
+    }
+
+    /**
+     * Informations légales du site (mentions légales, contact RGPD), rangées dans les paramètres.
+     *
+     * @return array<string, string>
+     */
+    public function getLegal(): array
+    {
+        $legal = $this->settings[self::LEGAL] ?? [];
+
+        return \is_array($legal) ? array_map('strval', $legal) : [];
+    }
+
+    private function legalValue(string $key): ?string
+    {
+        $value = trim($this->getLegal()[$key] ?? '');
+
+        return $value === '' ? null : $value;
+    }
+
+    private function setLegalValue(string $key, ?string $value): static
+    {
+        $legal = $this->getLegal();
+        $legal[$key] = trim((string) $value);
+        $this->settings[self::LEGAL] = $legal;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getLegalEditeur(): ?string { return $this->legalValue('editeur'); }
+
+    public function setLegalEditeur(?string $value): static { return $this->setLegalValue('editeur', $value); }
+
+    public function getLegalAdresse(): ?string { return $this->legalValue('adresse'); }
+
+    public function setLegalAdresse(?string $value): static { return $this->setLegalValue('adresse', $value); }
+
+    public function getLegalEmail(): ?string { return $this->legalValue('email'); }
+
+    public function setLegalEmail(?string $value): static { return $this->setLegalValue('email', $value); }
+
+    public function getLegalDirecteurPublication(): ?string { return $this->legalValue('directeurPublication'); }
+
+    public function setLegalDirecteurPublication(?string $value): static { return $this->setLegalValue('directeurPublication', $value); }
+
+    public function getLegalIdentifiant(): ?string { return $this->legalValue('identifiant'); }
+
+    public function setLegalIdentifiant(?string $value): static { return $this->setLegalValue('identifiant', $value); }
+
+    public function getLegalMiseAJour(): ?\DateTimeImmutable
+    {
+        $value = $this->legalValue('miseAJour');
+        $date = $value === null ? false : \DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+
+        return $date === false ? null : $date;
+    }
+
+    public function setLegalMiseAJour(?\DateTimeInterface $value): static
+    {
+        return $this->setLegalValue('miseAJour', $value?->format('Y-m-d'));
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable

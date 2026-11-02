@@ -1,5 +1,10 @@
 import { ref } from 'vue';
-import IntelligentSearchService from '../../services/intelligentSearchService.js';
+
+const normalizeSearchText = (value = '') =>
+  String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 
 export function useSearch(menus, user, isMobile, onSearchComplete = null) {
   const search = ref('');
@@ -23,110 +28,80 @@ export function useSearch(menus, user, isMobile, onSearchComplete = null) {
       return;
     }
 
-    const isUserConnected = user.value && user.value.roles && user.value.roles.includes('ROLE_USER');
+    // Recherche locale dans les cours déjà chargés : aucun service externe ni compte requis
+    const query = normalizeSearchText(search.value.trim());
+    const stopWords = ['comment', 'faire', 'une', 'un', 'le', 'la', 'les', 'de', 'du', 'des', 'pour', 'avec', 'dans', 'sur', 'en', 'et', 'ou', 'que', 'qui', 'quoi', 'ou', 'quand'];
+    const keywords = query
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !stopWords.includes(word))
+      .map(word => word.replace(/[?!.,;:]/g, ''));
 
-    try {
-      if (isUserConnected) {
-        const isServiceAvailable = await IntelligentSearchService.checkServiceHealth();
+    searchResults.value = menus.value.filter((menu) => {
+      const title = menu.title?.toLowerCase() || "";
+      const content = menu.content?.toLowerCase() || "";
+      const label = menu.menu?.label?.toLowerCase() || "";
+      const code = menu.code?.toLowerCase() || "";
+      const slug = menu.page?.slug?.toLowerCase() || "";
+      const category = menu.category?.name?.toLowerCase() || "";
+      const type = menu.type?.toLowerCase() || "";
 
-        if (isServiceAvailable) {
-          console.log("Recherche intelligente activée (utilisateur connecté)");
-          const result = await IntelligentSearchService.search(search.value, 15);
-
-          if (result.success) {
-            searchResults.value = IntelligentSearchService.formatResults(result.results);
-            searchAnalysis.value = result.analysis;
-            console.log("Analyse IA:", result.analysis);
-            console.log(`${result.total} résultats trouvés avec IA`);
-          } else {
-            throw new Error("Service de recherche IA non disponible");
-          }
-        } else {
-          throw new Error("Service de recherche IA non accessible");
-        }
-      } else {
-        console.log("Utilisateur non connecté : recherche classique uniquement");
-        throw new Error("Recherche IA non disponible pour les utilisateurs non connectés");
+      let blockContent = "";
+      if (menu.pageBlocks && Array.isArray(menu.pageBlocks)) {
+        blockContent = menu.pageBlocks.map(block => {
+          const blockTitle = block.title?.toLowerCase() || "";
+          const blockContent = block.content?.toLowerCase() || "";
+          const blockCode = block.code?.toLowerCase() || "";
+          return blockTitle + " " + blockContent + " " + blockCode;
+        }).join(" ");
       }
-    } catch (error) {
-      console.warn("Recherche IA échouée, utilisation de la recherche classique:", error.message);
 
-      const query = search.value.toLowerCase();
-      const stopWords = ['comment', 'faire', 'une', 'un', 'le', 'la', 'les', 'de', 'du', 'des', 'pour', 'avec', 'dans', 'sur', 'en', 'et', 'ou', 'que', 'qui', 'quoi', 'où', 'quand'];
-      const keywords = query
-        .split(/\s+/)
-        .filter(word => word.length > 2 && !stopWords.includes(word))
-        .map(word => word.replace(/[?!.,;:]/g, ''));
+      const searchableText = normalizeSearchText([
+        title,
+        content,
+        label,
+        code,
+        slug,
+        category,
+        type,
+        blockContent
+      ].join(" "));
 
-      console.log("🔍 Mots-clés extraits:", keywords);
+      if (keywords.length > 0) {
+        return keywords.some(keyword => searchableText.includes(keyword));
+      }
 
-      searchResults.value = menus.value.filter((menu) => {
-        const title = menu.title?.toLowerCase() || "";
-        const content = menu.content?.toLowerCase() || "";
-        const label = menu.menu?.label?.toLowerCase() || "";
-        const code = menu.code?.toLowerCase() || "";
-        const slug = menu.page?.slug?.toLowerCase() || "";
-        const category = menu.category?.name?.toLowerCase() || "";
-        const type = menu.type?.toLowerCase() || "";
+      return searchableText.includes(query);
+    });
 
-        let blockContent = "";
-        if (menu.pageBlocks && Array.isArray(menu.pageBlocks)) {
-          blockContent = menu.pageBlocks.map(block => {
-            const blockTitle = block.title?.toLowerCase() || "";
-            const blockContent = block.content?.toLowerCase() || "";
-            const blockCode = block.code?.toLowerCase() || "";
-            return blockTitle + " " + blockContent + " " + blockCode;
-          }).join(" ");
-        }
+    searchResults.value.sort((a, b) => {
+      const aTitle = normalizeSearchText(a.title);
+      const bTitle = normalizeSearchText(b.title);
+      const aContent = normalizeSearchText(a.content);
+      const bContent = normalizeSearchText(b.content);
+      const aCategory = normalizeSearchText(a.category?.name);
+      const bCategory = normalizeSearchText(b.category?.name);
 
-        const searchableText = [
-          title,
-          content,
-          label,
-          code,
-          slug,
-          category,
-          type,
-          blockContent
-        ].join(" ");
+      let scoreA = 0;
+      let scoreB = 0;
 
-        if (keywords.length > 0) {
-          return keywords.some(keyword => searchableText.includes(keyword));
-        }
+      if (keywords.length > 0) {
+        keywords.forEach(keyword => {
+          if (aTitle.includes(keyword)) scoreA += 3;
+          if (bTitle.includes(keyword)) scoreB += 3;
+          if (aCategory.includes(keyword)) scoreA += 2;
+          if (bCategory.includes(keyword)) scoreB += 2;
+          if (aContent.includes(keyword)) scoreA += 1;
+          if (bContent.includes(keyword)) scoreB += 1;
+        });
+      } else {
+        if (aTitle.includes(query)) scoreA += 3;
+        if (bTitle.includes(query)) scoreB += 3;
+        if (aContent.includes(query)) scoreA += 1;
+        if (bContent.includes(query)) scoreB += 1;
+      }
 
-        return searchableText.includes(query);
-      });
-
-      searchResults.value.sort((a, b) => {
-        const aTitle = a.title?.toLowerCase() || "";
-        const bTitle = b.title?.toLowerCase() || "";
-        const aContent = a.content?.toLowerCase() || "";
-        const bContent = b.content?.toLowerCase() || "";
-        const aCategory = a.category?.name?.toLowerCase() || "";
-        const bCategory = b.category?.name?.toLowerCase() || "";
-
-        let scoreA = 0;
-        let scoreB = 0;
-
-        if (keywords.length > 0) {
-          keywords.forEach(keyword => {
-            if (aTitle.includes(keyword)) scoreA += 3;
-            if (bTitle.includes(keyword)) scoreB += 3;
-            if (aCategory.includes(keyword)) scoreA += 2;
-            if (bCategory.includes(keyword)) scoreB += 2;
-            if (aContent.includes(keyword)) scoreA += 1;
-            if (bContent.includes(keyword)) scoreB += 1;
-          });
-        } else {
-          if (aTitle.includes(query)) scoreA += 3;
-          if (bTitle.includes(query)) scoreB += 3;
-          if (aContent.includes(query)) scoreA += 1;
-          if (bContent.includes(query)) scoreB += 1;
-        }
-
-        return scoreB - scoreA;
-      });
-    }
+      return scoreB - scoreA;
+    });
 
     // Sur mobile, toujours ouvrir le modal (avec ou sans résultats)
     if (isMobile.value && onSearchComplete) {

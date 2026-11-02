@@ -1,6 +1,7 @@
 
 @import "tailwindcss";
 @import "./assets/main.css";
+@import "./assets/styles/cards.css";
 
 
 /* pages cours et exo  */

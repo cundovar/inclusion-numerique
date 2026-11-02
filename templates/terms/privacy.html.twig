@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'terms/_macros.html.twig' as legal_ui %}
 
 {% block title %}Politique de confidentialité{% endblock %}
 
@@ -40,17 +41,21 @@
     .privacy-section li {
         margin-bottom: 5px;
     }
-    .back-link {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 10px 15px;
-        background: #007bff;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 4px;
+    .privacy-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+        font-size: 15px;
     }
-    .back-link:hover {
-        background: #0056b3;
+    .privacy-table th,
+    .privacy-table td {
+        border: 1px solid #d1d5db;
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+    }
+    .privacy-table th {
+        background: #eff6ff;
     }
 </style>
 
@@ -59,12 +64,14 @@
     
     <div class="privacy-section">
         <h2>1. Collecte des données</h2>
-        <p>Nous collectons les informations suivantes lors de votre inscription :</p>
+        <p>Le compte est facultatif : les cours publics restent accessibles sans inscription. Si vous créez un compte, nous enregistrons :</p>
         <ul>
-            <li>Nom d'utilisateur</li>
-            <li>Mot de passe (stocké de manière sécurisée)</li>
+            <li>Votre adresse e-mail, pour vous connecter et recevoir un lien si vous oubliez votre mot de passe (elle n'est jamais affichée sur le site)</li>
+            <li>Votre pseudo (n'utilisez pas votre nom complet)</li>
+            <li>Votre mot de passe, chiffré : personne ne peut le lire</li>
+            <li>La liste des cours et exercices que votre médiateur vous a réservés</li>
             <li>Adresse IP pour des raisons de sécurité</li>
-            <li>Données de navigation (cookies)</li>
+            <li>Les cookies techniques nécessaires au fonctionnement du site (voir la rubrique 5)</li>
         </ul>
     </div>
 
@@ -75,7 +82,6 @@
             <li>Gérer votre compte utilisateur</li>
             <li>Améliorer nos services</li>
             <li>Assurer la sécurité du site</li>
-            <li>Vous contacter si nécessaire</li>
         </ul>
     </div>
 
@@ -94,9 +100,30 @@
         <p>Nous mettons en place des mesures techniques et organisationnelles appropriées pour protéger vos données personnelles contre l'accès non autorisé, la divulgation, la modification ou la destruction.</p>
     </div>
 
-    <div class="privacy-section">
-        <h2>5. Cookies</h2>
-        <p>Notre site utilise des cookies pour améliorer votre expérience utilisateur. Vous pouvez désactiver les cookies dans les paramètres de votre navigateur.</p>
+    <div class="privacy-section" id="cookies">
+        <h2>5. Cookies et stockage dans votre navigateur</h2>
+        <p><strong>Ce site n'utilise aucun cookie publicitaire, aucune mesure d'audience et aucun bouton de réseau social.</strong> Aucune information sur votre navigation n'est transmise à une autre entreprise.</p>
+
+        <p>Le site dépose seulement des cookies nécessaires à son fonctionnement. La loi les dispense de votre accord (article 82 de la loi Informatique et Libertés, lignes directrices de la CNIL) :</p>
+        <table class="privacy-table">
+            <thead>
+                <tr><th scope="col">Cookie</th><th scope="col">À quoi il sert</th><th scope="col">Durée</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Session (<code>PHPSESSID</code>)</td><td>Vous garder connecté pendant votre visite et protéger les formulaires contre les envois frauduleux.</td><td>Jusqu'à la fermeture du navigateur</td></tr>
+                <tr><td>« Se souvenir de moi » (<code>REMEMBERME</code>)</td><td>Rester connecté d'une visite à l'autre. Il n'est déposé que si vous cochez cette case en vous connectant.</td><td>7 jours</td></tr>
+            </tbody>
+        </table>
+
+        <p>Le site garde aussi quelques réglages dans votre navigateur. Ils restent sur votre appareil et ne sont pas envoyés au site :</p>
+        <ul>
+            <li>vos préférences d'affichage (taille du texte, contraste, mode sombre…) et la vitesse de la lecture à voix haute ;</li>
+            <li>vos réponses aux QCM, effacées à la fermeture de l'onglet ;</li>
+            <li>les pages et les cours déjà consultés, gardés pour pouvoir les relire sans connexion (si vous avez un compte, ils sont effacés quand vous vous déconnectez) ;</li>
+            <li>le fait d'avoir déjà vu cette information ou la proposition d'installer l'application, pour ne pas les afficher à chaque visite.</li>
+        </ul>
+
+        <p>Vous pouvez supprimer à tout moment les cookies et ces réglages dans les paramètres de votre navigateur (rubrique « Confidentialité » ou « Données des sites »). Le site continue de fonctionner, mais il faudra vous reconnecter et refaire vos réglages.</p>
     </div>
 
     <div class="privacy-section">
@@ -109,6 +136,7 @@
             <li>Limiter le traitement de vos données</li>
             <li>Retirer votre consentement</li>
         </ul>
+        <p>Pour exercer ces droits, écrivez à {{ legal_ui.email(legal.email) }}. Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL (<a href="https://www.cnil.fr/fr/plaintes">www.cnil.fr</a>).</p>
     </div>
 
     <div class="privacy-section">
@@ -117,12 +145,12 @@
     </div>
 
     <div class="privacy-section">
-        <h2>8. Contact</h2>
-        <p>Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, vous pouvez nous contacter à l'adresse email fournie sur le site.</p>
+        <h2>8. Responsable du traitement et contact</h2>
+        <p>Le responsable du traitement de vos données est {{ legal_ui.value(legal.editeur) }}, {{ legal_ui.value(legal.adresse) }}.</p>
+        <p>Pour toute question sur cette politique ou pour exercer vos droits : {{ legal_ui.email(legal.email) }}.</p>
+        <p>Voir aussi les <a href="{{ path('app_legal') }}">mentions légales</a>.</p>
     </div>
 
-    <p><strong>Dernière mise à jour :</strong> {{ "now"|date("d/m/Y") }}</p>
-    
-    <a href="{{ path('app_register') }}" class="back-link">Retour à l'inscription</a>
+    {% include 'terms/_bas_de_page.html.twig' %}
 </div>
 {% endblock %}

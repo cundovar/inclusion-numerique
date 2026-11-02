@@ -13,6 +13,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // On importe la fonction pour gérer des chemins (path) facilement
 import { resolve } from 'path';
 import { fileURLToPath, URL } from 'node:url';
+import { copyFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 
 // On exporte la configuration principale de Vizte
 import path from 'node:path';
@@ -28,6 +29,22 @@ const PWA_OUTPUT_DIR = process.env.PWA_OUTPUT_DIR || `public${PWA_PATH}`;
 
 // Détecte si on est dans le contexte Storybook
 const isStorybook = process.env.npm_lifecycle_script?.includes('storybook') || false;
+
+// vite-plugin-pwa écrit le manifest dans le dossier de sortie de Vite (public/build), pas dans
+// celui de la PWA. La page le déclare en /spa/manifest.webmanifest : sans ce déplacement,
+// Symfony répond par la page HTML de la SPA, Chrome juge le site non installable et
+// n'envoie jamais beforeinstallprompt (le bouton « Installer » reste alors sans effet).
+const deplacerManifestPwa = (buildDir, pwaDir, nomFichier) => ({
+  name: 'deplacer-manifest-pwa',
+  apply: 'build',
+  closeBundle() {
+    const source = resolve(dirname, buildDir, nomFichier);
+    if (!existsSync(source)) return;
+    mkdirSync(resolve(dirname, pwaDir), { recursive: true });
+    copyFileSync(source, resolve(dirname, pwaDir, nomFichier));
+    rmSync(source);
+  }
+});
 
 export default defineConfig(() => {
   const viteDevOrigin = process.env.VITE_DEV_ORIGIN || 'http://localhost:8092';
@@ -69,15 +86,15 @@ export default defineConfig(() => {
         // Vite (/build/) et demande /build/sw.js, qui n'existe pas
         manifest: {
           // Contenu du manifest PWA
-          name: 'SPA Hybride Vue Symfony',
+          name: 'Inclusion numérique',
           // Nom complet de l'application
-          short_name: 'SpaVueSymfo',
+          short_name: 'Inclusion',
           // Nom court (pour l'écran d'accueil)
           start_url: `${PWA_PATH}/`,
           // URL de démarrage quand l'app est lancée
           scope: `${PWA_PATH}/`,
           // Limite les pages où le PWA fonctionne
-          description: 'Application hybride combinant Vue.js et Symfony pour une expérience utilisateur optimale',
+          description: 'Formations gratuites et sans inscription pour apprendre le numérique ou accompagner les personnes qui l\'apprennent',
           theme_color: '#3b82f6',
           // Couleur du thème (barre de statut, etc)
           background_color: '#ffffff',
@@ -93,29 +110,24 @@ export default defineConfig(() => {
             // Chemin de l'icône 192x192
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable'
+            // « any » seul : ces icônes n'ont pas la marge de sécurité qu'exige « maskable »
+            purpose: 'any'
           }, {
             src: `${PWA_PATH}/pwa1.png`,
             // Chemin de l'icône 512x512
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
           }],
           screenshots: [
-          // Screenshots pour l'installation PWA
+          // Capture affichée par Chrome à l'installation : taille réelle du fichier (512 × 512),
+          // format étroit seulement (un format « wide » exige une image plus large que haute)
           {
             src: `${PWA_PATH}/screenshot.png`,
-            sizes: '1280x720',
-            type: 'image/png',
-            form_factor: 'wide',
-            label: 'Application principale'
-          },
-          {
-            src: `${PWA_PATH}/screenshot.png`,
-            sizes: '1280x720',
+            sizes: '512x512',
             type: 'image/png',
             form_factor: 'narrow',
-            label: 'Application mobile'
+            label: 'Accueil d’Inclusion numérique'
           }]
         },
         workbox: {
@@ -180,7 +192,8 @@ export default defineConfig(() => {
             }
           }]
         }
-      })
+      }),
+      !isStorybook && deplacerManifestPwa(BUILD_OUTPUT_DIR, PWA_OUTPUT_DIR, 'manifest.webmanifest'),
     ].filter(Boolean),
     // Configuration du serveur de développement Vite
     // Le proxy /api redirige vers http://nginx

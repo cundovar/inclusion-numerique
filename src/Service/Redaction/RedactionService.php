@@ -10,7 +10,6 @@ use App\Entity\Menus;
 use App\Entity\NiveauCours;
 use App\Entity\Page;
 use App\Entity\PageContent;
-use App\Entity\SuperMenu;
 use App\Service\Capture\AutomaticCaptureService;
 use App\Service\Capture\CaptureFailed;
 use App\Service\Capture\ImageDepositService;
@@ -48,15 +47,10 @@ final class RedactionService
     public function catalogue(): array
     {
         return [
-            'rubriques' => array_map(fn (SuperMenu $r) => [
-                'id' => $r->getId(),
-                'nom' => $r->getName(),
-                'ordre' => $r->getOrdre(),
-            ], $this->entityManager->getRepository(SuperMenu::class)->findBy([], ['name' => 'ASC'])),
             'parcours' => array_map(fn (Category $c) => [
                 'id' => $c->getId(),
                 'nom' => $c->getName(),
-                'rubriqueId' => $c->getSuperMenu()?->getId(),
+                'public' => $c->getAudience(),
                 'description' => $c->getDescription(),
                 'niveau' => $c->getNiveauCours()?->getName(),
                 'visible' => $c->isVisible() !== false,
@@ -86,114 +80,28 @@ final class RedactionService
     public function createParcours(array $data): array
     {
         $name = $this->requiredName($data, 255);
+        $audience = (string) ($data['public'] ?? '');
         $errors = [];
+        if (!\in_array($audience, Category::AUDIENCES, true)) {
+            $errors[] = ['champ' => 'public', 'message' => 'Public attendu : apprendre ou accompagner.'];
+        }
         $existing = $this->entityManager->getRepository(Category::class)->findOneBy(['name' => $name]);
         if ($existing !== null) {
             $errors[] = ['champ' => 'nom', 'message' => 'Ce parcours existe déjà (identifiant '.$existing->getId().').'];
         }
         $level = $this->optionalLevel($data, $errors);
-        $rubrique = null;
-        if (isset($data['rubriqueId'])) {
-            $rubrique = $this->entityManager->find(SuperMenu::class, (int) $data['rubriqueId']);
-            if ($rubrique === null) {
-                $errors[] = ['champ' => 'rubriqueId', 'message' => 'Rubrique introuvable (voir lister_catalogue).'];
-            }
-        }
         if ($errors !== []) {
             throw RedactionError::invalid($errors);
         }
 
         $category = (new Category())
             ->setName($name)
+            ->setAudience($audience)
             ->setDescription($this->nullable($data['description'] ?? null))
-            ->setNiveauCours($level)
-            ->setSuperMenu($rubrique);
+            ->setNiveauCours($level);
         $this->persistValid($category);
 
-        return ['id' => $category->getId(), 'nom' => $category->getName(), 'description' => $category->getDescription(), 'niveauId' => $level?->getId(), 'rubriqueId' => $rubrique?->getId()];
-    }
-
-    /**
-     * Grande rubrique qui regroupe des parcours (entité SuperMenu). Créer une rubrique ne publie rien.
-     *
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
-     */
-    public function createRubrique(array $data): array
-    {
-        $name = $this->requiredName($data, 255);
-        $existing = $this->entityManager->getRepository(SuperMenu::class)->findOneBy(['name' => $name]);
-        if ($existing !== null) {
-            throw RedactionError::invalid([['champ' => 'nom', 'message' => 'Cette rubrique existe déjà (identifiant '.$existing->getId().').']]);
-        }
-
-        if (isset($data['ordre'])) {
-            $order = (int) $data['ordre'];
-        } else {
-            // Par défaut, la nouvelle rubrique se place après les autres
-            $last = $this->entityManager->getRepository(SuperMenu::class)->findOneBy([], ['ordre' => 'DESC']);
-            $order = (int) $last?->getOrdre() + 1;
-        }
-
-        $rubrique = (new SuperMenu())->setName($name)->setOrdre($order);
-        $this->persistValid($rubrique);
-
-        return ['id' => $rubrique->getId(), 'nom' => $rubrique->getName(), 'ordre' => $rubrique->getOrdre()];
-    }
-
-    /**
-     * Fixe l'ordre des rubriques sur l'accueil et dans le menu : le premier identifiant devient le rang 1.
-     *
-     * @param list<int> $rubriqueIds
-     * @return array<string, mixed>
-     */
-    public function orderRubriques(array $rubriqueIds): array
-    {
-        $result = ['ordres' => [], 'refus' => []];
-        $rank = 0;
-        foreach (array_values(array_unique(array_map('intval', $rubriqueIds))) as $id) {
-            $rubrique = $this->entityManager->find(SuperMenu::class, $id);
-            if ($rubrique === null) {
-                $result['refus'][] = ['id' => $id, 'raison' => 'Rubrique introuvable (voir lister_catalogue).'];
-                continue;
-            }
-            $rubrique->setOrdre(++$rank);
-            $result['ordres'][] = ['id' => $id, 'nom' => $rubrique->getName(), 'ordre' => $rank];
-        }
-        $this->entityManager->flush();
-
-        return $result;
-    }
-
-    /**
-     * Range des parcours dans une rubrique (ou les en retire avec null). Ne change ni les cours, ni les modules,
-     * ni le rang des parcours. Les parcours valides sont classés même si d'autres sont refusés.
-     *
-     * @param list<int> $parcoursIds
-     * @return array<string, mixed>
-     */
-    public function classifyParcours(array $parcoursIds, ?int $rubriqueId): array
-    {
-        $rubrique = null;
-        if ($rubriqueId !== null) {
-            $rubrique = $this->entityManager->find(SuperMenu::class, $rubriqueId)
-                ?? throw RedactionError::invalid([['champ' => 'rubriqueId', 'message' => 'Rubrique introuvable (voir lister_catalogue).']]);
-        }
-
-        $result = ['rubrique' => $rubrique === null ? null : ['id' => $rubrique->getId(), 'nom' => $rubrique->getName()], 'classes' => [], 'refus' => []];
-        foreach (array_values(array_unique(array_map('intval', $parcoursIds))) as $id) {
-            $category = $this->entityManager->find(Category::class, $id);
-            if ($category === null) {
-                $result['refus'][] = ['id' => $id, 'raison' => 'Parcours introuvable (voir lister_catalogue).'];
-                continue;
-            }
-            $previous = $category->getSuperMenu();
-            $category->setSuperMenu($rubrique);
-            $result['classes'][] = ['id' => $id, 'nom' => $category->getName(), 'ancienneRubriqueId' => $previous?->getId(), 'nouvelleRubriqueId' => $rubrique?->getId()];
-        }
-        $this->entityManager->flush();
-
-        return $result;
+        return ['id' => $category->getId(), 'nom' => $category->getName(), 'public' => $category->getAudience(), 'description' => $category->getDescription(), 'niveauId' => $level?->getId()];
     }
 
     /**
@@ -292,7 +200,7 @@ final class RedactionService
     {
         $slug = (string) ($data['slug'] ?? '');
         if (preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $slug) !== 1 || strlen($slug) > 90) {
-            throw RedactionError::invalid([['champ' => 'slug', 'message' => 'Adresse attendue en minuscules, chiffres et tirets, par exemple « ecrire-une-bonne-consigne ».']]);
+            throw RedactionError::invalid([['champ' => 'slug', 'message' => 'Adresse attendue en minuscules, chiffres et tirets, par exemple « caf-trouver-mon-compte ».']]);
         }
         if ($this->entityManager->getRepository(Page::class)->findOneBy(['slug' => '/'.$slug]) !== null) {
             throw RedactionError::invalid([['champ' => 'slug', 'message' => 'Cette adresse est déjà utilisée par un autre cours.']]);
@@ -412,6 +320,34 @@ final class RedactionService
         $this->entityManager->flush();
 
         return ['type' => $type, 'id' => $id, 'misEnBrouillon' => array_map(fn (PageContent $c) => $this->summary($c), $courses)];
+    }
+
+    /**
+     * Supprime un module vide. Refusé, sans rien changer, tant qu'un cours (quel que soit son statut) ou une
+     * page y est encore rattaché : jamais de suppression en cascade. Les cours se déplacent avec classer_cours.
+     *
+     * @return array<string, mixed>
+     */
+    public function deleteModule(int $moduleId): array
+    {
+        $menu = $this->entityManager->find(Menus::class, $moduleId)
+            ?? throw new RedactionError('Module introuvable (voir lister_catalogue).', RedactionError::NOT_FOUND);
+
+        $courses = $this->entityManager->getRepository(PageContent::class)->findBy(['menu' => $menu], ['id' => 'ASC']);
+        $pages = $this->entityManager->getRepository(Page::class)->count(['menus' => $menu]);
+        if ($courses !== [] || $pages > 0) {
+            throw new RedactionError(
+                sprintf('Le module « %s » n\'est pas vide : déplacez d\'abord ses cours (classer_cours). Rien n\'a été supprimé.', $menu->getLabel()),
+                RedactionError::CONFLICT,
+                ['cours' => array_map(fn (PageContent $c) => $this->summary($c), $courses), 'pagesRattachees' => $pages],
+            );
+        }
+
+        $deleted = ['id' => $menu->getId(), 'nom' => $menu->getLabel(), 'parcoursId' => $menu->getCategory()?->getId()];
+        $this->entityManager->remove($menu);
+        $this->entityManager->flush();
+
+        return ['supprime' => $deleted];
     }
 
     /**
@@ -538,6 +474,47 @@ final class RedactionService
             $course->getPage()?->setMenus($menu);
             $result['classes'][] = ['id' => $id, 'titre' => $course->getTitle(), 'statut' => $course->getStatus(), 'ancienModuleId' => $previous?->getId(), 'nouveauModuleId' => $menu?->getId(), 'ordre' => $course->getOrdre()];
             $result['ordres'][$id] = $course->getOrdre();
+        }
+        $this->entityManager->flush();
+
+        return $result;
+    }
+
+    /**
+     * Classement par niveau : donne un niveau à des cours (ou le retire avec null), quel que soit leur statut.
+     * Ne change ni le contenu, ni le statut, ni la relecture. Les cours valides sont classés même si
+     * d'autres sont refusés ; le résultat dit lesquels.
+     *
+     * @param list<int> $courseIds
+     * @return array<string, mixed>
+     */
+    public function classifyLevel(array $courseIds, ?int $niveauId): array
+    {
+        $level = null;
+        if ($niveauId !== null) {
+            $level = $this->entityManager->find(NiveauCours::class, $niveauId)
+                ?? throw RedactionError::invalid([['champ' => 'niveauId', 'message' => 'Niveau introuvable (voir lister_catalogue).']]);
+        }
+
+        $result = [
+            'niveau' => $level === null ? null : ['id' => $level->getId(), 'nom' => $level->getName()],
+            'classes' => [],
+            'dejaACeNiveau' => [],
+            'refus' => [],
+        ];
+        foreach (array_values(array_unique(array_map('intval', $courseIds))) as $id) {
+            $course = $this->entityManager->find(PageContent::class, $id);
+            if ($course === null) {
+                $result['refus'][] = ['id' => $id, 'raison' => 'Cours introuvable.'];
+                continue;
+            }
+            $previous = $course->getNiveauCours();
+            if ($previous?->getId() === $level?->getId()) {
+                $result['dejaACeNiveau'][] = $id;
+                continue;
+            }
+            $course->setNiveauCours($level);
+            $result['classes'][] = ['id' => $id, 'titre' => $course->getTitle(), 'statut' => $course->getStatus(), 'ancienNiveauId' => $previous?->getId(), 'nouveauNiveauId' => $level?->getId()];
         }
         $this->entityManager->flush();
 

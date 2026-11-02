@@ -2,45 +2,35 @@
 namespace App\Controller\Admin;
 
 use App\Domain\Category\Repository\CategoryRepositoryInterface;
-use App\Domain\ExoContent\Repository\ExoContentRepositoryInterface;
 use App\Domain\PageContent\Repository\PageContentRepositoryInterface;
-use App\Domain\QCM\Repository\QCMRepositoryInterface;
+use App\Domain\CourseMedia\Repository\CourseMediaRepositoryInterface;
 use App\Domain\SiteConfiguration\Repository\SiteConfigurationRepositoryInterface;
-use App\Domain\User\Repository\UserRepositoryInterface;
-use App\Domain\UserPageVisit\Repository\UserPageVisitRepositoryInterface;
 use App\Entity\Category;
-use App\Entity\CourseMedia;
-use App\Entity\Diaporama;
-use App\Entity\QcmDraft;
 use App\Entity\Menus;
 use App\Entity\Page;
 use App\Entity\PageContent;
-use App\Entity\Exo;
-use App\Entity\ExoMenu;
-use App\Entity\ExoContent;
+use App\Entity\CourseMedia;
 use App\Entity\QCM;
+use App\Entity\QcmDraft;
 use App\Entity\LanguageQCM;
 use App\Entity\NiveauQCM;
 use App\Entity\ChoicesQCM;
 use App\Entity\User;
-use App\Entity\UserPageVisit;
 use Symfony\Component\Routing\Attribute\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Entity\DocDeCode;
 use App\Entity\Logo;
 use App\Entity\PositionMenus;
 use App\Entity\Seo;
 use App\Entity\SuperMenu;
-use App\Entity\UserCustomization;
 use App\Entity\SiteConfiguration;
 use App\Controller\Admin\SiteConfigurationCrudController;
 use App\Entity\NiveauCours;
+use App\Service\LegalInformation;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // AdminDashboard fixe le préfixe des routes CRUD générées par EasyAdmin : sans lui, elles
 // sont dérivées de la route de index() et exposées hors de /admin (donc hors access_control).
@@ -50,14 +40,11 @@ class DashboardController extends AbstractDashboardController
 {
     public function __construct(
         private CategoryRepositoryInterface $categoryRepository,
-        private UserRepositoryInterface $userRepository,
         private PageContentRepositoryInterface $pageContentRepository,
-        private QCMRepositoryInterface $qcmRepository,
-        private ExoContentRepositoryInterface $exoContentRepository,
-        private UserPageVisitRepositoryInterface $userPageVisitRepository,
+        private CourseMediaRepositoryInterface $courseMediaRepository,
         private SiteConfigurationRepositoryInterface $siteConfigRepository,
         private AdminUrlGenerator $adminUrlGenerator,
-        #[Autowire(param: 'app.user_page_visit.enabled')] private bool $trackingEnabled,
+        private LegalInformation $legalInformation,
     ) {}
 
     #[Route('/site-config', name: 'admin_site_config')]
@@ -78,31 +65,31 @@ class DashboardController extends AbstractDashboardController
 
     public function index(): Response
     {
-        // Récupérer les statistiques
+        $today = new \DateTimeImmutable('today');
+
         $stats = [
-            'users' => $this->userRepository->countAll(),
+            'published' => count($this->pageContentRepository->findByStatuses([PageContent::STATUS_PUBLISHED])),
             'pages' => $this->pageContentRepository->countAll(),
             'categories' => count($this->categoryRepository->findAll()),
-            'qcm' => $this->qcmRepository->countAll(),
-            'exercices' => $this->exoContentRepository->countAll(),
-            'visits' => $this->trackingEnabled
-                ? $this->userPageVisitRepository->countAll()
-                : 0,
+            'captures' => $this->courseMediaRepository->countAll(),
         ];
 
-        // Récupérer les dernières visites
-        $recentVisits = $this->trackingEnabled
-            ? $this->userPageVisitRepository->findLatest(10)
-            : [];
-
-        // Récupérer les derniers utilisateurs
-        $recentUsers = $this->userRepository->findLatest(5);
+        // Travail éditorial en attente : cours à relire ou à mettre à jour, captures à comparer au site officiel
+        $coursesToReview = $this->pageContentRepository->findByStatuses([PageContent::STATUS_IN_REVIEW, PageContent::STATUS_TO_REVISE]);
+        $capturesDue = $this->courseMediaRepository->findDueForReview($today);
 
         return $this->render('admin/dashboard.html.twig', [
             'stats' => $stats,
-            'recentVisits' => $recentVisits,
-            'recentUsers' => $recentUsers,
-            'trackingEnabled' => $this->trackingEnabled,
+            // Mentions légales et contact RGPD : ce qui manque encore sur le site public
+            'legalMissing' => $this->legalInformation->missing(),
+            'coursesToReview' => array_map(fn (PageContent $course) => [
+                'course' => $course,
+                'url' => $this->adminUrlGenerator->unsetAll()->setController(PageContentCrudController::class)->setAction('edit')->setEntityId($course->getId())->generateUrl(),
+            ], $coursesToReview),
+            'capturesDue' => array_map(fn (CourseMedia $capture) => [
+                'capture' => $capture,
+                'url' => $this->adminUrlGenerator->unsetAll()->setController(CourseMediaCrudController::class)->setAction('edit')->setEntityId($capture->getId())->generateUrl(),
+            ], $capturesDue),
         ]);
     }
 
@@ -119,19 +106,12 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
     
         yield MenuItem::section('📚 Cours');
-        yield MenuItem::linkToCrud('PageContents', 'fa fa-bars', PageContent::class);
-        // Production du connecteur de rédaction (MCP) : images des cours, diaporamas et brouillons de QCM
+        yield MenuItem::linkToCrud('Cours', 'fa fa-file-lines', PageContent::class);
         yield MenuItem::linkToCrud('Captures', 'fa fa-image', CourseMedia::class);
-        yield MenuItem::linkToCrud('Diaporamas', 'fa fa-person-chalkboard', Diaporama::class);
-        yield MenuItem::linkToCrud('Brouillons de QCM du connecteur', 'fa fa-file-circle-question', QcmDraft::class);
-
-        yield MenuItem::section('📝 Exercices');
-        yield MenuItem::linkToCrud('ExoContents', 'fa fa-book', ExoContent::class);
-        yield MenuItem::linkToCrud('Exos', 'fa fa-list', Exo::class);
-        yield MenuItem::linkToCrud('ExoMenus', 'fa fa-bars', ExoMenu::class);
 
         yield MenuItem::section('🧠 QCM');
         yield MenuItem::linkToCrud('QCM', 'fa fa-question-circle', QCM::class);
+        yield MenuItem::linkToCrud('Brouillons du connecteur', 'fa fa-file-circle-question', QcmDraft::class);
         yield MenuItem::linkToCrud('Langages', 'fa fa-code', LanguageQCM::class);
         yield MenuItem::linkToCrud('Niveaux', 'fa fa-layer-group', NiveauQCM::class);
         yield MenuItem::linkToCrud('Choix', 'fa fa-check-square', ChoicesQCM::class);
@@ -148,14 +128,6 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('👥 Utilisateurs');
         yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);
-        yield MenuItem::linkToCrud('Personnalisations', 'fa fa-palette', UserCustomization::class);
-        if ($this->trackingEnabled) {
-            yield MenuItem::linkToCrud('Visites', 'fa fa-chart-line', UserPageVisit::class);
-            yield MenuItem::linkToRoute('Statistiques des visites', 'fa fa-chart-bar', 'admin_stats_page_visits');
-        }
-
-        yield MenuItem::section('🔗 ajout des doc dans menu');
-        yield MenuItem::linkToCrud('Doc de code', 'fa fa-code', DocDeCode::class);
 
         yield MenuItem::section('🔗 Logos');
         yield MenuItem::linkToCrud('Logos', 'fa fa-bars', Logo::class);

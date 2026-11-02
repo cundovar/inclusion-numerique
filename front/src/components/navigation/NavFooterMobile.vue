@@ -1,102 +1,48 @@
 <template>
   <footer
     ref="footerRef"
-    class="min-w-[320px] p-3 md:p-4 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-blue-300 z-50 shadow-2xl flex items-center justify-around xl:hidden gap-2 md:gap-4"
+    class="min-w-[320px] p-3 md:p-4 rounded-t-2xl fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-sky-50 z-50 flex items-center justify-around xl:hidden gap-2 md:gap-4 nav-footer"
   >
-    <!-- Bouton Profil -->
-    <router-link
-      v-if="user"
-      :to="`/${profileLink.name}`"
-      class="shadow-neutral-600 shadow-lg p-2 md:p-3 rounded-2xl nav-btn w-14 md:w-20 h-14 md:h-16 text-white font-bold hover:underline flex flex-col items-center justify-center transition-colors duration-200"
+    <nav
+      aria-label="Navigation principale"
+      class="contents"
     >
-      <i
-        :class="profileLink.icon"
-        class="text-2xl md:text-3xl mb-1"
-      />
-      <span class="text-xs md:text-sm">{{ profileLink.label }}</span>
-    </router-link>
-
-    <!-- Liens Technologies -->
-    <router-link
-      v-for="tech in techs"
-      :key="tech.name"
-      :to="tech.name === 'qcm' ? '/qcm' : `/pages/${tech.name}`"
-      :class="[
-        'shadow-neutral-600 shadow-lg p-2 md:p-3 rounded-xl w-14 md:w-20 h-14 md:h-16 text-white font-bold hover:underline flex flex-col items-center justify-center transition-colors duration-200',
-        tech.color === 'purple' ? 'nav-btn nav-btn--purple' : 'nav-btn'
-      ]"
-    >
-      <i
-        :class="tech.icon"
-        class="text-2xl md:text-3xl mb-1"
-      />
-      <span class="text-xs md:text-sm">{{ tech.label }}</span>
-    </router-link>
-
-    <!-- Bouton Vue.js (masqué sur mobile, visible sur tablette) -->
-    <!-- {# <router-link
-      :to="`/${vuejsLink.name}`"
-      class="hidden md:flex shadow-neutral-600 shadow-lg p-3 rounded-2xl nav-btn w-20 h-16 text-white font-bold hover:underline flex-col items-center justify-center transition-colors duration-200"
-    >
-      <i :class="vuejsLink.icon" class="text-3xl mb-1"></i>
-      <span class="text-sm">{{ vuejsLink.label }}</span>
-    </router-link> #} -->
-
-    <!-- Bouton Exercices (masqué sur mobile, visible sur tablette) -->
-    <router-link
-      to="/exercices"
-      class=" flex shadow-neutral-600 shadow-lg p-3 rounded-2xl nav-btn nav-btn--green w-20 h-16  font-bold hover:underline flex-col items-center justify-center transition-colors duration-200"
-    >
-      <i class="pi pi-book text-3xl mb-1" />
-      <span class="text-sm">Exos</span>
-    </router-link>
+      <router-link
+        v-for="link in links"
+        :key="link.to"
+        :to="link.to"
+        :class="[
+          'shadow-sm p-2 md:p-3 rounded-xl min-w-14 md:w-24 h-14 md:h-16 text-gray-900 font-bold hover:underline flex flex-col items-center justify-center transition-colors duration-200',
+          `nav-btn nav-btn--${link.color}`
+        ]"
+      >
+        <i
+          :class="link.icon"
+          class="text-2xl md:text-3xl mb-1"
+          aria-hidden="true"
+        />
+        <span class="text-xs md:text-sm">{{ link.label }}</span>
+      </router-link>
+    </nav>
   </footer>
 </template>
 
 <script setup>
-import axios from 'axios';
 import { ref, onMounted, onUnmounted } from 'vue';
 import Headroom from 'headroom.js';
 
-const user = ref(false);
 const footerRef = ref(null);
 let headroom = null;
-const techs = [
 
-  {
-    name: 'qcm',
-    label: 'QCM',
-    icon: 'fas fa-brain',
-    color: 'purple'
-  }
-]
-
-const profileLink = {
-  name: 'profile',
-  label: 'Profil',
-  icon: 'pi pi-user'
-}
-
-
-
-
-const fetchUser = async () => {
-  try {
-    const response = await axios.get('/user-api/me');
-    user.value = response.data;
-    if(user.value){
-        user.value=true
-    }
-    console.log('User:', user.value);
-  } catch (error) {
-    console.error('Erreur lors de la récupération de l\'utilisateur', error);
-    user.value=false
-  }
-};
+// Les deux entrées du site restent accessibles depuis toutes les pages sur mobile
+const links = [
+  { to: '/', label: 'Accueil', icon: 'fas fa-house', color: 'blue' },
+  { to: '/apprendre', label: 'Apprendre', icon: 'fas fa-laptop', color: 'green' },
+  { to: '/accompagner', label: 'Accompagner', icon: 'fas fa-people-group', color: 'amber' },
+  { to: '/qcm', label: 'QCM', icon: 'fas fa-brain', color: 'purple' },
+];
 
 onMounted(() => {
-  fetchUser();
-
   // Headroom.js pour le footer (logique inversée)
   if (footerRef.value) {
     headroom = new Headroom(footerRef.value, {
@@ -128,43 +74,61 @@ onUnmounted(() => {
 
 <style scoped>
 
+.nav-footer {
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+}
+
 .nav-btn {
-  background: #60a5fa;
+  background: #dbeafe;
 }
 
 .nav-btn:hover {
-  background: #3b82f6;
+  background: #bfdbfe;
 }
 
 .nav-btn:active,
 .nav-btn:focus-visible {
-  background: #2563eb;
+  background: #bfdbfe;
+}
+
+.nav-btn:focus-visible {
+  outline: 3px solid #94a3b8;
+  outline-offset: 2px;
+}
+
+/* Page en cours */
+.nav-btn.router-link-active {
+  box-shadow: inset 0 -4px 0 #fff, 0 0 0 3px #cbd5e1;
 }
 
 .nav-btn--purple {
-  background: #c084fc;
+  background: #f3e8ff;
 }
 
-.nav-btn--purple:hover {
-  background: #a855f7;
-}
-
+.nav-btn--purple:hover,
 .nav-btn--purple:active,
 .nav-btn--purple:focus-visible {
-  background: #9333ea;
+  background: #e9d5ff;
 }
 
 .nav-btn--green {
-  background: #86efac;
+  background: #dcfce7;
 }
 
-.nav-btn--green:hover {
-  background: #4ade80;
-}
-
+.nav-btn--green:hover,
 .nav-btn--green:active,
 .nav-btn--green:focus-visible {
-  background: #22c55e;
+  background: #bbf7d0;
+}
+
+.nav-btn--amber {
+  background: #fef3c7;
+}
+
+.nav-btn--amber:hover,
+.nav-btn--amber:active,
+.nav-btn--amber:focus-visible {
+  background: #fde68a;
 }
 
 .footer-mobil{

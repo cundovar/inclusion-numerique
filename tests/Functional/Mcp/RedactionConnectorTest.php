@@ -20,7 +20,7 @@ final class RedactionConnectorTest extends McpTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->parcours = (new Category())->setName('démarches en ligne');
+        $this->parcours = (new Category())->setName('démarches en ligne')->setAudience(Category::AUDIENCE_APPRENDRE);
         $this->entityManager->persist($this->parcours);
         $this->entityManager->flush();
     }
@@ -31,49 +31,47 @@ final class RedactionConnectorTest extends McpTestCase
         sort($tools);
 
         self::assertSame([
-            'attribuer_acces', 'capturer_page', 'classer_cours', 'classer_parcours', 'creer_brouillon', 'creer_brouillon_qcm', 'creer_diaporama', 'creer_module',
-            'creer_niveau', 'creer_niveau_qcm', 'creer_parcours', 'creer_rubrique', 'creer_theme_qcm', 'definir_illustration_parcours', 'enregistrer_relecture',
-            'enregistrer_relecture_diaporama', 'enregistrer_relecture_qcm', 'lire_regles', 'lister_acces', 'lister_apprenants', 'lister_brouillons',
-            'lister_brouillons_qcm', 'lister_captures', 'lister_catalogue', 'lister_catalogue_qcm', 'lister_cours_publies', 'lister_diaporamas',
-            'mettre_en_brouillon', 'modifier_brouillon', 'modifier_brouillon_qcm', 'modifier_diaporama', 'obtenir_modele', 'ordonner_parcours',
-            'ordonner_rubriques', 'ouvrir_a_tous', 'preparer_depot_image', 'preparer_diaporama', 'publier_cours', 'publier_diaporama', 'publier_qcm',
-            'remplacer_capture', 'retirer_acces', 'soumettre_en_revue', 'verifier_brouillon', 'verifier_brouillon_qcm', 'verifier_diaporama',
-            'voir_brouillon', 'voir_brouillon_qcm', 'voir_diaporama',
+            'attribuer_acces', 'capturer_page', 'classer_cours', 'classer_niveau', 'creer_brouillon', 'creer_brouillon_qcm', 'creer_module', 'creer_niveau', 'creer_niveau_qcm', 'creer_parcours', 'creer_theme_qcm', 'definir_illustration_parcours', 'enregistrer_relecture',
+            'enregistrer_relecture_qcm', 'lire_regles', 'lister_acces', 'lister_apprenants', 'lister_brouillons', 'lister_brouillons_qcm', 'lister_captures', 'lister_catalogue', 'lister_catalogue_qcm',
+            'lister_cours_publies', 'mettre_en_brouillon', 'modifier_brouillon', 'modifier_brouillon_qcm', 'obtenir_modele', 'ordonner_parcours', 'ouvrir_a_tous', 'preparer_depot_image', 'publier_cours', 'publier_qcm', 'remplacer_capture',
+            'retirer_acces', 'soumettre_en_revue', 'supprimer_module', 'verifier_brouillon', 'verifier_brouillon_qcm', 'voir_brouillon', 'voir_brouillon_qcm',
         ], $tools);
 
         $prompts = array_column($this->rpc(self::CLAUDE, 'prompts/list')['result']['prompts'], 'name');
         sort($prompts);
-        self::assertSame(['rediger_cours', 'rediger_diaporama', 'rediger_qcm', 'relire_brouillon', 'relire_diaporama', 'relire_qcm'], $prompts);
-        $writing = $this->rpc(self::CLAUDE, 'prompts/get', ['name' => 'rediger_cours', 'arguments' => ['sujet' => 'créer un premier contrôleur']]);
+        self::assertSame(['rediger_cours', 'rediger_qcm', 'relire_brouillon', 'relire_qcm'], $prompts);
+        $writing = $this->rpc(self::CLAUDE, 'prompts/get', ['name' => 'rediger_cours', 'arguments' => ['sujet' => 'trouver son espace CAF', 'public' => 'apprendre']]);
         self::assertStringContainsString('Ne publie jamais sans relecture favorable', $writing['result']['messages'][0]['content']['text']);
 
         $resources = array_column($this->rpc(self::CLAUDE, 'resources/list')['result']['resources'], 'uri');
-        self::assertContains('regles:///01-redaction.md', $resources);
+        self::assertContains('regles:///01-posture.md', $resources);
         $readme = $this->rpc(self::CLAUDE, 'resources/read', ['uri' => 'regles:///README.md']);
-        self::assertStringContainsString('Référentiel de rédaction DevDoc', $readme['result']['contents'][0]['text']);
+        self::assertStringContainsString('Référentiel de la médiation numérique', $readme['result']['contents'][0]['text']);
     }
 
-    public function testRulesAreRead(): void
+    public function testRulesAreReadWithTheirSources(): void
     {
         $index = $this->tool(self::CLAUDE, 'lire_regles')['data'];
         self::assertStringContainsString('premier jet', $index['statut']);
-        self::assertContains(['id' => 'COD-01', 'titre' => 'Un langage par bloc', 'fichier' => '02-code.md'], $index['regles']);
-        self::assertSame(['cours'], $index['modeles']);
+        self::assertContains(['id' => 'POS-01', 'titre' => 'Faire avec, pas à la place', 'fichier' => '01-posture.md'], $index['regles']);
+        self::assertSame(['cours-accompagner', 'cours-apprendre', 'fiche-service'], $index['modeles']);
 
-        $text = $this->tool(self::CLAUDE, 'lire_regles', ['identifiants' => ['COD-01', 'SRC-01']])['text'];
-        self::assertStringContainsString('## COD-01 — Un langage par bloc', $text);
-        self::assertStringContainsString('## SRC-01', $text);
+        $text = $this->tool(self::CLAUDE, 'lire_regles', ['identifiants' => ['POS-01', 'LIM-01']])['text'];
+        self::assertStringContainsString('## POS-01 — Faire avec, pas à la place', $text);
+        self::assertStringContainsString('## LIM-01', $text);
+        self::assertStringContainsString('# Sources', $text);
 
         self::assertTrue($this->tool(self::CLAUDE, 'lire_regles', ['identifiants' => ['XYZ-99']])['error']);
-        self::assertStringContainsString('Pour aller plus loin', $this->tool(self::CLAUDE, 'obtenir_modele', ['modele' => 'cours'])['text']);
+        self::assertStringContainsString('Si ça ne marche pas', $this->tool(self::CLAUDE, 'obtenir_modele', ['modele' => 'fiche-service'])['text']);
     }
 
-    public function testCatalogueListsParcours(): void
+    public function testCatalogueListsParcoursWithTheirPublic(): void
     {
         $data = $this->tool(self::CLAUDE, 'lister_catalogue')['data'];
 
         self::assertSame('démarches en ligne', $data['parcours'][0]['nom']);
-        self::assertArrayNotHasKey('public', $data['parcours'][0]);
+        self::assertSame('apprendre', $data['parcours'][0]['public']);
+        self::assertArrayNotHasKey('sitesCapturables', $data);
     }
 
     public function testCatalogueStructureCanBeCreatedWithoutDuplicates(): void
@@ -83,8 +81,9 @@ final class RedactionConnectorTest extends McpTestCase
         self::assertSame(1, $level['data']['ordre']);
         self::assertSame(2, $this->tool(self::CLAUDE, 'creer_niveau', ['nom' => 'Intermédiaire'])['data']['ordre']);
 
-        $parcours = $this->tool(self::CLAUDE, 'creer_parcours', ['nom' => "J'apprends le numérique", 'niveauId' => $level['data']['id']]);
+        $parcours = $this->tool(self::CLAUDE, 'creer_parcours', ['nom' => "J'apprends le numérique", 'public' => 'apprendre', 'niveauId' => $level['data']['id']]);
         self::assertFalse($parcours['error'], $parcours['text']);
+        self::assertSame('apprendre', $parcours['data']['public']);
 
         $module = $this->tool(self::CLAUDE, 'creer_module', ['nom' => "Prendre en main l'ordinateur", 'parcoursId' => $parcours['data']['id'], 'niveauId' => $level['data']['id']]);
         self::assertFalse($module['error'], $module['text']);
@@ -93,8 +92,8 @@ final class RedactionConnectorTest extends McpTestCase
         self::assertContains(['id' => $module['data']['id'], 'nom' => "Prendre en main l'ordinateur", 'parcoursId' => $parcours['data']['id']], $catalogue['modules']);
         self::assertSame(['Débutant', 'Intermédiaire'], array_column($catalogue['niveaux'], 'nom'));
 
-        // Un doublon renvoie l'identifiant existant ; un champ ou un parcours inconnu est refusé
-        self::assertStringContainsString('identifiant '.$parcours['data']['id'], $this->tool(self::CLAUDE, 'creer_parcours', ['nom' => "J'apprends le numérique"])['text']);
+        // Un doublon renvoie l'identifiant existant ; un public ou un parcours inconnu est refusé
+        self::assertStringContainsString('identifiant '.$parcours['data']['id'], $this->tool(self::CLAUDE, 'creer_parcours', ['nom' => "J'apprends le numérique", 'public' => 'apprendre'])['text']);
         self::assertStringContainsString('identifiant '.$module['data']['id'], $this->tool(self::CLAUDE, 'creer_module', ['nom' => "Prendre en main l'ordinateur", 'parcoursId' => $parcours['data']['id']])['text']);
         self::assertTrue($this->tool(self::CLAUDE, 'creer_niveau', ['nom' => 'Débutant'])['error']);
         self::assertTrue($this->tool(self::CLAUDE, 'creer_parcours', ['nom' => 'Autre', 'public' => 'tout le monde'])['error']);
@@ -125,7 +124,7 @@ final class RedactionConnectorTest extends McpTestCase
 
     public function testInvalidDraftsAreRejectedWithReasons(): void
     {
-        $other = (new Category())->setName('autre');
+        $other = (new Category())->setName('autre')->setAudience(Category::AUDIENCE_ACCOMPAGNER);
         $foreignModule = (new Menus())->setLabel('Module étranger')->setCategory($other);
         $this->entityManager->persist($other);
         $this->entityManager->persist($foreignModule);
@@ -207,7 +206,7 @@ final class RedactionConnectorTest extends McpTestCase
         $report = $this->tool(self::CLAUDE, 'verifier_brouillon', ['id' => $id])['data'];
         self::assertFalse($report['soumissible']);
         $phone = array_values(array_filter($report['controles'], static fn (array $c) => $c['code'] === 'TELEPHONE'))[0];
-        self::assertSame('Aucun secret ni donnée réelle', $phone['regleTitre']);
+        self::assertSame('Uniquement des données fictives dans les cours', $phone['regleTitre']);
 
         self::assertTrue($this->tool(self::CLAUDE, 'soumettre_en_revue', ['id' => $id])['error']);
         $this->entityManager->clear();
@@ -243,7 +242,7 @@ final class RedactionConnectorTest extends McpTestCase
     public function testEditingClearsTheReviewAndAnUnfavourableReviewBlocks(): void
     {
         $id = $this->createDraft('a-corriger', '<p>Texte.</p><h2>À vous</h2><p>Essayez.</p>');
-        $this->review($id, PageContent::REVIEW_UNFAVORABLE, [['regle' => 'COD-02', 'constat' => "L'exemple ne compile pas.", 'suggestion' => null]]);
+        $this->review($id, PageContent::REVIEW_UNFAVORABLE, [['regle' => 'POS-01', 'constat' => 'Le cours fait à la place de la personne.', 'suggestion' => null]]);
 
         self::assertStringContainsString('RELECTURE_DEFAVORABLE', $this->tool(self::CLAUDE, 'soumettre_en_revue', ['id' => $id])['text']);
 

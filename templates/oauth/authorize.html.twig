@@ -11,32 +11,17 @@
             <p>Retournez dans Claude ou ChatGPT et ajoutez de nouveau le connecteur.</p>
         {% else %}
             <h1>Autoriser « {{ client.name }} »</h1>
-            {% if learner %}
-            <p>
-                <strong>{{ client.name }}</strong> demande à lire les cours de ce site,
-                au nom de <strong>{{ app.user.userIdentifier }}</strong>.
-            </p>
-            <p>Il pourra :</p>
-            <ul>
-                <li>lister les parcours, lire et rechercher les cours publiés et ceux qui vous sont réservés ;</li>
-                <li>vous proposer les QCM accessibles, sans enregistrer vos réponses.</li>
-            </ul>
-            <p>Il ne pourra <strong>rien modifier</strong> sur le site et ne recevra pas votre adresse e-mail.</p>
-            {% else %}
             <p>
                 <strong>{{ client.name }}</strong> demande à préparer des cours pour ce site,
                 au nom de <strong>{{ app.user.userIdentifier }}</strong>.
             </p>
             <p>Il pourra :</p>
             <ul>
-                <li>lire le catalogue, les règles de rédaction de DevDoc et les captures ;</li>
-                <li>créer et modifier des <strong>brouillons</strong> de cours, de QCM et de diaporamas, et relire ceux d'un autre connecteur ;</li>
-                <li>capturer des pages publiques et préparer le dépôt d'images pour les cours ;</li>
-                <li>réserver un cours, un parcours ou un QCM à certains comptes du site ;</li>
-                <li>publier un cours, un QCM ou un diaporama <strong>seulement</strong> après l'avis favorable d'un autre connecteur et sans contrôle bloquant ;</li>
+                <li>lire le catalogue, les règles de la médiation numérique et les captures ;</li>
+                <li>créer et modifier des <strong>brouillons</strong>, et relire ceux d'un autre connecteur ;</li>
                 <li>soumettre un brouillon à votre relecture dans le back-office.</li>
             </ul>
-            {% endif %}
+            <p>Il ne pourra <strong>jamais publier</strong> un cours ni modifier un cours publié.</p>
             <p class="oauth-note">Retour vers : <code>{{ redirect_host }}</code>. Vous pourrez couper cet accès à tout moment (commande <code>app:connecteurs revoke</code> sur le serveur).</p>
 
             <form method="post" action="{{ path('oauth_authorize_decision') }}" class="oauth-actions">

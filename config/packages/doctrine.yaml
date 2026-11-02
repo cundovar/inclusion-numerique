@@ -1,6 +1,9 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        # Tables que le schéma ignore : celles ajoutées pour DevDoc dans la base partagée avec
+        # inclusion-numerique (voir config/services.yaml)
+        schema_filter: '%env(DOCTRINE_SCHEMA_FILTER)%'
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
@@ -8,8 +11,6 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
-        # Tables que le schéma ignore : celles de mediateur dans la base partagée d'inclusion-numerique
-        schema_filter: '%env(DOCTRINE_SCHEMA_FILTER)%'
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true

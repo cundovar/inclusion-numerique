@@ -71,3 +71,55 @@ describe('fetchDataPwa — repli hors ligne sur IndexedDB', () => {
     expect(offline.data.user.value).toBeNull()
   })
 })
+
+describe('fetchDataPwa — contenus personnalisés hors ligne', () => {
+  it('à la déconnexion, efface le catalogue et les pages qui ont pu être réservés à la personne', async () => {
+    const online = await launchApp()
+    online.axios.get.mockImplementation(async (url) => {
+      if (url === '/user-api/me') return { data: { username: 'alice', roles: ['ROLE_USER'] } }
+      if (url === '/api/categories') return { data: { member: [{ id: 1, name: 'Atelier Alice', reserve: true }] } }
+      return { data: { member: [{ id: 10, title: 'Pour Alice', reserve: true }] } }
+    })
+    await online.data.fetchUser()
+    await online.data.fetchMenus()
+
+    window.dispatchEvent(new Event('auth:logout'))
+    await vi.waitFor(async () => {
+      const offline = await launchApp()
+      offline.axios.get.mockRejectedValue(networkError())
+      await offline.data.fetchMenus()
+      expect(offline.data.menus.value).toEqual([])
+      expect(offline.data.cats.value).toEqual([])
+    })
+  })
+
+  it('un visiteur jamais connecté garde son catalogue hors ligne', async () => {
+    const online = await launchApp()
+    online.axios.get.mockImplementation(async (url) => {
+      if (url === '/user-api/me') throw Object.assign(new Error('Unauthorized'), { response: { status: 401 } })
+      return { data: { member: [{ id: 10, title: 'Public' }] } }
+    })
+    await online.data.fetchMenus()
+    await online.data.fetchUser()
+
+    const offline = await launchApp()
+    offline.axios.get.mockRejectedValue(networkError())
+    await offline.data.fetchMenus()
+
+    expect(offline.data.menus.value).toEqual([{ id: 10, title: 'Public' }])
+  })
+
+  it('un cours qui n’est plus servi disparaît du cache au rechargement suivant', async () => {
+    const first = await launchApp()
+    first.axios.get.mockResolvedValue({ data: { member: [{ id: 10, title: 'Public' }, { id: 11, title: 'Retiré' }] } })
+    await first.data.fetchMenus()
+    first.axios.get.mockResolvedValue({ data: { member: [{ id: 10, title: 'Public' }] } })
+    await first.data.fetchMenus()
+
+    const offline = await launchApp()
+    offline.axios.get.mockRejectedValue(networkError())
+    await offline.data.fetchMenus()
+
+    expect(offline.data.menus.value).toEqual([{ id: 10, title: 'Public' }])
+  })
+})

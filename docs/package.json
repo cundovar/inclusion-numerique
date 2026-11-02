@@ -1,8 +1,8 @@
 {
-  "name": "devdoc-docs-site",
+  "name": "mediateur-docs-site",
   "private": true,
   "type": "module",
-  "description": "Documentation technique de DevDoc (VitePress), source dans ../docs",
+  "description": "Documentation technique du site de formation à la médiation numérique (VitePress), source dans ../docs",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",

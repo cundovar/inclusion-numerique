@@ -43,7 +43,7 @@ final class QcmConnectorTest extends McpTestCase
             self::assertStringContainsString('autre connecteur', $tools['publier_qcm']['description']);
         }
 
-        $writing = $this->rpc(self::CLAUDE, 'prompts/get', ['name' => 'rediger_qcm', 'arguments' => ['sujet' => 'reconnaître un faux message']]);
+        $writing = $this->rpc(self::CLAUDE, 'prompts/get', ['name' => 'rediger_qcm', 'arguments' => ['sujet' => 'reconnaître un faux message', 'public' => 'apprendre']]);
         $text = $writing['result']['messages'][0]['content']['text'];
         self::assertStringContainsString('lister_catalogue_qcm', $text);
         self::assertStringContainsString('creer_theme_qcm', $text);
@@ -121,7 +121,7 @@ final class QcmConnectorTest extends McpTestCase
         self::assertTrue($check['sansControleBloquant']);
         self::assertFalse($check['publiable']);
         self::assertSame(['RELECTURE_MANQUANTE'], array_column($check['controles'], 'code'));
-        self::assertSame('Relecture par un autre agent', $check['controles'][0]['regleTitre']);
+        self::assertSame('Tester la compréhension avant de publier', $check['controles'][0]['regleTitre']);
 
         // Ni QCM ni réponse publics tant que le brouillon n'est pas publié
         self::assertSame(0, $this->entityManager->getRepository(QCM::class)->count([]));

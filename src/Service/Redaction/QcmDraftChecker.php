@@ -100,7 +100,7 @@ final class QcmDraftChecker
             $texts[] = (string) $answer['explication'];
         }
         foreach ($this->personalData->find(implode("\n", $texts)) as [$code, $message]) {
-            $issues[] = $this->issue($code, 'DON-01', DraftChecker::BLOCKING, $message);
+            $issues[] = $this->issue($code, 'DON-04', DraftChecker::BLOCKING, $message);
         }
 
         return $issues;

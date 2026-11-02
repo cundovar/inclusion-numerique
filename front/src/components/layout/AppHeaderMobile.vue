@@ -29,8 +29,9 @@
       <router-link to="/">
         <div class="flex items-center gap-2">
           <i
-            :class="[header.textColor || 'text-blue-950', 'pi pi-code']"
-            style="font-size: 1.8rem"
+            :class="[header.textColor || 'text-blue-950', 'fas fa-laptop']"
+            style="font-size: 1.5rem"
+            aria-hidden="true"
           />
           <span
             :class="[header.textColor || 'text-blue-950', 'font-bold text-xl']"
@@ -57,7 +58,7 @@
             rounded="full"
           />
         </a>
-        <AuthButtonMobile />
+        <AuthButton compact />
       </div>
     </div>
 
@@ -65,6 +66,7 @@
     <div class="px-3    flex justify-between pt-1 pb-2">
       <!-- Sélecteur de niveau stylisé -->
       <select
+        v-if="FILTRE_NIVEAU_VISIBLE"
         v-model="selectedLevel"
         class="w-48 h-9 px-3  bg-white border border-gray-300 rounded-lg text-sm text-gray-700
                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
@@ -86,7 +88,7 @@
         variant=""
         size="md"
         icon="pi pi-search"
-        class="  "
+        class="ml-auto"
         :class="showSearch ? 'invisible': 'visible'"
         @click="toggleSearchPanel"
       />
@@ -139,10 +141,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed,watch} from 'vue';
 import Headroom from 'headroom.js';
-import AuthButtonMobile from '../features/auth/AuthButtonMobile.vue';
 import SearchInput from '../features/search/SearchInput.vue';
 import { useCustomization } from '../../composables/ui/useCustomization';
 import AppButton from '../ui/AppButton.vue';
+import AuthButton from '../features/auth/AuthButton.vue';
 import { useData } from '../../utils/fetchDataPwa';
 import { APP_CONFIG } from '../../config/app.js';
 import SearchResultItem from '../features/search/SearchResultItem.vue';
@@ -150,7 +152,7 @@ import SearchResultItem from '../features/search/SearchResultItem.vue';
 // =============================================================================
 // STORE NIVEAU - Connexion au filtre global
 // =============================================================================
-import { useNiveauStore } from '@/stores/niveauCoursStore';
+import { FILTRE_NIVEAU_VISIBLE, useNiveauStore } from '@/stores/niveauCoursStore';
 import { storeToRefs } from 'pinia';
 import { useNavigation } from '@/composables/ui/useNavigation';
 import { useSearch } from '@/composables/domain/useSearch';
@@ -212,6 +214,8 @@ const selectedLevel = computed({
 // Note: fetchNiveaux() ne fait rien si les niveaux sont déjà chargés (optimisation)
 onMounted(() => {
   niveauStore.fetchNiveaux()
+  // Filtre masqué : on retire un niveau gardé d'une visite précédente, invisible et impossible à changer
+  if (!FILTRE_NIVEAU_VISIBLE) niveauStore.resetNiveau()
 })
 
 // Watch: Réinitialiser selectedNiveau si la valeur persistée n'existe pas dans les options

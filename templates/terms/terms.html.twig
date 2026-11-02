@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'terms/_macros.html.twig' as legal_ui %}
 
 {% block title %}Conditions générales d'utilisation{% endblock %}
 
@@ -39,18 +40,6 @@
     }
     .terms-section li {
         margin-bottom: 5px;
-    }
-    .back-link {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 10px 15px;
-        background: #007bff;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 4px;
-    }
-    .back-link:hover {
-        background: #0056b3;
     }
 </style>
 
@@ -98,11 +87,9 @@
 
     <div class="terms-section">
         <h2>7. Contact</h2>
-        <p>Pour toute question concernant ces conditions générales, vous pouvez nous contacter à l'adresse email fournie sur le site.</p>
+        <p>Pour toute question sur ces conditions d'utilisation : {{ legal_ui.email(legal.email) }}. L'éditeur du site est présenté dans les <a href="{{ path('app_legal') }}">mentions légales</a>.</p>
     </div>
 
-    <p><strong>Dernière mise à jour :</strong> {{ "now"|date("d/m/Y") }}</p>
-    
-    <a href="{{ path('app_register') }}" class="back-link">Retour à l'inscription</a>
+    {% include 'terms/_bas_de_page.html.twig' %}
 </div>
 {% endblock %}

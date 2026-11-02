@@ -37,21 +37,13 @@ class OAuthAuthorizationCode
     #[ORM\Column(name: 'code_challenge', length: 128)]
     private string $codeChallenge;
 
-    // Valeurs par défaut : la base d'inclusion-numerique est partagée avec mediateur, dont le code
-    // n'écrit pas ces colonnes ; ses accès (ressource vide) ne valent donc pas ici
-    #[ORM\Column(length: 500, options: ['default' => ''])]
-    private string $resource;
-
-    #[ORM\Column(length: 64, options: ['default' => ''])]
-    private string $scope;
-
     #[ORM\Column(name: 'expires_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $expiresAt;
 
     #[ORM\Column(name: 'used_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $usedAt = null;
 
-    public function __construct(string $codeHash, OAuthClient $client, User $user, string $redirectUri, string $codeChallenge, \DateTimeImmutable $expiresAt, string $resource = '/mcp', string $scope = 'redaction')
+    public function __construct(string $codeHash, OAuthClient $client, User $user, string $redirectUri, string $codeChallenge, \DateTimeImmutable $expiresAt)
     {
         $this->codeHash = $codeHash;
         $this->client = $client;
@@ -59,8 +51,6 @@ class OAuthAuthorizationCode
         $this->redirectUri = $redirectUri;
         $this->codeChallenge = $codeChallenge;
         $this->expiresAt = $expiresAt;
-        $this->resource = $resource;
-        $this->scope = $scope;
     }
 
     public function getId(): ?int { return $this->id; }
@@ -72,10 +62,6 @@ class OAuthAuthorizationCode
     public function getRedirectUri(): string { return $this->redirectUri; }
 
     public function getCodeChallenge(): string { return $this->codeChallenge; }
-
-    public function getResource(): string { return $this->resource; }
-
-    public function getScope(): string { return $this->scope; }
 
     public function isExpired(\DateTimeImmutable $now): bool { return $now >= $this->expiresAt; }
 

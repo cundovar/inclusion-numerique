@@ -58,6 +58,11 @@ final class DoctrinePageContentRepository implements PageContentRepositoryInterf
             ->getResult();
     }
 
+    public function findByStatuses(array $statuses): array
+    {
+        return $this->em->getRepository(PageContent::class)->findBy(['status' => $statuses], ['title' => 'ASC']);
+    }
+
     public function save(PageContent $pageContent): void
     {
         $this->em->persist($pageContent);

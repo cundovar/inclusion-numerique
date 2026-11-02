@@ -1,5 +1,8 @@
 <template>
-  <div class="flex gap-2 md:w-1/2 lg:w-1/3 m-auto items-center justify-start flex-row">
+  <form
+    class="flex gap-2 md:w-1/2 lg:w-1/3 m-auto items-center justify-start flex-row"
+    @submit.prevent="emit('search')"
+  >
     <AppInput
       :model-value="modelValue"
       type="text"
@@ -8,7 +11,7 @@
       clearable
       size="default"
       @update:model-value="emit('update:modelValue', $event)"
-      @keyup.enter="emit('search')"
+      @keydown.enter.prevent="emit('search')"
     />
 
     <!-- Bouton desktop -->
@@ -16,8 +19,8 @@
       variant="primary"
       size="sm"
       text-content="Rechercher"
+      type="submit"
       class="max-xl:hidden xl:flex"
-      @click="emit('search')"
     />
 
     <!-- Bouton mobile (icône ronde) -->
@@ -26,10 +29,10 @@
       size="md"
       icon="pi pi-search"
       rounded="full"
+      type="submit"
       class="xl:hidden"
-      @click="emit('search')"
     />
-  </div>
+  </form>
 </template>
 
 <script setup>

@@ -22,7 +22,7 @@
       v-show="!closed"
       class="toc-body"
     >
-      <!-- Onglets Sommaire et Notes -->
+      <!-- Onglets du sommaire -->
       <div class="toc-tabs">
         <button
           class="toc-tab"
@@ -30,14 +30,6 @@
           @click="switchTab('sommaire')"
         >
           Sommaire
-        </button>
-        <button
-          v-if="isUserAuthenticated"
-          class="toc-tab"
-          :class="{ active: activeTab === 'notes' }"
-          @click="switchTab('notes')"
-        >
-          Notes
         </button>
       </div>
 
@@ -54,31 +46,17 @@
           :bg-categorie="bgCategorie"
           @scroll-to="handleScrollTo"
         />
-
-        <!-- Onglet Notes -->
-        <NoteEditor
-          v-if="activeTab === 'notes' && isUserAuthenticated"
-          :page-id="pageId"
-          :initial-content="noteContent"
-          :bg-categorie="bgCategorie"
-          :bg-hover="bgHover"
-          @save="handleNoteSave"
-        />
       </div>
     </div>
   </aside>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref } from 'vue'
 import TocList from './TocList.vue'
-import NoteEditor from '../../notes/NoteEditor.vue'
-import { useData } from '../../../../utils/fetchDataPwa'
-import { noteService } from '../../../../services/noteService'
 
-const { user } = useData()
 
-const props = defineProps({
+defineProps({
   toc: {
     type: Array,
     required: true
@@ -109,53 +87,23 @@ const emit = defineEmits(['scroll-to'])
 
 const activeTab = ref('sommaire')
 const closed = ref(false)
-const noteContent = ref('')
 
 const toggleClosed = () => {
   closed.value = !closed.value
 }
 
-const isUserAuthenticated = computed(() => {
-  return user.value && user.value.username && user.value.username.trim() !== ''
-})
 
-watch(isUserAuthenticated, (isAuth) => {
-  if (!isAuth && activeTab.value === 'notes') {
-    activeTab.value = 'sommaire'
-  }
-})
 
 const switchTab = (tab) => {
   activeTab.value = tab
-  if (tab === 'notes' && props.pageId) {
-    loadNote()
-  }
 }
 
 const handleScrollTo = (id) => {
   emit('scroll-to', id)
 }
 
-const loadNote = async () => {
-  if (!props.pageId) return
 
-  try {
-    const data = await noteService.getNoteByPage(props.pageId)
-    noteContent.value = data?.content || ''
-  } catch (error) {
-    console.error('Erreur lors du chargement de la note:', error)
-  }
-}
 
-const handleNoteSave = (content) => {
-  noteContent.value = content
-}
-
-watch(() => props.pageId, (newPageId) => {
-  if (newPageId && activeTab.value === 'notes') {
-    loadNote()
-  }
-})
 </script>
 
 <style scoped>

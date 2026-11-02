@@ -7,7 +7,8 @@ nav{
 
 .scroll-gauche {
     direction: rtl; /* met la scrollbar à gauche */
-    overflow-y: scroll;
+    /* auto, pas scroll : une colonne fixe toujours « défilable » capte la molette et la page ne descend plus */
+    overflow-y: auto;
 
     text-align: left; /* garde le texte aligné à gauche */
   }

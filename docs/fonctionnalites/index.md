@@ -1,45 +1,25 @@
 # Fonctionnalités
 
-Chaque fonctionnalité est décrite de l'écran jusqu'aux données, sur le même plan. Le badge en tête de chaque fiche indique ce qui a été vérifié : la recette en production (scénarios R-01 à R-12 du [plan de tests](../tests/plan-de-tests.md)) ne couvre pas encore l'espace connecté.
+Vue d'ensemble des fonctions présentes. Les badges renvoient au run CI [39493348934](https://github.com/cundovar/mediateur-numerique-formation/actions/runs/39493348934) (`main`, 2026-10-20) quand des tests automatisés couvrent la fonction.
 
-| Fonctionnalité | Écran (route Vue) | API | Accès | Fiche |
-|---|---|---|---|---|
-| Cours par catégorie et niveau | `/category/:category`, `/pages/:slug` | API Platform `pages`, `page_contents`, `menuses` ; `GET /api/menus` | Public | [Fiche](cours.md) |
-| Recherche | Barre de recherche (ordinateur et mobile) | Contenus déjà chargés, `page_contents` | Public | [Fiche](recherche.md) |
-| Exercices | `/exercices`, `/exercices/:slug` | API Platform `exos`, `exo_contents`, `exo_menus` | Public | [Fiche](exercices.md) |
-| **QCM et progression** | `/qcm`, `/qcm/:index`, `/qcm/result`, onglet du profil | `q_c_ms`, `/api/qcm-results` | Public ; progression connectée | [Fiche](qcm.md) |
-| Compte et connexion | `/register`, `/login` (Twig) | `/user-api/me` | Public | [Fiche](compte.md) |
-| Notes chiffrées | Éditeur sur la page de cours, onglet du profil | `/api/notes` | Connecté | [Fiche](notes.md) |
-| Favoris | Bouton sur les cours, onglet du profil | `/api/me-favorites` | Connecté | [Fiche](favoris.md) |
-| Historique de visite | Onglet « Statistiques » du profil (si `VITE_ENABLE_PAGE_TRACKING`) | `/api/page-visits` | Connecté | [Fiche](historique.md) |
-| Personnalisation | En-tête et fond ; onglet « Apparence » du profil (contenu désactivé) | `/api/customization` | Défauts : tous ; réglages : connecté | [Fiche](personnalisation.md) |
-| Hors ligne (PWA) | Toute la SPA | Cache Workbox, IndexedDB `spa-db` | Public | [Fiche](hors-ligne.md) |
-| Back-office | `/admin` (EasyAdmin) | — | Administrateur | [Fiche](back-office.md) |
-| **Connecteurs MCP** | Claude, ChatGPT (connecteur personnalisé) ; back-office : filtre « En revue », captures, diaporamas, brouillons de QCM | `/mcp`, `/mcp/apprenant`, `/oauth/*`, `/depot-image/{jeton}`, `/api/captures`, `/api/diaporamas` | Rédaction : administrateur ; apprenant : connecté | [Fiche](connecteur-mcp.md) |
-| Propositions de cours IA | Aucun écran | `/api/proposition-ia`, `/api/admin/agent-cours` | Administrateur, agents par clé | [Fiche](propositions-ia.md) |
+| Fonction | Où | Tests | Preuve |
+|---|---|---|---|
+| Accueil à deux entrées, catalogues par public | `front/src/views/AudiencePage.vue`, routes `/apprendre` et `/accompagner` | `front/tests/unit/views/HomeAndAudience.spec.js`, `tests/Functional/CategoryAudienceApiTest.php` | <Status is="ci" /> |
+| Cours, parcours, modules | `front/src/views/CategoryPage.vue`, `src/Entity/PageContent.php` | `tests/Functional/PublishedContentApiTest.php` | <Status is="ci" /> |
+| QCM avec correction immédiate, sans score enregistré | `front/src/views/QCM/`, `src/Controller/Api/QCMApiController.php` | `front/tests/unit/stores/qcm.spec.js` | <Status is="ci" /> |
+| Recherche | composants de navigation repris de DevDoc | `front/e2e/inputSearch.spec.js` (Playwright, non exécutable en l'état, voir [tests](../tests/index.md)) | <Status is="code" /> |
+| Hors ligne (PWA, IndexedDB) | `front/vite.config.js`, `front/src/utils/offlineDb.js` | `front/tests/unit/utils/offlineDb.spec.js`, `fetchDataPwa.spec.js` | <Status is="ci" /> |
+| PDF d'un cours ou d'un module | `/cours/<slug>.pdf`, `/module/<id>.pdf`, `src/Service/Pdf/` | `tests/Functional/CoursePdfTest.php` | <Status is="ci" /> |
+| Compte apprenant facultatif, mot de passe oublié | `/register`, `/mot-de-passe-oublie`, `src/Service/Account/` | `LearnerAccountTest`, `ResetPasswordTest` | <Status is="ci" /> |
+| Contenus personnalisés (réservés à un apprenant) | `src/Entity/AccesReserve.php`, `src/Service/Redaction/AccesPersonnaliseService.php` | `PersonalizedContentApiTest`, `Mcp/PersonalizedAccessConnectorTest` | <Status is="ci" /> |
+| Back-office éditorial (EasyAdmin) | `src/Controller/Admin/` | `Admin/BackOfficePagesTest`, `Admin/CaptureBackOfficeTest` | <Status is="ci" /> |
+| Captures sourcées dans les cours | marqueur `[capture:ID]`, `src/Entity/CourseMedia.php` ; voir le [guide d'édition](edition.md) | `CaptureApiTest`, `CourseMediaValidationTest` | <Status is="ci" /> |
+| Assistant de rédaction (MCP) : brouillons, contrôles, relecture croisée, publication | `/mcp`, `src/Mcp/`, `src/Service/Redaction/` ; voir le [connecteur](connecteur.md) | `tests/Functional/Mcp/`, `tests/Service/DraftCheckerTest.php` | <Status is="ci" /> |
+| Capture automatique de pages publiques | `src/Service/Capture/`, `capture/`, `capture-service/` | `tests/Service/RemoteCaptureRunnerTest.php`, `capture/test/` | <Status is="ci" /> |
+| Pages légales | `/mentions-legales`, `/privacy`, `/terms`, `src/Service/LegalInformation.php` | `tests/Functional/LegalPagesTest.php` | <Status is="ci" /> |
 
-Les routes de la SPA sont déclarées dans [`front/src/router/index.js`](../../front/src/router/index.js), les règles d'accès dans [`config/packages/security.yaml`](../../config/packages/security.yaml).
+Le site en ligne répond sur `https://mediateur.varascundo.com/spa` (contrôle du 2026-10-30). <Status is="prod" />
 
-## Défauts relevés en rédigeant les fiches
+## Hors périmètre
 
-Constatés dans le code le 2026-10-13, non corrigés :
-
-| Fiche | Défaut | Gravité |
-|---|---|---|
-| [Historique](historique.md#limites-connues) | `POST /api/page-visits` ignore le choix « désactiver le suivi » de l'utilisateur et enregistre son IP | Élevée si le suivi est activé |
-| [QCM](qcm.md#limites-connues) | Les bonnes réponses sont lisibles dans `GET /api/q_c_ms` | Moyenne |
-| [Notes](notes.md#limites-connues) | Changer `APP_SECRET` rend les notes illisibles ; chiffrement sans authentification | Moyenne |
-| [Propositions IA](propositions-ia.md#limites-connues) | Aucun écran de validation ; une génération finalisée est publiée directement | Moyenne |
-| [Personnalisation](personnalisation.md#limites-connues) | Onglet « Apparence » vide (contenu en commentaire) | Faible |
-| [Back-office](back-office.md#limites-connues) | Second tableau de bord EasyAdmin involontaire, routes CRUD en double | Faible |
-| [Historique](historique.md#limites-connues) | Deux routes enregistrent la même visite ; `my-history` déclarée deux fois | Faible |
-
-## Plan d'une fiche
-
-1. En une phrase, avec une capture
-2. Parcours utilisateur
-3. Schéma de séquence
-4. Fichiers impliqués : front, back, données
-5. Règles de sécurité
-6. Tests qui la couvrent
-7. Limites connues
+Suivi de progression, attestations, réservations et statistiques ne font pas partie de la première version (décision dans [`AGENTS.md`](../../AGENTS.md)). La veille automatique des captures (refaire et comparer) est <Status is="prevu" />.

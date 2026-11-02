@@ -29,8 +29,6 @@ abstract class McpTestCase extends WebTestCase
     protected array $connectors = [];
     /** @var array<string, string> jeton d'accès par connecteur */
     protected array $tokens = [];
-    /** @var array<string, string> point MCP par connecteur (/mcp par défaut) */
-    protected array $paths = [];
     /** @var array<string, string> session MCP par connecteur */
     private array $sessions = [];
     private int $nextId = 1;
@@ -63,10 +61,10 @@ abstract class McpTestCase extends WebTestCase
     /**
      * Accès valide pour ce connecteur, au nom de l'administrateur ; renvoie le jeton d'accès.
      */
-    protected function grant(OAuthClient $connector, string $access = '+1 hour', ?User $user = null, string $resource = '/mcp', string $scope = OAuthServer::SCOPE_REDACTION): string
+    protected function grant(OAuthClient $connector, string $access = '+1 hour'): string
     {
         $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
-        $grant = new OAuthGrant($connector, $user ?? $this->admin, null, $resource, $scope);
+        $grant = new OAuthGrant($connector, $this->admin, null);
         $grant->rotate(OAuthServer::hash($token), new \DateTimeImmutable($access), OAuthServer::hash('refresh-'.$token), new \DateTimeImmutable('+30 days'));
         $this->entityManager->persist($grant);
 
@@ -125,7 +123,7 @@ abstract class McpTestCase extends WebTestCase
             $headers['HTTP_MCP_SESSION_ID'] = $this->sessions[$who];
             $headers['HTTP_MCP_PROTOCOL_VERSION'] = '2025-06-18';
         }
-        $this->client->request('POST', $this->paths[$who] ?? '/mcp', [], [], $headers, json_encode($message, \JSON_THROW_ON_ERROR));
+        $this->client->request('POST', '/mcp', [], [], $headers, json_encode($message, \JSON_THROW_ON_ERROR));
 
         return self::decode((string) $this->client->getResponse()->getContent());
     }

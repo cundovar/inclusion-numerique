@@ -1,51 +1,34 @@
-# Règles de commandes Codex pour ce projet (équivalent des permissions de .claude/settings.json).
-# Tester : codex execpolicy check --pretty --rules .codex/rules/project.rules -- <commande>
+# Règles de commandes Codex inspirées de DevDoc et adaptées au nouveau dépôt.
+# Tester avec : codex execpolicy check --pretty --rules .codex/rules/project.rules -- <commande>
 
-# Validation : sans demande.
 prefix_rule(
-    pattern = ["make", ["check", "check-fast", "lint-php", "lint-front", "analyse", "test", "test-front", "test-qcm-results", "test-e2e", "build-front", "docs-build", "docs-dev"]],
+    pattern = ["make", ["check", "check-fast", "lint-php", "lint-front", "analyse", "test", "test-front", "build-front", "docs-build", "docs-dev"]],
     decision = "allow",
-    justification = "Boucle de validation du projet (lecture seule hors var/ et public/build).",
-    match = ["make check", "make lint-front"],
-)
-prefix_rule(
-    pattern = ["make", ["up", "dev", "start", "stop", "logs"]],
-    decision = "allow",
-    match = ["make up"],
-)
-prefix_rule(
-    pattern = ["docker", "compose", ["ps", "logs", "exec"]],
-    decision = "allow",
-    match = ["docker compose exec -T php composer test"],
+    justification = "Contrôles et documentation du projet, sans effet sur les données.",
+    match = ["make check", "make docs-build"],
 )
 
-# Actions à confirmer.
-prefix_rule(
-    pattern = ["git", ["commit", "push"]],
-    decision = "prompt",
-    justification = "Commit et push uniquement sur accord explicite.",
-    match = ["git push origin main"],
-)
-prefix_rule(
-    pattern = ["make", ["migrate", "down", "restart"]],
-    decision = "prompt",
-    justification = "Modifie la base ou arrête les conteneurs.",
-    match = ["make migrate"],
-)
-
-# Interdit : destruction de la base MySQL et suppressions en root.
 prefix_rule(
     pattern = ["make", "down-volumes"],
     decision = "forbidden",
-    justification = "Supprime le volume MySQL. À lancer manuellement par l'utilisateur.",
+    justification = "Supprime la base MySQL locale.",
     match = ["make down-volumes"],
 )
+
+prefix_rule(
+    pattern = ["git", ["commit", "push"]],
+    decision = "prompt",
+    justification = "Publication du travail seulement après accord explicite.",
+    match = ["git push origin main"],
+)
+
 prefix_rule(
     pattern = ["docker", "compose", "down", ["-v", "--volumes"]],
     decision = "forbidden",
-    justification = "Supprime le volume MySQL.",
+    justification = "Supprime les volumes de données.",
     match = ["docker compose down -v"],
 )
+
 prefix_rule(
     pattern = ["sudo", "rm"],
     decision = "forbidden",

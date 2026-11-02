@@ -1,17 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { authGuard } from './guards'
+import { installerRechargementVersion } from './rechargementVersion'
 
 // Views (lazy-loaded)
 const PageContent = () => import('../components/features/pages/PageContent.vue')
-const Profile = () => import('../views/Profile.vue')
 const CategoryPage = () => import('../views/CategoryPage.vue')
 const PageQCM = () => import('../views/QCM/PageQCM.vue')
-const Exercices = () => import('../views/exercices.vue')
-const ExerciceView = () => import('../components/features/exercices/ExerciceView.vue')
 const questionQCM = () => import('../views/QCM/questionQCM.vue')
 const resultQCM = () => import('../views/QCM/resultQCM.vue')
 const ComponentsDemo = () => import('../views/ComponentsDemo.vue')
 const HomePage = () => import('../components/features/home/HomePage.vue')
+const AudiencePage = () => import('../views/AudiencePage.vue')
+const ExercicesPage = () => import('../views/ExercicesPage.vue')
+const ExercicePage = () => import('../views/ExercicePage.vue')
+const MonEspacePage = () => import('../views/MonEspacePage.vue')
 
 const routes = [
   // Route accueil
@@ -21,30 +22,38 @@ const routes = [
     component: HomePage
   },
 
-  // Redirections des anciennes routes
+  // Les deux entrées de l'accueil : catalogue des parcours de chaque public
   {
-    path: '/pages/symfony',
-    redirect: '/category/symfony'
+    path: '/apprendre',
+    name: 'apprendre',
+    component: AudiencePage,
+    props: { audienceKey: 'apprendre' }
   },
   {
-    path: '/pages/vuejs',
-    redirect: '/category/vuejs'
-  },
-  {
-    path: '/pages/reactjs',
-    redirect: '/category/react'
-  },
-  {
-    path: '/pages/wp',
-    redirect: '/category/wordpress'
+    path: '/accompagner',
+    name: 'accompagner',
+    component: AudiencePage,
+    props: { audienceKey: 'accompagner' }
   },
 
-  // Route Profile (protegee)
+  // Exercices interactifs (données dans src/exercices, rien n'est enregistré)
   {
-    path: '/profile',
-    name: 'profile',
-    component: Profile,
-    beforeEnter: authGuard
+    path: '/exercices',
+    name: 'exercices',
+    component: ExercicesPage
+  },
+  {
+    path: '/exercices/:slug',
+    name: 'exercice',
+    component: ExercicePage,
+    props: true
+  },
+
+  // Espace de l'apprenant connecté : cours, parcours et exercices personnalisés, compte
+  {
+    path: '/mon-espace',
+    name: 'mon-espace',
+    component: MonEspacePage
   },
 
   // Demo composants
@@ -68,18 +77,6 @@ const routes = [
     name: 'pages',
     component: PageContent,
     props: true
-  },
-
-  // Exercices
-  {
-    path: '/exercices',
-    name: 'exercices',
-    component: Exercices
-  },
-  {
-    path: '/exercices/:slug',
-    name: 'exercices-id',
-    component: ExerciceView
   },
 
   // QCM
@@ -121,5 +118,7 @@ const router = createRouter({
     }
   }
 })
+
+installerRechargementVersion(router)
 
 export default router

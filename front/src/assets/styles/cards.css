@@ -1,0 +1,10 @@
+/* Source commune des surfaces et interactions de toutes les cartes. */
+.surface-card { border: 0; border-radius: 1rem; box-shadow: 0 8px 20px rgb(15 23 42 / 8%); transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
+.surface-card--blue { background-color: #eff6ff; }
+.surface-card--green { background-color: #ecfdf5; }
+.surface-card--amber { background-color: #fffbeb; }
+.surface-card--purple { background-color: #f5f3ff; }
+.surface-card--white { background-color: #fff; }
+.surface-card:hover { box-shadow: 0 10px 24px rgb(15 23 42 / 12%); }
+.surface-card:focus-within { outline: 4px solid #1d4ed8; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .surface-card { transition: none; } }

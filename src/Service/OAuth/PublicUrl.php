@@ -22,9 +22,9 @@ final class PublicUrl
         return $configured !== '' ? $configured : $request->getSchemeAndHttpHost();
     }
 
-    public function resource(Request $request, string $path = '/mcp'): string
+    public function resource(Request $request): string
     {
-        return $this->base($request).$path;
+        return $this->base($request).'/mcp';
     }
 
     public function host(Request $request): string

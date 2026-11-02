@@ -1,15 +1,15 @@
 import axios from 'axios'
 
+// Événement écouté par fetchDataPwa (effacement de l'utilisateur et du contenu qui lui était réservé)
 const LOGOUT_EVENT = 'auth:logout'
 const LOGOUT_TOKEN_SELECTOR = 'meta[name="logout-csrf-token"]'
 
+// Les autres onglets ouverts sont prévenus de la déconnexion
 const authChannel = typeof BroadcastChannel === 'undefined'
   ? null
-  : new BroadcastChannel('devdoc-auth')
+  : new BroadcastChannel('mediation-auth')
 
 export function clearAuthenticatedClientState() {
-  sessionStorage.removeItem('token')
-  sessionStorage.removeItem('redirectAfterLogin')
   window.dispatchEvent(new Event(LOGOUT_EVENT))
 }
 

@@ -39,14 +39,12 @@ final class OAuthBearerAuthenticator extends AbstractAuthenticator implements Au
             throw new CustomUserMessageAuthenticationException('Jeton mal formé.');
         }
 
-        $learner = str_starts_with($request->getPathInfo(), '/mcp/apprenant');
-        $resource = $this->url->resource($request, $learner ? '/mcp/apprenant' : '/mcp');
-        $grant = $this->server->authenticate($matches[1], $resource);
+        $grant = $this->server->authenticate($matches[1]);
         if ($grant === null) {
             throw new CustomUserMessageAuthenticationException('Jeton invalide, expiré ou révoqué.');
         }
 
-        $user = $learner ? new LearnerConnectorUser($grant) : new ConnectorUser($grant);
+        $user = new ConnectorUser($grant);
 
         return new SelfValidatingPassport(new UserBadge($user->getUserIdentifier(), static fn () => $user));
     }
@@ -68,10 +66,7 @@ final class OAuthBearerAuthenticator extends AbstractAuthenticator implements Au
 
     private function unauthorized(Request $request, string $message, ?string $error): JsonResponse
     {
-        $learner = str_starts_with($request->getPathInfo(), '/mcp/apprenant');
-        $suffix = $learner ? '/mcp/apprenant' : '';
-        $scope = $learner ? OAuthServer::SCOPE_LEARNER_READ : OAuthServer::SCOPE_REDACTION;
-        $challenge = sprintf('Bearer resource_metadata="%s/.well-known/oauth-protected-resource%s", scope="%s"', $this->url->base($request), $suffix, $scope);
+        $challenge = sprintf('Bearer resource_metadata="%s/.well-known/oauth-protected-resource", scope="%s"', $this->url->base($request), OAuthServer::SCOPE);
         if ($error !== null) {
             $challenge .= sprintf(', error="%s"', $error);
         }

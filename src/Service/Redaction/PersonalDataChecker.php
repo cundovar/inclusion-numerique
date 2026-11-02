@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Redaction;
 
 /**
- * Repère dans un texte les données qui pourraient être celles d'une personne réelle (règle DON-01).
+ * Repère dans un texte les données qui pourraient être celles d'une personne réelle (règle DON-04).
  * Partagé par les contrôles des cours et des QCM.
  */
 final class PersonalDataChecker
@@ -28,10 +28,6 @@ final class PersonalDataChecker
         }
         if (preg_match('/(?<!\d)(\+33\s?|0)[1-9]([\s.-]?\d{2}){4}(?!\d)/', $text) === 1) {
             $found[] = ['TELEPHONE', 'Le contenu contient un numéro de téléphone. Écrivez un exemple avec des X (06 XX XX XX XX).'];
-        }
-        // Clé d'API d'un service d'IA (OpenAI, Anthropic, Mistral…) : une vraie clé ne doit jamais apparaître
-        if (preg_match('/\b(sk-(ant-|proj-)?[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{35})\b/', $text) === 1) {
-            $found[] = ['CLE_API', 'Le contenu contient ce qui ressemble à une clé d\'API. Écrivez un exemple comme sk-XXXX.'];
         }
         preg_match_all('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i', $text, $emails);
         foreach ($emails[0] as $email) {

@@ -7,17 +7,16 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 // Site VitePress à la racine de docs/ : les documents restent à côté du code
 const SRC_DIR = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '')
 const REPO_ROOT = path.resolve(SRC_DIR, '..')
-const GITHUB_BLOB = 'https://github.com/cundovar/vue-symfony/blob/main/'
+const GITHUB_REPO = 'https://github.com/cundovar/mediateur-numerique-formation'
+const GITHUB_BLOB = `${GITHUB_REPO}/blob/main/`
 
-// Brouillons et anciennes notes de travail : hors du site, mais toujours lisibles sur GitHub
-const EXCLUDED = ['application-plan/', 'test/', 'roadmap-100-hexagonal.md', 'hexagonal-audit.md',
-  'architecture-hexagonale-option1.md', 'architecture-hexagonale-option2.md',
-  'mcp-agents-cours-vers-symfony-checklist.md', 'filtrage-niveau-cours.md']
+// Notes de travail hors du site, mais toujours lisibles sur GitHub
+const EXCLUDED = []
 
 /**
- * Un lien qui pointe vers le code (hors de docs/) ou vers un dossier sans page
- * (ex. docs/conception/captures/), vers un fichier qui n'est pas une page (image liée)
- * ou vers une page exclue du site est réécrit vers GitHub au lieu de donner une page morte.
+ * Un lien qui pointe vers le code (hors de docs/, dont le dossier VAE/), vers un dossier sans page,
+ * vers un fichier qui n'est pas une page (ex. env.example) ou vers une page exclue du site
+ * est réécrit vers GitHub au lieu de donner une page morte.
  */
 function toGithub(target) {
   if (!target.startsWith(REPO_ROOT + path.sep)) return null
@@ -65,110 +64,54 @@ const githubSlug = (text) => text.trim().toLowerCase()
 
 const sidebar = [
   {
-    text: 'Démarrer',
+    text: 'Présentation',
     items: [
-      { text: 'Présentation', link: '/demarrer/' },
-      { text: 'Lancer en local', link: '/demarrer/local' },
-      { text: 'Glossaire', link: '/demarrer/glossaire' }
+      { text: 'Le projet', link: '/' }
+    ]
+  },
+  {
+    text: 'Conception',
+    items: [
+      { text: 'Besoin et publics', link: '/conception/' },
+      { text: 'Reprise de DevDoc', link: '/conception/reprise-devdoc' }
     ]
   },
   {
     text: 'Fonctionnalités',
     items: [
       { text: 'Vue d\'ensemble', link: '/fonctionnalites/' },
-      { text: 'Cours', link: '/fonctionnalites/cours' },
-      { text: 'Recherche', link: '/fonctionnalites/recherche' },
-      { text: 'Exercices', link: '/fonctionnalites/exercices' },
-      { text: 'QCM et progression', link: '/fonctionnalites/qcm' },
-      { text: 'Hors ligne (PWA)', link: '/fonctionnalites/hors-ligne' },
-      {
-        text: 'Espace personnel',
-        collapsed: false,
-        items: [
-          { text: 'Compte et connexion', link: '/fonctionnalites/compte' },
-          { text: 'Notes chiffrées', link: '/fonctionnalites/notes' },
-          { text: 'Favoris', link: '/fonctionnalites/favoris' },
-          { text: 'Historique de visite', link: '/fonctionnalites/historique' },
-          { text: 'Personnalisation', link: '/fonctionnalites/personnalisation' }
-        ]
-      },
-      {
-        text: 'Administration',
-        collapsed: false,
-        items: [
-          { text: 'Back-office', link: '/fonctionnalites/back-office' },
-          { text: 'Connecteurs MCP', link: '/fonctionnalites/connecteur-mcp' },
-          { text: 'Propositions de cours IA', link: '/fonctionnalites/propositions-ia' }
-        ]
-      }
+      { text: 'Guide d\'édition', link: '/fonctionnalites/edition' },
+      { text: 'Connecteur MCP', link: '/fonctionnalites/connecteur' }
     ]
   },
   {
-    text: 'Architecture',
-    collapsed: false,
+    text: 'Technique',
     items: [
-      { text: 'Architecture logicielle', link: '/conception/architecture' },
-      { text: 'Audit hexagonal', link: '/final-hexagonal-audit' }
+      { text: 'Architecture', link: '/architecture/' },
+      { text: 'Sécurité', link: '/securite/' }
     ]
   },
   {
-    text: 'Harness des agents IA',
-    collapsed: false,
+    text: 'Qualité et exploitation',
     items: [
-      { text: 'Vue d\'ensemble', link: '/harness/' },
-      { text: 'Consignes', link: '/harness/consignes' },
-      { text: 'Permissions', link: '/harness/permissions' },
-      { text: 'Hooks', link: '/harness/hooks' },
-      { text: 'Validation', link: '/harness/validation' },
-      { text: 'Méthode et documentation', link: '/harness/methode' },
-      { text: 'Carte complète', link: '/harness-agents' }
+      { text: 'Tests', link: '/tests/' },
+      { text: 'Déploiement et CI', link: '/deploiement/' },
+      { text: 'Harness des agents', link: '/harness/' }
     ]
   },
   {
-    text: 'Données',
+    text: 'VAE',
     items: [
-      { text: 'Vue d\'ensemble', link: '/donnees/' },
-      { text: 'MySQL, IndexedDB, MongoDB', link: '/conception/base-de-donnees' }
-    ]
-  },
-  {
-    text: 'API',
-    items: [
-      { text: 'Carte des API', link: '/api/' }
-    ]
-  },
-  {
-    text: 'Intégrations',
-    items: [
-      { text: 'Agents de cours (MCP)', link: '/migration-mcp-vers-symfony' }
-    ]
-  },
-  {
-    text: 'Qualité',
-    items: [
-      { text: 'Plan de tests', link: '/tests/plan-de-tests' },
-      { text: 'CI/CD', link: '/CI_CD' }
-    ]
-  },
-  {
-    text: 'Projet',
-    collapsed: true,
-    items: [
-      { text: 'Besoins', link: '/conception/besoins' },
-      { text: 'Maquettes', link: '/conception/maquettes' },
-      { text: 'Design system', link: '/conception/design-system' },
-      { text: 'Gestion de projet', link: '/gestion-de-projet' },
-      { text: 'Décisions d\'architecture', link: '/decisions/' }
+      { text: 'Dossier et preuves', link: '/vae/' }
     ]
   }
 ]
 
 export default withMermaid(defineConfig({
-  // Brouillons et anciennes notes de travail, hors du site
   srcExclude: EXCLUDED.map((entry) => (entry.endsWith('/') ? `${entry}**` : entry)),
   lang: 'fr-FR',
-  title: 'DevDoc',
-  description: 'Fonctionnement de DevDoc : fonctionnalités, architecture, données, API et exploitation',
+  title: 'Médiation numérique',
+  description: 'Fonctionnement du site de formation à la médiation numérique : fonctionnalités, architecture, sécurité, tests et déploiement',
   base: '/docs/',
   cleanUrls: true,
   lastUpdated: true,
@@ -181,10 +124,10 @@ export default withMermaid(defineConfig({
   themeConfig: {
     nav: [
       { text: 'Fonctionnalités', link: '/fonctionnalites/' },
-      { text: 'Architecture', link: '/conception/architecture' },
-      { text: 'Données', link: '/donnees/' },
-      { text: 'API', link: '/api/' },
-      { text: 'Qualité', link: '/tests/plan-de-tests' }
+      { text: 'Architecture', link: '/architecture/' },
+      { text: 'Tests', link: '/tests/' },
+      { text: 'Déploiement', link: '/deploiement/' },
+      { text: 'VAE', link: '/vae/' }
     ],
     sidebar,
     outline: { level: [2, 3], label: 'Sur cette page' },
@@ -197,8 +140,8 @@ export default withMermaid(defineConfig({
         }
       }
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/cundovar/vue-symfony' }],
-    editLink: { pattern: 'https://github.com/cundovar/vue-symfony/edit/main/docs/:path', text: 'Modifier cette page' },
+    socialLinks: [{ icon: 'github', link: GITHUB_REPO }],
+    editLink: { pattern: `${GITHUB_REPO}/edit/main/docs/:path`, text: 'Modifier cette page' },
     docFooter: { prev: 'Page précédente', next: 'Page suivante' },
     lastUpdated: { text: 'Mis à jour' },
     darkModeSwitchLabel: 'Thème',

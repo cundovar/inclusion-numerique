@@ -7,11 +7,15 @@ namespace App\Infrastructure\SiteConfiguration\Repository;
 use App\Domain\SiteConfiguration\Repository\SiteConfigurationRepositoryInterface;
 use App\Entity\SiteConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class DoctrineSiteConfigurationRepository implements SiteConfigurationRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        // La configuration est partagée avec mediateur dans la même base : le nom propre au site l'emporte
+        #[Autowire('%app.site_name%')]
+        private string $siteName = 'Inclusion numérique',
     ) {}
 
     public function getDefault(): SiteConfiguration
@@ -29,7 +33,7 @@ final class DoctrineSiteConfigurationRepository implements SiteConfigurationRepo
 
     public function getDefaultSettings(): array
     {
-        return $this->getDefault()->getSettings();
+        return ['siteName' => $this->siteName] + $this->getDefault()->getSettings();
     }
 
     public function save(SiteConfiguration $configuration): void

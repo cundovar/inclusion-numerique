@@ -27,7 +27,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 'niveauQCM.titre' => 'iexact',
 
 ])]
-// Série « Mes QCM » : ?reserve=true ne renvoie que les QCM personnalisés de la personne connectée
+// Série « Mes exercices » : ?reserve=true ne renvoie que les QCM personnalisés de la personne connectée
 #[ApiFilter(BooleanFilter::class, properties: ['reserve'])]
 class QCM
 {

@@ -37,8 +37,6 @@
         .stat-card.pages { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
         .stat-card.categories { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
         .stat-card.qcm { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .stat-card.exercices { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-        .stat-card.visits { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
 
         .stat-card h3 {
             margin: 0 0 10px 0;
@@ -111,102 +109,94 @@
     </style>
 
     <div class="dashboard-container">
+        {# Mentions légales et contact RGPD incomplets : le site public affiche « À compléter » #}
+        {% if legalMissing|length > 0 %}
+            <div class="alert alert-warning" role="alert">
+                <strong><i class="fa fa-scale-balanced"></i> Informations légales à compléter :</strong>
+                {{ legalMissing|join(', ') }}.
+                Les mentions légales et la politique de confidentialité affichent « À compléter » à leur place.
+                <a href="{{ path('admin_site_config') }}">Compléter dans Configuration du site</a>
+            </div>
+        {% endif %}
+
         {# Cartes de statistiques #}
         <div class="stats-grid">
             <div class="stat-card users">
-                <i class="fa fa-users icon"></i>
-                <h3>Utilisateurs</h3>
-                <p class="number">{{ stats.users }}</p>
+                <i class="fa fa-circle-check icon"></i>
+                <h3>Cours publiés</h3>
+                <p class="number">{{ stats.published }}</p>
             </div>
 
             <div class="stat-card pages">
                 <i class="fa fa-file-text icon"></i>
-                <h3>Pages de cours</h3>
+                <h3>Cours (tous statuts)</h3>
                 <p class="number">{{ stats.pages }}</p>
             </div>
 
             <div class="stat-card categories">
                 <i class="fa fa-folder icon"></i>
-                <h3>Catégories</h3>
+                <h3>Parcours</h3>
                 <p class="number">{{ stats.categories }}</p>
             </div>
 
             <div class="stat-card qcm">
-                <i class="fa fa-question-circle icon"></i>
-                <h3>QCM</h3>
-                <p class="number">{{ stats.qcm }}</p>
-            </div>
-
-            <div class="stat-card exercices">
-                <i class="fa fa-code icon"></i>
-                <h3>Exercices</h3>
-                <p class="number">{{ stats.exercices }}</p>
-            </div>
-
-            <div class="stat-card visits">
-                <i class="fa fa-chart-line icon"></i>
-                <h3>Visites totales</h3>
-                <p class="number">{{ stats.visits }}</p>
+                <i class="fa fa-image icon"></i>
+                <h3>Captures</h3>
+                <p class="number">{{ stats.captures }}</p>
             </div>
         </div>
 
-        {# Derniers utilisateurs #}
-        <div class="recent-section">
-            <h2><i class="fa fa-users"></i> Derniers utilisateurs inscrits</h2>
-            {% if recentUsers|length > 0 %}
+        {# Cours en attente de relecture ou de mise à jour #}
+        <div class="recent-section" data-testid="courses-to-review">
+            <h2><i class="fa fa-list-check"></i> Cours à relire</h2>
+            {% if coursesToReview|length > 0 %}
                 <table class="recent-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Nom d'utilisateur</th>
-                            <th>Rôles</th>
+                            <th>Cours</th>
+                            <th>Statut</th>
+                            <th>Vérifié le</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user in recentUsers %}
+                        {% for item in coursesToReview %}
                             <tr>
-                                <td>#{{ user.id }}</td>
-                                <td>{{ user.username }}</td>
-                                <td>
-                                    {% for role in user.roles %}
-                                        <span class="badge badge-success">{{ role }}</span>
-                                    {% endfor %}
-                                </td>
+                                <td><a href="{{ item.url }}">{{ item.course.title }}</a></td>
+                                <td>{{ item.course.status == 'en_revue' ? 'En revue' : 'À réviser' }}</td>
+                                <td>{{ item.course.verifiedAt ? item.course.verifiedAt|date('d/m/Y') : '—' }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             {% else %}
-                <p>Aucun utilisateur pour le moment.</p>
+                <p>Aucun cours en attente.</p>
             {% endif %}
         </div>
 
-        {# Dernières visites #}
-        <div class="recent-section">
-            <h2><i class="fa fa-chart-bar"></i> Dernières visites de pages</h2>
-            {% if recentVisits|length > 0 %}
+        {# Captures dont la date de vérification est atteinte #}
+        <div class="recent-section" data-testid="captures-due">
+            <h2><i class="fa fa-image"></i> Captures à revérifier</h2>
+            {% if capturesDue|length > 0 %}
                 <table class="recent-table">
                     <thead>
                         <tr>
-                            <th>Utilisateur</th>
-                            <th>Page visitée</th>
-                            <th>URL</th>
-                            <th>Date de visite</th>
+                            <th>Capture</th>
+                            <th>Service</th>
+                            <th>À revérifier le</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for visit in recentVisits %}
+                        {% for item in capturesDue %}
                             <tr>
-                                <td>{{ visit.user ? visit.user.username : 'Anonyme' }}</td>
-                                <td>{{ visit.pageTitle ?? 'Sans titre' }}</td>
-                                <td><small>{{ visit.pageUrl }}</small></td>
-                                <td>{{ visit.visitedAt|date('d/m/Y H:i') }}</td>
+                                <td><a href="{{ item.url }}">{{ item.capture.marker }} {{ item.capture.caption|length > 60 ? item.capture.caption|slice(0, 60) ~ '…' : item.capture.caption }}</a></td>
+                                <td>{{ item.capture.service ?? '—' }}</td>
+                                <td>{{ item.capture.nextReviewAt|date('d/m/Y') }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             {% else %}
-                <p>Aucune visite enregistrée.</p>
+                <p>Aucune capture à revérifier.</p>
             {% endif %}
         </div>
     </div>

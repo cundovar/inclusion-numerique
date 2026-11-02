@@ -35,8 +35,6 @@ class Logo
     private ?string $titre = null;
 
 
-    #[ORM\OneToOne(inversedBy: 'logo', cascade: ['persist', 'remove'])]
-    private ?DocDeCode $docDeCode = null;
 
     #[ORM\OneToOne(inversedBy: 'logo', cascade: ['persist', 'remove'])]
     private ?Category $category = null;
@@ -84,17 +82,7 @@ class Logo
 
     
 
-    public function getDocDeCode(): ?DocDeCode
-    {
-        return $this->docDeCode;
-    }
 
-    public function setDocDeCode(?DocDeCode $docDeCode): static
-    {
-        $this->docDeCode = $docDeCode;
-
-        return $this;
-    }
 
     public function getCategory(): ?Category
     {

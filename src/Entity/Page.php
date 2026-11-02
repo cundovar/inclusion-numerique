@@ -33,21 +33,16 @@ class Page
     #[ORM\OneToMany(targetEntity: PageContent::class, mappedBy: 'page')]
     private Collection $pageContents;
 
-    /**
-     * @var Collection<int, Favorite>
-     */
-    #[ORM\OneToMany(mappedBy: 'page', targetEntity: Favorite::class, orphanRemoval: true)]
-    private Collection $favorites;
 
     #[ORM\OneToOne(targetEntity: Seo::class, inversedBy: 'pageEntity', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?Seo $seo = null;
 
+
     public function __construct()
     {
         $this->pageContents = new ArrayCollection();
-        $this->favorites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,34 +103,8 @@ class Page
         return $this;
     }
 
-    /**
-     * @return Collection<int, Favorite>
-     */
-    public function getFavorites(): Collection
-    {
-        return $this->favorites;
-    }
 
-    public function addFavorite(Favorite $favorite): static
-    {
-        if (!$this->favorites->contains($favorite)) {
-            $this->favorites[] = $favorite;
-            $favorite->setPage($this);
-        }
 
-        return $this;
-    }
-
-    public function removeFavorite(Favorite $favorite): static
-    {
-        if ($this->favorites->removeElement($favorite)) {
-            if ($favorite->getPage() === $this) {
-                $favorite->setPage(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getSeo(): ?Seo
     {

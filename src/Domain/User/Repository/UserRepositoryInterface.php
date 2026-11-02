@@ -10,6 +10,8 @@ interface UserRepositoryInterface
 {
     public function findByUsername(string $username): ?User;
 
+    public function findByEmail(string $email): ?User;
+
     public function countAll(): int;
 
     /**

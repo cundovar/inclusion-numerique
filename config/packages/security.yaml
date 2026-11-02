@@ -12,63 +12,13 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        # Connecteur MCP apprenant : jeton OAuth propre, sans session, lecture des seuls cours publiés.
-        mcp_learner:
-            pattern: ^/mcp/apprenant
-            stateless: true
-            custom_authenticators:
-                - App\Security\OAuthBearerAuthenticator
-            entry_point: App\Security\OAuthBearerAuthenticator
-
-        # Connecteur MCP de rédaction : jeton OAuth donné par un administrateur, sans session
+        # Connecteur MCP (claude.ai, ChatGPT) : jeton OAuth, sans session, brouillons uniquement
         mcp:
             pattern: ^/mcp
             stateless: true
             custom_authenticators:
                 - App\Security\OAuthBearerAuthenticator
             entry_point: App\Security\OAuthBearerAuthenticator
-
-        api_favorites:
-            pattern: ^/api/me-favorites
-            stateless: false
-            provider: app_user_provider
-            context: main
-            entry_point: App\Security\ApiAuthenticationEntryPoint
-
-        api_page_visits:
-            pattern: ^/api/page-visits
-            stateless: false
-            provider: app_user_provider
-            context: main
-            entry_point: App\Security\ApiAuthenticationEntryPoint
-
-        api_notes:
-            pattern: ^/api/notes
-            stateless: false
-            provider: app_user_provider
-            context: main
-            entry_point: App\Security\ApiAuthenticationEntryPoint
-
-        api_customization:
-            pattern: ^/api/customization
-            stateless: false
-            provider: app_user_provider
-            context: main
-            entry_point: App\Security\ApiAuthenticationEntryPoint
-
-        api_propositions:
-            pattern: ^/api/proposition-ia
-            stateless: false
-            provider: app_user_provider
-            context: main
-            entry_point: App\Security\ApiAuthenticationEntryPoint
-
-        api_admin:
-            pattern: ^/api/admin
-            stateless: true
-            provider: app_user_provider
-            custom_authenticators:
-                - App\Security\ApiKeyAuthenticator
 
         # Lecture publique, mais session partagée avec `main` pour que access_control
         # et les règles `security` d'API Platform connaissent l'utilisateur connecté.
@@ -99,21 +49,12 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-         - { path: ^/mcp/apprenant, roles: ROLE_AGENT_APPRENANT }
          - { path: ^/mcp, roles: ROLE_AGENT_REDACTION }
-         # Consentement OAuth : tout compte autorise le connecteur apprenant ; rédaction réservée aux admins (OAuthServer).
-         - { path: ^/oauth/authorize, roles: ROLE_USER }
+         # Consentement OAuth : un administrateur autorise le connecteur (la connexion renvoie ici)
+         - { path: ^/oauth/authorize, roles: ROLE_ADMIN }
          - { path: ^/admin, roles: ROLE_ADMIN }
-         - { path: ^/api/admin, roles: ROLE_ADMIN }
-         - { path: ^/api/me-favorites, roles: ROLE_USER }
-         - { path: ^/api/page-visits, roles: ROLE_USER }
-         - { path: ^/api/notes, roles: ROLE_USER }
-         - { path: ^/api/customization, roles: ROLE_USER }
-         - { path: ^/api/proposition-ia, roles: ROLE_ADMIN }
-         # Résultats de QCM (micro-service MongoDB) : statistiques réservées aux admins, le reste à l'utilisateur connecté
-         - { path: ^/api/qcm-results/stats, roles: ROLE_ADMIN }
-         - { path: ^/api/qcm-results, roles: ROLE_USER }
-         - { path: ^/user-api/me, roles: ROLE_USER }
+         # Compte de la personne connectée (/user-api/me) et espace apprenant (/user-api/mon-espace)
+         - { path: ^/user-api, roles: ROLE_USER }
          # Ressources API Platform : modification de son propre profil, le reste réservé aux admins
          - { path: ^/api/users, methods: [PATCH], roles: ROLE_USER }
          - { path: ^/api/users, roles: ROLE_ADMIN }

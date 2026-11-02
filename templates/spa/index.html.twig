@@ -1,6 +1,6 @@
 {% extends 'base2.html.twig' %}
 
-{% block title %}{{ seo.title|default('Application SPA') }}{% endblock %}
+{% block title %}{{ seo.title|default(site_name) }}{% endblock %}
 
 {% block body %}
   <div id="app"></div>

@@ -211,7 +211,7 @@ async function dismissConsent(page) {
   await page.addStyleTag({ content: `${CONSENT_CONTAINERS.join(',')}{display:none !important}` })
 }
 
-// Repères : contour et numéro (l'information n'est pas donnée seulement par la couleur)
+// Repères : contour et numéro (ACC-03 : l'information n'est pas donnée seulement par la couleur)
 async function drawMarkers(page, marked) {
   await page.evaluate((items) => {
     for (const { repere, boite } of items) {

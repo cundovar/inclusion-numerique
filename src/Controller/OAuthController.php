@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use App\Entity\User;
 use App\Service\OAuth\OAuthError;
 use App\Service\OAuth\OAuthServer;
@@ -18,29 +19,30 @@ use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Serveur d'autorisation OAuth du connecteur MCP (claude.ai, ChatGPT) : métadonnées, enregistrement
- * dynamique, consentement d'un administrateur, jetons et révocation. Voir docs/fonctionnalites/connecteur-mcp.md.
+ * dynamique, consentement d'un administrateur, jetons et révocation. Voir docs/fonctionnalites/connecteur.md.
  */
 final class OAuthController extends AbstractController
 {
     // Paramètres de la demande repris tels quels dans le formulaire de consentement
     private const AUTHORIZE_PARAMS = ['response_type', 'client_id', 'redirect_uri', 'code_challenge', 'code_challenge_method', 'state', 'scope', 'resource'];
 
-    public function __construct(private OAuthServer $server, private PublicUrl $url) {}
+    public function __construct(
+        private OAuthServer $server,
+        private PublicUrl $url,
+        #[Autowire('%app.site_name%')] private string $siteName = 'Inclusion numérique',
+    ) {}
 
     // Métadonnées de la ressource protégée (RFC 9728), annoncées par le 401 du point MCP
     #[Route('/.well-known/oauth-protected-resource', name: 'oauth_protected_resource', methods: ['GET'])]
     #[Route('/.well-known/oauth-protected-resource/mcp', name: 'oauth_protected_resource_mcp', methods: ['GET'])]
-    #[Route('/.well-known/oauth-protected-resource/mcp/apprenant', name: 'oauth_protected_resource_mcp_apprenant', methods: ['GET'])]
     public function protectedResource(Request $request): JsonResponse
     {
-        $learner = str_ends_with($request->getPathInfo(), '/mcp/apprenant');
-
         return $this->metadata([
-            'resource' => $this->url->resource($request, $learner ? '/mcp/apprenant' : '/mcp'),
+            'resource' => $this->url->resource($request),
             'authorization_servers' => [$this->url->base($request)],
-            'scopes_supported' => [$learner ? OAuthServer::SCOPE_LEARNER_READ : OAuthServer::SCOPE_REDACTION],
+            'scopes_supported' => [OAuthServer::SCOPE],
             'bearer_methods_supported' => ['header'],
-            'resource_name' => $learner ? 'DevDoc — assistant apprenant' : 'DevDoc — assistant de rédaction',
+            'resource_name' => $this->siteName.' — assistant de rédaction',
         ]);
     }
 
@@ -62,7 +64,7 @@ final class OAuthController extends AbstractController
             'code_challenge_methods_supported' => ['S256'],
             'token_endpoint_auth_methods_supported' => ['none'],
             'revocation_endpoint_auth_methods_supported' => ['none'],
-            'scopes_supported' => [OAuthServer::SCOPE_REDACTION, OAuthServer::SCOPE_LEARNER_READ],
+            'scopes_supported' => [OAuthServer::SCOPE],
             'authorization_response_iss_parameter_supported' => true,
         ]);
     }
@@ -90,32 +92,27 @@ final class OAuthController extends AbstractController
             'grant_types' => ['authorization_code', 'refresh_token'],
             'response_types' => ['code'],
             'token_endpoint_auth_method' => 'none',
-            'scope' => OAuthServer::SCOPE_REDACTION.' '.OAuthServer::SCOPE_LEARNER_READ,
+            'scope' => OAuthServer::SCOPE,
         ], Response::HTTP_CREATED));
     }
 
-    // Réservé aux comptes connectés (access_control), et aux administrateurs pour la rédaction : la connexion renvoie ici
+    // Réservé aux administrateurs connectés (access_control) : la connexion renvoie ici
     #[Route('/oauth/authorize', name: 'oauth_authorize', methods: ['GET'])]
     public function authorize(Request $request): Response
     {
         $params = $this->authorizeParams($request->query->all());
         try {
-            $authorization = $this->server->validateAuthorizationRequest($params, $this->resources($request));
+            $authorization = $this->server->validateAuthorizationRequest($params, $this->url->resource($request));
         } catch (OAuthError $error) {
             return $this->consentPage(['error' => $error->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (RedirectableOAuthError $error) {
             return $this->redirectWithError($request, (string) $params['redirect_uri'], $error->error, $error->getMessage(), $params['state'] ?? null);
-        }
-        $user = $this->getUser();
-        if (!$user instanceof User || ($authorization['scope'] === OAuthServer::SCOPE_REDACTION && !OAuthServer::canAuthorize($user))) {
-            throw $this->createAccessDeniedException();
         }
 
         return $this->consentPage([
             'client' => $authorization['client'],
             'params' => $params,
             'redirect_host' => parse_url($authorization['redirectUri'], \PHP_URL_HOST),
-            'learner' => $authorization['scope'] === OAuthServer::SCOPE_LEARNER_READ,
         ]);
     }
 
@@ -142,7 +139,7 @@ final class OAuthController extends AbstractController
 
         $params = $this->authorizeParams($request->request->all());
         try {
-            $authorization = $this->server->validateAuthorizationRequest($params, $this->resources($request));
+            $authorization = $this->server->validateAuthorizationRequest($params, $this->url->resource($request));
         } catch (OAuthError $error) {
             return $this->consentPage(['error' => $error->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (RedirectableOAuthError $error) {
@@ -154,11 +151,11 @@ final class OAuthController extends AbstractController
         }
 
         $user = $this->getUser();
-        if (!$user instanceof User || ($authorization['scope'] === OAuthServer::SCOPE_REDACTION && !OAuthServer::canAuthorize($user))) {
+        if (!$user instanceof User || !OAuthServer::canAuthorize($user)) {
             throw $this->createAccessDeniedException();
         }
 
-        $code = $this->server->issueCode($authorization['client'], $user, $authorization['redirectUri'], $authorization['codeChallenge'], $authorization['resource'], $authorization['scope']);
+        $code = $this->server->issueCode($authorization['client'], $user, $authorization['redirectUri'], $authorization['codeChallenge']);
 
         return $this->redirectTo($authorization['redirectUri'], array_filter([
             'code' => $code,
@@ -171,7 +168,7 @@ final class OAuthController extends AbstractController
     public function token(Request $request): JsonResponse
     {
         try {
-            return $this->noStore(new JsonResponse($this->server->token($request->request->all(), $this->resources($request))));
+            return $this->noStore(new JsonResponse($this->server->token($request->request->all(), $this->url->resource($request))));
         } catch (OAuthError $error) {
             return $this->oauthError($error);
         }
@@ -237,15 +234,6 @@ final class OAuthController extends AbstractController
     private function oauthError(OAuthError $error): JsonResponse
     {
         return $this->noStore(new JsonResponse($error->toArray(), $error->status));
-    }
-
-    /** @return array<string, string> */
-    private function resources(Request $request): array
-    {
-        return [
-            $this->url->resource($request) => OAuthServer::SCOPE_REDACTION,
-            $this->url->resource($request, '/mcp/apprenant') => OAuthServer::SCOPE_LEARNER_READ,
-        ];
     }
 
     /**

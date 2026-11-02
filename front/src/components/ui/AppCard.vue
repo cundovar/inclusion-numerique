@@ -1,11 +1,5 @@
 <template>
-  <div :class="cardClasses">
-    <!-- Border decoratif en haut (optionnel) -->
-    <div
-      v-if="showTopBorder"
-      class="card-top-border"
-    />
-
+  <div class="course-card surface-card surface-card--blue">
     <!-- Header -->
     <div class="card-header">
       <slot name="header">
@@ -71,9 +65,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-
-const props = defineProps({
+defineProps({
   // Titre de la carte
   title: {
     type: String,
@@ -104,12 +96,6 @@ const props = defineProps({
     default: false
   },
 
-  // Afficher la bordure décorative en haut
-  showTopBorder: {
-    type: Boolean,
-    default: false
-  },
-
   // Texte du footer
   footerText: {
     type: String,
@@ -120,35 +106,17 @@ const props = defineProps({
   footerIcon: {
     type: String,
     default: 'fas fa-list'
-  },
-
-  // Classe CSS additionnelle pour la bordure gauche
-  borderClass: {
-    type: String,
-    default: 'border-l-pink-500'
   }
 })
 
-// Classes de la carte
-const cardClasses = computed(() => {
-  return [
-    'course-card',
-    'border',
-    props.borderClass
-  ]
-})
 </script>
 
 <style scoped>
 .course-card {
-  color: black;
-  border-radius: 20px;
+  color: #1f2937;
+  border-radius: 1rem;
   padding: 24px;
   margin: 16px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
   min-height: 350px;
   display: flex;
   flex-direction: column;
@@ -156,26 +124,8 @@ const cardClasses = computed(() => {
   overflow: hidden;
 }
 
-.card-top-border {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
-  border-radius: 20px 20px 0 0;
-}
-
-.course-card:hover {
-  transform: translateY(-1px);
-  background-color: var(--primary-color);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-}
-
 .card-header {
   display: flex;
-  border-bottom: 1px solid rgba(97, 95, 95, 0.5);
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
@@ -185,13 +135,11 @@ const cardClasses = computed(() => {
   width: 50px;
   height: 50px;
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #dbeafe;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 15px;
-  backdrop-filter: blur(10px);
-  background-color: var(--primary-color);
 }
 
 .card-icon i {
@@ -221,10 +169,9 @@ const cardClasses = computed(() => {
 }
 
 .card-item {
-  background: rgba(0, 0, 0, 0.1);
+  background: #fff;
   border-radius: 12px;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .item-content {
@@ -270,10 +217,11 @@ const cardClasses = computed(() => {
 
 .card-footer {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: space-between;
   align-items: center;
   padding-top: 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-count {
@@ -319,16 +267,16 @@ const cardClasses = computed(() => {
 }
 
 .card-items-list::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: #eff6ff;
   border-radius: 10px;
 }
 
 .card-items-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: #bfdbfe;
   border-radius: 10px;
 }
 
 .card-items-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: #93c5fd;
 }
 </style>

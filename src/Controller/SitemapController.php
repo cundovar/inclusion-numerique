@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\PageContent;
 use App\Domain\Category\Repository\CategoryRepositoryInterface;
 use App\Domain\Page\Repository\PageRepositoryInterface;
+use App\Entity\PageContent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -32,6 +32,16 @@ class SitemapController extends AbstractController
             'priority' => '1.0',
             'lastmod' => (new \DateTime())->format('Y-m-d')
         ];
+
+        // Les deux entrées publiques de l'accueil
+        foreach (['/apprendre', '/accompagner'] as $entry) {
+            $urls[] = [
+                'loc' => $hostname . $spaPath . $entry,
+                'changefreq' => 'weekly',
+                'priority' => '0.9',
+                'lastmod' => (new \DateTime())->format('Y-m-d')
+            ];
+        }
 
         // Pages de cours (pages/:slug) : seulement celles qui ont un contenu publié et ouvert à tous
         $pages = $this->pageRepository->findAll();

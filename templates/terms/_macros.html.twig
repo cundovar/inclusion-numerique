@@ -1,0 +1,4 @@
+{# Valeur saisie dans le back-office (Configuration du site), ou « À compléter » bien visible : jamais inventée #}
+{% macro value(v) %}{% if v %}{{ v }}{% else %}<span class="a-completer">À compléter</span>{% endif %}{% endmacro %}
+
+{% macro email(v) %}{% if v %}<a href="mailto:{{ v }}">{{ v }}</a>{% else %}<span class="a-completer">À compléter</span>{% endif %}{% endmacro %}

@@ -33,7 +33,8 @@ const labels = {
   vertical-align: middle;
 }
 .status--code { color: var(--vp-c-text-2); }
-.status--local { color: var(--vp-c-tip-1); }
+/* Violet : distinct du bleu de marque utilisé par « Validé par la CI » */
+.status--local { color: var(--vp-c-purple-1, #6f42c1); }
 .status--ci { color: var(--vp-c-brand-1); }
 .status--prod { color: var(--vp-c-green-1, #18794e); }
 .status--prevu { color: var(--vp-c-warning-1); }

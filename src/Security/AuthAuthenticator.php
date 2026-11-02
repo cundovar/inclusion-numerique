@@ -37,7 +37,9 @@ class AuthAuthenticator extends AbstractLoginFormAuthenticator
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $username);
 
         return new Passport(
-            new UserBadge($username, fn (string $userIdentifier) => $this->userRepository->findByUsername($userIdentifier)),
+            new UserBadge($username, fn (string $userIdentifier) => str_contains($userIdentifier, '@')
+                ? $this->userRepository->findByEmail($userIdentifier)
+                : $this->userRepository->findByUsername($userIdentifier)),
             new PasswordCredentials($request->getPayload()->getString('password')),
             [
                 new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
