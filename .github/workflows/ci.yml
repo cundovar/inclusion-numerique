@@ -2,13 +2,13 @@ name: CI/CD
 
 on:
   pull_request:
-    branches: [main, deploy]
+    branches: [main, deploy, main2]
   push:
-    branches: [main, deploy]
+    branches: [main, deploy, main2]
   workflow_dispatch:
     inputs:
       deploy:
-        description: Deploy the selected branch to production
+        description: Deploy the selected branch (main or main2) to its site
         type: boolean
         default: false
 
@@ -39,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       deploy: ${{ steps.context.outputs.deploy }}
+      environment: ${{ steps.context.outputs.environment }}
+      ovh_path: ${{ steps.context.outputs.ovh_path }}
     steps:
       - id: context
         env:
@@ -46,13 +48,23 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
           MANUAL_DEPLOY: ${{ inputs.deploy }}
         run: |
+          # Une branche = un site : main -> devdoc.varascundo.com, main2 -> inclusion-numerique.varascundo.com
+          case "$REF_NAME" in
+            main)  environment=production;          ovh_path=/home/egflbug/devdoc/prod ;;
+            main2) environment=inclusion-numerique; ovh_path=/home/egflbug/inclusion-numerique ;;
+            *)     environment="";                  ovh_path="" ;;
+          esac
           deploy=false
-          if [[ "$EVENT_NAME" == "push" && "$REF_NAME" == "main" ]]; then
+          if [[ -n "$environment" && "$EVENT_NAME" == "push" ]]; then
             deploy=true
-          elif [[ "$EVENT_NAME" == "workflow_dispatch" && "$REF_NAME" == "main" && "$MANUAL_DEPLOY" == "true" ]]; then
+          elif [[ -n "$environment" && "$EVENT_NAME" == "workflow_dispatch" && "$MANUAL_DEPLOY" == "true" ]]; then
             deploy=true
           fi
-          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+          {
+            echo "deploy=$deploy"
+            echo "environment=$environment"
+            echo "ovh_path=$ovh_path"
+          } >> "$GITHUB_OUTPUT"
 
   dependencies:
     name: Dependencies
@@ -364,16 +376,16 @@ jobs:
           [[ "$BUILD" == "success" ]]
 
   deploy:
-    name: Deploy production
+    name: Deploy ${{ needs.setup_variables.outputs.environment }}
     needs: [setup_variables, report]
     if: needs.setup_variables.outputs.deploy == 'true'
     runs-on: ubuntu-latest
-    environment: production
-    concurrency: production
+    environment: ${{ needs.setup_variables.outputs.environment }}
+    concurrency: ${{ needs.setup_variables.outputs.environment }}
     env:
       OVH_HOST: ssh.cluster130.hosting.ovh.net
       OVH_USER: egflbug
-      OVH_PATH: /home/egflbug/devdoc/prod
+      OVH_PATH: ${{ needs.setup_variables.outputs.ovh_path }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
@@ -392,6 +404,11 @@ jobs:
         env:
           SSHPASS: ${{ secrets.OVH_SSH_PASSWORD }}
         run: |
+          # --delete vide le dossier cible : refuser tout chemin hors des deux sites connus
+          case "$OVH_PATH" in
+            /home/egflbug/devdoc/prod|/home/egflbug/inclusion-numerique) ;;
+            *) echo "Chemin de déploiement inattendu : '$OVH_PATH'"; exit 1 ;;
+          esac
           sshpass -e rsync -az --delete --delay-updates \
             --exclude='.env' \
             --exclude='.env.*' \

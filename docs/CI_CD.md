@@ -1,7 +1,7 @@
 # Pipeline CI/CD GitHub Actions
 
-Le workflow `.github/workflows/ci.yml` valide les pull requests vers `main` et
-`deploy`, ainsi que chaque push sur ces branches. Les controles PHP, frontend,
+Le workflow `.github/workflows/ci.yml` valide les pull requests vers `main`,
+`deploy` et `main2`, ainsi que chaque push sur ces branches. Les controles PHP, frontend,
 tests et securite s'executent en parallele apres l'installation des dependances.
 Une couverture Clover et les assets de production sont conserves 14 jours dans
 les artifacts GitHub Actions.
@@ -72,6 +72,35 @@ travailler sur `deploy`, ouvrir ou mettre a jour une pull request vers `main`,
 puis merger quand les checks sont verts. Il peut aussi etre lance depuis
 l'onglet Actions avec `Run workflow`, sur `main`, en cochant l'option de
 deploiement.
+
+### Second site : `main2` vers inclusion-numerique
+
+La branche `main2` (DevDoc avec les connecteurs MCP du gabarit `app-neutre`) se
+deploie sur un second site, sans toucher a la production de `main`. Le job
+`Setup variables` associe chaque branche a son site :
+
+| Branche | Environnement GitHub | Dossier OVH | Adresse |
+| --- | --- | --- | --- |
+| `main` | `production` | `/home/egflbug/devdoc/prod` | `https://devdoc.varascundo.com` |
+| `main2` | `inclusion-numerique` | `/home/egflbug/inclusion-numerique` | `https://inclusion-numerique.varascundo.com` |
+
+Un push sur `main2` lance les memes controles et la meme release, puis deploie
+dans son dossier ; `Run workflow` sur `main2` avec l'option cochee fait de meme.
+Le job de deploiement refuse tout autre dossier, car `rsync --delete` vide la
+cible. Aucune autre branche ne deploie.
+
+A preparer une seule fois, avant le premier deploiement :
+
+- environnement GitHub `inclusion-numerique` avec le secret `OVH_SSH_PASSWORD` ;
+- sur OVH, dans `/home/egflbug/inclusion-numerique` : un `.ovhconfig` en PHP 8.2
+  (comme `/home/egflbug/devdoc/.ovhconfig`) et un `.env` propre au site, avec
+  sa propre base de donnees et `MCP_PUBLIC_URL` sur la nouvelle adresse ;
+- le multisite OVH pointe sur ce dossier (le `.htaccess` racine transmet a
+  `public/`).
+
+Le workflow ne lance pas les migrations : sur la base du second site, elles se
+lancent a la main apres le premier deploiement
+(`php bin/console doctrine:migrations:migrate --env=prod`).
 
 Le deploiement rsync remplace les anciens `git pull` manuels sur OVH. Le depot
 `.git` distant est conserve par securite, mais ne doit plus servir a mettre la
