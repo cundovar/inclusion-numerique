@@ -54,7 +54,7 @@ Inclusion-numerique affiche le contenu de mediateur avec son propre nom : même 
 | Captures | `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN` identiques à ceux de mediateur | Même service Netcup |
 | Connecteur | `MCP_PUBLIC_URL=https://inclusion-numerique.varascundo.com` | Les connexions OAuth restent sur ce site |
 
-Le lien des images se crée une fois sur le serveur ; `rsync` exclut `public/uploads/` et ne le touche donc pas :
+Le lien des images se crée une fois sur le serveur. `rsync` exclut `public/uploads`, sans barre finale : avec `public/uploads/`, l'exclusion ne protège qu'un vrai dossier, et `--delete` a supprimé le lien au déploiement du 2026-11-02 (images en 404 jusqu'à sa recréation) :
 
 ```bash
 ln -s ~/mediateur/public/uploads ~/inclusion-numerique/public/uploads

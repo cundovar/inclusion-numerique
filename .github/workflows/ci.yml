@@ -275,13 +275,15 @@ jobs:
         run: |
           # --delete vide le dossier cible : refuser tout autre chemin
           [[ "$OVH_PATH" == /home/egflbug/inclusion-numerique ]] || { echo "Chemin inattendu : '$OVH_PATH'"; exit 1; }
+          # public/uploads sans barre finale : c'est un lien vers les images de mediateur, et
+          # « public/uploads/ » ne protège qu'un vrai dossier (--delete supprimait le lien)
           sshpass -e rsync -az --delete --delay-updates \
             --exclude='.env' \
             --exclude='.env.*' \
             --exclude='.git/' \
             --exclude='.ovhconfig' \
             --exclude='var/' \
-            --exclude='public/uploads/' \
+            --exclude='public/uploads' \
             -e 'ssh -o StrictHostKeyChecking=yes' \
             /tmp/release/ "$OVH_USER@$OVH_HOST:$OVH_PATH/"
       # cache:clear renomme var/cache/prod, ce qui échoue parfois sur le disque partagé d'OVH
