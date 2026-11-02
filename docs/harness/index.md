@@ -45,7 +45,7 @@ make up && make composer && make npm-install && make migrate
 docker compose exec php php bin/console app:create-admin <nom>   # compte du back-office
 ```
 
-Assistant de rédaction : connecteur MCP sur `/mcp`, à ajouter dans claude.ai ou ChatGPT avec un compte administrateur (voir [le connecteur](../fonctionnalites/connecteur.md)) ; `php bin/console app:connecteurs` liste et coupe les accès.
+Assistant de rédaction : pas de connecteur sur ce site, on utilise celui de mediateur (voir [le connecteur](../fonctionnalites/connecteur.md)).
 
 Site : <http://localhost:8094/spa> ; back-office : <http://localhost:8094/admin> ; phpMyAdmin : <http://localhost:8095> ; MySQL hôte : `localhost:3310`.
 
@@ -71,25 +71,16 @@ php -S 127.0.0.1:8000 -t public             # le serveur intégré a besoin d'un
 | ESLint | `npm run lint --prefix front` | `make lint-front` |
 | Vitest | `npm test --prefix front` | `make test-front` |
 | Build Vite | `npm run check --prefix front` | `make build-front` |
-| Connecteur MCP | inclus dans PHPUnit (`tests/Functional/Mcp/`) | `make test` |
-| Moteur de capture | `npm ci --prefix capture && npm run lint --prefix capture && npm test --prefix capture` | — |
 | Documentation VitePress | `npm ci --prefix docs && npm run build --prefix docs` | `make docs-build` |
 
-`make check-fast` enchaîne syntaxe PHP, PHPStan et ESLint ; `make check` y ajoute PHPUnit, Vitest et le build, puis efface le marqueur `.agents/.needs-check`. La CI (`.github/workflows/ci.yml`) exécute les mêmes contrôles, plus les migrations sur un MySQL 8.0 (montée, validation du schéma, retour arrière et remontée), le moteur de capture et le build de la documentation.
+`make check-fast` enchaîne syntaxe PHP, PHPStan et ESLint ; `make check` y ajoute PHPUnit, Vitest et le build, puis efface le marqueur `.agents/.needs-check`. La CI (`.github/workflows/ci.yml`) exécute les mêmes contrôles, plus les migrations sur un MySQL 8.0 (montée, validation du schéma, retour arrière et remontée) et le build de la documentation.
 
 `make docs-dev` sert la documentation sur <http://localhost:5176/docs/> (service Docker `docs`, profil `docs`, port `HOST_DOCS_PORT`). `make docs-build` échoue sur un lien interne mort.
-
-### Moteur de capture
-
-`capture/` (Node, `playwright-core`) est exécuté sur Netcup par `capture-service/`, dans un conteneur séparé de l'application OVH. Le site lui envoie une demande HTTPS authentifiée avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`, puis enregistre lui-même le JPEG et ses métadonnées. En développement, laisser `CAPTURE_SERVICE_URL` vide utilise encore le moteur local. Réglages : `docs/env.example` (`CAPTURE_SERVICE_URL`, `CAPTURE_SERVICE_TOKEN`, `CAPTURE_CHROMIUM_PATH`, `CAPTURE_NO_SANDBOX`, `CAPTURE_HOME`).
-
-Les tests du moteur ouvrent un site local et utilisent `CAPTURE_CHROMIUM_PATH` (ou `/opt/pw-browsers/chromium`) ; en CI, `npx --prefix capture playwright-core install --with-deps chromium`. PHPUnit remplace le moteur par un double, sauf `tests/Service/NodeCaptureRunnerTest.php`, ignoré si `capture/node_modules` manque.
 
 Pour un parcours public, compléter par un essai dans le navigateur sur ordinateur et mobile, et en mode hors ligne. Ne pas présenter les tests de DevDoc comme une validation de cette application.
 
 Dans un environnement où le proxy refuse les archives GitHub, `composer install --prefer-source` fonctionne, sauf PHPStan, qui n'est distribué qu'en archive ; le cloner alors en profondeur 1 depuis `github.com/phpstan/phpstan` au tag du `composer.lock` (le clone complet est trop lourd pour certains proxys).
 
-Le connecteur MCP est testé par PHPUnit : appels JSON-RPC réels sur `/mcp` (`tests/Functional/Mcp/`) et parcours OAuth complet (`tests/Functional/OAuthFlowTest.php`). Pour un essai manuel avec un client MCP, ajouter `localhost` à `OAUTH_REDIRECT_HOSTS` et utiliser par exemple MCP Inspector (`npx @modelcontextprotocol/inspector`) sur `http://localhost:8094/mcp`.
 
 ### Déploiement en production
 

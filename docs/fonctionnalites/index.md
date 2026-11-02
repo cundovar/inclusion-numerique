@@ -11,11 +11,10 @@ Vue d'ensemble des fonctions présentes. Les badges renvoient au run CI [3949334
 | Hors ligne (PWA, IndexedDB) | `front/vite.config.js`, `front/src/utils/offlineDb.js` | `front/tests/unit/utils/offlineDb.spec.js`, `fetchDataPwa.spec.js` | <Status is="ci" /> |
 | PDF d'un cours ou d'un module | `/cours/<slug>.pdf`, `/module/<id>.pdf`, `src/Service/Pdf/` | `tests/Functional/CoursePdfTest.php` | <Status is="ci" /> |
 | Compte apprenant facultatif, mot de passe oublié | `/register`, `/mot-de-passe-oublie`, `src/Service/Account/` | `LearnerAccountTest`, `ResetPasswordTest` | <Status is="ci" /> |
-| Contenus personnalisés (réservés à un apprenant) | `src/Entity/AccesReserve.php`, `src/Service/Redaction/AccesPersonnaliseService.php` | `PersonalizedContentApiTest`, `Mcp/PersonalizedAccessConnectorTest` | <Status is="ci" /> |
+| Contenus personnalisés (réservés à un apprenant) : affichage seulement, l'attribution se fait par le connecteur de mediateur | `src/Entity/AccesReserve.php`, `src/Infrastructure/ApiPlatform/PublishedContentExtension.php` | `PersonalizedContentApiTest` | <Status is="ci" /> |
 | Back-office éditorial (EasyAdmin) | `src/Controller/Admin/` | `Admin/BackOfficePagesTest`, `Admin/CaptureBackOfficeTest` | <Status is="ci" /> |
 | Captures sourcées dans les cours | marqueur `[capture:ID]`, `src/Entity/CourseMedia.php` ; voir le [guide d'édition](edition.md) | `CaptureApiTest`, `CourseMediaValidationTest` | <Status is="ci" /> |
-| Assistant de rédaction (MCP) : brouillons, contrôles, relecture croisée, publication | `/mcp`, `src/Mcp/`, `src/Service/Redaction/` ; voir le [connecteur](connecteur.md) | `tests/Functional/Mcp/`, `tests/Service/DraftCheckerTest.php` | <Status is="ci" /> |
-| Capture automatique de pages publiques | `src/Service/Capture/`, `capture/`, `capture-service/` | `tests/Service/RemoteCaptureRunnerTest.php`, `capture/test/` | <Status is="ci" /> |
+| Assistant de rédaction (MCP) et captures automatiques | Retirés de ce site : on utilise le [connecteur de mediateur](connecteur.md) | `RemovedFeaturesTest` | <Status is="local" /> |
 | Pages légales | `/mentions-legales`, `/privacy`, `/terms`, `src/Service/LegalInformation.php` | `tests/Functional/LegalPagesTest.php` | <Status is="ci" /> |
 
 Le site en ligne répond sur `https://mediateur.varascundo.com/spa` (contrôle du 2026-10-30). <Status is="prod" />

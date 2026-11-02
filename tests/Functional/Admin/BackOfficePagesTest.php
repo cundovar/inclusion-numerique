@@ -43,34 +43,4 @@ final class BackOfficePagesTest extends WebTestCase
             self::assertTrue($client->getResponse()->isSuccessful(), sprintf('%s répond %d', $path, $client->getResponse()->getStatusCode()));
         }
     }
-
-    public function testConnectorQcmDraftAppearsInTheRealBackOffice(): void
-    {
-        $client = static::createClient();
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        $schemaTool = new SchemaTool($entityManager);
-        $schemaTool->dropSchema($entityManager->getMetadataFactory()->getAllMetadata());
-        $schemaTool->createSchema($entityManager->getMetadataFactory()->getAllMetadata());
-
-        $admin = (new User())->setUsername('redaction')->setRoles(['ROLE_ADMIN'])->setPassword('inutilise');
-        $entityManager->persist($admin);
-        $entityManager->flush();
-        $client->loginUser($admin, 'main');
-
-        $draft = (new \App\Entity\QcmDraft('connecteur:Claude#test'))
-            ->setQuestion('Quel est le premier geste à faire ?')
-            ->setExplanation('Prenez le temps de vérifier.')
-            ->setAnswers([
-                ['texte' => 'Vérifier la source', 'correcte' => true, 'explication' => null],
-                ['texte' => 'Cliquer immédiatement', 'correcte' => false, 'explication' => 'Le lien peut être frauduleux.'],
-            ]);
-        $entityManager->persist($draft);
-        $entityManager->flush();
-
-        $client->request('GET', '/admin');
-        self::assertResponseIsSuccessful();
-        $client->clickLink('Brouillons du connecteur');
-        self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('body', 'Quel est le premier geste à faire ?');
-    }
 }

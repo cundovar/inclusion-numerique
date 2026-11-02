@@ -8,7 +8,6 @@ Workflow unique : [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (
 |---|---|---|
 | `php` | Syntaxe PHP, lint conteneur/Twig/YAML, PHPStan, PHPUnit | Toujours |
 | `migrations` | Migrations sur MySQL 8.0 : montée, validation, retour arrière, remontée | Toujours |
-| `capture` | Lint et tests du moteur de capture avec Chromium | Toujours |
 | `front` | ESLint, Vitest, build Vite | Toujours |
 | `docs` | Build VitePress de `docs/` (échoue sur un lien interne mort) | Toujours |
 | `build` | Archive de production : `composer install --no-dev`, build Vue, documentation copiée dans `public/docs/` | Push sur `main2` |
@@ -49,10 +48,10 @@ Inclusion-numerique affiche le contenu de mediateur avec son propre nom : même 
 | Base | `egflbugcundo6`, celle de mediateur | Contenu commun |
 | Migrations | Aucune au déploiement | Le schéma de la base partagée évolue par le déploiement de mediateur |
 | Schéma | `DOCTRINE_SCHEMA_FILTER` (défaut dans [`config/services.yaml`](../../config/services.yaml)) ignore les 14 tables DevDoc ajoutées dans la base partagée (`appy_Exo*`, `appy_Note`, `revision`, `diaporama`…) | Doctrine ne propose jamais de les supprimer |
-| Nom du site | `SITE_NAME`, défaut « Inclusion numérique » ; l'emporte sur `siteName` de la configuration en base (`DoctrineSiteConfigurationRepository::getDefaultSettings()`), et sert aux gabarits Twig (`site_name`), au SEO, aux e-mails, aux PDF et au connecteur | La configuration en base est partagée : la modifier changerait aussi le nom de mediateur |
+| Nom du site | `SITE_NAME`, défaut « Inclusion numérique » ; l'emporte sur `siteName` de la configuration en base (`DoctrineSiteConfigurationRepository::getDefaultSettings()`), et sert aux gabarits Twig (`site_name`), au SEO, aux e-mails et aux PDF | La configuration en base est partagée : la modifier changerait aussi le nom de mediateur |
 | Images | `public/uploads` est un lien symbolique vers `/home/egflbug/mediateur/public/uploads` | Les cours de la base pointent vers ces fichiers ; une capture ajoutée depuis l'un des deux sites s'affiche sur l'autre |
-| Captures | `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN` identiques à ceux de mediateur | Même service Netcup |
-| Connecteur | `MCP_PUBLIC_URL=https://inclusion-numerique.varascundo.com` | Les connexions OAuth restent sur ce site |
+| Connecteur MCP | Aucun sur ce site (code retiré) ; on utilise celui de mediateur, `https://mediateur.varascundo.com/mcp` | Base et images partagées : ses modifications s'appliquent aux deux sites. Voir [Connecteur MCP](../fonctionnalites/connecteur.md) |
+| Adresse publique | `MCP_PUBLIC_URL=https://inclusion-numerique.varascundo.com` (nom conservé) | Liens envoyés par e-mail (mot de passe oublié) |
 
 Le lien des images se crée une fois sur le serveur. `rsync` exclut `public/uploads`, sans barre finale : avec `public/uploads/`, l'exclusion ne protège qu'un vrai dossier, et `--delete` a supprimé le lien au déploiement du 2026-11-02 (images en 404 jusqu'à sa recréation) :
 
@@ -69,11 +68,11 @@ Vérifié en production le 2026-11-02 :
 
 ## Service de capture Netcup
 
-[`deploy/netcup-capture/docker-compose.yml`](../../deploy/netcup-capture/docker-compose.yml) lance `capture-service/` derrière Traefik, sur `capture.mediateur.varascundo.com`. Le site OVH l'appelle en HTTPS avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN` (même jeton des deux côtés, généré par `openssl rand -hex 32`). Vérifier `GET /health` puis une capture réelle après chaque mise à jour. <Status is="code" />
+Le service de capture (`capture.mediateur.varascundo.com`) appartient à mediateur et n'est appelé que par son connecteur. Ce site n'a plus de moteur de capture ni de variables `CAPTURE_*`.
 
 ## Variables d'environnement
 
-Modèle sans secret : [`docs/env.example`](../env.example). En production, fixer aussi `MAILER_DSN` (Brevo), `MAILER_FROM` et `MCP_PUBLIC_URL`.
+Modèle sans secret : [`docs/env.example`](../env.example). En production, fixer aussi `MAILER_DSN` (Brevo), `MAILER_FROM`, `MCP_PUBLIC_URL` (adresse publique du site) et, au besoin, `SITE_NAME`.
 
 ## Exécution locale
 

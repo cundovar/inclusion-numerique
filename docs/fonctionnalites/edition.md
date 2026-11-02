@@ -13,7 +13,7 @@ Menu **Cours**, champ **Statut** :
 | Publié | Visible sur le site, dans l'API et dans le plan du site. |
 | À réviser | Le service officiel a changé ou un usager a signalé un décalage. Le cours disparaît du site jusqu'à sa remise en « Publié ». |
 
-L'API ne permet pas de publier : un statut change dans le back-office, ou par l'assistant de rédaction (`publier_cours`, après une relecture favorable d'un autre connecteur, voir [le connecteur](connecteur.md)). Un brouillon préparé par l'assistant de rédaction porte « agent:… » dans **Préparé par** ; quand il est soumis, il arrive « En revue » après avoir passé les contrôles de `regles/controles.md`. La relecture vérifie le reste du référentiel `regles/`. Un administrateur connecté voit aussi les brouillons sur le site, avec un bandeau « Ce cours n'est pas publié ».
+L'API ne permet pas de publier : un statut change dans le back-office, ou par l'assistant de rédaction de mediateur (`publier_cours`, après une relecture favorable d'un autre connecteur, voir [le connecteur](connecteur.md)), dont les modifications s'appliquent aussi à ce site. Un brouillon préparé par l'assistant de rédaction porte « agent:… » dans **Préparé par** ; quand il est soumis, il arrive « En revue » après avoir passé les contrôles de `regles/controles.md`. La relecture vérifie le reste du référentiel `regles/`. Un administrateur connecté voit aussi les brouillons sur le site, avec un bandeau « Ce cours n'est pas publié ».
 
 Pour un cours sur un service, remplir **Page officielle de référence** et **Vérifié le** après chaque comparaison avec le site officiel.
 

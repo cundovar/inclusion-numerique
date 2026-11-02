@@ -23,6 +23,11 @@
         <server name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0&amp;max[direct]=0&amp;quiet[]=indirect" />
         <!-- Base SQLite jetable : les tests fonctionnels ne touchent jamais la base MySQL -->
         <env name="DATABASE_URL" value="sqlite:///%kernel.project_dir%/var/test.db" force="true" />
+
+        <!-- ###+ symfony/brevo-mailer ### -->
+        <!-- MAILER_DSN=brevo+api://KEY@default -->
+        <!-- MAILER_DSN=brevo+smtp://USERNAME:PASSWORD@default -->
+        <!-- ###- symfony/brevo-mailer ### -->
     </php>
 
     <testsuites>

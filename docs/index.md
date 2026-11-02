@@ -18,9 +18,8 @@ Cette documentation décrit le fonctionnement réel du dépôt. Chaque informati
 |---|---|---|
 | Interface | Vue 3, Vite, Pinia, Tailwind, PWA hors ligne | <Status is="ci" /> |
 | API et back-office | Symfony 6.4, API Platform, EasyAdmin, MySQL 8 | <Status is="ci" /> |
-| Assistant de rédaction | Connecteur MCP `/mcp` pour claude.ai et ChatGPT, OAuth | <Status is="ci" /> |
-| Captures automatiques | Service Playwright isolé sur Netcup | <Status is="ci" /> |
-| Hébergement | OVH, déploiement automatique depuis `main` | <Status is="prod" /> |
+| Assistant de rédaction | Connecteur MCP de mediateur (base partagée), aucun sur ce site | <Status is="local" /> |
+| Hébergement | OVH (`inclusion-numerique.varascundo.com`), déploiement automatique depuis `main2` | <Status is="prod" /> |
 
 ## Parcourir
 

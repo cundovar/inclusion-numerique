@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Form\RegistrationForm;
 use App\Service\Account\PasswordResetService;
-use App\Service\OAuth\PublicUrl;
+use App\Service\PublicUrl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

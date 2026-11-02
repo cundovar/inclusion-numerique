@@ -3,24 +3,16 @@ parameters:
     # Chemin SPA - Modifier cette valeur pour changer le préfixe
     # Note: Modifier aussi les Routes dans SpaController.php et SitemapController.php
     app.spa_path: '/spa'
-    env(CAPTURE_NODE_BINARY): 'node'
     # Expéditeur des e-mails du site (mot de passe oublié)
     env(MAILER_FROM): 'ne-pas-repondre@localhost'
-    env(CAPTURE_CHROMIUM_PATH): ''
-    env(CAPTURE_NO_SANDBOX): '0'
-    env(CAPTURE_HOME): ''
-    # Service Playwright isolé sur Netcup. Laisser l'URL vide en développement pour utiliser le moteur local.
-    env(CAPTURE_SERVICE_URL): ''
-    env(CAPTURE_SERVICE_TOKEN): ''
-    # Connecteur MCP (docs/fonctionnalites/connecteur.md) : adresse publique du site et hôtes de retour OAuth autorisés
+    # Adresse publique du site, pour les liens envoyés par e-mail (voir App\Service\PublicUrl)
     env(MCP_PUBLIC_URL): ''
-    # Base egflbugcundo6 partagée entre mediateur et inclusion-numerique : tables DevDoc à ignorer
-    env(DOCTRINE_SCHEMA_FILTER): '~^(?!(appy_Exo|appy_ExoBlock|appy_ExoContent|appy_ExoMenu|appy_DocDeCode|appy_favorite|appy_Note|appy_PropositionIA|appy_UserCustomization|appy_UserPageVisit|revision|agent_course_generation|diaporama|rag_passage|doctrine_migration_versions_inclusion)$)~'
+    # Base egflbugcundo6 partagée entre mediateur et inclusion-numerique : tables à ignorer, celles
+    # ajoutées pour DevDoc et celles du connecteur MCP de mediateur (retiré de ce site)
+    env(DOCTRINE_SCHEMA_FILTER): '~^(?!(oauth_client|oauth_grant|oauth_authorization_code|qcm_draft|appy_Exo|appy_ExoBlock|appy_ExoContent|appy_ExoMenu|appy_DocDeCode|appy_favorite|appy_Note|appy_PropositionIA|appy_UserCustomization|appy_UserPageVisit|revision|agent_course_generation|diaporama|rag_passage|doctrine_migration_versions_inclusion)$)~'
     # Nom du site : la configuration en base est partagée avec mediateur, le nom vient donc de l'environnement
     env(SITE_NAME): 'Inclusion numérique'
     app.site_name: '%env(SITE_NAME)%'
-    app.oauth.redirect_hosts: '%env(csv:OAUTH_REDIRECT_HOSTS)%'
-    env(OAUTH_REDIRECT_HOSTS): 'claude.ai,claude.com,chatgpt.com'
 
 services:
     App\Doctrine\PrefixedNamingStrategy:
@@ -88,5 +80,3 @@ services:
     App\Domain\CourseMedia\Repository\CourseMediaRepositoryInterface: '@App\Infrastructure\CourseMedia\Repository\DoctrineCourseMediaRepository'
     App\Domain\Shared\Persistence\PersistenceFlusherInterface: '@App\Infrastructure\Persistence\DoctrinePersistenceFlusher'
     App\Domain\Shared\Persistence\TransactionalExecutorInterface: '@App\Infrastructure\Persistence\DoctrineTransactionalExecutor'
-
-    App\Service\Capture\CaptureRunnerInterface: '@App\Service\Capture\ConfiguredCaptureRunner'

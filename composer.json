@@ -18,7 +18,6 @@
         "easycorp/easyadmin-bundle": "^4.24",
         "ezyang/htmlpurifier": "*",
         "league/commonmark": "^2.7",
-        "mcp/sdk": "0.8.1",
         "nelmio/cors-bundle": "^2.5",
         "nyholm/psr7": "^1.8",
         "pentatrion/vite-bundle": "^8.2",

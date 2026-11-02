@@ -11,7 +11,6 @@ use App\Entity\Page;
 use App\Entity\PageContent;
 use App\Entity\CourseMedia;
 use App\Entity\QCM;
-use App\Entity\QcmDraft;
 use App\Entity\LanguageQCM;
 use App\Entity\NiveauQCM;
 use App\Entity\ChoicesQCM;
@@ -111,7 +110,6 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('🧠 QCM');
         yield MenuItem::linkToCrud('QCM', 'fa fa-question-circle', QCM::class);
-        yield MenuItem::linkToCrud('Brouillons du connecteur', 'fa fa-file-circle-question', QcmDraft::class);
         yield MenuItem::linkToCrud('Langages', 'fa fa-code', LanguageQCM::class);
         yield MenuItem::linkToCrud('Niveaux', 'fa fa-layer-group', NiveauQCM::class);
         yield MenuItem::linkToCrud('Choix', 'fa fa-check-square', ChoicesQCM::class);

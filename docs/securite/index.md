@@ -9,30 +9,20 @@ Configuration : [`config/packages/security.yaml`](../../config/packages/security
 | Zone | Accès | Mécanisme |
 |---|---|---|
 | `/admin` (back-office) | `ROLE_ADMIN` | Session, formulaire de connexion (`src/Security/AuthAuthenticator.php`) |
-| `/mcp` (connecteur) | `ROLE_AGENT_REDACTION` | Jeton OAuth Bearer, sans session (`src/Security/OAuthBearerAuthenticator.php`) |
-| `/oauth/authorize` | `ROLE_ADMIN` | Un administrateur autorise le connecteur une fois |
 | `/user-api` | `ROLE_USER` | Compte apprenant |
 | `/api` en écriture | `ROLE_ADMIN` | L'API publique est en lecture seule |
 
 - Mots de passe hachés par l'algorithme `auto` de Symfony ; déconnexion protégée par jeton CSRF.
 - Mot de passe oublié : lien à usage unique valable une heure (`src/Service/Account/PasswordResetService.php`, `ResetPasswordTest`).
-- Tests : [`AccessControlTest`](../../tests/Functional/Security/AccessControlTest.php), [`OAuthFlowTest`](../../tests/Functional/OAuthFlowTest.php).
+- Tests : [`AccessControlTest`](../../tests/Functional/Security/AccessControlTest.php), [`RemovedFeaturesTest`](../../tests/Functional/RemovedFeaturesTest.php) (aucune route `/mcp` ni `/oauth`).
 
 ## Contenus non publiés et réservés
 
 `src/Infrastructure/ApiPlatform/PublishedContentExtension.php` filtre l'API publique : un cours non publié n'est jamais exposé, un contenu réservé (cours, parcours, module, QCM) n'est visible que de son destinataire. Le plan du site et les PDF (`src/Service/CourseVisibility.php`) suivent les mêmes règles. Tests : `PublishedContentApiTest`, `PersonalizedContentApiTest`, `CoursePdfTest`. <Status is="ci" />
 
-## Assistant de rédaction
+## Assistant de rédaction et captures
 
-- Un connecteur ne publie qu'après les contrôles bloquants (`src/Service/Redaction/DraftChecker.php`, `QcmDraftChecker.php`) et l'avis favorable d'un **autre** connecteur.
-- `PersonalDataChecker` refuse les données personnelles dans un brouillon (`tests/Service/PersonalDataCheckerTest.php`).
-- Les accès se listent et se coupent par `php bin/console app:connecteurs` (`ConnectorsCommandTest`).
-
-<Status is="ci" />
-
-## Capture automatique
-
-Garde-fous du moteur (`capture/src/capturer.js`, règles `regles/05-captures.md`) : pages publiques en HTTPS uniquement, adresses locales et privées refusées, requêtes GET seulement, écrans de connexion refusés, cookies jamais acceptés, aucune tentative de contourner une protection anti-robots (`CAP-08`). Le service Netcup exige un jeton (`CAPTURE_SERVICE_TOKEN`). Tests : `capture/test/`, `capture-service/test/`. <Status is="ci" />
+Pas de connecteur MCP ni de moteur de capture sur ce site : la rédaction passe par le connecteur de mediateur, qui applique ses propres contrôles (voir [Connecteur MCP](../fonctionnalites/connecteur.md)).
 
 ## Secrets et contenus
 
