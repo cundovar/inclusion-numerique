@@ -103,7 +103,8 @@ class PageContent
 
     // Cycle éditorial des connecteurs MCP ; `visible` suit le statut (vrai seulement si « publié »).
     // Un cours créé dans le back-office est publié, comme avant ; le connecteur crée des brouillons.
-    #[ORM\Column(length: 20, options: ['default' => self::STATUS_PUBLISHED])]
+    // Le défaut SQL (brouillon) est celui de la base partagée avec mediateur ; seul le défaut PHP publie.
+    #[ORM\Column(length: 20, options: ['default' => self::STATUS_DRAFT])]
     #[Assert\Choice(choices: self::STATUSES)]
     #[Groups(['page_content:read'])]
     private string $status = self::STATUS_PUBLISHED;

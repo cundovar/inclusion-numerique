@@ -22,6 +22,11 @@ parameters:
     # Recherche vectorielle de l'assistant apprenant : sans adresse, la recherche reste textuelle
     env(RAG_VECTOR_URL): ''
     env(RAG_VECTOR_TOKEN): ''
+    # Base partagée avec mediateur (inclusion-numerique) : historique de migrations séparé et tables
+    # de mediateur hors du schéma. Sur ce site : MIGRATIONS_TABLE=doctrine_migration_versions_inclusion
+    # et DOCTRINE_SCHEMA_FILTER='~^(?!(password_reset_token|doctrine_migration_versions)$)~'
+    env(MIGRATIONS_TABLE): 'doctrine_migration_versions'
+    env(DOCTRINE_SCHEMA_FILTER): '~^(?!password_reset_token$)~'
     # Module laboratoires du gabarit de formation : désactivé dans DevDoc
     env(APP_MODULE_LABORATOIRES): '0'
     app.module_laboratoires: '%env(bool:APP_MODULE_LABORATOIRES)%'

@@ -92,6 +92,11 @@ class Category
     #[Groups(['page_content:read', 'page_content:write'])]
     private ?int $ordre = null;
 
+    // Public visé par les parcours mediateur (apprendre / former), dont la base est partagée avec
+    // inclusion-numerique : mappé pour que Doctrine ne le supprime pas, DevDoc ne s'en sert pas
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $audience = null;
+
     // Miniature affichée sur la carte du parcours : une illustration du back-office (CourseMedia)
     #[ORM\ManyToOne(targetEntity: CourseMedia::class)]
     #[ORM\JoinColumn(name: 'illustration_id', nullable: true, onDelete: 'SET NULL')]
@@ -375,6 +380,11 @@ class Category
     public function getOrdre(): ?int
     {
         return $this->ordre;
+    }
+
+    public function getAudience(): ?string
+    {
+        return $this->audience;
     }
 
     public function setOrdre(?int $ordre): static

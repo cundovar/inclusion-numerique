@@ -27,6 +27,7 @@ flowchart LR
 ## Règles
 
 - Le schéma MySQL évolue **uniquement par migration Doctrine** ([`migrations/`](../../migrations)), jamais par SQL manuel. Une migration déjà commitée n'est jamais modifiée.
+- Le second site (inclusion-numerique, branche `main2`) partage la base MySQL de l'application mediateur : migrations seulement additives, historique de migrations et filtre de schéma séparés ([détail](../conception/base-de-donnees.md#base-partagée-avec-mediateur-second-site)).
 - Les tables portent le préfixe `appy_` (`PrefixedNamingStrategy`).
 - Les notes sont chiffrées avant d'être écrites ([`NoteEncryptionService`](../../src/Infrastructure/Note/Service/NoteEncryptionService.php)).
 - Le HTML des cours est nettoyé à l'écriture côté serveur et à l'affichage côté client.

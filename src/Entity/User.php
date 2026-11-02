@@ -41,6 +41,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private ?string $username = null;
 
+    // Adresse des comptes mediateur (réinitialisation du mot de passe), dont la base est partagée
+    // avec inclusion-numerique : mappée pour que Doctrine ne la supprime pas, DevDoc ne s'en sert pas
+    #[ORM\Column(length: 180, unique: true, nullable: true)]
+    private ?string $email = null;
+
     #[ORM\Column]
     private array $roles = [];
 
@@ -79,6 +84,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->username = $username;
         return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
     }
 
     public function getUserIdentifier(): string

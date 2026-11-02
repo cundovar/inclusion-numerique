@@ -4,3 +4,7 @@ doctrine_migrations:
         # as migrations classes should NOT be autoloaded
         'DoctrineMigrations': '%kernel.project_dir%/migrations'
     enable_profiler: false
+    # Table d'historique : inclusion-numerique partage sa base avec mediateur, qui a la sienne
+    storage:
+        table_storage:
+            table_name: '%env(MIGRATIONS_TABLE)%'

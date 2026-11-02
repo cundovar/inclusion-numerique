@@ -410,6 +410,10 @@ erDiagram
 
 Les jetons et codes ne sont stockés que sous forme d'empreinte SHA-256.
 
+#### Base partagée avec mediateur (second site)
+
+Le site inclusion-numerique (branche `main2`) utilise la base de l'application mediateur, dont les tables portent les mêmes noms. [`Version20261102104351`](../../migrations/Version20261102104351.php) y ajoute seulement ce qui manque : les tables DevDoc (exercices, notes, favoris, visites, personnalisation, docs de code, propositions IA, révisions, générations, diaporamas, passages), `visible` (calculé depuis `status`), `trackPageVisits`, `docDeCode_id`, `ordre` et les colonnes d'agent de `course_media`. Les colonnes de mediateur restent mappées (`appy_User.email`, `appy_Category.audience`), `resource` et `scope` des tables OAuth ont un défaut vide, et le défaut SQL de `status` devient `brouillon`, comme chez mediateur. Sa table `password_reset_token` et son historique de migrations sont exclus du schéma par `DOCTRINE_SCHEMA_FILTER` (voir [CI/CD](../CI_CD.md)).
+
 ### Configuration
 
 ```mermaid

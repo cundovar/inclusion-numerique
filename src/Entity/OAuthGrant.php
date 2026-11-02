@@ -33,10 +33,12 @@ class OAuthGrant
     #[ORM\JoinColumn(name: 'authorization_code_id', nullable: true, onDelete: 'SET NULL')]
     private ?OAuthAuthorizationCode $authorizationCode;
 
-    #[ORM\Column(length: 500)]
+    // Valeurs par défaut : la base d'inclusion-numerique est partagée avec mediateur, dont le code
+    // n'écrit pas ces colonnes ; ses accès (ressource vide) ne valent donc pas ici
+    #[ORM\Column(length: 500, options: ['default' => ''])]
     private string $resource;
 
-    #[ORM\Column(length: 64)]
+    #[ORM\Column(length: 64, options: ['default' => ''])]
     private string $scope;
 
     #[ORM\Column(name: 'access_token_hash', length: 64, unique: true)]

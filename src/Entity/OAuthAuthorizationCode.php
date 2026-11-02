@@ -37,10 +37,12 @@ class OAuthAuthorizationCode
     #[ORM\Column(name: 'code_challenge', length: 128)]
     private string $codeChallenge;
 
-    #[ORM\Column(length: 500)]
+    // Valeurs par défaut : la base d'inclusion-numerique est partagée avec mediateur, dont le code
+    // n'écrit pas ces colonnes ; ses accès (ressource vide) ne valent donc pas ici
+    #[ORM\Column(length: 500, options: ['default' => ''])]
     private string $resource;
 
-    #[ORM\Column(length: 64)]
+    #[ORM\Column(length: 64, options: ['default' => ''])]
     private string $scope;
 
     #[ORM\Column(name: 'expires_at', type: Types::DATETIME_IMMUTABLE)]

@@ -94,13 +94,40 @@ A preparer une seule fois, avant le premier deploiement :
 - environnement GitHub `inclusion-numerique` avec le secret `OVH_SSH_PASSWORD` ;
 - sur OVH, dans `/home/egflbug/inclusion-numerique` : un `.ovhconfig` en PHP 8.2
   (comme `/home/egflbug/devdoc/.ovhconfig`) et un `.env` propre au site, avec
-  sa propre base de donnees et `MCP_PUBLIC_URL` sur la nouvelle adresse ;
+  `MCP_PUBLIC_URL` sur la nouvelle adresse ;
 - le multisite OVH pointe sur ce dossier (le `.htaccess` racine transmet a
   `public/`).
 
-Le workflow ne lance pas les migrations : sur la base du second site, elles se
-lancent a la main apres le premier deploiement
-(`php bin/console doctrine:migrations:migrate --env=prod`).
+#### Base partagee avec mediateur
+
+Le second site lit le contenu de l'application mediateur : son `.env` pointe sur
+`egflbugcundo6`, la base de mediateur, toujours en service. La prod de `main`
+garde sa propre base. Deux variables du `.env` du second site le protegent :
+
+| Variable | Valeur | Role |
+| --- | --- | --- |
+| `MIGRATIONS_TABLE` | `doctrine_migration_versions_inclusion` | Historique de migrations separe de celui de mediateur |
+| `DOCTRINE_SCHEMA_FILTER` | `'~^(?!(password_reset_token|doctrine_migration_versions)$)~'` | Tables de mediateur ignorees par le schema |
+
+Le code garde les colonnes propres a mediateur (`appy_User.email`,
+`appy_Category.audience`) et donne un defaut aux colonnes que mediateur n'ecrit
+pas (`resource` et `scope` des tables OAuth). La migration `Version20261102104351`
+n'ajoute que ce qui manque (tables, colonnes, index et cles etrangeres verifies
+un par un) et ne supprime rien ; sur une base DevDoc deja complete, elle ne
+change que des defauts et ces deux colonnes.
+
+Le workflow ne lance pas les migrations. Premiere mise en place, apres
+sauvegarde de la base :
+
+```bash
+php bin/console doctrine:migrations:sync-metadata-storage --env=prod
+php bin/console doctrine:migrations:version --add --all --no-interaction --env=prod
+php bin/console doctrine:migrations:version 'DoctrineMigrations\Version20261102104351' --delete --no-interaction --env=prod
+php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+```
+
+Les trois premieres commandes inscrivent les migrations DevDoc deja couvertes par
+le schema de mediateur, sans les executer.
 
 Le deploiement rsync remplace les anciens `git pull` manuels sur OVH. Le depot
 `.git` distant est conserve par securite, mais ne doit plus servir a mettre la

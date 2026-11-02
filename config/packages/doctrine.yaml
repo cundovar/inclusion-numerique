@@ -8,6 +8,8 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
+        # Tables que le schéma ignore : celles de mediateur dans la base partagée d'inclusion-numerique
+        schema_filter: '%env(DOCTRINE_SCHEMA_FILTER)%'
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
