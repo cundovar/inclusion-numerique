@@ -1,6 +1,6 @@
 # Sécurité
 
-Mesures présentes dans le code et leurs tests. Les tests cités passent dans le job « PHP » du run CI [39493348934](https://github.com/cundovar/mediateur-numerique-formation/actions/runs/39493348934).
+Mesures présentes dans le code et leurs tests. Les tests cités passent dans le job « PHP » du run CI [41440222629](https://github.com/cundovar/vue-symfony/actions/runs/41440222629) (`main2`, `a379bfe1`, 2026-11-02).
 
 ## Authentification et rôles
 

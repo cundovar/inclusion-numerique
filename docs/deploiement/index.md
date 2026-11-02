@@ -13,29 +13,28 @@ Workflow unique : [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (
 | `build` | Archive de production : `composer install --no-dev`, build Vue, documentation copiée dans `public/docs/` | Push sur `main2` |
 | `deploy` | Envoi sur OVH dans `/home/egflbug/inclusion-numerique`, reconstruction du cache, sans migration | Après `build` |
 
-Dernier déploiement vérifié : run [41056420072](https://github.com/cundovar/mediateur-numerique-formation/actions/runs/41056420072) (`main`, `cd9f65e`, 2026-10-30) : les 7 jobs ont réussi, dont `docs`, `build` et `deploy`. <Status is="ci" />
+Dernier déploiement vérifié : run [41440222629](https://github.com/cundovar/vue-symfony/actions/runs/41440222629) (`main2`, `a379bfe1`, 2026-11-02) : les 6 jobs ont réussi, dont `docs`, `build` et `deploy`. <Status is="ci" />
 
 ## Production OVH
 
 1. `build` assemble l'archive à partir de `git archive HEAD`, sans les dossiers de développement (`tests`, `docs`, `VAE`, `front`, configuration des agents…). La documentation construite est copiée dans `public/docs/`.
-2. `deploy` (environnement GitHub `production`) l'envoie par `rsync --delete` en conservant sur le serveur `.env`, `var/` et `public/uploads/`, puis lance `doctrine:migrations:migrate` et reconstruit `var/cache/prod`.
-3. Le mot de passe SSH est le secret `OVH_SSH_PASSWORD` ; l'empreinte du serveur est dans `.github/ovh_known_hosts`. Le `.env` de production se crée sur le serveur, jamais dans le dépôt.
+2. `deploy` (environnement GitHub `inclusion-numerique`) l'envoie par `rsync --delete` dans `/home/egflbug/inclusion-numerique`, en conservant sur le serveur `.env`, `var/` et le lien `public/uploads`, puis supprime `var/cache/prod` et le reconstruit avec `cache:warmup`. Aucune migration : voir [plus bas](#site-inclusion-numerique-branche-main2).
+3. Le mot de passe SSH est le secret `OVH_SSH_PASSWORD` de l'environnement `inclusion-numerique` ; l'empreinte du serveur est dans `.github/ovh_known_hosts`. Le `.env` de production se crée sur le serveur, jamais dans le dépôt.
 
-Le site répond sur `https://mediateur.varascundo.com/spa` (contrôle `curl` du 2026-10-30). <Status is="prod" />
+Après le run 41440222629, le 2026-11-02, `https://inclusion-numerique.varascundo.com` répond (`curl`) :
+
+- `/spa/`, `/api/categories`, `/api/page_contents`, `/docs/` et `/login` : 200 ; `/admin` : 302 ;
+- titre de page « Inclusion numérique - Formations libres et gratuites » ;
+- `/mcp`, `/.well-known/oauth-authorization-server` et `/oauth/authorize` : 404.
+
+<Status is="prod" />
 
 ### Documentation publiée
 
 Le site VitePress est construit avec `base: '/docs/'` et `cleanUrls`. Les règles Apache (`public/.htaccess` et `.htaccess` racine, pour les deux racines web possibles) servent `/docs/` et ses pages profondes sans extension `.html` (`/docs/tests/` → `tests/index.html`, `/docs/fonctionnalites/edition` → `fonctionnalites/edition.html`) ; `/docs` redirige vers `/docs/`, une page inconnue retombe sur Symfony.
 
 - Règles vérifiées le 2026-10-30 sur Apache 2.4 (image `httpd:2.4`) avec le build local copié sous `public/docs/`, racine `public/` et racine du dépôt : racine, page profonde, URL propre et feuille de style servies, redirection `/docs` en 301. <Status is="local" />
-- Contrôle en production le 2026-10-30, après le déploiement du run 41056420072 :
-  - `/docs/`, `/docs/tests/`, `/docs/fonctionnalites/edition`, `/docs/conception/reprise-devdoc` et `/docs/vae/` répondent 200 ;
-  - feuille de style et script servis ;
-  - `/docs` redirige en 301 ;
-  - une page inconnue reçoit la 404 de Symfony ;
-  - navigation par clic dans le navigateur, sans erreur console.
-
-  <Status is="prod" />
+- Sur inclusion-numerique, `/docs/` et `/docs/deploiement/` répondent 200 (2026-11-02, après le run 41440222629). <Status is="prod" />
 
 ## Site inclusion-numerique (branche `main2`)
 
@@ -62,7 +61,8 @@ ln -s ~/mediateur/public/uploads ~/inclusion-numerique/public/uploads
 Vérifié en production le 2026-11-02 :
 
 - run [41430174319](https://github.com/cundovar/vue-symfony/actions/runs/41430174319) (`95d47ac0`) : contrôles PHP, migrations, capture, front, documentation et build réussis, puis déploiement ;
-- lien `public/uploads` créé, deux images de cours qui répondaient 404 répondent 200.
+- lien `public/uploads` créé, deux images de cours qui répondaient 404 répondent 200 ;
+- après les runs suivants (exclusion corrigée, puis [41440222629](https://github.com/cundovar/vue-symfony/actions/runs/41440222629)), le lien est toujours en place et les images répondent 200.
 
 <Status is="prod" />
 

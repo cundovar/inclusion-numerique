@@ -18,14 +18,14 @@ Volume présent dans le dépôt : 32 fichiers de test PHPUnit et 28 fichiers Vit
 ## Environnements
 
 - **Local** : conteneurs `php` et `front` (`make check` enchaîne syntaxe PHP, PHPStan, ESLint, PHPUnit, Vitest et build Vite).
-- **CI** : `.github/workflows/ci.yml` sur chaque pull request et chaque push sur `main`, avec un `.env` de test écrit par le workflow.
+- **CI** : `.github/workflows/ci.yml` sur chaque pull request et chaque push sur `main2`, avec un `.env` de test écrit par le workflow.
 
 ## Critères
 
-- Une pull request n'est fusionnée que si les jobs PHP, Migrations, Capture et Front sont verts ; le déploiement dépend de ces jobs.
+- Une pull request n'est fusionnée que si les jobs PHP, Migrations, Front et Documentation sont verts ; le déploiement dépend de ces jobs.
 - Le build de cette documentation fait aussi échouer la CI sur un lien interne mort ([déploiement](../deploiement/index.md)).
 - Parcours publics : compléter par un essai navigateur sur mobile, au clavier et hors ligne. Ces essais ne sont pas encore consignés : <Status is="prevu" />
 
 ## Dernière exécution vérifiée
 
-Run [41056420072](https://github.com/cundovar/mediateur-numerique-formation/actions/runs/41056420072) (`main`, `cd9f65e`, 2026-10-30) : les 7 jobs ont réussi, dont le build de cette documentation.
+Run [41440222629](https://github.com/cundovar/vue-symfony/actions/runs/41440222629) (`main2`, `a379bfe1`, 2026-11-02) : les 6 jobs ont réussi, dont le build de cette documentation. En local sur le même commit, `make check` a réussi (88 tests PHPUnit, 28 fichiers Vitest, build). <Status is="ci" />

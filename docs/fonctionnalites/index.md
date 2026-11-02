@@ -1,6 +1,6 @@
 # Fonctionnalités
 
-Vue d'ensemble des fonctions présentes. Les badges renvoient au run CI [39493348934](https://github.com/cundovar/mediateur-numerique-formation/actions/runs/39493348934) (`main`, 2026-10-20) quand des tests automatisés couvrent la fonction.
+Vue d'ensemble des fonctions présentes. Les badges renvoient au run CI [41440222629](https://github.com/cundovar/vue-symfony/actions/runs/41440222629) (`main2`, `a379bfe1`, 2026-11-02) quand des tests automatisés couvrent la fonction.
 
 | Fonction | Où | Tests | Preuve |
 |---|---|---|---|

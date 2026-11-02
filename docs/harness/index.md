@@ -49,6 +49,8 @@ Assistant de rédaction : pas de connecteur sur ce site, on utilise celui de med
 
 Site : <http://localhost:8094/spa> ; back-office : <http://localhost:8094/admin> ; phpMyAdmin : <http://localhost:8095> ; MySQL hôte : `localhost:3310`.
 
+Ces ports par défaut et le nom de projet Compose (`mediateur_numerique`) sont ceux de mediateur, dont le `compose.yaml` est repris tel quel. Pour lancer les deux en même temps, démarrer celui-ci avec `COMPOSE_PROJECT_NAME=inclusion_numerique` et d'autres ports (`HOST_HTTP_PORT`, `HOST_DB_PORT`, `HOST_PMA_PORT`, `HOST_VITE_PORT`, `HOST_STORYBOOK_PORT`, `HOST_DOCS_PORT`), sans quoi Compose reprend les conteneurs de mediateur.
+
 Sans Docker, avec PHP 8.2+ et SQLite (`DATABASE_URL` SQLite dans `.env`) :
 
 ```bash
@@ -84,16 +86,14 @@ Dans un environnement où le proxy refuse les archives GitHub, `composer install
 
 ### Déploiement en production
 
-`.github/workflows/ci.yml` (« CI/CD ») déploie à chaque push sur `main`, une fois tous les contrôles verts :
+`.github/workflows/ci.yml` (« CI/CD ») déploie inclusion-numerique à chaque push sur `main2`, une fois tous les contrôles verts :
 
 1. `build` assemble l'archive : `composer install --no-dev`, build Vue dans `public/build` et `public/spa`, documentation VitePress dans `public/docs`, sans les dossiers de développement (`tests`, `docs`, `VAE`, `front`, configuration des agents…). Détail : [déploiement et CI](../deploiement/index.md).
-2. `deploy` (environnement GitHub `production`) l'envoie sur l'hébergement OVH par `rsync --delete`, en gardant sur le serveur `.env`, `var/` et `public/uploads/` (captures déposées), puis lance `doctrine:migrations:migrate`, puis supprime `var/cache/prod` et le reconstruit avec `cache:warmup`.
+2. `deploy` (environnement GitHub `inclusion-numerique`) l'envoie dans `/home/egflbug/inclusion-numerique` par `rsync --delete`, en gardant sur le serveur `.env`, `var/` et le lien `public/uploads` (images de mediateur), puis supprime `var/cache/prod` et le reconstruit avec `cache:warmup`.
 
 Le mot de passe SSH est le secret `OVH_SSH_PASSWORD` ; l'empreinte du serveur est dans `.github/ovh_known_hosts`. Le `.env` de production se crée et se modifie directement sur le serveur, jamais dans le dépôt.
 
-Un merge sur `main` passe donc en production, migrations comprises : vérifier les migrations sur MySQL (job `migrations`) avant de fusionner.
-
-L'hébergement mutualisé OVH n'a ni Node ni Chromium ; il n'exécute donc jamais Playwright. Le service `deploy/netcup-capture/` est déployé sur Netcup, où Docker et le proxy Traefik sont présents. L'enregistrement DNS `A capture.mediateur.varascundo.com → 152.53.114.87` doit répondre avant le premier démarrage. Générer un jeton avec `openssl rand -hex 32`, le placer dans le `.env` Netcup, puis renseigner la même valeur et `CAPTURE_SERVICE_URL=https://capture.mediateur.varascundo.com` dans le `.env` OVH. Vérifier ensuite `GET /health` et une capture réelle, sans publier de données d'usager. Le `.env` de production doit aussi fixer `MCP_PUBLIC_URL` (adresse https du site) pour le connecteur.
+Un push sur `main2` passe donc en production, sans migration : la base `egflbugcundo6` appartient à mediateur, qui la fait évoluer par son propre déploiement. Une entité modifiée ici sans la même migration chez mediateur casserait le site. Le `.env` de production fixe `MCP_PUBLIC_URL` (adresse https du site), utilisée pour les liens des e-mails.
 
 Contrôles du harness lui-même :
 
