@@ -58,6 +58,16 @@
             Ce cours n'est pas publié : seuls les administrateurs le voient.
           </p>
 
+          <!-- Lu sans réseau : copie gardée sur l'appareil au dernier lancement en ligne -->
+          <p
+            v-if="horsLigne"
+            class="offline-banner"
+            role="status"
+            data-testid="cours-hors-ligne"
+          >
+            Vous êtes hors ligne : version du cours enregistrée sur cet appareil lors de votre dernière connexion.
+          </p>
+
           <!-- Cours et captures en PDF, pour l'imprimer ou le garder -->
           <!-- Outils du cours : PDF à garder ou imprimer, lecture à voix haute (synthèse vocale du navigateur) -->
           <div class="course-tools">
@@ -148,6 +158,8 @@ import { storeToRefs } from 'pinia'
 import { useNiveauStore } from '@/stores/niveauCoursStore'
 import { useToc } from '@/composables/ui/useToc'
 import { useVisibilityFilter } from '@/composables/ui/useVisibilityFilter'
+import { chargerCaptures } from '@/services/captures'
+import { useData } from '@/utils/fetchDataPwa'
 
 // Props
 const props = defineProps({
@@ -165,6 +177,7 @@ const { toc, activeId, scrollToHeading, generateToc } = useToc(contentRef, {
   offsetTop: 120
 })
 const { filterByVisibility } = useVisibilityFilter()
+const { findCourseOffline, listCoursesOffline } = useData()
 const niveauStore = useNiveauStore()
 const { niveaux } = storeToRefs(niveauStore)
 
@@ -175,6 +188,7 @@ const renderedCode = ref('')
 const previousPage = ref(null)
 const nextPage = ref(null)
 const allPages = ref([])
+const horsLigne = ref(false)
 
 // Methods
 // Revient à la page précédente du site ; arrivé directement sur le cours (lien, favori), on va à son parcours
@@ -214,16 +228,29 @@ function getPageId(page) {
   return null
 }
 
-async function fetchPageContent() {
-  renderedCode.value = ''
+// Cours demandé à l'API ; sans réseau, copie enregistrée par fetchMenus (voir utils/fetchDataPwa.js)
+async function loadCourse() {
   try {
     const { data } = await api.get(
       `/page_contents?page.slug=/${encodeURIComponent(props.slug)}`
     )
+    return { course: data.totalItems > 0 ? data.member[0] : null, copie: false }
+  } catch (err) {
+    if (err.response) throw err
+    return { course: await findCourseOffline(props.slug), copie: true }
+  }
+}
 
-    if (data.totalItems > 0) {
-      pageContent.value = data.member[0]
-      renderedCode.value = structureCourse(await expandCaptures(pageContent.value.code, fetchCaptures))
+async function fetchPageContent() {
+  renderedCode.value = ''
+  try {
+    const { course, copie } = await loadCourse()
+    // Copie de l'appareil, ou réponse gardée par le service worker en mode avion
+    horsLigne.value = copie || (typeof navigator !== 'undefined' && navigator.onLine === false)
+
+    if (course) {
+      pageContent.value = course
+      renderedCode.value = structureCourse(await expandCaptures(pageContent.value.code, chargerCaptures))
 
       nextTick(() => {
         document.querySelectorAll('pre code').forEach((el) => {
@@ -250,12 +277,6 @@ async function fetchPageContent() {
   }
 }
 
-async function fetchCaptures(ids) {
-  const query = ids.map((id) => `id[]=${encodeURIComponent(id)}`).join('&')
-  const { data } = await api.get(`/captures?${query}`)
-  return data.member ?? []
-}
-
 async function fetchNavigationPages() {
   try {
     const menuId = pageContent.value?.menu?.id || pageContent.value?.menu?.['@id']
@@ -269,11 +290,20 @@ async function fetchNavigationPages() {
       menuApiId = menuId.split('/api/menus/')[1]
     }
 
-    const { data } = await api.get(`/page_contents?menu.id=${menuApiId}&order[position]=asc`)
+    let pages
+    try {
+      const { data } = await api.get(`/page_contents?menu.id=${menuApiId}&order[position]=asc`)
+      pages = data.member
+    } catch (err) {
+      if (err.response) throw err
+      // Hors ligne : liste de tous les cours enregistrée par fetchMenus, réduite à cette rubrique
+      pages = (await listCoursesOffline())
+        .filter((p) => String(p.menu?.id ?? p.menu?.['@id']?.split('/api/menus/')[1]) === String(menuApiId))
+    }
 
-    if (data.totalItems > 0) {
+    if (pages.length > 0) {
       // Même ordre que la page du parcours : du niveau le plus simple au plus avancé
-      allPages.value = [...filterByVisibility(data.member)].sort(compareCourses)
+      allPages.value = [...filterByVisibility(pages)].sort(compareCourses)
 
       const currentIndex = allPages.value.findIndex(
         p => p.page?.slug === `/${props.slug}` || p.page?.slug === props.slug
@@ -382,6 +412,15 @@ onMounted(() => {
   border-left: 6px solid #b45309;
   background: #fffbeb;
   color: #78350f;
+  font-weight: 600;
+}
+
+.offline-banner {
+  margin: 0 1.25rem 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 6px solid #2563eb;
+  background: #eff6ff;
+  color: #1e3a8a;
   font-weight: 600;
 }
 

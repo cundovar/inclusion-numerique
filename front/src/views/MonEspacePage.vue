@@ -288,6 +288,9 @@
           </form>
         </section>
       </template>
+
+      <!-- Ouvert à tous, avec ou sans compte : les cours publics se lisent aussi hors ligne -->
+      <TelechargementHorsLigne v-if="state !== 'loading'" />
     </div>
   </div>
 </template>
@@ -297,6 +300,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import axios from 'axios'
 import { clearAuthenticatedClientState } from '../services/auth.js'
 import { useData } from '../utils/fetchDataPwa'
+import TelechargementHorsLigne from '../components/features/horsLigne/TelechargementHorsLigne.vue'
 
 const { clearUser } = useData()
 const state = ref('loading')

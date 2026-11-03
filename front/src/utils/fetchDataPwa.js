@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { createOfflineDb } from './offlineDb'
 import { useVisibilityFilter } from '../composables/ui/useVisibilityFilter'
+import { COURSE_MEDIA_CACHE } from '../../pwa/courseMedia.js'
 
 // Références globales pour réactivité partagée
 const menus = ref([])
@@ -9,13 +10,23 @@ const cats = ref([])
 const user = ref({ username: "", roles: [] })
 const seoData = ref([])
 
+// Réponses de l'API gardées par le service worker (front/pwa/apiCache.js), anciennes versions comprises,
+// et images des captures (front/pwa/courseMedia.js)
+const clearApiCaches = async () => {
+  if (typeof caches === 'undefined') return
+  const names = await caches.keys()
+  await Promise.all(names
+    .filter((name) => name.startsWith('api-') || name === COURSE_MEDIA_CACHE)
+    .map((name) => caches.delete(name)))
+}
+
 // Une personne était connectée : on efface aussi le contenu qui a pu lui être réservé.
 // Un visiteur jamais connecté garde son catalogue hors ligne.
 const clearUser = async () => {
   user.value = { username: '', roles: [] }
   const previous = await offlineDb.loadUser()
   if (previous?.username) {
-    await offlineDb.clearPersonalData()
+    await Promise.all([offlineDb.clearPersonalData(), clearApiCaches()])
   } else {
     await offlineDb.clearUser()
   }
@@ -121,6 +132,21 @@ async function fetchPageContent(pageId) {
   }
 }
 
+// ----------- Lecture hors ligne des cours -----------
+// fetchMenus enregistre à chaque lancement la liste complète des cours visibles, texte compris
+// (/api/page_contents n'est pas paginé) : tous les cours restent lisibles hors ligne, même jamais ouverts.
+
+// Tous les cours gardés, dans l'ordre de l'API
+async function listCoursesOffline() {
+  return loadFromDB('menus')
+}
+
+// Cours dont l'adresse est /spa/<slug> (le slug de l'API commence par « / »)
+async function findCourseOffline(slug) {
+  const courses = await listCoursesOffline()
+  return courses.find((course) => course.page?.slug === `/${slug}` || course.page?.slug === slug) ?? null
+}
+
 // Récupérer toutes les données SEO
 async function fetchSeoData() {
   try {
@@ -212,6 +238,10 @@ export function useData() {
 
     // Récupère toutes les données SEO avec cache offline
     fetchSeoData,
+
+    // Cours gardés pour la lecture hors ligne (liste complète, ou un cours par son slug)
+    listCoursesOffline,
+    findCourseOffline,
 
     // Déconnexion locale : efface l'utilisateur et le contenu qui a pu lui être réservé (à attendre avant de quitter la page)
     clearUser,

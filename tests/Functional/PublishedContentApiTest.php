@@ -83,6 +83,16 @@ final class PublishedContentApiTest extends WebTestCase
         $this->client->loginUser($admin, 'main');
 
         self::assertSame(['brouillon', 'publie'], $this->titles('/api/page_contents'));
+        // Le service worker ne garde pas ces réponses : sinon un brouillon resterait figé ou visible hors ligne
+        self::assertResponseHeaderSame('X-Offline-Cache', 'none');
+    }
+
+    public function testVisitorResponsesMayBeKeptForOfflineReading(): void
+    {
+        $this->createCourse('publie', PageContent::STATUS_PUBLISHED);
+
+        self::assertSame(['publie'], $this->titles('/api/page_contents'));
+        self::assertResponseNotHasHeader('X-Offline-Cache');
     }
 
     public function testStatusCannotBeChangedThroughTheApi(): void
