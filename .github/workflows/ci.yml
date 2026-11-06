@@ -39,6 +39,8 @@ jobs:
       SYMFONY_DEPRECATIONS_HELPER: 'max[total]=999999'
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: true
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
@@ -74,7 +76,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       # Le test de liaison PHP → moteur Node n'ouvre aucune page : pas besoin de navigateur
       - name: Install capture engine
-        run: npm ci --prefix capture
+        run: npm ci --prefix capture-service/capture
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       - name: Run PHPUnit
@@ -131,24 +133,6 @@ jobs:
           php bin/console doctrine:migrations:migrate first --no-interaction
           php bin/console doctrine:migrations:migrate --no-interaction
 
-  capture:
-    name: Moteur de capture (Playwright)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: capture/package-lock.json
-      - name: Install capture dependencies
-        run: npm ci --prefix capture
-      - name: Install Chromium for Playwright
-        run: npx --prefix capture playwright-core install --with-deps chromium
-      - name: Check syntax
-        run: npm run lint --prefix capture
-      - name: Run capture tests (local test site, no external network)
-        run: npm test --prefix capture
 
   front:
     name: Front Vue (ESLint, Vitest, build)
@@ -190,7 +174,7 @@ jobs:
   # Construit aussi une archive sur PR pour valider le chemin de release.
   build:
     name: Build release
-    needs: [php, migrations, capture, front, docs]
+    needs: [php, migrations, front, docs]
     if: >-
       github.event_name == 'pull_request' ||
       (github.ref == 'refs/heads/main' && (
@@ -247,7 +231,7 @@ jobs:
           mkdir -p /tmp/production-release/public/docs
           cp -a docs/.vitepress/dist/. /tmp/production-release/public/docs/
           # Fichiers inutiles en production (les sources docs/ sont remplacées par public/docs/)
-          rm -rf /tmp/production-release/{.agents,.claude,.codex,.github,tests,docs,VAE,front,nginx,php-fpm.d}
+          rm -rf /tmp/production-release/{.agents,.claude,.codex,.github,tests,docs,VAE,front,nginx,php-fpm.d,capture-service,.gitmodules}
           tar -C /tmp/production-release -czf /tmp/production-release.tar.gz .
       - uses: actions/upload-artifact@v7
         with:

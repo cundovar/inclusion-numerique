@@ -15,7 +15,7 @@ Vue d'ensemble des fonctions présentes. Les badges renvoient au run CI [4144022
 | Back-office éditorial (EasyAdmin) | `src/Controller/Admin/` | `Admin/BackOfficePagesTest`, `Admin/CaptureBackOfficeTest` | <Status is="ci" /> |
 | Captures sourcées dans les cours | marqueur `[capture:ID]`, `src/Entity/CourseMedia.php` ; voir le [guide d'édition](edition.md) | `CaptureApiTest`, `CourseMediaValidationTest` | <Status is="ci" /> |
 | Assistant de rédaction (MCP) : brouillons, contrôles, relecture croisée, publication | `/mcp`, `src/Mcp/`, `src/Service/Redaction/` ; voir le [connecteur](connecteur.md) | `tests/Functional/Mcp/`, `tests/Service/DraftCheckerTest.php` | <Status is="ci" /> |
-| Capture automatique de pages publiques | `src/Service/Capture/`, `capture/`, `capture-service/` | `tests/Service/RemoteCaptureRunnerTest.php`, `capture/test/` | <Status is="ci" /> |
+| Capture automatique de pages publiques | `src/Service/Capture/`, sous-module `capture-service/` | `tests/Service/RemoteCaptureRunnerTest.php`, tests du dépôt [`capture-service`](https://github.com/cundovar/capture-service) | <Status is="ci" /> |
 | Pages légales | `/mentions-legales`, `/privacy`, `/terms`, `src/Service/LegalInformation.php` | `tests/Functional/LegalPagesTest.php` | <Status is="ci" /> |
 
 Le site en ligne répond sur `https://mediateur.varascundo.com/spa` (contrôle du 2026-10-30). <Status is="prod" />

@@ -18,8 +18,8 @@ final class NodeCaptureRunnerTest extends TestCase
     protected function setUp(): void
     {
         $this->projectDir = \dirname(__DIR__, 2);
-        if (!is_dir($this->projectDir.'/capture/node_modules/playwright-core')) {
-            self::markTestSkipped('Moteur de capture non installé (npm ci --prefix capture).');
+        if (!is_dir($this->projectDir.'/capture-service/capture/node_modules/playwright-core')) {
+            self::markTestSkipped('Moteur de capture non installé (make capture-install).');
         }
     }
 

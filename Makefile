@@ -3,6 +3,7 @@ PROJECT_NAME=mediateur_numerique
 
 up:
 	@echo "🚀 Lancement du projet $(PROJECT_NAME)..."
+	git submodule update --init capture-service
 	docker compose up -d --build
 
 down:
@@ -66,6 +67,11 @@ dev:
 	@echo "🔥 Démarrage en mode dev..."
 	docker compose up -d && docker compose restart nginx
 
+# Moteur de capture en développement (sous-module capture-service/) ; OVH passe par le service Netcup
+capture-install:
+	git submodule update --init capture-service
+	docker compose exec php npm ci --prefix capture-service/capture --omit=dev
+
 # --- Validation (mêmes contrôles que la CI) ---
 
 lint-php:
@@ -110,5 +116,5 @@ docs-build:
 	@echo "📚 Build VitePress..."
 	docker compose --profile docs run --rm --no-deps -T docs sh -c "git config --global --add safe.directory /app && npm ci --no-audit --no-fund && npx vitepress build"
 
-.PHONY: up down down-volumes restart logs bash front-bash composer composer-require npm-install npm-dev symfo migrate start stop dev \
+.PHONY: capture-install up down down-volumes restart logs bash front-bash composer composer-require npm-install npm-dev symfo migrate start stop dev \
 	lint-php analyse test test-front lint-front build-front check-fast check docs-dev docs-build
