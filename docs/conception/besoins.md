@@ -10,7 +10,7 @@ Chaque critère indique son niveau de preuve actuel. Un critère <Status is="pre
 |---|---|---|
 | Apprenant (adulte, senior) | sans compte ; compte facultatif pour les contenus réservés | SPA `/spa/`, entrée « J'apprends le numérique » |
 | Médiateur, professionnel, bénévole | sans compte | SPA, entrée « J'accompagne des personnes » |
-| Responsable éditorial | compte `ROLE_ADMIN` | back-office `/admin` d'Inclusion ; rédaction assistée par le connecteur MCP de Médiateur, hors de ce dépôt |
+| Responsable éditorial | compte `ROLE_ADMIN` | back-office `/admin` d'Inclusion ; rédaction assistée par le connecteur MCP du site (`/mcp`) |
 
 ## Cas d'utilisation
 
@@ -62,7 +62,7 @@ flowchart LR
 |---|---|---|---|---|
 | US-E1 | En tant que responsable, je veux corriger un cours, un lien ou une capture sans toucher au code. | Le back-office liste et modifie les cours et les captures ; `/admin` exige `ROLE_ADMIN`. | EasyAdmin `src/Controller/Admin/`, `CaptureFileManager` | `BackOfficePagesTest`, `CaptureBackOfficeTest`, `AccessControlTest` <Status is="ci" /> |
 | US-E2 | … qu'un brouillon reste invisible du public. | Un cours au statut `brouillon` n'apparaît ni dans l'API publique, ni dans le plan du site, ni en PDF. | `PublishedContentExtension`, `SitemapController`, `CourseVisibility` | `PublishedContentApiTest` (dont `testSitemapOnlyListsPublishedPages`), `CoursePdfTest` <Status is="ci" /> |
-| US-E3 | … rédiger avec un assistant IA. | Hors périmètre de ce dépôt : la rédaction passe par le connecteur de Médiateur, qui écrit dans la base partagée. `/mcp` répond 404 ici. | — | `RemovedFeaturesTest` <Status is="ci" /> ; contrôle du 2026-11-02 <Status is="prod" /> |
+| US-E3 | … rédiger avec un assistant IA. | Connecteur du site sur `/mcp` : brouillons, contrôles bloquants, relecture par un autre connecteur, publication. Pas encore déployé. | [Connecteur](../fonctionnalites/connecteur.md) | `tests/Functional/Mcp/`, `OAuthFlowTest` <Status is="ci" /> |
 
 ## Hors périmètre
 

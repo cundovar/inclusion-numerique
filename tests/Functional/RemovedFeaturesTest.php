@@ -10,7 +10,6 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * Fonctions de DevDoc écartées (pas de suivi, de favoris ni de notes, pas d'exercices de code ni d'agents
  * de génération) : aucune route ne doit les réexposer. L'inscription est revenue avec les contenus personnalisés.
- * Inclusion-numerique n'a pas non plus de connecteur MCP : on passe par celui de mediateur.
  */
 final class RemovedFeaturesTest extends WebTestCase
 {
@@ -41,11 +40,6 @@ final class RemovedFeaturesTest extends WebTestCase
         yield 'API admin par clé' => ['/api/admin'];
         yield 'exercices de code' => ['/api/exo'];
         yield 'documentation de code' => ['/api/doc_de_codes'];
-        yield 'API de rédaction par clé' => ['/api/redaction'];
-        // Inclusion-numerique : le contenu se rédige par le connecteur de mediateur, qui partage la base
-        yield 'connecteur MCP' => ['/mcp'];
-        yield 'serveur OAuth du connecteur' => ['/oauth'];
-        yield 'métadonnées OAuth' => ['/.well-known/oauth'];
-        yield 'dépôt d\'image du connecteur' => ['/depot-image'];
+        yield 'API de rédaction par clé (remplacée par le connecteur /mcp)' => ['/api/redaction'];
     }
 }

@@ -69,6 +69,14 @@ jobs:
           php bin/console lint:yaml config
       - name: Run PHPStan
         run: composer analyse
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      # Le test de liaison PHP → moteur Node n'ouvre aucune page : pas besoin de navigateur
+      - name: Install capture engine
+        run: npm ci --prefix capture
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       - name: Run PHPUnit
         run: composer test
 
@@ -123,6 +131,25 @@ jobs:
           php bin/console doctrine:migrations:migrate first --no-interaction
           php bin/console doctrine:migrations:migrate --no-interaction
 
+  capture:
+    name: Moteur de capture (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: capture/package-lock.json
+      - name: Install capture dependencies
+        run: npm ci --prefix capture
+      - name: Install Chromium for Playwright
+        run: npx --prefix capture playwright-core install --with-deps chromium
+      - name: Check syntax
+        run: npm run lint --prefix capture
+      - name: Run capture tests (local test site, no external network)
+        run: npm test --prefix capture
+
   front:
     name: Front Vue (ESLint, Vitest, build)
     runs-on: ubuntu-latest
@@ -163,7 +190,7 @@ jobs:
   # Construit aussi une archive sur PR pour valider le chemin de release.
   build:
     name: Build release
-    needs: [php, migrations, front, docs]
+    needs: [php, migrations, capture, front, docs]
     if: >-
       github.event_name == 'pull_request' ||
       (github.ref == 'refs/heads/main' && (
@@ -261,8 +288,9 @@ jobs:
         run: |
           # --delete vide le dossier cible : refuser tout autre chemin
           [[ "$OVH_PATH" == /home/egflbug/inclusion-numerique ]] || { echo "Chemin inattendu : '$OVH_PATH'"; exit 1; }
-          # public/uploads sans barre finale : c'est un lien vers les images de mediateur, et
-          # « public/uploads/ » ne protège qu'un vrai dossier (--delete supprimait le lien)
+          # public/uploads sans barre finale : protège aussi bien le lien vers les images de mediateur
+          # (avant la bascule) que le dossier propre du site (après) ; « public/uploads/ » ne protège
+          # qu'un vrai dossier, et --delete supprimait le lien. var/ garde la copie de préparation.
           sshpass -e rsync -az --delete --delay-updates \
             --exclude='.env' \
             --exclude='.env.*' \

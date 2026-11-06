@@ -6,10 +6,10 @@
 
 | Schéma | Source | Observé |
 |---|---|---|
-| Attendu par le code | 18 entités (`src/Entity/`) et 13 migrations (`migrations/`, de `Version20261015093531` à `Version20261016220000`) | Oui : `doctrine:schema:validate` réussi sur la base issue des migrations <Status is="local" /> ; job « Migrations MySQL » du run [41442887513](https://github.com/cundovar/vue-symfony/actions/runs/41442887513) <Status is="ci" /> |
+| Attendu par le code | 22 entités (`src/Entity/`, dont les 4 du connecteur reprises le 2026-11-06) et 13 migrations (`migrations/`, de `Version20261015093531` à `Version20261016220000`) | Oui : job « Migrations MySQL » du run [42217518469](https://github.com/cundovar/inclusion-numerique/actions/runs/42217518469) <Status is="ci" /> |
 | Base de production `egflbugcundo6` | Partagée avec Médiateur, qui la fait évoluer ; contient aussi des tables de DevDoc | Non : aucune migration n'est jouée par Inclusion et la base n'a pas été inspectée |
 
-`DOCTRINE_SCHEMA_FILTER` (`config/services.yaml`) fait ignorer à Doctrine les tables présentes dans la base partagée qu'Inclusion ne mappe pas : celles du connecteur de Médiateur (`oauth_*`, `qcm_draft`) et celles de DevDoc (`appy_Exo*`, `appy_Note`, `revision`, `diaporama`…). Sans ce filtre, Doctrine proposerait de les supprimer.
+`DOCTRINE_SCHEMA_FILTER` (`config/services.yaml`) fait ignorer à Doctrine les tables présentes dans la base partagée qu'Inclusion ne mappe pas : celles de DevDoc (`appy_Exo*`, `appy_Note`, `revision`, `diaporama`…). Sans ce filtre, Doctrine proposerait de les supprimer.
 
 ## MCD
 
@@ -83,7 +83,7 @@ Clés primaires soulignées par `PK`, clés étrangères par `FK → table`. Col
 | `appy_Seo`, `appy_Logo` | `id` PK, `category_id` FK unique, attributs SEO ou logo |
 | `appy_SiteConfiguration` | `id` PK, `configKey`, `settings` (JSON), `updatedAt` |
 
-Tables créées par les migrations mais **non mappées** à `30da5e5` : `oauth_client`, `oauth_grant`, `oauth_authorization_code` et `qcm_draft`. Elles viennent du connecteur de Médiateur, retiré d'Inclusion par `a379bfe` ; les migrations, héritées de Médiateur, n'ont pas été modifiées (règle du projet : une migration commitée ne change pas).
+Tables `oauth_client`, `oauth_grant`, `oauth_authorization_code` et `qcm_draft` : non mappées à `30da5e5` (connecteur retiré par `a379bfe`), de nouveau mappées depuis `4a804ad` (connecteur repris). Les MCD et MLD ci-dessus datent de `30da5e5` et ne les détaillent pas. Les migrations n'ont pas été modifiées (règle du projet : une migration commitée ne change pas).
 
 ## Accès aux données
 
