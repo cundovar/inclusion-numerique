@@ -8,6 +8,7 @@ Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exéc
 |---|---|---|
 | `php` | Syntaxe PHP, lint Symfony/Twig/YAML, PHPStan et PHPUnit | PR et push sur `main` |
 | `migrations` | Montée, validation, retour arrière et remontée sur MySQL 8 de CI | PR et push sur `main` |
+| `capture` | Moteur de capture : syntaxe et tests sur un site local avec Chromium | PR et push sur `main` |
 | `front` | ESLint, Vitest et build Vue | PR et push sur `main` |
 | `docs` | Build VitePress, avec échec sur lien interne mort | PR et push sur `main` |
 | `build` | Archive de production avec dépendances PHP, build Vue et documentation | PR et push sur `main` ; lancement manuel avec `deploy=true` |
@@ -34,7 +35,46 @@ Le mot de passe SSH est le secret `OVH_SSH_PASSWORD` de l'environnement GitHub `
 
 Le site a historiquement utilisé la base partagée avec mediateur. Le workflow n'exécute aucune migration : les changements de schéma doivent être coordonnés avec le déploiement de mediateur. Le contenu exact du `.env` OVH n'a pas été lu pendant la préparation de cette PR.
 
-`public/uploads` est un lien symbolique vers `/home/egflbug/mediateur/public/uploads`. L'exclusion `--exclude='public/uploads'` sans barre finale est nécessaire pour que `rsync --delete` préserve ce lien.
+`public/uploads` est encore un lien symbolique vers `/home/egflbug/mediateur/public/uploads`. L'exclusion `--exclude='public/uploads'` sans barre finale préserve aussi bien ce lien que le dossier propre qui le remplacera ; `var/`, exclu aussi, garde la copie de préparation.
+
+## Connecteur MCP et images
+
+Inclusion reprend le connecteur de Médiateur et aura son propre dossier d'images, pour pouvoir continuer après l'arrêt de Médiateur. La base reste commune pendant la transition. <Status is="prevu" />
+
+### Avant de déployer
+
+| Contrôle | Pourquoi |
+|---|---|
+| Sauvegarde de la base, restauration essayée sur une copie isolée | Le code du connecteur écrit dans la base commune |
+| `deploy/uploads-inclusion.sh inventory` | Fichiers, volume, liens, espace libre, images manquantes, URL absolues en base. Lecture seule. **Pas encore exécuté** |
+| Présence de `oauth_client`, `oauth_grant`, `oauth_authorization_code` et `qcm_draft` | Ce site ne joue aucune migration : le schéma commun vient de Médiateur (`c87941f`, mêmes migrations). Aucune migration n'a été ajoutée |
+| `.env` OVH : `MCP_PUBLIC_URL=https://inclusion-numerique.varascundo.com` | Adresse annoncée aux connecteurs |
+| `.env` OVH : `CAPTURE_SERVICE_URL`, `CAPTURE_SERVICE_TOKEN` | Sans eux, `capturer_page` échoue : OVH n'a ni Node ni Chromium. Le reste du connecteur fonctionne |
+
+### Bascule des images
+
+Le script [`deploy/uploads-inclusion.sh`](../../deploy/uploads-inclusion.sh) se lance sur le serveur, depuis `~/inclusion-numerique`. Il n'écrit jamais dans Médiateur ni en base.
+
+1. `prepare` puis `verify` : copie dans `var/uploads-copie`, puis comparaison des nombres, tailles et empreintes.
+2. Gel : plus aucun ajout d'image, ni sur Médiateur ni sur Inclusion (back-office et connecteurs).
+3. `switch` : dernière copie, nouveau contrôle, puis le dossier remplace le lien. Le script refuse de continuer si la copie diffère.
+4. Contrôler une image en page, une miniature, l'API, un PDF et la PWA hors ligne.
+5. Fin du gel : les nouvelles images se déposent uniquement sur Inclusion.
+
+Retour arrière : `rollback` remet le lien, conserve le dossier dans `var/uploads-avant-retour` et liste les images créées depuis la bascule, à recopier à la main.
+
+::: warning Après la bascule
+Les deux dossiers ne se synchronisent pas. La base étant commune, une image ajoutée sur Inclusion est référencée aussi sur Médiateur, où elle répond 404. Remplacer ou supprimer une capture sur Inclusion n'efface plus le fichier de Médiateur. C'est accepté : Inclusion devient la source principale, et Médiateur s'arrête après les contrôles.
+:::
+
+Les chemins `/uploads/course-media/<nom>` sont relatifs : aucune réécriture en base n'est prévue, sauf si l'inventaire trouve des URL absolues.
+
+### Après le déploiement
+
+1. Contrôler `/mcp` sans jeton (401), `/.well-known/oauth-authorization-server`, un parcours OAuth réel avec un compte administrateur et l'envoi de l'en-tête `Authorization` jusqu'à PHP.
+2. Vérifier qu'un connecteur de Médiateur continue de fonctionner sur Médiateur, et que ses jetons sont refusés sur Inclusion.
+3. Contrôler une image existante et une image créée après la bascule.
+4. Reconnecter les clients sur Inclusion. Arrêter Médiateur seulement après ces contrôles.
 
 ## Publication VitePress
 
@@ -42,11 +82,11 @@ La documentation est construite avec `base: '/docs/'` et `cleanUrls`, puis copi�
 
 ## Service de capture Netcup
 
-Le service de capture (`capture.mediateur.varascundo.com`) appartient à mediateur et n'est appelé que par son connecteur. Ce site n'a plus de moteur de capture ni de variables `CAPTURE_*`.
+Le service isolé ([`deploy/netcup-capture/`](../../deploy/netcup-capture/docker-compose.yml), `capture.mediateur.varascundo.com`) n'a pas changé. Inclusion l'appelle en HTTPS avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`, sans modification du service. Ne pas arrêter ce service en même temps que Médiateur tant qu'Inclusion s'en sert.
 
 ## Variables d'environnement
 
-Modèle sans secret : [`docs/env.example`](../env.example). En production, le `.env` OVH contient les réglages applicatifs. Selon la configuration retenue, prévoir `MAILER_DSN`, `MAILER_FROM`, `MCP_PUBLIC_URL` et `SITE_NAME`.
+Modèle sans secret : [`docs/env.example`](../env.example). En production, le `.env` OVH contient les réglages applicatifs. Selon la configuration retenue, prévoir `MAILER_DSN`, `MAILER_FROM`, `MCP_PUBLIC_URL`, `SITE_NAME`, `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`.
 
 ## Exécution locale
 

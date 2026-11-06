@@ -10,18 +10,22 @@ flowchart LR
   SPA --> IDB[(IndexedDB hors ligne)]
   SPA --> API[API Symfony / API Platform]
   R[Responsable éditorial] --> BO[Back-office EasyAdmin]
+  A[claude.ai / ChatGPT] -->|OAuth| MCP[Connecteur MCP /mcp]
   BO --> API
+  MCP --> SVC[Services de rédaction]
   API --> DB[(MySQL 8, partagée avec mediateur)]
-  MED[Site mediateur et son connecteur MCP] --> DB
+  SVC --> DB
+  SVC -->|HTTPS + jeton| CAP[Service de capture Netcup]
 ```
 
 | Bloc | Rôle | Hébergement |
 |---|---|---|
 | SPA Vue 3 (`front/`) | Interface publique, PWA, cache hors ligne | OVH, fichiers statiques `public/spa` et `public/build` |
-| Symfony 6.4 (`src/`) | API, back-office, PDF, pages serveur | OVH |
-| MySQL 8.0 | Base `egflbugcundo6`, partagée avec mediateur | OVH |
+| Symfony 6.4 (`src/`) | API, back-office, connecteur MCP, PDF, pages serveur | OVH |
+| MySQL 8.0 | Base `egflbugcundo6`, partagée avec mediateur pendant la transition | OVH |
+| Service de capture (`capture/`, `capture-service/`) | Navigateur Chromium automatisé, lecture seule | Netcup, conteneur Docker derrière Traefik |
 
-Les cours se rédigent avec le connecteur MCP de mediateur ; ce site n'a ni connecteur ni moteur de capture (voir [Connecteur MCP](../fonctionnalites/connecteur.md)).
+Le service de capture est isolé : l'hébergement mutualisé OVH n'a ni Node ni Chromium, et un navigateur automatisé ne doit pas partager le serveur des données.
 
 ## Couches du backend
 
@@ -29,21 +33,21 @@ Les cours se rédigent avec le connecteur MCP de mediateur ; ce site n'a ni conn
 |---|---|---|
 | Domaine | `src/Domain/` | Objets et contrats métier par contexte (Category, Page, QCM, User…) |
 | Infrastructure | `src/Infrastructure/` | Repositories Doctrine, intégration API Platform (`ApiPlatform/PublishedContentExtension.php`), sécurité (`Security/User/HexagonalUserProvider`) |
-| Entités | `src/Entity/` | 18 entités Doctrine (mapping) |
-| Services applicatifs | `src/Service/` | PDF, fichiers des captures du back-office, comptes, SEO |
-| Entrées | `src/Controller/`, `src/Command/` | HTTP (API, back-office, PDF), commandes console |
+| Entités | `src/Entity/` | 22 entités Doctrine (mapping) |
+| Services applicatifs | `src/Service/` | Rédaction et contrôles, PDF, captures, OAuth, comptes |
+| Entrées | `src/Controller/`, `src/Mcp/`, `src/Command/` | HTTP (API, back-office, PDF, OAuth), serveur MCP, commandes console |
 
 Cette organisation est reprise de DevDoc ([reprise](../conception/reprise-devdoc.md)) puis allégée.
 
 ## Données
 
-- Modèle relationnel Doctrine : parcours (`Category`), contenus (`Page`, `PageContent`, `PageBlock`), niveaux (`NiveauCours`), captures (`CourseMedia`), QCM (`QCM`, `ChoicesQCM`, `NiveauQCM`, `LanguageQCM`), accès réservés (`AccesReserve`), comptes (`User`, `PasswordResetToken`), configuration (`SiteConfiguration`, `Seo`, menus, logo).
+- Modèle relationnel Doctrine : parcours (`Category`), contenus (`Page`, `PageContent`, `PageBlock`), niveaux (`NiveauCours`), captures (`CourseMedia`), QCM (`QCM`, `ChoicesQCM`, `NiveauQCM`, `LanguageQCM`), brouillons du connecteur (`QcmDraft`), accès réservés (`AccesReserve`), comptes et OAuth (`User`, `PasswordResetToken`, `OAuthClient`, `OAuthGrant`, `OAuthAuthorizationCode`), configuration (`SiteConfiguration`, `Seo`, menus, logo).
 - Schéma géré uniquement par 13 migrations (`migrations/`), vérifiées en CI par montée, `doctrine:schema:validate`, retour arrière et remontée. <Status is="ci" />
 - Côté client : IndexedDB (`front/src/utils/offlineDb.js`, bibliothèque `idb`) pour les modules préparés hors ligne, vidée à la déconnexion. <Status is="ci" />
 - MCD, MLD et diagramme de séquence de l'accès filtré : [modèle de données](../conception/base-de-donnees.md) <Status is="local" /> ; choix structurants : [décisions d'architecture](../conception/decisions-architecture.md).
 
 ## Intégrations
 
-- **MCP** : aucun serveur sur ce site ; le connecteur est celui de mediateur (voir le [connecteur](../fonctionnalites/connecteur.md)).
+- **MCP** : SDK `mcp/sdk`, serveur `src/Mcp/RedactionMcpServer.php`, exposé sur `/mcp` (voir le [connecteur](../fonctionnalites/connecteur.md)).
 - **E-mail** : Brevo par `symfony/brevo-mailer` (mot de passe oublié).
 - **Capture** : aucun moteur sur ce site depuis `a379bfe` ; les captures s'ajoutent dans le back-office (`CaptureFileManager`) ou par le connecteur de Médiateur.

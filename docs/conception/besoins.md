@@ -10,7 +10,7 @@ Chaque critère indique son niveau de preuve actuel. Un critère <Status is="pre
 |---|---|---|
 | Apprenant (adulte, senior) | sans compte ; compte facultatif pour les contenus réservés | SPA `/spa/`, entrée « J'apprends le numérique » |
 | Médiateur, professionnel, bénévole | sans compte | SPA, entrée « J'accompagne des personnes » |
-| Responsable éditorial | compte `ROLE_ADMIN` | back-office `/admin` d'Inclusion ; rédaction assistée par le connecteur MCP de Médiateur, hors de ce dépôt |
+| Responsable éditorial | compte `ROLE_ADMIN` | back-office `/admin` d'Inclusion ; rédaction assistée par le connecteur MCP du site (`/mcp`) |
 
 ## Cas d'utilisation
 
