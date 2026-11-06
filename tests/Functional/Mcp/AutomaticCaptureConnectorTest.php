@@ -11,7 +11,7 @@ use App\Service\CaptureFileManager;
 
 /**
  * Capture automatique demandée par le connecteur : tout domaine public en HTTPS, fiche remplie par le site.
- * Le moteur Playwright est remplacé par un double ; il est testé à part (capture/test, NodeCaptureRunnerTest).
+ * Le moteur Playwright est remplacé par un double ; il est testé à part (dépôt capture-service, NodeCaptureRunnerTest).
  */
 final class AutomaticCaptureConnectorTest extends McpTestCase
 {

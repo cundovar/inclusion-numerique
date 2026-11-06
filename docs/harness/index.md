@@ -74,18 +74,18 @@ php -S 127.0.0.1:8000 -t public             # le serveur intégré a besoin d'un
 | Vitest | `npm test --prefix front` | `make test-front` |
 | Build Vite | `npm run check --prefix front` | `make build-front` |
 | Connecteur MCP | inclus dans PHPUnit (`tests/Functional/Mcp/`) | `make test` |
-| Moteur de capture | `npm ci --prefix capture && npm run lint --prefix capture && npm test --prefix capture` | — |
+| Moteur de capture (développement) | `make capture-install` | — |
 | Documentation VitePress | `npm ci --prefix docs && npm run build --prefix docs` | `make docs-build` |
 
-`make check-fast` enchaîne syntaxe PHP, PHPStan et ESLint ; `make check` y ajoute PHPUnit, Vitest et le build, puis efface le marqueur `.agents/.needs-check`. La CI (`.github/workflows/ci.yml`) exécute les mêmes contrôles, plus les migrations sur un MySQL 8.0 (montée, validation du schéma, retour arrière et remontée), le moteur de capture et le build de la documentation.
+`make check-fast` enchaîne syntaxe PHP, PHPStan et ESLint ; `make check` y ajoute PHPUnit, Vitest et le build, puis efface le marqueur `.agents/.needs-check`. La CI (`.github/workflows/ci.yml`) exécute les mêmes contrôles, plus les migrations sur un MySQL 8.0 (montée, validation du schéma, retour arrière et remontée) et le build de la documentation. Les tests du moteur sont dans la CI du dépôt `capture-service`.
 
 `make docs-dev` sert la documentation sur <http://localhost:5176/docs/> (service Docker `docs`, profil `docs`, port `HOST_DOCS_PORT`). `make docs-build` échoue sur un lien interne mort.
 
 ### Moteur de capture
 
-`capture/` (Node, `playwright-core`) est exécuté sur Netcup par `capture-service/`, dans un conteneur séparé de l'application OVH. Le site lui envoie une demande HTTPS authentifiée avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`, puis enregistre lui-même le JPEG et ses métadonnées. En développement, laisser `CAPTURE_SERVICE_URL` vide utilise encore le moteur local. Réglages : `docs/env.example` (`CAPTURE_SERVICE_URL`, `CAPTURE_SERVICE_TOKEN`, `CAPTURE_CHROMIUM_PATH`, `CAPTURE_NO_SANDBOX`, `CAPTURE_HOME`).
+Le moteur (Node, `playwright-core`) vit dans le dépôt [`capture-service`](https://github.com/cundovar/capture-service). Il tourne sur Netcup, dans un conteneur séparé de l'application OVH. Ici, `capture-service/` est un sous-module Git, à une version précise, utilisé seulement en développement. Le site lui envoie une demande HTTPS authentifiée avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`, puis enregistre lui-même le JPEG et ses métadonnées. En développement, laisser `CAPTURE_SERVICE_URL` vide utilise le moteur du sous-module (`make capture-install`). Sur OVH, ce réglage est obligatoire : sans lui, la capture échoue. Réglages : `docs/env.example` (`CAPTURE_SERVICE_URL`, `CAPTURE_SERVICE_TOKEN`, `CAPTURE_CHROMIUM_PATH`, `CAPTURE_NO_SANDBOX`, `CAPTURE_HOME`).
 
-Les tests du moteur ouvrent un site local et utilisent `CAPTURE_CHROMIUM_PATH` (ou `/opt/pw-browsers/chromium`) ; en CI, `npx --prefix capture playwright-core install --with-deps chromium`. PHPUnit remplace le moteur par un double, sauf `tests/Service/NodeCaptureRunnerTest.php`, ignoré si `capture/node_modules` manque.
+Les tests du moteur tournent dans la CI du dépôt `capture-service`. PHPUnit remplace le moteur par un double, sauf `tests/Service/NodeCaptureRunnerTest.php`, ignoré si `capture-service/capture/node_modules` manque. Pour passer à une nouvelle version du moteur : `git -C capture-service pull origin main`, puis valider le changement du sous-module.
 
 Pour un parcours public, compléter par un essai dans le navigateur sur ordinateur et mobile, et en mode hors ligne. Ne pas présenter les tests de DevDoc comme une validation de cette application.
 

@@ -33,7 +33,7 @@ Configuration : [`config/packages/security.yaml`](../../config/packages/security
 
 ## Capture automatique
 
-Garde-fous du moteur (`capture/src/capturer.js`, règles `regles/05-captures.md`) : pages publiques en HTTPS uniquement, adresses locales et privées refusées, requêtes GET seulement, écrans de connexion refusés, cookies jamais acceptés, aucune tentative de contourner une protection anti-robots (`CAP-08`). Le service Netcup exige un jeton (`CAPTURE_SERVICE_TOKEN`). Tests : `capture/test/`, `capture-service/test/`. <Status is="ci" />
+Garde-fous du moteur (`capture/src/capturer.js` du dépôt [`capture-service`](https://github.com/cundovar/capture-service), règles `regles/05-captures.md`) : pages publiques en HTTPS uniquement, adresses locales et privées refusées, requêtes GET seulement, écrans de connexion refusés, cookies jamais acceptés, aucune tentative de contourner une protection anti-robots (`CAP-08`). Le service Netcup exige un jeton (`CAPTURE_SERVICE_TOKEN`). Tests : CI du dépôt `capture-service`. <Status is="ci" />
 
 ## Secrets et contenus
 

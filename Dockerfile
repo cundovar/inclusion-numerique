@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql zip intl gd opcache
 
-# Moteur de capture automatique (capture/) : Node.js et Chromium de Debian.
+# Moteur de capture automatique (sous-module capture-service/, développement uniquement) : Node.js et Chromium de Debian.
 # Playwright n'a pas besoin de télécharger son propre navigateur : CAPTURE_CHROMIUM_PATH pointe sur celui-ci.
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm chromium fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
@@ -44,7 +44,7 @@ COPY composer.json composer.lock ./
 COPY . .
 
 # Dépendances du moteur de capture
-RUN npm ci --prefix capture --omit=dev
+RUN npm ci --prefix capture-service/capture --omit=dev
 
 # 🔐 Fixer les permissions
 RUN chown -R www-data:www-data /var/www/symfony

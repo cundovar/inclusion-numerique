@@ -8,7 +8,6 @@ Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exéc
 |---|---|---|
 | `php` | Syntaxe PHP, lint Symfony/Twig/YAML, PHPStan et PHPUnit | PR et push sur `main` |
 | `migrations` | Montée, validation, retour arrière et remontée sur MySQL 8 de CI | PR et push sur `main` |
-| `capture` | Moteur de capture : syntaxe et tests sur un site local avec Chromium | PR et push sur `main` |
 | `front` | ESLint, Vitest et build Vue | PR et push sur `main` |
 | `docs` | Build VitePress, avec échec sur lien interne mort | PR et push sur `main` |
 | `build` | Archive de production avec dépendances PHP, build Vue et documentation | PR et push sur `main` ; lancement manuel avec `deploy=true` |
@@ -84,7 +83,7 @@ La documentation est construite avec `base: '/docs/'` et `cleanUrls`, puis copi�
 
 ## Service de capture Netcup
 
-Le service isolé ([`deploy/netcup-capture/`](../../deploy/netcup-capture/docker-compose.yml), `capture.mediateur.varascundo.com`) n'a pas changé. Inclusion l'appelle en HTTPS avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`, sans modification du service. Ne pas arrêter ce service en même temps que Médiateur tant qu'Inclusion s'en sert.
+Le service isolé (`capture.mediateur.varascundo.com`) a son propre dépôt, [`capture-service`](https://github.com/cundovar/capture-service), qui porte sa recette Docker, sa CI et sa procédure de déploiement. Ce site n'en garde qu'un sous-module pour le développement : il n'est pas envoyé sur OVH, qui n'a ni Node ni Chromium. Inclusion l'appelle en HTTPS avec `CAPTURE_SERVICE_URL` et `CAPTURE_SERVICE_TOKEN`, sans modification du service. Ne pas arrêter ce service en même temps que Médiateur tant qu'Inclusion s'en sert.
 
 ## Variables d'environnement
 

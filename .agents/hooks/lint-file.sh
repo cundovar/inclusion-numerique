@@ -24,10 +24,6 @@ while IFS= read -r rel; do
       running front || continue
       out=$(docker compose exec -T front npx eslint --quiet "${rel#front/}" 2>&1) || errors+="ESLint a trouvé des erreurs dans $rel :"$'\n'"$out"$'\n'
       ;;
-    capture/*|capture-service/*)
-      # Moteur Node : ses tests tournent en CI (job « Moteur de capture »), voir docs/harness/index.md
-      touch .agents/.needs-check
-      ;;
     config/*|templates/*|front/tests/*|.github/*|compose*.yaml|Dockerfile|nginx.conf|Makefile|front/vite.config.js|front/package.json|composer.json)
       touch .agents/.needs-check
       ;;

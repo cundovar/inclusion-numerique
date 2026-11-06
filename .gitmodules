@@ -1,0 +1,3 @@
+[submodule "capture-service"]
+	path = capture-service
+	url = https://github.com/cundovar/capture-service.git

@@ -10,10 +10,11 @@ use Symfony\Component\Process\Exception\RuntimeException as ProcessRuntimeExcept
 use Symfony\Component\Process\Process;
 
 /**
- * Lance le moteur Node (Playwright) du dossier capture/ : paramètres en JSON sur l'entrée, résultat en JSON.
+ * Lance le moteur Node (Playwright) du sous-module capture-service/ : paramètres en JSON sur l'entrée, résultat en JSON.
  */
 final class NodeCaptureRunner implements CaptureRunnerInterface
 {
+    private const ENGINE_DIR = '/capture-service/capture';
     private const TIMEOUT_SECONDS = 90;
 
     public function __construct(
@@ -26,9 +27,9 @@ final class NodeCaptureRunner implements CaptureRunnerInterface
 
     public function run(array $request): array
     {
-        $script = $this->projectDir.'/capture/src/cli.js';
-        if (!is_file($script) || !is_dir($this->projectDir.'/capture/node_modules/playwright-core')) {
-            throw new CaptureFailed(CaptureFailed::UNAVAILABLE, 'Le moteur de capture n\'est pas installé sur ce serveur (npm ci --prefix capture).');
+        $script = $this->projectDir.self::ENGINE_DIR.'/src/cli.js';
+        if (!is_file($script) || !is_dir($this->projectDir.self::ENGINE_DIR.'/node_modules/playwright-core')) {
+            throw new CaptureFailed(CaptureFailed::UNAVAILABLE, 'Le moteur de capture n\'est pas installé sur ce serveur (make capture-install).');
         }
 
         // Le navigateur a besoin d'un dossier personnel (profil, certificats) ; php-fpm et le serveur web n'en fournissent pas toujours
@@ -37,7 +38,7 @@ final class NodeCaptureRunner implements CaptureRunnerInterface
             mkdir($home, 0700, true);
         }
 
-        $process = new Process([$this->nodeBinary, $script], $this->projectDir.'/capture', [
+        $process = new Process([$this->nodeBinary, $script], $this->projectDir.self::ENGINE_DIR, [
             'CAPTURE_CHROMIUM_PATH' => $this->chromiumPath,
             'CAPTURE_NO_SANDBOX' => $this->noSandbox ? '1' : '0',
             'HOME' => $home,

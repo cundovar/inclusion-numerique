@@ -23,7 +23,7 @@ flowchart LR
 | SPA Vue 3 (`front/`) | Interface publique, PWA, cache hors ligne | OVH, fichiers statiques `public/spa` et `public/build` |
 | Symfony 6.4 (`src/`) | API, back-office, connecteur MCP, PDF, pages serveur | OVH |
 | MySQL 8.0 | Base `egflbugcundo6`, partagée avec mediateur pendant la transition | OVH |
-| Service de capture (`capture/`, `capture-service/`) | Navigateur Chromium automatisé, lecture seule | Netcup, conteneur Docker derrière Traefik |
+| Service de capture (dépôt [`capture-service`](https://github.com/cundovar/capture-service)) | Navigateur Chromium automatisé, lecture seule | Netcup, conteneur Docker derrière Traefik |
 
 Le service de capture est isolé : l'hébergement mutualisé OVH n'a ni Node ni Chromium, et un navigateur automatisé ne doit pas partager le serveur des données.
 

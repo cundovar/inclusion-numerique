@@ -93,7 +93,7 @@ Seul un agent qui a accès aux fichiers de l'ordinateur fait l'envoi : Claude Co
 
 ### Capture automatique
 
-`capturer_page` demande au site d'ouvrir une page publique en HTTPS dans un navigateur sans affichage (moteur `capture/`, Playwright et Chromium exécuté dans le service Netcup), de placer les repères et d'enregistrer la capture avec sa source, sa date et son auteur. Les adresses locales ou privées, les pages de connexion et les demandes autres que la lecture sont refusées.
+`capturer_page` demande au site d'ouvrir une page publique en HTTPS dans un navigateur sans affichage (moteur du dépôt [`capture-service`](https://github.com/cundovar/capture-service), Playwright et Chromium exécuté dans le service Netcup), de placer les repères et d'enregistrer la capture avec sa source, sa date et son auteur. Les adresses locales ou privées, les pages de connexion et les demandes autres que la lecture sont refusées.
 
 - `url` : adresse https publique, sans identifiants. Aucun domaine n'est prédéfini ; les adresses locales et privées sont refusées pour protéger le serveur.
 - `format` : `ordinateur` (1280×800) ou `mobile` (390×844).
