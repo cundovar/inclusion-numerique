@@ -28,4 +28,4 @@ Volume présent dans le dépôt : 32 fichiers de test PHPUnit et 28 fichiers Vit
 
 ## Dernière exécution vérifiée
 
-Run PR [42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700) (2026-11-06) : PHP/PHPUnit, migrations MySQL, ESLint/Vitest/build Vue, VitePress et build de release réussis ; `deploy` a été ignoré sur la PR. Le run précédent après fusion de la PR #1 a échoué car `SSHPASS` était vide : le workflow ciblait l'environnement `inclusion-numerique` au lieu de `production`, où se trouve le secret. <Status is="ci" />
+Runs [42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700) (PR) et [42206988450](https://github.com/cundovar/inclusion-numerique/actions/runs/42206988450) (post-fusion sur `main`, 2026-11-06) : PHP/PHPUnit, migrations MySQL, ESLint/Vitest/build Vue, VitePress et build de release réussis ; `deploy` a été ignoré. Le run précédent après fusion de la PR #1 a échoué car `SSHPASS` était vide : le workflow ciblait l'environnement `inclusion-numerique` au lieu de `production`, où se trouve le secret. <Status is="ci" />

@@ -24,7 +24,7 @@ Site de formation libre et gratuit à la médiation numérique, pour deux public
 
 - Tests PHPUnit, Vitest et moteur de capture exécutés en CI. Le scénario Playwright hérité n'est pas exécutable en l'état ([tests](../docs/tests/index.md)).
 - Déploiement documenté : OVH par rsync depuis la CI, service de capture sur Netcup ([déploiement](../docs/deploiement/index.md)).
-- Workflow GitHub Actions : les contrôles PHP, migrations, front, documentation et build de release sont réussis sur la PR #2 ([run 42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700)). Le déploiement du premier push sur `main` a échoué car le workflow ciblait le mauvais environnement GitHub ; la correction est validée mais n'a pas encore été fusionnée. Le lancement OVH reste manuel jusqu'à synchronisation du code.
+- Workflow GitHub Actions : les contrôles PHP, migrations, front, documentation et build de release sont réussis sur la PR #2 ([run 42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700)) et sur `main` après fusion ([run 42206988450](https://github.com/cundovar/inclusion-numerique/actions/runs/42206988450)). Le déploiement du premier push sur `main` a échoué car le workflow ciblait le mauvais environnement GitHub ; la correction est fusionnée et le lancement OVH reste manuel jusqu'à synchronisation du code.
 
 ## État de la couverture
 
