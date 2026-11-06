@@ -2,7 +2,7 @@
 
 Chaque ligne relie un sujet à une preuve vérifiable dans le dépôt, la CI ou le site déployé. Les niveaux sont décrits en [fin de page](#niveaux-de-preuve).
 
-Projet : **Inclusion numérique**, branche `main2` de `cundovar/vue-symfony`, version de référence `30da5e5` ([cadrage du 2026-11-02](evidence/2026-11-02-cadrage/inventaire.md)). Abréviations : run **41442887513** = [run CI de `30da5e5`](https://github.com/cundovar/vue-symfony/actions/runs/41442887513) (2026-11-02, 6 jobs réussis) ; **contrôle du 2026-11-02** = [contrôle HTTP en lecture seule](evidence/2026-11-02-cadrage/prod-http.txt) de `https://inclusion-numerique.varascundo.com` à 13 h 40.
+Projet : **Inclusion numérique**, dépôt dédié `cundovar/inclusion-numerique` ; cadrage historique sur `main2` de `cundovar/vue-symfony`, version `30da5e5` ([cadrage du 2026-11-02](evidence/2026-11-02-cadrage/inventaire.md)). Abréviations : run **41442887513** = [run CI de `30da5e5`](https://github.com/cundovar/vue-symfony/actions/runs/41442887513) (2026-11-02, 6 jobs réussis) ; **contrôle du 2026-11-02** = [contrôle HTTP en lecture seule](evidence/2026-11-02-cadrage/prod-http.txt) de `https://inclusion-numerique.varascundo.com` à 13 h 40.
 
 ## Registre
 

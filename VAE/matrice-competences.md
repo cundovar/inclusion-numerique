@@ -2,7 +2,7 @@
 
 Référentiel : TP Concepteur développeur d'applications, [RNCP37873](https://www.francecompetences.fr/recherche/rncp/37873/), REAC et RE TP-01281 millésime 04 ([sources](evidence/2026-11-02-cadrage/sources-referentiel.md)). Statuts et couvertures : voir [`preuves.md`](preuves.md#niveaux-de-preuve).
 
-Projet : **Inclusion numérique**, branche `main2` de `cundovar/vue-symfony`, version de référence `30da5e5` (cadrage du 2026-11-02 : [inventaire](evidence/2026-11-02-cadrage/inventaire.md)). Le code est repris de Médiateur numérique (`c87941f`), lui-même construit sur DevDoc : « hérité » signale un élément repris sans modification propre à `main2`. La part personnelle du candidat dans chaque réalisation est à établir (questions ouvertes de l'inventaire). « Formalisé a posteriori » signale un document écrit après la réalisation.
+Projet : **Inclusion numérique**, dépôt dédié `cundovar/inclusion-numerique` ; cadrage historique sur `main2` de `cundovar/vue-symfony`, version `30da5e5` (cadrage du 2026-11-02 : [inventaire](evidence/2026-11-02-cadrage/inventaire.md)). Le code est repris de Médiateur numérique (`c87941f`), lui-même construit sur DevDoc : « hérité » signale un élément repris sans modification propre à `main2`. La part personnelle du candidat dans chaque réalisation est à établir (questions ouvertes de l'inventaire). « Formalisé a posteriori » signale un document écrit après la réalisation.
 
 Les runs et contrôles de Médiateur (`mediateur-numerique-formation`, runs 39493348934 et 41056420072, contrôles du 2026-10-30) restent dans le [journal](journal.md#2026-10-30) comme historique de Médiateur ; ils ne servent de preuve à aucune ligne ci-dessous.
 

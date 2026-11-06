@@ -2,7 +2,7 @@
 
 Inclusion numérique est présenté pour le titre professionnel **Concepteur développeur d'applications** ([RNCP37873](https://www.francecompetences.fr/recherche/rncp/37873/), niveau 6).
 
-Version de référence : branche `main2` de `cundovar/vue-symfony`, commit `30da5e5` (cadrage du 2026-11-02 : [inventaire](../../VAE/evidence/2026-11-02-cadrage/inventaire.md)). Le code reprend celui de Médiateur numérique, lui-même construit sur DevDoc, et partage la base et les images de Médiateur ([origine et dépendances](../index.md#origine-et-dépendances)).
+Cadrage historique : branche `main2` de `cundovar/vue-symfony`, commit `30da5e5` ; dépôt dédié actuel : `cundovar/inclusion-numerique` (cadrage du 2026-11-02 : [inventaire](../../VAE/evidence/2026-11-02-cadrage/inventaire.md)). Le code reprend celui de Médiateur numérique, lui-même construit sur DevDoc, et partage la base et les images de Médiateur ([origine et dépendances](../index.md#origine-et-dépendances)).
 
 Le dossier canonique est dans le dépôt, sous `VAE/`. Cette page l'introduit sans le dupliquer.
 
