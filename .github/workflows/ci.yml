@@ -2,10 +2,15 @@ name: CI/CD
 
 on:
   pull_request:
+    branches: [main]
   push:
-    # Dépôt DevDoc : seule main2 (inclusion-numerique) porte ce workflow
-    branches: [main2]
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Déployer la branche main sur OVH
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -155,11 +160,16 @@ jobs:
       - name: Build documentation (fails on dead internal links)
         run: npm run build --prefix docs
 
-  # Construit l'archive de production (vendor sans dev + build Vue + documentation) uniquement sur push vers main
+  # Construit aussi une archive sur PR pour valider le chemin de release.
   build:
     name: Build release
     needs: [php, migrations, front, docs]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main2'
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.ref == 'refs/heads/main' && (
+        github.event_name == 'push' ||
+        (github.event_name == 'workflow_dispatch' && inputs.deploy == true)
+      ))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -179,7 +189,7 @@ jobs:
         run: |
           {
             echo "APP_ENV=prod"
-            echo "APP_SECRET=REDACTED
+            echo "APP_SECRET=ci-build-placeholder"
             echo "DATABASE_URL=sqlite:///%kernel.project_dir%/var/build.db"
             echo "MAILER_DSN=null://null"
             echo "MESSENGER_TRANSPORT_DSN=sync://"
@@ -221,6 +231,10 @@ jobs:
   deploy:
     name: Deploy inclusion-numerique (OVH)
     needs: build
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
     runs-on: ubuntu-latest
     environment: inclusion-numerique
     concurrency: inclusion-numerique
