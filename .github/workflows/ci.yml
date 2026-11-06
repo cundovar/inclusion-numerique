@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy:
-        description: Déployer la branche main sur OVH
+        description: Redéployer la branche main sur OVH (un push sur main déploie déjà)
         type: boolean
         default: false
 
@@ -17,7 +17,8 @@ permissions:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Seules les PR s'annulent : un push sur main ne doit jamais couper un déploiement en cours
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   PHP_VERSION: '8.2'
@@ -243,8 +244,10 @@ jobs:
     name: Deploy inclusion-numerique (OVH)
     needs: build
     if: >-
-      github.ref == 'refs/heads/main' &&
-      github.event_name == 'workflow_dispatch' && inputs.deploy == true
+      github.ref == 'refs/heads/main' && (
+        github.event_name == 'push' ||
+        (github.event_name == 'workflow_dispatch' && inputs.deploy == true)
+      )
     runs-on: ubuntu-latest
     environment: production
     concurrency: inclusion-numerique
