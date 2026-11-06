@@ -2,7 +2,7 @@
 
 Inclusion-numerique n'a pas de connecteur MCP. Les cours se rédigent avec le connecteur de **mediateur**, ajouté dans claude.ai ou ChatGPT à l'adresse `https://mediateur.varascundo.com/mcp`.
 
-Les deux sites partagent la base `egflbugcundo6` et le dossier des images (`public/uploads`, lien vers celui de mediateur) : un cours créé, modifié, publié ou retiré par ce connecteur, ou une capture qu'il ajoute, apparaît sur les deux sites. Voir [Déploiement](../deploiement/index.md#site-inclusion-numerique-branche-main2).
+Les deux sites ont historiquement partagé la base `egflbugcundo6` et le dossier des images (`public/uploads`, lien vers celui de mediateur) : un cours créé, modifié, publié ou retiré par ce connecteur, ou une capture qu'il ajoute, apparaît sur les deux sites. Voir [Déploiement](../deploiement/index.md#base-et-fichiers-partagés).
 
 ## Ce qui a été retiré de ce site
 

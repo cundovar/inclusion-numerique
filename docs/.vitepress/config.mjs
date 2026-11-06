@@ -7,7 +7,7 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 // Site VitePress à la racine de docs/ : les documents restent à côté du code
 const SRC_DIR = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '')
 const REPO_ROOT = path.resolve(SRC_DIR, '..')
-const GITHUB_REPO = 'https://github.com/cundovar/mediateur-numerique-formation'
+const GITHUB_REPO = 'https://github.com/cundovar/inclusion-numerique'
 const GITHUB_BLOB = `${GITHUB_REPO}/blob/main/`
 
 // Notes de travail hors du site, mais toujours lisibles sur GitHub

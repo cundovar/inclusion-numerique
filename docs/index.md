@@ -19,7 +19,7 @@ Cette documentation décrit le fonctionnement réel du dépôt. Chaque informati
 | Interface | Vue 3, Vite, Pinia, Tailwind, PWA hors ligne | <Status is="ci" /> |
 | API et back-office | Symfony 6.4, API Platform, EasyAdmin, MySQL 8 | <Status is="ci" /> |
 | Assistant de rédaction | Connecteur MCP de mediateur (base partagée), aucun sur ce site | <Status is="local" /> |
-| Hébergement | OVH (`inclusion-numerique.varascundo.com`), déploiement automatique depuis `main2` | <Status is="prod" /> |
+| Hébergement | OVH (`inclusion-numerique.varascundo.com`), workflow CI/CD corrigé en PR #2 ; déploiement manuel après synchronisation du code | <Status is="ci" /> |
 
 ## Parcourir
 
