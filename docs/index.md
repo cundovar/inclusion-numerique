@@ -9,7 +9,7 @@
 | Code | Dépôt dédié [`cundovar/inclusion-numerique`](https://github.com/cundovar/inclusion-numerique), branche `main`, issu de `main2` de DevDoc. Le code reprend celui de Médiateur numérique ([`cundovar/mediateur-numerique-formation`](https://github.com/cundovar/mediateur-numerique-formation), commit `c87941f`), lui-même construit sur le socle de DevDoc ([reprise](conception/reprise-devdoc.md)). | <Status is="code" /> |
 | Base de données | `egflbugcundo6`, partagée avec Médiateur ; aucune migration jouée par ce site | <Status is="code" /> |
 | Images | `public/uploads`, encore un lien vers le dossier de Médiateur ; [bascule préparée](deploiement/index.md#connecteur-mcp-et-images), pas encore faite | <Status is="prod" /> |
-| Connecteur MCP | Repris de Médiateur sur `/mcp`, jetons cloisonnés ; pas encore déployé | <Status is="code" /> |
+| Connecteur MCP | Repris de Médiateur sur `/mcp`, jetons cloisonnés ; pas encore déployé | <Status is="ci" /> |
 
 Détail et contrôles : [déploiement](deploiement/index.md#base-et-fichiers-partagés). Les preuves de DevDoc et de Médiateur ne valent pas pour ce site.
 
@@ -29,7 +29,7 @@ Cette documentation décrit le fonctionnement réel du dépôt. Chaque informati
 |---|---|---|
 | Interface | Vue 3, Vite, Pinia, Tailwind, PWA hors ligne | <Status is="ci" /> |
 | API et back-office | Symfony 6.4, API Platform, EasyAdmin, MySQL 8 | <Status is="ci" /> |
-| Assistant de rédaction | Connecteur MCP du site (`/mcp`), pas encore déployé | <Status is="code" /> |
+| Assistant de rédaction | Connecteur MCP du site (`/mcp`), pas encore déployé | <Status is="ci" /> |
 | Hébergement | OVH (`inclusion-numerique.varascundo.com`), workflow CI/CD corrigé en PR #2 ; déploiement manuel après validation de la synchronisation | <Status is="ci" /> |
 
 ## Parcourir

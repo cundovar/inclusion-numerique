@@ -50,4 +50,4 @@ Cette organisation est reprise de DevDoc ([reprise](../conception/reprise-devdoc
 
 - **MCP** : SDK `mcp/sdk`, serveur `src/Mcp/RedactionMcpServer.php`, exposé sur `/mcp` (voir le [connecteur](../fonctionnalites/connecteur.md)).
 - **E-mail** : Brevo par `symfony/brevo-mailer` (mot de passe oublié).
-- **Capture** : aucun moteur sur ce site depuis `a379bfe` ; les captures s'ajoutent dans le back-office (`CaptureFileManager`) ou par le connecteur de Médiateur.
+- **Capture** : les captures s'ajoutent dans le back-office (`CaptureFileManager`) ou par le connecteur, qui appelle le service Netcup.

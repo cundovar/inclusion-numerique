@@ -29,11 +29,11 @@ Configuration : [`config/packages/security.yaml`](../../config/packages/security
 - Les accès se listent et se coupent par `php bin/console app:connecteurs` (`ConnectorsCommandTest`).
 - **Base partagée avec mediateur** : les tables OAuth sont communes. L'empreinte des jetons et des codes est propre à ce site (`hash_hmac` dans [`OAuthServer::hash`](../../src/Service/OAuth/OAuthServer.php)), alors que mediateur stocke un `sha256` simple : un jeton d'un site est inconnu de l'autre, pour l'accès, le rafraîchissement et la révocation (`OAuthFlowTest::testTokensStoredByTheOtherSiteAreRefused`, `OAuthTokenIsolationTest`). Restent communs : la liste des connecteurs enregistrés (un identifiant public, l'autorisation reste à donner sur chaque site), la limite de 30 enregistrements par heure, et `app:connecteurs revoke`, qui coupe les accès d'un connecteur **sur les deux sites**.
 
-<Status is="code" />
+<Status is="ci" />
 
 ## Capture automatique
 
-Garde-fous du moteur (`capture/src/capturer.js`, règles `regles/05-captures.md`) : pages publiques en HTTPS uniquement, adresses locales et privées refusées, requêtes GET seulement, écrans de connexion refusés, cookies jamais acceptés, aucune tentative de contourner une protection anti-robots (`CAP-08`). Le service Netcup exige un jeton (`CAPTURE_SERVICE_TOKEN`). Tests : `capture/test/`, `capture-service/test/`. <Status is="code" />
+Garde-fous du moteur (`capture/src/capturer.js`, règles `regles/05-captures.md`) : pages publiques en HTTPS uniquement, adresses locales et privées refusées, requêtes GET seulement, écrans de connexion refusés, cookies jamais acceptés, aucune tentative de contourner une protection anti-robots (`CAP-08`). Le service Netcup exige un jeton (`CAPTURE_SERVICE_TOKEN`). Tests : `capture/test/`, `capture-service/test/`. <Status is="ci" />
 
 ## Secrets et contenus
 

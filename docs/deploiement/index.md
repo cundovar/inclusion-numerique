@@ -16,6 +16,8 @@ Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exéc
 
 Les runs [42204743070](https://github.com/cundovar/inclusion-numerique/actions/runs/42204743070) et [42205300321](https://github.com/cundovar/inclusion-numerique/actions/runs/42205300321) (2026-11-06) ont validé PHP, migrations MySQL, Vue, VitePress et le build de release. Le second a tenté le déploiement après fusion de la PR #1, mais l'authentification SSH a échoué car le job ne recevait pas `SSHPASS`. La PR #2 corrige l'environnement et rend le déploiement manuel. Son run [42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700) et le run post-fusion sur `main` [42206988450](https://github.com/cundovar/inclusion-numerique/actions/runs/42206988450) ont validé tous les contrôles et le build ; `deploy` a été ignoré dans les deux cas. <Status is="ci" />
 
+Le run [42217518469](https://github.com/cundovar/inclusion-numerique/actions/runs/42217518469) (PR #5, commit `6b566b8`, 2026-11-06) a validé PHP (180 tests, 926 assertions), migrations MySQL, moteur de capture, Vue, VitePress et le build de release, avec le connecteur repris ; `deploy` a été ignoré. <Status is="ci" />
+
 ## État actuel d'OVH
 
 Le dossier cible est `/home/egflbug/inclusion-numerique`. Le 2026-11-06, l'ancien code applicatif a été retiré de ce dossier en conservant `.env`, `.ovhconfig`, `var/` et le lien `public/uploads`. La base de données n'a pas été modifiée. Le nouveau dépôt n'a pas encore été déployé.

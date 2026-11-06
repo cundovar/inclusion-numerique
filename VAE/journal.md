@@ -2,6 +2,11 @@
 
 ## 2026-11-06
 
+- Reprise du connecteur MCP et préparation du dossier d'images propre (plan du jour, PR #5, `4a804ad`, `6b566b8`, co-signés par Claude Opus 5.5). Jetons OAuth cloisonnés sans changement de schéma ; script `deploy/uploads-inclusion.sh`.
+- Run [42217518469](https://github.com/cundovar/inclusion-numerique/actions/runs/42217518469), commit `6b566b8` : tous les jobs réussis (PHP : 180 tests, 926 assertions), `deploy` ignoré. Le run précédent, 42217207046 sur `4a804ad`, a échoué sur une erreur du nouveau test, corrigée par `6b566b8`.
+- Contrôles locaux : `make check-fast` réussi ; étapes `prepare`, `verify`, `switch` et `rollback` du script sur de faux dossiers. `make check` complet non exécuté en local, à la demande du candidat : la CI en tient lieu.
+- Non vérifié : inventaire de production (lecture SSH refusée par le contrôle de permissions de l'agent), étape `inventory` du script, déploiement, parcours OAuth réel, bascule des images.
+
 - Préparation de la CI/CD du dépôt dédié `cundovar/inclusion-numerique` : PR #1 a corrigé le déclenchement sur `main`, la génération de l'archive et la protection Apache des fichiers `.env*` ; elle a été fusionnée par l'utilisateur.
 - Runs [42204743070](https://github.com/cundovar/inclusion-numerique/actions/runs/42204743070) (PR) et [42205300321](https://github.com/cundovar/inclusion-numerique/actions/runs/42205300321) (push `main`) : PHP/PHPUnit, migrations MySQL, Vue/Vitest, VitePress et build de release réussis. Le déploiement a échoué à l'authentification, car le job ciblait l'environnement `inclusion-numerique` alors que `OVH_SSH_PASSWORD` est configuré dans `production` (nom vérifié sans lire sa valeur).
 - La PR #2 corrige l'environnement attendu (`production`) et rend le déploiement manuel. Son run [42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700) a validé PHP/PHPUnit, migrations MySQL, front/Vitest, VitePress et le build de release ; `deploy` a été ignoré sur la PR. Après fusion, le run [42206988450](https://github.com/cundovar/inclusion-numerique/actions/runs/42206988450) sur `main` a également réussi et a ignoré `deploy`. Aucun nouveau déploiement n'a été réalisé.
