@@ -122,8 +122,10 @@ final class OAuthFlowTest extends WebTestCase
         // La révocation ne touche pas non plus l'accès de l'autre site
         $this->client->request('POST', '/oauth/revoke', ['token' => $access]);
         self::assertResponseIsSuccessful();
-        $this->entityManager->refresh($grant);
-        self::assertTrue($grant->isAccessValid(new \DateTimeImmutable()));
+        $this->entityManager->clear();
+        $stored = $this->entityManager->getRepository(OAuthGrant::class)->findOneBy(['accessTokenHash' => hash('sha256', $access)]);
+        self::assertNotNull($stored);
+        self::assertTrue($stored->isAccessValid(new \DateTimeImmutable()));
     }
 
     public function testCodeIsSingleUseAndCheckedAgainstPkceAndRedirect(): void
