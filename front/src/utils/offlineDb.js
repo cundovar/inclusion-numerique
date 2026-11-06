@@ -2,7 +2,7 @@ import { openDB } from 'idb'
 
 // Base IndexedDB (NoSQL clé-valeur) utilisée pour le mode hors ligne de la PWA.
 export const DB_NAME = 'spa-db'
-export const DB_VERSION = 5
+export const DB_VERSION = 6
 
 // Durée de validité du cache des réponses API (1 heure)
 export const API_CACHE_TTL = 3600000
@@ -17,7 +17,8 @@ export const STORES = {
   exoMenus: 'id',
   exoContents: 'id',
   seo: 'id',
-  docDeCodes: 'id'
+  docDeCodes: 'id',
+  captures: 'id'
 }
 
 // Migrations du schéma : chaque version ajoute ses stores sans toucher aux précédents
@@ -40,6 +41,10 @@ export function upgradeSchema(db, oldVersion) {
   }
   if (oldVersion < 5) {
     db.createObjectStore('docDeCodes', { keyPath: 'id' })
+  }
+  if (oldVersion < 6) {
+    // Légendes et adresses des captures des cours, pour les afficher hors ligne
+    db.createObjectStore('captures', { keyPath: 'id' })
   }
 }
 
@@ -97,9 +102,16 @@ export function createOfflineDb({ name = DB_NAME, now = () => Date.now() } = {})
     // Sur un poste partagé, la personne suivante ne retrouve pas hors ligne les cours personnalisés de la précédente.
     async clearPersonalData() {
       const db = await dbPromise
-      const stores = ['user', 'menus', 'categories', 'pages', 'api_cache']
+      const stores = ['user', 'menus', 'categories', 'pages', 'api_cache', 'captures']
       const tx = db.transaction(stores, 'readwrite')
       await Promise.all([...stores.map(store => tx.objectStore(store).clear()), tx.done])
+    },
+
+    // Captures demandées par identifiant (celles absentes du store sont ignorées)
+    async loadCaptures(ids) {
+      const db = await dbPromise
+      const found = await Promise.all(ids.map((id) => db.get('captures', Number(id))))
+      return found.filter(Boolean)
     },
 
     // Page de cours individuelle (champs utiles à l'affichage hors ligne)

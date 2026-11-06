@@ -9,6 +9,10 @@ import symfony from 'vite-plugin-symfony';
 
 // On importe le plugin qui gère le mode PWA (Progressive Web App)
 import { VitePWA } from 'vite-plugin-pwa';
+import { apiRuntimeCaching } from './pwa/apiCache.js';
+import { spaNavigationCaching } from './pwa/spaNavigation.js';
+import { courseMediaCaching } from './pwa/courseMedia.js';
+import { precacheOptions } from './pwa/precache.js';
 
 // On importe la fonction pour gérer des chemins (path) facilement
 import { resolve } from 'path';
@@ -132,25 +136,21 @@ export default defineConfig(() => {
         },
         workbox: {
           // Configuration de Workbox pour gérer le cache
-          globDirectory: PWA_OUTPUT_DIR,
-          // Où chercher les fichiers à mettre en cache (aligné avec outDir)
-          globPatterns: ['**/*.{png,svg}'],
-          // Seules les icônes vivent dans /spa ; le JS et le CSS sont dans /build (cache à l'exécution)
-          globIgnores: ['manifest.webmanifest', 'workbox-*.js', 'sw.js', 'screenshot.png'],
-          // Quels fichiers ignorer
+          // Préchargement : page /spa/, scripts et styles du build, icônes (voir pwa/precache.js)
+          ...precacheOptions({
+            dirname,
+            buildDir: BUILD_OUTPUT_DIR,
+            pwaDir: PWA_OUTPUT_DIR,
+            // Pas de module laboratoires sur ce site : aucune vue à précharger pour lui
+            laboratoires: false,
+            revision: String(Date.now())
+          }),
           // Pas de page HTML statique : la SPA est rendue par Symfony, on ne sert donc pas index.html
           navigateFallback: null,
-          runtimeCaching: [{
-            // Pages de la SPA : réseau d'abord, dernière version en cache si hors ligne.
-            // Chemin en dur : Workbox copie la fonction dans sw.js, où PWA_PATH n'existe pas.
-            urlPattern: ({ request, url }) => request.mode === 'navigate' && url.pathname.startsWith('/spa/'),
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'spa-pages',
-              networkTimeoutSeconds: 3,
-              expiration: { maxEntries: 50 }
-            }
-          }, {
+          runtimeCaching: [
+          // Pages de la SPA : réseau d'abord, copie gardée si hors ligne (voir pwa/spaNavigation.js)
+          spaNavigationCaching,
+          {
             // JS et CSS compilés : noms hachés, donc immuables
             urlPattern: ({ url }) => url.pathname.startsWith('/build/assets/'),
             handler: 'CacheFirst',
@@ -158,18 +158,13 @@ export default defineConfig(() => {
               cacheName: 'build-assets',
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 }
             }
-          }, {
-            // Lecture de l'API publique (cours, menus, QCM) ; jamais les données personnelles
-            urlPattern: ({ request, url }) => request.method === 'GET'
-              && url.pathname.startsWith('/api/')
-              && !/^\/api\/(admin|notes|me-favorites|page-visits|customization|proposition-ia|users)/.test(url.pathname),
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-public',
-              networkTimeoutSeconds: 3,
-              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 }
-            }
-          }, {
+          },
+          // Lecture de l'API publique (cours, menus, QCM, catégories) : voir pwa/apiCache.js
+          apiRuntimeCaching,
+          // Images des captures : nom de fichier unique par capture, gardées pour la lecture hors ligne
+          // (téléchargées d'avance par le bouton « Tout télécharger », voir services/telechargementHorsLigne.js)
+          courseMediaCaching,
+          {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
@@ -178,17 +173,6 @@ export default defineConfig(() => {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365 // 1 an
               }
-            }
-          }, {
-            urlPattern: /\/api\/categories/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-categories-cache',
-              expiration: {
-                maxEntries: 5,
-                maxAgeSeconds: 60 * 60 // 1 heure
-              },
-              networkTimeoutSeconds: 3
             }
           }]
         }

@@ -1,0 +1,46 @@
+# git-provenance — commandes exécutées le 2026-11-02T13:40:25+01:00 dans le dépôt Inclusion numérique
+$ git rev-parse HEAD origin/main2
+30da5e5b98c17fa1ad3740346f53a782cd3543dc
+30da5e5b98c17fa1ad3740346f53a782cd3543dc
+$ git status --short | wc -l
+0
+$ git log --format="%h %ad %an %s" --date=short ec173dc..HEAD
+30da5e5 2026-11-02 Facundo VARAS docs(main2): describe inclusion-numerique deploy and CI instead of mediateur's
+a379bfe 2026-11-02 Facundo VARAS refactor(main2): remove the MCP connector from inclusion-numerique
+8ed912f 2026-11-02 Facundo VARAS fix(deploy): keep the uploads symlink on inclusion-numerique
+e32f39e 2026-11-02 Facundo VARAS docs(deploiement): document the inclusion-numerique site on the shared base
+95d47ac 2026-11-02 Facundo VARAS refactor(main2): take over mediateur's code for inclusion-numerique
+a3ca623 2026-11-02 Facundo VARAS docs(vae): record the shared-database migration in production
+deb7543 2026-11-02 Facundo VARAS feat(db): run main2 on mediateur's shared database
+d148fd6 2026-11-02 Facundo VARAS ci(deploy): deploy main2 to inclusion-numerique.varascundo.com
+90623fd 2026-10-31 Facundo VARAS fix(hooks): resolve the project root from the session folder
+2b7de33 2026-10-31 Facundo VARAS feat(mcp): replace the course connectors with the app-neutre template
+$ git log --no-merges --format="%B" ec173dc..HEAD | grep -i co-authored-by | sort | uniq -c
+     10 Co-Authored-By: Claude Opus 5.5 
+$ git log --no-merges --oneline ec173dc | wc -l   (historique DevDoc contenu dans main2)
+167
+$ git log --merges --oneline ec173dc | wc -l
+65
+$ git log --no-merges --format="%B" ec173dc | grep -i co-authored-by | sort | uniq -c
+      1 Co-Authored-By: Claude Haiku 4.5 
+     32 Co-Authored-By: Claude Opus 5.5 
+$ git log --no-merges --format="%an" ec173dc | sort | uniq -c
+     14 cundo
+    153 Facundo VARAS
+
+# Dépôt Médiateur (cundovar/mediateur-numerique-formation), checkout local, commit source c87941f
+$ git show -s --format="%H %ad %an %s" --date=iso c87941f
+c87941f42bef16908c848929c30be56973d85a93 2026-10-30 14:09:04 +0100 Facundo VARAS Merge pull request #48 from cundovar/docs/vae-preuves-publication
+$ git log --no-merges --oneline c87941f | wc -l
+86
+$ git log --merges --oneline c87941f | wc -l
+49
+$ git log --no-merges --format="%an" c87941f | sort | uniq -c
+     15 Claude
+     71 Facundo VARAS
+$ git log --no-merges --format="%B" c87941f | grep -i co-authored-by | sort | uniq -c
+     43 Co-Authored-By: Claude Opus 5.5 
+      4 Co-Authored-By: Claude Sonnet 5.5 
+$ git log --reverse --format="%h %ad %s" --date=short c87941f | head -2
+ae98e73 2026-10-15 Initial commit
+0779043 2026-10-15 docs: add digital mediation training plan

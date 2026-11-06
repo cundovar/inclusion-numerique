@@ -1,0 +1,38 @@
+# Indicateurs Git — 2026-11-02T13:57:33+01:00
+Définition : un commit « ia=oui » porte au moins une ligne Co-Authored-By (agent IA). Les fusions sont exclues.
+
+## Inclusion, commits propres à main2 (REV=ec173dc..30da5e5), dépôt /home/cundo/Bureau/perso/code_perso/SITES/Inclusion numérique
+      2 2026-10-31 Facundo VARAS ia=oui
+      8 2026-11-02 Facundo VARAS ia=oui
+
+## Médiateur (REV=c87941f), dépôt cundovar/mediateur-numerique-formation
+     12 2026-10-15 Claude ia=oui
+     26 2026-10-15 Facundo VARAS ia=non
+     14 2026-10-15 Facundo VARAS ia=oui
+      3 2026-10-16 Claude ia=oui
+     12 2026-10-16 Facundo VARAS ia=non
+      4 2026-10-16 Facundo VARAS ia=oui
+      2 2026-10-17 Facundo VARAS ia=oui
+      1 2026-10-20 Facundo VARAS ia=non
+     10 2026-10-20 Facundo VARAS ia=oui
+      2 2026-10-30 Facundo VARAS ia=oui
+PR fusionnées : 48
+Types Conventional Commits :
+     46 feat
+     17 fix
+     10 docs
+      4 style
+      4 ci
+      2 test
+      1 remove
+      1 Initial commit
+      1 chore
+
+## DevDoc contenu dans main2 (REV=ec173dc), par auteur et mention IA
+     14 cundo ia=non
+    120 Facundo VARAS ia=non
+     33 Facundo VARAS ia=oui
+Premier et dernier commit : 2025-06-05 → 2026-10-19
+
+## CI main2 (gh run list --branch main2)
+success: 8

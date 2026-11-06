@@ -1,0 +1,393 @@
+2026-11-02T14:27:08+01:00
++ make check (COMPOSE_PROJECT_NAME=vae-inclusion-iso)
+🔎 Syntaxe PHP...
+docker compose exec -T php sh -c "find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null"
+🔬 PHPStan...
+docker compose exec -T php composer analyse -- --memory-limit=1G
+
+ [OK] No errors                                                                 
+
+🔎 ESLint...
+docker compose exec -T front npm run lint
+
+> front@0.0.0 lint
+> eslint .
+
+✅ check-fast terminé
+🧪 PHPUnit...
+docker compose exec -T php composer test
+PHPUnit 9.6.31 by Sebastian Bergmann and contributors.
+
+Testing 
+Category And Page (App\Tests\Entity\CategoryAndPage)
+ ✔ New category is visible with empty collections
+ ✔ New page has no content yet
+
+Course Media Validation (App\Tests\Entity\CourseMediaValidation)
+ ✔ Complete capture is valid
+ ✔ Capture needs its source and date
+ ✔ Illustration does not need a source
+ ✔ Every image needs an alternative text a caption and a file
+ ✔ Review date is due on the day itself
+
+Position Menus (App\Tests\Entity\PositionMenus)
+ ✔ Add and remove menu keep both sides in sync
+ ✔ Menu position can be reassigned and cleared
+
+Back Office Pages (App\Tests\Functional\Admin\BackOfficePages)
+ ✔ Every enabled crud index and new form renders
+
+Capture Back Office (App\Tests\Functional\Admin\CaptureBackOffice)
+ ✔ Upload then replace the image keeps the capture and its courses
+ ✔ Capture without source is refused
+
+Capture Api (App\Tests\Functional\CaptureApi)
+ ✔ Visitor reads the requested captures with their source
+ ✔ Captures cannot be written through the api
+
+Category Audience Api (App\Tests\Functional\CategoryAudienceApi)
+ ✔ Public category list exposes the audience
+ ✔ Public category list exposes the thumbnail of a parcours
+ ✔ Admin cannot set an unknown audience
+
+Create Admin Command (App\Tests\Functional\Command\CreateAdminCommand)
+ ✔ Creates an admin with a hashed password
+ ✔ Updates the existing account instead of duplicating it
+ ✔ Rejects a short password
+
+Course Pdf (App\Tests\Functional\CoursePdf)
+ ✔ Capture becomes a figure read from the disk with its source
+ ✔ Published course is downloaded as a pdf that is reused until it changes
+ ✔ Drafts and reserved courses are not found for other people
+ ✔ Module sheet gathers only the courses the person can see
+
+Learner Account (App\Tests\Functional\LearnerAccount)
+ ✔ Registration creates a plain learner and opens their space
+ ✔ Registration rejects a full name or a short password
+ ✔ Registration refuses an address already used
+ ✔ Learner signs in with their address and is shown by pseudo
+ ✔ Back office account without address still signs in with its pseudo
+ ✔ Space lists only the published content reserved to the learner
+ ✔ Visitor has no space
+ ✔ Password change requires the current password
+ ✔ Account deletion removes the learner and their accesses
+ ✔ Administrator cannot delete their account from the space
+
+Legal Pages (App\Tests\Functional\LegalPages)
+ ✔ Empty information is shown as to complete without todays date
+ ✔ Information entered in the back office appears on the pages
+
+Personalized Content Api (App\Tests\Functional\PersonalizedContentApi)
+ ✔ Reserved course is only served to its learners
+ ✔ Reserved parcours hides its modules and courses
+ ✔ Reserved qcm is a personal exercise
+ ✔ Administrator sees every reserved content
+ ✔ Reserved content stays out of the sitemap and course counts
+
+Published Content Api (App\Tests\Functional\PublishedContentApi)
+ ✔ Visitor only receives published courses
+ ✔ Courses are served in rank order then by age
+ ✔ Visitor cannot open a draft by its identifier
+ ✔ Drafts stay hidden when searching by slug
+ ✔ Administrator sees drafts to review them
+ ✔ Status cannot be changed through the api
+ ✔ Sitemap only lists published pages
+
+Removed Features (App\Tests\Functional\RemovedFeatures)
+ ✔ No route exposes a removed feature with data set "favoris"
+ ✔ No route exposes a removed feature with data set "notes"
+ ✔ No route exposes a removed feature with data set "suivi des visites"
+ ✔ No route exposes a removed feature with data set "personnalisation par visiteur"
+ ✔ No route exposes a removed feature with data set "résultats de QCM enregistrés"
+ ✔ No route exposes a removed feature with data set "propositions IA"
+ ✔ No route exposes a removed feature with data set "API admin par clé"
+ ✔ No route exposes a removed feature with data set "exercices de code"
+ ✔ No route exposes a removed feature with data set "documentation de code"
+ ✔ No route exposes a removed feature with data set "API de rédaction par clé"
+ ✔ No route exposes a removed feature with data set "connecteur MCP"
+ ✔ No route exposes a removed feature with data set "serveur OAuth du connecteur"
+ ✔ No route exposes a removed feature with data set "métadonnées OAuth"
+ ✔ No route exposes a removed feature with data set "dépôt d'image du connecteur"
+
+Reset Password (App\Tests\Functional\ResetPassword)
+ ✔ Link received by email sets a new password once
+ ✔ Unknown address gets the same answer and no email
+ ✔ Repeated requests send only one email every five minutes
+ ✔ Expired link is refused
+ ✔ Login page offers the forgotten password link
+
+Access Control (App\Tests\Functional\Security\AccessControl)
+ ✔ Admin crud requires login with data set "tableau de bord"
+ ✔ Admin crud requires login with data set "création de catégorie"
+ ✔ Admin crud requires login with data set "liste des utilisateurs"
+ ✔ Admin crud is not exposed outside admin prefix
+ ✔ Admin crud is reachable for admin
+ ✔ Admin crud is forbidden for regular user
+ ✔ Public read of api resource stays open
+ ✔ Anonymous write on api resource is rejected with data set "création"
+ ✔ Anonymous write on api resource is rejected with data set "modification"
+ ✔ Anonymous write on api resource is rejected with data set "suppression"
+ ✔ Regular user cannot write api resource
+ ✔ Admin can write api resource
+ ✔ Anonymous cannot read users
+ ✔ Anonymous cannot patch user
+ ✔ User cannot patch another user
+ ✔ User can rename himself but not change roles
+
+Site Configuration Api (App\Tests\Functional\SiteConfigurationApi)
+ ✔ Anonymous visitor reads the site configuration
+
+Mapping (App\Tests\Integration\Doctrine\Mapping)
+ ✔ Mapping is valid
+ ✔ Column names match migration with data set "CourseMedia::mimeType"
+ ✔ Column names match migration with data set "CourseMedia::altText"
+ ✔ Column names match migration with data set "CourseMedia::createdAt"
+
+Time: 00:30.588, Memory: 205.00 MB
+
+OK (88 tests, 320 assertions)
+
+Remaining indirect deprecation notices (2221)
+🧪 Vitest...
+docker compose exec -T front npm test
+
+> front@0.0.0 test
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.14 [39m[90m/app[39m
+
+ [32m✓[39m tests/unit/exercices/moteurTelephone.spec.js [2m([22m[2m11 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+Browserslist: browsers data (caniuse-lite) is 18 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ [32m✓[39m tests/unit/exercices/donnees.spec.js [2m([22m[2m35 tests[22m[2m)[22m[32m 212[2mms[22m[39m
+[90mstderr[2m | tests/unit/utils/captures.spec.js[2m > [22m[2mmarqueurs de capture[2m > [22m[2mretire le marqueur d'une capture introuvable ou si le réseau manque
+[22m[39mCaptures indisponibles, le cours est affiché sans elles. Error: hors ligne
+    at [90m/app/[39mtests/unit/utils/captures.spec.js:84:97
+    at expandCaptures [90m(/app/[39msrc/utils/captures.js:25:22[90m)[39m
+    at [90m/app/[39mtests/unit/utils/captures.spec.js:84:41
+[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at [90mfile:///app/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:919:20
+
+ [32m✓[39m tests/unit/utils/captures.spec.js [2m([22m[2m10 tests[22m[2m)[22m[33m 456[2mms[22m[39m
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+ [32m✓[39m tests/unit/exercices/ScenePlayer.spec.js [2m([22m[2m6 tests[22m[2m)[22m[33m 1107[2mms[22m[39m
+     [33m[2m✓[22m[39m affiche les quatre résultats et l'étiquette « Annonce » en texte [33m 486[2mms[22m[39m
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+ [32m✓[39m tests/unit/exercices/EnvoyerMessage.spec.js [2m([22m[2m6 tests[22m[2m)[22m[33m 1669[2mms[22m[39m
+     [33m[2m✓[22m[39m affiche les lettres en majuscule quand le message est vide [33m 621[2mms[22m[39m
+[90mstderr[2m | tests/unit/views/HomeAndAudience.spec.js[2m > [22m[2mparcours[2m > [22m[2maffiche un cours publié sans module
+[22m[39m[Vue Router warn]: No match found for location with path "/pages/utiliser-un-ecran-tactile"
+
+[90mstdout[2m | tests/unit/views/HomeAndAudience.spec.js[2m > [22m[2mparcours[2m > [22m[2maffiche un cours publié sans module
+[22m[39mlocalstorage [1mnull[22m
+🔍 Debug CategoryPage:
+  - categoryName from URL: Premiers gestes numériques
+  - Total menus: [33m1[39m
+  - Available categories in API: [ [32m'Premiers gestes numériques'[39m ]
+
+[90mstderr[2m | tests/unit/views/HomeAndAudience.spec.js
+[22m[39m[API] Erreur reseau - Mode offline possible
+
+[90mstderr[2m | tests/unit/views/HomeAndAudience.spec.js
+[22m[39merreur chargement niveau de cours AxiosError: Network Error
+    at XMLHttpRequest.handleError [90m(file:///app/[39mnode_modules/[4maxios[24m/lib/adapters/xhr.js:124:21[90m)[39m
+    at XMLHttpRequest.invokeTheCallbackFunction [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/generated/idl/EventHandlerNonNull.js:14:28[90m)[39m
+    at XMLHttpRequest.<anonymous> [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/helpers/create-event-accessor.js:57:32[90m)[39m
+    at innerInvokeEventListeners [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/events/EventTarget-impl.js:360:16[90m)[39m
+    at invokeEventListeners [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/events/EventTarget-impl.js:296:3[90m)[39m
+    at XMLHttpRequestImpl._dispatch [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/events/EventTarget-impl.js:243:9[90m)[39m
+    at fireAnEvent [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/helpers/events.js:18:36[90m)[39m
+    at requestErrorSteps [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/xhr/XMLHttpRequest-impl.js:157:3[90m)[39m
+    at dispatchError [90m(/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/xhr/XMLHttpRequest-impl.js:131:3[90m)[39m
+    at [90m/app/[39mnode_modules/[4mjsdom[24m/lib/jsdom/living/xhr/XMLHttpRequest-impl.js:752:13
+    at Axios.request [90m(file:///app/[39mnode_modules/[4maxios[24m/lib/core/Axios.js:46:41[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at getNiveaux [90m(/app/[39msrc/composables/api/useNiveauCoursApi.js:6:24[90m)[39m
+    at Proxy.fetchNiveaux [90m(/app/[39msrc/stores/niveauCoursStore.js:24:29[90m)[39m {
+  isAxiosError: [33mtrue[39m,
+  code: [32m'ERR_NETWORK'[39m,
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: [33mtrue[39m,
+      forcedJSONParsing: [33mtrue[39m,
+      clarifyTimeoutError: [33mfalse[39m,
+      legacyInterceptorReqResOrdering: [33mtrue[39m,
+      advertiseZstdAcceptEncoding: [33mfalse[39m,
+      validateStatusUndefinedResolves: [33mtrue[39m
+    },
+    adapter: [ [32m'xhr'[39m, [32m'http'[39m, [32m'fetch'[39m ],
+    transformRequest: [ [36m[Function: transformRequest][39m ],
+    transformResponse: [ [36m[Function: transformResponse][39m ],
+    timeout: [33m10000[39m,
+    xsrfCookieName: [32m'XSRF-TOKEN'[39m,
+    xsrfHeaderName: [32m'X-XSRF-TOKEN'[39m,
+    maxContentLength: [33m-1[39m,
+    maxBodyLength: [33m-1[39m,
+    env: { FormData: [36m[Function][39m, Blob: [36m[class Blob][39m },
+    validateStatus: [36m[Function: validateStatus][39m,
+    headers: Object [AxiosHeaders] {
+      Accept: [32m'application/ld+json'[39m,
+      [32m'Content-Type'[39m: [32m'application/ld+json'[39m
+    },
+    baseURL: [32m'/api'[39m,
+    withCredentials: [33mtrue[39m,
+    method: [32m'get'[39m,
+    url: [32m'/niveau_cours'[39m,
+    allowAbsoluteUrls: [33mtrue[39m,
+    data: [90mundefined[39m
+  },
+  request: XMLHttpRequest {},
+  event: ProgressEvent { isTrusted: [36m[Getter][39m },
+  isNetworkError: [33mtrue[39m
+}
+
+ [32m✓[39m tests/unit/views/HomeAndAudience.spec.js [2m([22m[2m6 tests[22m[2m)[22m[33m 793[2mms[22m[39m
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+ [32m✓[39m tests/unit/utils/offlineDb.spec.js [2m([22m[2m12 tests[22m[2m)[22m[32m 105[2mms[22m[39m
+Not implemented: Window's scrollBy() method
+Not implemented: Window's scrollBy() method
+ [32m✓[39m tests/unit/utils/fetchDataPwa.spec.js [2m([22m[2m6 tests[22m[2m)[22m[33m 772[2mms[22m[39m
+     [33m[2m✓[22m[39m en ligne, enregistre menus et catégories visibles ; hors ligne, les relit [33m 690[2mms[22m[39m
+ [32m✓[39m tests/unit/exercices/Telephone.spec.js [2m([22m[2m8 tests[22m[2m)[22m[33m 3577[2mms[22m[39m
+     [33m[2m✓[22m[39m affiche la première mission, l'accueil et ses applications [33m 455[2mms[22m[39m
+     [33m[2m✓[22m[39m affiche la mission dans le téléphone, avec une progression écrite [33m 347[2mms[22m[39m
+     [33m[2m✓[22m[39m réalise les cinq missions et mène à la conclusion [33m 611[2mms[22m[39m
+     [33m[2m✓[22m[39m n'avance pas sur une mauvaise action et propose une aide sans pénalité [33m 1207[2mms[22m[39m
+     [33m[2m✓[22m[39m remet le téléphone à zéro quand on recommence [33m 521[2mms[22m[39m
+ [32m✓[39m tests/unit/exercices/Formulaire.spec.js [2m([22m[2m3 tests[22m[2m)[22m[33m 582[2mms[22m[39m
+ [32m✓[39m tests/unit/exercices/moteurMessage.spec.js [2m([22m[2m10 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/parcours.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m tests/unit/composables/usePWA.spec.js [2m([22m[2m7 tests[22m[2m)[22m[33m 326[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/courseSections.spec.js [2m([22m[2m5 tests[22m[2m)[22m[32m 146[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/niveaux.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 160[2mms[22m[39m
+ [32m✓[39m tests/unit/exercices/moteurFormulaire.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/unit/stores/qcm.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m tests/unit/composables/useReadAloud.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 125[2mms[22m[39m
+ [32m✓[39m tests/unit/exercices/routes.spec.js [2m([22m[2m4 tests[22m[2m)[22m[33m 353[2mms[22m[39m
+ [32m✓[39m tests/unit/composables/useSearch.spec.js [2m([22m[2m4 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/unit/router/guards.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/unit/components/SafeHtml.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 254[2mms[22m[39m
+ [32m✓[39m tests/unit/router/rechargementVersion.spec.js [2m([22m[2m3 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/utils.spec.js [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/components/PdfDownload.spec.js [2m([22m[2m2 tests[22m[2m)[22m[32m 118[2mms[22m[39m
+ [32m✓[39m tests/unit/components/MobileAppPopup.spec.js [2m([22m[2m2 tests[22m[2m)[22m[32m 135[2mms[22m[39m
+ [32m✓[39m tests/unit/components/CookieNotice.spec.js [2m([22m[2m2 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+ [32m✓[39m tests/unit/components/AppFooter.spec.js [2m([22m[2m1 test[22m[2m)[22m[32m 38[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m28 passed[39m[22m[90m (28)[39m
+[2m      Tests [22m [1m[32m191 passed[39m[22m[90m (191)[39m
+[2m   Start at [22m 13:27:49
+[2m   Duration [22m 20.23s[2m (transform 8.82s, setup 0ms, import 23.59s, tests 11.27s, environment 82.66s)[22m
+
+🏗️  Build Vite...
+docker compose exec -T front npm run check
+
+> front@0.0.0 check
+> vite build
+
+vite v6.4.3 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 18 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 1623 modules transformed.
+rendering chunks...
+computing gzip size...
+public/build/manifest.webmanifest                                              0.63 kB
+public/build/.vite/entrypoints.json                                            0.98 kB │ gzip:   0.42 kB
+public/build/assets/fa-v4compatibility-C9RhG_FT.woff2                          4.80 kB
+public/build/.vite/manifest.json                                              10.12 kB │ gzip:   1.51 kB
+public/build/assets/fa-v4compatibility-CCth-dXg.ttf                           10.84 kB
+public/build/assets/atkinson-hyperlegible-latin-400-normal-BbWidj28.woff      14.02 kB
+public/build/assets/atkinson-hyperlegible-latin-700-normal-BK6Glc0m.woff      14.29 kB
+public/build/assets/atkinson-hyperlegible-latin-400-normal-BrHNak5F.woff2     17.21 kB
+public/build/assets/atkinson-hyperlegible-latin-700-normal-GZI4o3u0.woff2     17.52 kB
+public/build/assets/fa-regular-400-BjRzuEpd.woff2                             25.47 kB
+public/build/assets/primeicons-C6QP2o4f.woff2                                 35.15 kB
+public/build/assets/fa-regular-400-DZaxPHgR.ttf                               68.06 kB
+public/build/assets/primeicons-MpK4pl85.ttf                                   84.98 kB
+public/build/assets/primeicons-WjwUDZjB.woff                                  85.06 kB
+public/build/assets/primeicons-DMOk5skT.eot                                   85.16 kB
+public/build/assets/fa-brands-400-D_cYUPeE.woff2                             118.68 kB
+public/build/assets/fa-solid-900-CTAAxXor.woff2                              158.22 kB
+public/build/assets/fa-brands-400-D1LuMI3I.ttf                               210.79 kB
+public/build/assets/primeicons-Dr5RGzOO.svg                                  342.53 kB │ gzip: 105.26 kB
+public/build/assets/fa-solid-900-D0aA9rwL.ttf                                426.11 kB
+public/build/assets/HomePage-DQOYC_4Z.css                                      0.16 kB │ gzip:   0.14 kB
+public/build/assets/ExercicesPage-5IDE-Zk5.css                                 0.17 kB │ gzip:   0.14 kB
+public/build/assets/AudiencePage-CX1KojXU.css                                  0.29 kB │ gzip:   0.20 kB
+public/build/assets/ExercicePage-Dmyca2nk.css                                  0.29 kB │ gzip:   0.20 kB
+public/build/assets/AppSelect-KfyE8MyA.css                                     0.38 kB │ gzip:   0.16 kB
+public/build/assets/PageQCM-Br0EJYOu.css                                       0.48 kB │ gzip:   0.26 kB
+public/build/assets/questionQCM-CnjkOxQk.css                                   1.27 kB │ gzip:   0.36 kB
+public/build/assets/PdfDownload-B_l7Hjyu.css                                   1.57 kB │ gzip:   0.55 kB
+public/build/assets/resultQCM-CY1qvSrp.css                                     4.30 kB │ gzip:   1.08 kB
+public/build/assets/CategoryPage-g_BPMAwm.css                                  5.91 kB │ gzip:   1.48 kB
+public/build/assets/PageContent-apvza5E5.css                                   6.13 kB │ gzip:   1.69 kB
+public/build/assets/main-CLyBxzqJ.css                                        502.95 kB │ gzip:  86.62 kB
+public/build/assets/qcm-CspMeltQ.js                                            0.81 kB │ gzip:   0.43 kB
+public/build/assets/PdfDownload-BtqTlgzc.js                                    2.80 kB │ gzip:   1.27 kB
+public/build/assets/ExercicesPage-Ch6Tkcxj.js                                  2.91 kB │ gzip:   1.42 kB
+public/build/assets/AppSelect-HN1LhFdk.js                                      3.24 kB │ gzip:   1.27 kB
+public/build/assets/PageQCM-CoyqYtIR.js                                        3.53 kB │ gzip:   1.49 kB
+public/build/assets/HomePage-BxeTGpGF.js                                       3.68 kB │ gzip:   1.70 kB
+public/build/assets/AudiencePage-CupD47uV.js                                   4.76 kB │ gzip:   2.24 kB
+public/build/assets/workbox-window.prod.es5-BqEJf4Xk.js                        5.71 kB │ gzip:   2.34 kB
+public/build/assets/questionQCM-CZethUaj.js                                    6.65 kB │ gzip:   2.80 kB
+public/build/assets/MonEspacePage-hjGOOBmM.js                                  9.51 kB │ gzip:   3.29 kB
+public/build/assets/CategoryPage-CGQr_Azm.js                                   9.63 kB │ gzip:   3.57 kB
+public/build/assets/index-CqlD2gp6.js                                         14.22 kB │ gzip:   4.86 kB
+public/build/assets/ComponentsDemo-B1AF4VXr.js                                14.79 kB │ gzip:   3.95 kB
+public/build/assets/PageContent-Mpo7WP3A.js                                   17.52 kB │ gzip:   7.31 kB
+public/build/assets/resultQCM-C8Ujjcbh.js                                     18.90 kB │ gzip:   7.53 kB
+public/build/assets/SafeHtml-D0thYq_a.js                                      30.06 kB │ gzip:  11.40 kB
+public/build/assets/ExercicePage-BBV5suSV.js                                  40.10 kB │ gzip:  11.53 kB
+public/build/assets/main-ip8VUnSk.js                                       1,126.86 kB │ gzip: 370.75 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 9.32s
+
+PWA v1.0.0
+mode      generateSW
+precache  1 entries (0.00 KiB)
+files generated
+  public/spa/sw.js
+  public/spa/workbox-34b4b191.js
+warnings
+  One of the glob patterns doesn't match any files. Please remove or fix the following: {
+  "globDirectory": "public/spa",
+  "globPattern": "**/*.{png,svg}",
+  "globIgnores": [
+    "manifest.webmanifest",
+    "workbox-*.js",
+    "sw.js",
+    "screenshot.png",
+    "sw.js",
+    "workbox-*.js"
+  ]
+}
+
+✅ check terminé
+exit=0
+2026-11-02T14:28:23+01:00

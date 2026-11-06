@@ -1,0 +1,13 @@
+# Contrôle HTTP en lecture seule de https://inclusion-numerique.varascundo.com — 2026-11-02T13:40:29+01:00 — curl 7.81.0
+/spa/                                      200 text/html; charset=UTF-8
+/spa                                       200 text/html; charset=UTF-8
+/docs/                                     200 text/html
+/api                                       200 application/ld+json; charset=utf-8
+/mcp                                       404 text/html; charset=UTF-8
+/oauth/authorize                           404 text/html; charset=UTF-8
+/.well-known/oauth-authorization-server    404 text/html; charset=UTF-8
+/VAE/README.md                             404 text/html; charset=UTF-8
+/.env                                      403 text/html; charset=utf8
+## <title> de /spa/ et /docs/
+<title>Inclusion numérique - Formations libres et gratuites</title>
+<title>Site de formation à la médiation numérique | Médiation numérique</title>

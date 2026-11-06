@@ -33,10 +33,11 @@ describe('offlineDb — schéma', () => {
     1: ['menus', 'categories', 'user'],
     2: ['menus', 'categories', 'user', 'pages', 'api_cache'],
     3: ['menus', 'categories', 'user', 'pages', 'api_cache', 'exoMenus', 'exoContents'],
-    4: ['menus', 'categories', 'user', 'pages', 'api_cache', 'exoMenus', 'exoContents', 'seo']
+    4: ['menus', 'categories', 'user', 'pages', 'api_cache', 'exoMenus', 'exoContents', 'seo'],
+    5: ['menus', 'categories', 'user', 'pages', 'api_cache', 'exoMenus', 'exoContents', 'seo', 'docDeCodes']
   }
 
-  it.each([1, 2, 3, 4])('migre une base en version %i sans perdre les données existantes', async (version) => {
+  it.each([1, 2, 3, 4, 5])('migre une base en version %i sans perdre les données existantes', async (version) => {
     const name = `${dbName}-v${version}`
     const legacy = await openDB(name, version, {
       upgrade(db) {
@@ -84,6 +85,27 @@ describe('offlineDb — utilisateur', () => {
 
     await offlineDb.clearUser()
     expect(await offlineDb.loadUser()).toBeNull()
+  })
+})
+
+describe('offlineDb — captures', () => {
+  it('relit les captures demandées, sans erreur pour celles jamais enregistrées', async () => {
+    await offlineDb.saveAll('captures', [{ id: 1, url: '/uploads/course-media/a.png' }, { id: 2, url: '/uploads/course-media/b.png' }])
+
+    expect(await offlineDb.loadCaptures([2, '1', 99])).toEqual([
+      { id: 2, url: '/uploads/course-media/b.png' },
+      { id: 1, url: '/uploads/course-media/a.png' }
+    ])
+  })
+
+  it('les efface à la déconnexion, avec le catalogue : une capture peut illustrer un cours réservé', async () => {
+    await offlineDb.saveAll('captures', [{ id: 1, url: '/uploads/course-media/a.png' }])
+    await offlineDb.saveAll('menus', [{ id: 10, title: 'Pour Alice' }])
+
+    await offlineDb.clearPersonalData()
+
+    expect(await offlineDb.loadAll('captures')).toEqual([])
+    expect(await offlineDb.loadAll('menus')).toEqual([])
   })
 })
 

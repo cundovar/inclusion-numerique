@@ -93,6 +93,22 @@ describe('fetchDataPwa — contenus personnalisés hors ligne', () => {
     })
   })
 
+  it('à la déconnexion, vide aussi les réponses de l’API et les images des captures gardées par le service worker', async () => {
+    const stored = new Map([['api-public', {}], ['api-public-v2', {}], ['captures-images', {}], ['build-assets', {}]])
+    vi.stubGlobal('caches', {
+      keys: async () => [...stored.keys()],
+      delete: async (name) => stored.delete(name)
+    })
+    const online = await launchApp()
+    online.axios.get.mockResolvedValue({ data: { username: 'redaction', roles: ['ROLE_ADMIN'] } })
+    await online.data.fetchUser()
+
+    window.dispatchEvent(new Event('auth:logout'))
+
+    await vi.waitFor(() => expect([...stored.keys()]).toEqual(['build-assets']))
+    vi.unstubAllGlobals()
+  })
+
   it('un visiteur jamais connecté garde son catalogue hors ligne', async () => {
     const online = await launchApp()
     online.axios.get.mockImplementation(async (url) => {
@@ -121,5 +137,25 @@ describe('fetchDataPwa — contenus personnalisés hors ligne', () => {
     await offline.data.fetchMenus()
 
     expect(offline.data.menus.value).toEqual([{ id: 10, title: 'Public' }])
+  })
+})
+
+describe('fetchDataPwa — lecture hors ligne de tous les cours', () => {
+  const COURS = [
+    { id: 10, title: 'Flexbox', code: '<p>Texte complet</p>', page: { slug: '/flexbox' } },
+    { id: 11, title: 'Grid', code: '<p>Autre</p>', page: { slug: 'grid' } }
+  ]
+
+  it('retrouve un cours jamais ouvert grâce à la liste enregistrée au lancement', async () => {
+    const online = await launchApp()
+    online.axios.get.mockResolvedValue({ data: { member: COURS } })
+    await online.data.fetchMenus()
+
+    const offline = await launchApp()
+
+    expect(await offline.data.findCourseOffline('flexbox')).toEqual(COURS[0])
+    expect(await offline.data.findCourseOffline('grid')).toEqual(COURS[1])
+    expect(await offline.data.findCourseOffline('inconnu')).toBeNull()
+    expect(await offline.data.listCoursesOffline()).toEqual(COURS)
   })
 })

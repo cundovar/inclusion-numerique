@@ -8,7 +8,8 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 const SRC_DIR = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '')
 const REPO_ROOT = path.resolve(SRC_DIR, '..')
 const GITHUB_REPO = 'https://github.com/cundovar/inclusion-numerique'
-const GITHUB_BLOB = `${GITHUB_REPO}/blob/main/`
+const GITHUB_BRANCH = 'main'
+const GITHUB_BLOB = `${GITHUB_REPO}/blob/${GITHUB_BRANCH}/`
 
 // Notes de travail hors du site, mais toujours lisibles sur GitHub
 const EXCLUDED = []
@@ -73,7 +74,12 @@ const sidebar = [
     text: 'Conception',
     items: [
       { text: 'Besoin et publics', link: '/conception/' },
-      { text: 'Reprise de DevDoc', link: '/conception/reprise-devdoc' }
+      { text: 'User stories', link: '/conception/besoins' },
+      { text: 'Écrans et enchaînements', link: '/conception/maquettes' },
+      { text: 'Modèle de données', link: '/conception/base-de-donnees' },
+      { text: 'Décisions d\'architecture', link: '/conception/decisions-architecture' },
+      { text: 'Reprise de DevDoc', link: '/conception/reprise-devdoc' },
+      { text: 'Gestion de projet', link: '/gestion-de-projet' }
     ]
   },
   {
@@ -110,8 +116,8 @@ const sidebar = [
 export default withMermaid(defineConfig({
   srcExclude: EXCLUDED.map((entry) => (entry.endsWith('/') ? `${entry}**` : entry)),
   lang: 'fr-FR',
-  title: 'Médiation numérique',
-  description: 'Fonctionnement du site de formation à la médiation numérique : fonctionnalités, architecture, sécurité, tests et déploiement',
+  title: 'Inclusion numérique',
+  description: 'Fonctionnement d\'Inclusion numérique, site de formation libre et gratuit au numérique : fonctionnalités, architecture, sécurité, tests et déploiement',
   base: '/docs/',
   cleanUrls: true,
   lastUpdated: true,
@@ -140,8 +146,8 @@ export default withMermaid(defineConfig({
         }
       }
     },
-    socialLinks: [{ icon: 'github', link: GITHUB_REPO }],
-    editLink: { pattern: `${GITHUB_REPO}/edit/main/docs/:path`, text: 'Modifier cette page' },
+    socialLinks: [{ icon: 'github', link: `${GITHUB_REPO}/tree/${GITHUB_BRANCH}` }],
+    editLink: { pattern: `${GITHUB_REPO}/edit/${GITHUB_BRANCH}/docs/:path`, text: 'Modifier cette page' },
     docFooter: { prev: 'Page précédente', next: 'Page suivante' },
     lastUpdated: { text: 'Mis à jour' },
     darkModeSwitchLabel: 'Thème',

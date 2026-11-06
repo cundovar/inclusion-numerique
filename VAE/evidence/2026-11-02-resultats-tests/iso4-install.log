@@ -1,0 +1,591 @@
++ cd /tmp/claude-1000/-home-cundo-Bureau-perso-symfoy-projets-symfo-vue-devdoc-local/37bc4227-fdf0-460c-8733-5b508a481b4c/scratchpad/iso4
++ export COMPOSE_PROJECT_NAME=vae-inclusion-iso HOST_HTTP_PORT=8190 HOST_VITE_PORT=5190 HOST_DB_PORT=3390 HOST_PMA_PORT=8191 HOST_STORYBOOK_PORT=6090 HOST_DOCS_PORT=5191 VITE_DEV_ORIGIN=http://localhost:8190
++ COMPOSE_PROJECT_NAME=vae-inclusion-iso
++ HOST_HTTP_PORT=8190
++ HOST_VITE_PORT=5190
++ HOST_DB_PORT=3390
++ HOST_PMA_PORT=8191
++ HOST_STORYBOOK_PORT=6090
++ HOST_DOCS_PORT=5191
++ VITE_DEV_ORIGIN=http://localhost:8190
++ date -Iseconds
+2026-11-02T14:25:16+01:00
++ docker --version
+Docker version 29.9.2, build a82e528
++ docker compose version
+Docker Compose version v5.6.1
++ cat
++ docker compose up -d --build php front nginx db
+ Image vae-inclusion-iso-php Building 
+ Image vae-inclusion-iso-front Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.38kB done
+#1 DONE 0.0s
+
+#2 [front internal] load build definition from Dockerfile
+#2 transferring dockerfile: 306B 0.0s done
+#2 DONE 0.0s
+
+#3 [php internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.14kB done
+#3 DONE 0.0s
+
+#4 [php internal] load metadata for docker.io/library/php:8.3-fpm
+#4 ...
+
+#5 [auth] library/node:pull token for registry-1.docker.io
+#5 DONE 0.0s
+
+#6 [auth] library/composer:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#7 [auth] library/php:pull token for registry-1.docker.io
+#7 DONE 0.0s
+
+#8 [php internal] load metadata for docker.io/library/composer:latest
+#8 ...
+
+#9 [front internal] load metadata for docker.io/library/node:20
+#9 DONE 0.6s
+
+#8 [php internal] load metadata for docker.io/library/composer:latest
+#8 DONE 0.6s
+
+#10 [front internal] load .dockerignore
+#10 transferring context: 2B done
+#10 DONE 0.0s
+
+#4 [php internal] load metadata for docker.io/library/php:8.3-fpm
+#4 DONE 0.6s
+
+#11 [front 1/5] FROM docker.io/library/node:20@sha256:8f693eaa7e0a8e71560c9a82b55fd54c2ae920a2ba5d2cde28bac7d1c01c9ba5
+#11 DONE 0.0s
+
+#12 [php internal] load .dockerignore
+#12 transferring context: 162B done
+#12 DONE 0.0s
+
+#13 [php stage-0 1/9] FROM docker.io/library/php:8.3-fpm@sha256:7c6bba25ec696f21a2e3ca0b7d3e4282c899095e7e628c1851b0432f14a49d76
+#13 DONE 0.0s
+
+#14 [php stage-0 2/9] RUN apt-get update && apt-get install -y     git     unzip     zip     curl     libpq-dev     libzip-dev     libonig-dev     libicu-dev     libjpeg-dev     libpng-dev     libfreetype6-dev     && docker-php-ext-configure gd --with-freetype --with-jpeg     && docker-php-ext-install pdo pdo_mysql zip intl gd opcache
+#14 CACHED
+
+#15 [php] FROM docker.io/library/composer:latest@sha256:4ed71c38c6d788eb4e4e3747b5332f5b40d5b5a6fcadd5062a1a70986a118e0a
+#15 CACHED
+
+#16 [front internal] load build context
+#16 transferring context: 2.12MB 0.0s done
+#16 DONE 0.1s
+
+#17 [front 2/5] WORKDIR /app
+#17 CACHED
+
+#18 [front 3/5] COPY package*.json ./
+#18 CACHED
+
+#19 [front 4/5] RUN npm install
+#19 CACHED
+
+#20 [php internal] load build context
+#20 transferring context: 3.84MB 0.1s done
+#20 DONE 0.1s
+
+#21 [front 5/5] COPY . .
+#21 DONE 0.1s
+
+#22 [php stage-0 3/9] COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#22 DONE 0.2s
+
+#23 [front] exporting to image
+#23 exporting layers 0.1s done
+#23 writing image sha256:7ceb9280c09933e9157507c9dad9d7aad97774326becc0bd318c941b6d044b1c done
+#23 naming to docker.io/library/vae-inclusion-iso-front done
+#23 DONE 0.1s
+
+#24 [front] resolving provenance for metadata file
+#24 DONE 0.0s
+
+#25 [php stage-0 4/9] RUN curl -sS https://get.symfony.com/cli/installer | bash &&     mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+#25 0.418 [1;33mSymfony CLI installer[22;39m
+#25 0.419 [1;33m
+#25 0.419 Environment check[22;39m
+#25 0.419 [0;32m  [*] cURL is installed[0m
+#25 0.419 [0;32m  [*] Tar is installed[0m
+#25 0.419 [0;32m  [*] Git is installed[0m
+#25 0.422 [0;32m  [*] Your architecture (amd64) is supported[0m
+#25 0.422 [1;33m
+#25 0.422 Download[22;39m
+#25 0.422   Downloading https://github.com/symfony-cli/symfony-cli/releases/latest/download/symfony-cli_linux_amd64.tar.gz...
+#25 0.429   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#25 0.429                                  Dload  Upload   Total   Spent    Left  Speed
+#25 0.429   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+#25 0.493   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+#25 0.753  17 6754k   17 1155k    0     0  3566k      0  0:00:01 --:--:--  0:00:01 3566k 24 6754k   24 1630k    0     0  1213k      0  0:00:05  0:00:01  0:00:04  466k 33 6754k   33 2270k    0     0   896k      0  0:00:07  0:00:02  0:00:05  504k 42 6754k   42 2890k    0     0   870k      0  0:00:07  0:00:03  0:00:04  578k 51 6754k   51 3445k    0     0   797k      0  0:00:08  0:00:04  0:00:04  573k 59 6754k   59 4000k    0     0   751k      0  0:00:08  0:00:05  0:00:03  569k 67 6754k   67 4555k    0     0   720k      0  0:00:09  0:00:06  0:00:03  587k 76 6754k   76 5158k    0     0   704k      0  0:00:09  0:00:07  0:00:02  603k 84 6754k   84 5729k    0     0   688k      0  0:00:09  0:00:08  0:00:01  567k 93 6754k   93 6300k    0     0   676k      0  0:00:09  0:00:09 --:--:--  571k100 6754k  100 6754k    0     0   669k      0  0:00:10  0:00:10 --:--:--  576k
+#25 10.53   Uncompress binary...
+#25 10.66   Installing the binary into your home directory...
+#25 10.66   The binary was saved to: /root/.symfony5/bin/symfony
+#25 10.66 [0;32m
+#25 10.66 The Symfony CLI was installed successfully![0m
+#25 10.66 [33m
+#25 10.66 Use it as a local file:[39m
+#25 10.66   /root/.symfony5/bin/symfony
+#25 10.66 [33m
+#25 10.66 Or add the following line to your shell configuration file:[39m
+#25 10.66   export PATH="$HOME/.symfony5/bin:$PATH"
+#25 10.66 [33m
+#25 10.66 Or install it globally on your system:[39m
+#25 10.66   mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
+#25 10.66 [33m
+#25 10.66 Then start a new shell and run 'symfony'[39m
+#25 DONE 10.7s
+
+#26 [php stage-0 5/9] WORKDIR /var/www/symfony
+#26 DONE 0.0s
+
+#27 [php stage-0 6/9] COPY php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
+#27 DONE 0.0s
+
+#28 [php stage-0 7/9] COPY composer.json composer.lock ./
+#28 DONE 0.0s
+
+#29 [php stage-0 8/9] COPY . .
+#29 DONE 0.1s
+
+#30 [php stage-0 9/9] RUN chown -R www-data:www-data /var/www/symfony
+#30 DONE 1.1s
+
+#31 [php] exporting to image
+#31 exporting layers 0.1s done
+#31 writing image sha256:6c4c7d37d42b3b6021f9e0bacc3b41275aad76a178b8a840b765f6cdbe4663d5 done
+#31 naming to docker.io/library/vae-inclusion-iso-php done
+#31 DONE 0.1s
+
+#32 [php] resolving provenance for metadata file
+#32 DONE 0.0s
+ Image vae-inclusion-iso-front Built 
+ Image vae-inclusion-iso-php Built 
+ Network vae-inclusion-iso_connectPerso Creating 
+ Volume vae-inclusion-iso_mysql_data Creating 
+ Volume vae-inclusion-iso_mysql_data Creating 
+ Network vae-inclusion-iso_connectPerso Creating 
+ Volume vae-inclusion-iso_front_node_modules Creating 
+ Volume vae-inclusion-iso_front_node_modules Creating 
+ Volume vae-inclusion-iso_mysql_data Created 
+ Volume vae-inclusion-iso_mysql_data Created 
+ Volume vae-inclusion-iso_front_node_modules Created 
+ Volume vae-inclusion-iso_front_node_modules Created 
+ Network vae-inclusion-iso_connectPerso Created 
+ Network vae-inclusion-iso_connectPerso Created 
+ Container vae-inclusion-iso-db-1 Creating 
+ Container vae-inclusion-iso-php-1 Creating 
+ Container vae-inclusion-iso-front-1 Creating 
+ Container vae-inclusion-iso-db-1 Created 
+ Container vae-inclusion-iso-php-1 Created 
+ Container vae-inclusion-iso-nginx-1 Creating 
+ Container vae-inclusion-iso-nginx-1 Created 
+ Container vae-inclusion-iso-front-1 Created 
+ Container vae-inclusion-iso-db-1 Starting 
+ Container vae-inclusion-iso-php-1 Starting 
+ Container vae-inclusion-iso-front-1 Starting 
+ Container vae-inclusion-iso-db-1 Started 
+ Container vae-inclusion-iso-php-1 Started 
+ Container vae-inclusion-iso-nginx-1 Starting 
+ Container vae-inclusion-iso-front-1 Started 
+ Container vae-inclusion-iso-nginx-1 Started 
+
+real	0m24,356s
+user	0m0,359s
+sys	0m0,162s
++ docker compose ps
+NAME                        IMAGE                     COMMAND                  SERVICE   CREATED          STATUS                  PORTS
+vae-inclusion-iso-db-1      mysql:8.0                 "docker-entrypoint.s…"   db        11 seconds ago   Up Less than a second   33060/tcp, 0.0.0.0:3390->3306/tcp, [::]:3390->3306/tcp
+vae-inclusion-iso-front-1   vae-inclusion-iso-front   "docker-entrypoint.s…"   front     11 seconds ago   Up Less than a second   0.0.0.0:5190->5173/tcp, [::]:5190->5173/tcp
+vae-inclusion-iso-nginx-1   nginx:stable              "/docker-entrypoint.…"   nginx     11 seconds ago   Up Less than a second   0.0.0.0:8190->80/tcp, [::]:8190->80/tcp
+vae-inclusion-iso-php-1     vae-inclusion-iso-php     "docker-php-entrypoi…"   php       11 seconds ago   Up Less than a second   9000/tcp
++ docker compose exec -T php composer install --no-interaction --no-progress
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Package operations: 169 installs, 0 updates, 0 removals
+  - Downloading symfony/flex (v2.10.0)
+  - Downloading symfony/runtime (v6.4.30)
+  - Downloading symfony/deprecation-contracts (v3.7.1)
+  - Downloading symfony/var-exporter (v6.4.45)
+  - Downloading symfony/polyfill-mbstring (v1.43.0)
+  - Downloading symfony/polyfill-intl-normalizer (v1.33.0)
+  - Downloading symfony/polyfill-intl-grapheme (v1.33.0)
+  - Downloading symfony/string (v6.4.30)
+  - Downloading psr/container (2.0.2)
+  - Downloading symfony/service-contracts (v3.7.3)
+  - Downloading symfony/console (v6.4.31)
+  - Downloading psr/cache (3.0.0)
+  - Downloading doctrine/event-manager (2.0.1)
+  - Downloading doctrine/persistence (4.1.1)
+  - Downloading doctrine/lexer (3.0.1)
+  - Downloading doctrine/instantiator (2.0.0)
+  - Downloading doctrine/inflector (2.1.0)
+  - Downloading doctrine/deprecations (1.1.5)
+  - Downloading psr/log (3.0.2)
+  - Downloading doctrine/dbal (3.10.4)
+  - Downloading symfony/polyfill-php84 (v1.33.0)
+  - Downloading doctrine/collections (2.5.1)
+  - Downloading doctrine/orm (3.6.1)
+  - Downloading symfony/translation-contracts (v3.6.1)
+  - Downloading symfony/serializer (v6.4.31)
+  - Downloading symfony/polyfill-php83 (v1.41.0)
+  - Downloading symfony/http-foundation (v6.4.45)
+  - Downloading psr/event-dispatcher (1.0.0)
+  - Downloading symfony/event-dispatcher-contracts (v3.7.1)
+  - Downloading symfony/event-dispatcher (v6.4.44)
+  - Downloading symfony/var-dumper (v6.4.45)
+  - Downloading symfony/error-handler (v6.4.44)
+  - Downloading symfony/http-kernel (v6.4.45)
+  - Downloading symfony/type-info (v7.4.1)
+  - Downloading symfony/property-info (v6.4.31)
+  - Downloading api-platform/metadata (v4.2.12)
+  - Downloading api-platform/state (v4.2.12)
+  - Downloading doctrine/common (3.5.0)
+  - Downloading api-platform/doctrine-common (v4.2.12)
+  - Downloading api-platform/doctrine-orm (v4.2.12)
+  - Downloading willdurand/negotiation (3.1.0)
+  - Downloading symfony/password-hasher (v6.4.24)
+  - Downloading symfony/security-core (v6.4.31)
+  - Downloading symfony/property-access (v6.4.31)
+  - Downloading symfony/finder (v6.4.31)
+  - Downloading symfony/asset (v6.4.24)
+  - Downloading psr/link (2.0.1)
+  - Downloading symfony/web-link (v6.4.24)
+  - Downloading symfony/validator (v6.4.31)
+  - Downloading api-platform/validator (v4.2.12)
+  - Downloading api-platform/serializer (v4.2.12)
+  - Downloading symfony/filesystem (v6.4.45)
+  - Downloading symfony/polyfill-uuid (v1.33.0)
+  - Downloading symfony/uid (v6.4.24)
+  - Downloading api-platform/json-schema (v4.2.12)
+  - Downloading api-platform/openapi (v4.2.12)
+  - Downloading api-platform/jsonld (v4.2.12)
+  - Downloading api-platform/documentation (v4.2.12)
+  - Downloading api-platform/hydra (v4.2.12)
+  - Downloading api-platform/http-cache (v4.2.12)
+  - Downloading api-platform/symfony (v4.2.12)
+  - Downloading symfony/routing (v6.4.30)
+  - Downloading symfony/dependency-injection (v6.4.44)
+  - Downloading symfony/config (v6.4.44)
+  - Downloading symfony/cache-contracts (v3.6.0)
+  - Downloading symfony/cache (v6.4.31)
+  - Downloading symfony/framework-bundle (v6.4.31)
+  - Downloading symfony/stopwatch (v6.4.24)
+  - Downloading doctrine/migrations (3.9.5)
+  - Downloading symfony/doctrine-bridge (v6.4.26)
+  - Downloading doctrine/sql-formatter (1.5.3)
+  - Downloading doctrine/doctrine-bundle (2.18.2)
+  - Downloading doctrine/doctrine-migrations-bundle (3.7.0)
+  - Downloading masterminds/html5 (2.10.0)
+  - Downloading sabberworm/php-css-parser (v9.5.0)
+  - Downloading dompdf/php-svg-lib (1.0.2)
+  - Downloading dompdf/php-font-lib (1.0.2)
+  - Downloading dompdf/dompdf (v3.1.6)
+  - Downloading twig/twig (v3.30.0)
+  - Downloading symfony/polyfill-intl-idn (v1.33.0)
+  - Downloading symfony/mime (v6.4.30)
+  - Downloading twig/html-extra (v3.29.0)
+  - Downloading symfony/twig-bridge (v6.4.31)
+  - Downloading symfony/twig-bundle (v6.4.31)
+  - Downloading twig/extra-bundle (v3.29.0)
+  - Downloading symfony/ux-twig-component (v2.32.0)
+  - Downloading symfony/translation (v6.4.31)
+  - Downloading symfony/security-http (v6.4.31)
+  - Downloading symfony/security-csrf (v6.4.31)
+  - Downloading psr/clock (1.0.0)
+  - Downloading symfony/clock (v6.4.30)
+  - Downloading symfony/security-bundle (v6.4.30)
+  - Downloading symfony/intl (v6.4.30)
+  - Downloading symfony/polyfill-intl-icu (v1.33.0)
+  - Downloading symfony/options-resolver (v6.4.30)
+  - Downloading symfony/form (v6.4.31)
+  - Downloading easycorp/easyadmin-bundle (v4.27.6)
+  - Downloading ezyang/htmlpurifier (v4.19.0)
+  - Downloading nette/utils (v4.1.1)
+  - Downloading nette/schema (v1.3.3)
+  - Downloading dflydev/dot-access-data (v3.0.3)
+  - Downloading league/config (v1.2.0)
+  - Downloading league/commonmark (2.8.0)
+  - Downloading nelmio/cors-bundle (2.6.1)
+  - Downloading psr/http-message (2.0)
+  - Downloading psr/http-factory (1.1.0)
+  - Downloading nyholm/psr7 (1.8.2)
+  - Downloading symfony/http-client-contracts (v3.7.3)
+  - Downloading symfony/http-client (v6.4.31)
+  - Downloading pentatrion/vite-bundle (v8.2.3)
+  - Downloading webmozart/assert (2.1.2)
+  - Downloading phpstan/phpdoc-parser (2.3.1)
+  - Downloading phpdocumentor/reflection-common (2.2.0)
+  - Downloading phpdocumentor/type-resolver (1.12.0)
+  - Downloading phpdocumentor/reflection-docblock (5.6.6)
+  - Downloading phpstan/phpstan (2.1.54)
+  - Downloading phpstan/phpstan-doctrine (2.0.22)
+  - Downloading phpstan/phpstan-symfony (2.0.17)
+  - Downloading sebastian/version (3.0.2)
+  - Downloading sebastian/type (3.2.1)
+  - Downloading sebastian/resource-operations (3.0.4)
+  - Downloading sebastian/recursion-context (4.0.6)
+  - Downloading sebastian/object-reflector (2.0.4)
+  - Downloading sebastian/object-enumerator (4.0.4)
+  - Downloading sebastian/global-state (5.0.8)
+  - Downloading sebastian/exporter (4.0.8)
+  - Downloading sebastian/environment (5.1.5)
+  - Downloading sebastian/diff (4.0.6)
+  - Downloading sebastian/comparator (4.0.9)
+  - Downloading sebastian/code-unit (1.0.8)
+  - Downloading sebastian/cli-parser (1.0.2)
+  - Downloading phpunit/php-timer (5.0.3)
+  - Downloading phpunit/php-text-template (2.0.4)
+  - Downloading phpunit/php-invoker (3.1.1)
+  - Downloading phpunit/php-file-iterator (3.0.6)
+  - Downloading theseer/tokenizer (1.3.1)
+  - Downloading nikic/php-parser (v5.7.0)
+  - Downloading sebastian/lines-of-code (1.0.4)
+  - Downloading sebastian/complexity (2.0.3)
+  - Downloading sebastian/code-unit-reverse-lookup (2.0.3)
+  - Downloading phpunit/php-code-coverage (9.2.32)
+  - Downloading phar-io/version (3.2.1)
+  - Downloading phar-io/manifest (2.0.4)
+  - Downloading myclabs/deep-copy (1.13.4)
+  - Downloading phpunit/phpunit (9.6.31)
+  - Downloading egulias/email-validator (4.0.4)
+  - Downloading symfony/mailer (v6.4.31)
+  - Downloading symfony/brevo-mailer (v6.4.41)
+  - Downloading symfony/dom-crawler (v6.4.25)
+  - Downloading symfony/browser-kit (v6.4.31)
+  - Downloading symfony/css-selector (v6.4.24)
+  - Downloading symfony/debug-bundle (v6.4.27)
+  - Downloading symfony/messenger (v6.4.31)
+  - Downloading symfony/doctrine-messenger (v6.4.31)
+  - Downloading symfony/dotenv (v6.4.30)
+  - Downloading symfony/expression-language (v6.4.30)
+  - Downloading symfony/process (v6.4.31)
+  - Downloading symfony/maker-bundle (v1.65.1)
+  - Downloading monolog/monolog (3.10.0)
+  - Downloading symfony/monolog-bridge (v6.4.28)
+  - Downloading symfony/monolog-bundle (v3.11.1)
+  - Downloading symfony/notifier (v6.4.25)
+  - Downloading symfony/phpunit-bridge (v7.4.3)
+  - Downloading symfony/psr-http-message-bridge (v6.4.48)
+  - Downloading symfony/requirements-checker (v2.0.3)
+  - Downloading symfony/stimulus-bundle (v2.32.0)
+  - Downloading symfony/ux-turbo (v2.32.0)
+  - Downloading symfony/web-profiler-bundle (v6.4.27)
+  - Downloading symfony/yaml (v6.4.30)
+  - Installing symfony/flex (v2.10.0): Extracting archive
+  - Installing symfony/runtime (v6.4.30): Extracting archive
+  - Installing symfony/deprecation-contracts (v3.7.1): Extracting archive
+  - Installing symfony/var-exporter (v6.4.45): Extracting archive
+  - Installing symfony/polyfill-mbstring (v1.43.0): Extracting archive
+  - Installing symfony/polyfill-intl-normalizer (v1.33.0): Extracting archive
+  - Installing symfony/polyfill-intl-grapheme (v1.33.0): Extracting archive
+  - Installing symfony/string (v6.4.30): Extracting archive
+  - Installing psr/container (2.0.2): Extracting archive
+  - Installing symfony/service-contracts (v3.7.3): Extracting archive
+  - Installing symfony/console (v6.4.31): Extracting archive
+  - Installing psr/cache (3.0.0): Extracting archive
+  - Installing doctrine/event-manager (2.0.1): Extracting archive
+  - Installing doctrine/persistence (4.1.1): Extracting archive
+  - Installing doctrine/lexer (3.0.1): Extracting archive
+  - Installing doctrine/instantiator (2.0.0): Extracting archive
+  - Installing doctrine/inflector (2.1.0): Extracting archive
+  - Installing doctrine/deprecations (1.1.5): Extracting archive
+  - Installing psr/log (3.0.2): Extracting archive
+  - Installing doctrine/dbal (3.10.4): Extracting archive
+  - Installing symfony/polyfill-php84 (v1.33.0): Extracting archive
+  - Installing doctrine/collections (2.5.1): Extracting archive
+  - Installing doctrine/orm (3.6.1): Extracting archive
+  - Installing symfony/translation-contracts (v3.6.1): Extracting archive
+  - Installing symfony/serializer (v6.4.31): Extracting archive
+  - Installing symfony/polyfill-php83 (v1.41.0): Extracting archive
+  - Installing symfony/http-foundation (v6.4.45): Extracting archive
+  - Installing psr/event-dispatcher (1.0.0): Extracting archive
+  - Installing symfony/event-dispatcher-contracts (v3.7.1): Extracting archive
+  - Installing symfony/event-dispatcher (v6.4.44): Extracting archive
+  - Installing symfony/var-dumper (v6.4.45): Extracting archive
+  - Installing symfony/error-handler (v6.4.44): Extracting archive
+  - Installing symfony/http-kernel (v6.4.45): Extracting archive
+  - Installing symfony/type-info (v7.4.1): Extracting archive
+  - Installing symfony/property-info (v6.4.31): Extracting archive
+  - Installing api-platform/metadata (v4.2.12): Extracting archive
+  - Installing api-platform/state (v4.2.12): Extracting archive
+  - Installing doctrine/common (3.5.0): Extracting archive
+  - Installing api-platform/doctrine-common (v4.2.12): Extracting archive
+  - Installing api-platform/doctrine-orm (v4.2.12): Extracting archive
+  - Installing willdurand/negotiation (3.1.0): Extracting archive
+  - Installing symfony/password-hasher (v6.4.24): Extracting archive
+  - Installing symfony/security-core (v6.4.31): Extracting archive
+  - Installing symfony/property-access (v6.4.31): Extracting archive
+  - Installing symfony/finder (v6.4.31): Extracting archive
+  - Installing symfony/asset (v6.4.24): Extracting archive
+  - Installing psr/link (2.0.1): Extracting archive
+  - Installing symfony/web-link (v6.4.24): Extracting archive
+  - Installing symfony/validator (v6.4.31): Extracting archive
+  - Installing api-platform/validator (v4.2.12): Extracting archive
+  - Installing api-platform/serializer (v4.2.12): Extracting archive
+  - Installing symfony/filesystem (v6.4.45): Extracting archive
+  - Installing symfony/polyfill-uuid (v1.33.0): Extracting archive
+  - Installing symfony/uid (v6.4.24): Extracting archive
+  - Installing api-platform/json-schema (v4.2.12): Extracting archive
+  - Installing api-platform/openapi (v4.2.12): Extracting archive
+  - Installing api-platform/jsonld (v4.2.12): Extracting archive
+  - Installing api-platform/documentation (v4.2.12): Extracting archive
+  - Installing api-platform/hydra (v4.2.12): Extracting archive
+  - Installing api-platform/http-cache (v4.2.12): Extracting archive
+  - Installing api-platform/symfony (v4.2.12): Extracting archive
+  - Installing symfony/routing (v6.4.30): Extracting archive
+  - Installing symfony/dependency-injection (v6.4.44): Extracting archive
+  - Installing symfony/config (v6.4.44): Extracting archive
+  - Installing symfony/cache-contracts (v3.6.0): Extracting archive
+  - Installing symfony/cache (v6.4.31): Extracting archive
+  - Installing symfony/framework-bundle (v6.4.31): Extracting archive
+  - Installing symfony/stopwatch (v6.4.24): Extracting archive
+  - Installing doctrine/migrations (3.9.5): Extracting archive
+  - Installing symfony/doctrine-bridge (v6.4.26): Extracting archive
+  - Installing doctrine/sql-formatter (1.5.3): Extracting archive
+  - Installing doctrine/doctrine-bundle (2.18.2): Extracting archive
+  - Installing doctrine/doctrine-migrations-bundle (3.7.0): Extracting archive
+  - Installing masterminds/html5 (2.10.0): Extracting archive
+  - Installing sabberworm/php-css-parser (v9.5.0): Extracting archive
+  - Installing dompdf/php-svg-lib (1.0.2): Extracting archive
+  - Installing dompdf/php-font-lib (1.0.2): Extracting archive
+  - Installing dompdf/dompdf (v3.1.6): Extracting archive
+  - Installing twig/twig (v3.30.0): Extracting archive
+  - Installing symfony/polyfill-intl-idn (v1.33.0): Extracting archive
+  - Installing symfony/mime (v6.4.30): Extracting archive
+  - Installing twig/html-extra (v3.29.0): Extracting archive
+  - Installing symfony/twig-bridge (v6.4.31): Extracting archive
+  - Installing symfony/twig-bundle (v6.4.31): Extracting archive
+  - Installing twig/extra-bundle (v3.29.0): Extracting archive
+  - Installing symfony/ux-twig-component (v2.32.0): Extracting archive
+  - Installing symfony/translation (v6.4.31): Extracting archive
+  - Installing symfony/security-http (v6.4.31): Extracting archive
+  - Installing symfony/security-csrf (v6.4.31): Extracting archive
+  - Installing psr/clock (1.0.0): Extracting archive
+  - Installing symfony/clock (v6.4.30): Extracting archive
+  - Installing symfony/security-bundle (v6.4.30): Extracting archive
+  - Installing symfony/intl (v6.4.30): Extracting archive
+  - Installing symfony/polyfill-intl-icu (v1.33.0): Extracting archive
+  - Installing symfony/options-resolver (v6.4.30): Extracting archive
+  - Installing symfony/form (v6.4.31): Extracting archive
+  - Installing easycorp/easyadmin-bundle (v4.27.6): Extracting archive
+  - Installing ezyang/htmlpurifier (v4.19.0): Extracting archive
+  - Installing nette/utils (v4.1.1): Extracting archive
+  - Installing nette/schema (v1.3.3): Extracting archive
+  - Installing dflydev/dot-access-data (v3.0.3): Extracting archive
+  - Installing league/config (v1.2.0): Extracting archive
+  - Installing league/commonmark (2.8.0): Extracting archive
+  - Installing nelmio/cors-bundle (2.6.1): Extracting archive
+  - Installing psr/http-message (2.0): Extracting archive
+  - Installing psr/http-factory (1.1.0): Extracting archive
+  - Installing nyholm/psr7 (1.8.2): Extracting archive
+  - Installing symfony/http-client-contracts (v3.7.3): Extracting archive
+  - Installing symfony/http-client (v6.4.31): Extracting archive
+  - Installing pentatrion/vite-bundle (v8.2.3): Extracting archive
+  - Installing webmozart/assert (2.1.2): Extracting archive
+  - Installing phpstan/phpdoc-parser (2.3.1): Extracting archive
+  - Installing phpdocumentor/reflection-common (2.2.0): Extracting archive
+  - Installing phpdocumentor/type-resolver (1.12.0): Extracting archive
+  - Installing phpdocumentor/reflection-docblock (5.6.6): Extracting archive
+  - Installing phpstan/phpstan (2.1.54): Extracting archive
+  - Installing phpstan/phpstan-doctrine (2.0.22): Extracting archive
+  - Installing phpstan/phpstan-symfony (2.0.17): Extracting archive
+  - Installing sebastian/version (3.0.2): Extracting archive
+  - Installing sebastian/type (3.2.1): Extracting archive
+  - Installing sebastian/resource-operations (3.0.4): Extracting archive
+  - Installing sebastian/recursion-context (4.0.6): Extracting archive
+  - Installing sebastian/object-reflector (2.0.4): Extracting archive
+  - Installing sebastian/object-enumerator (4.0.4): Extracting archive
+  - Installing sebastian/global-state (5.0.8): Extracting archive
+  - Installing sebastian/exporter (4.0.8): Extracting archive
+  - Installing sebastian/environment (5.1.5): Extracting archive
+  - Installing sebastian/diff (4.0.6): Extracting archive
+  - Installing sebastian/comparator (4.0.9): Extracting archive
+  - Installing sebastian/code-unit (1.0.8): Extracting archive
+  - Installing sebastian/cli-parser (1.0.2): Extracting archive
+  - Installing phpunit/php-timer (5.0.3): Extracting archive
+  - Installing phpunit/php-text-template (2.0.4): Extracting archive
+  - Installing phpunit/php-invoker (3.1.1): Extracting archive
+  - Installing phpunit/php-file-iterator (3.0.6): Extracting archive
+  - Installing theseer/tokenizer (1.3.1): Extracting archive
+  - Installing nikic/php-parser (v5.7.0): Extracting archive
+  - Installing sebastian/lines-of-code (1.0.4): Extracting archive
+  - Installing sebastian/complexity (2.0.3): Extracting archive
+  - Installing sebastian/code-unit-reverse-lookup (2.0.3): Extracting archive
+  - Installing phpunit/php-code-coverage (9.2.32): Extracting archive
+  - Installing phar-io/version (3.2.1): Extracting archive
+  - Installing phar-io/manifest (2.0.4): Extracting archive
+  - Installing myclabs/deep-copy (1.13.4): Extracting archive
+  - Installing phpunit/phpunit (9.6.31): Extracting archive
+  - Installing egulias/email-validator (4.0.4): Extracting archive
+  - Installing symfony/mailer (v6.4.31): Extracting archive
+  - Installing symfony/brevo-mailer (v6.4.41): Extracting archive
+  - Installing symfony/dom-crawler (v6.4.25): Extracting archive
+  - Installing symfony/browser-kit (v6.4.31): Extracting archive
+  - Installing symfony/css-selector (v6.4.24): Extracting archive
+  - Installing symfony/debug-bundle (v6.4.27): Extracting archive
+  - Installing symfony/messenger (v6.4.31): Extracting archive
+  - Installing symfony/doctrine-messenger (v6.4.31): Extracting archive
+  - Installing symfony/dotenv (v6.4.30): Extracting archive
+  - Installing symfony/expression-language (v6.4.30): Extracting archive
+  - Installing symfony/process (v6.4.31): Extracting archive
+  - Installing symfony/maker-bundle (v1.65.1): Extracting archive
+  - Installing monolog/monolog (3.10.0): Extracting archive
+  - Installing symfony/monolog-bridge (v6.4.28): Extracting archive
+  - Installing symfony/monolog-bundle (v3.11.1): Extracting archive
+  - Installing symfony/notifier (v6.4.25): Extracting archive
+  - Installing symfony/phpunit-bridge (v7.4.3): Extracting archive
+  - Installing symfony/psr-http-message-bridge (v6.4.48): Extracting archive
+  - Installing symfony/requirements-checker (v2.0.3): Extracting archive
+  - Installing symfony/stimulus-bundle (v2.32.0): Extracting archive
+  - Installing symfony/ux-turbo (v2.32.0): Extracting archive
+  - Installing symfony/web-profiler-bundle (v6.4.27): Extracting archive
+  - Installing symfony/yaml (v6.4.30): Extracting archive
+Generating autoload files
+124 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+Run composer recipes at any time to see the status of your Symfony recipes.
+
+Executing script cache:clear [OK]
+Executing script assets:install public [OK]
+Executing script requirements-checker [OK]
+
+
+real	1m5,954s
+user	0m0,035s
+sys	0m0,032s
+++ seq 1 60
++ for i in $(seq 1 60)
++ docker compose exec -T db mysqladmin -uroot -proot ping
++ grep -q alive
++ docker compose logs db
++ grep -q 'port: 3306  MySQL Community'
++ break
++ docker compose exec -T php php bin/console doctrine:migrations:migrate -n
+[notice] Migrating up to DoctrineMigrations\Version20261016220000
+[notice] finished in 5754.8ms, used 26M memory, 13 migrations executed, 83 sql queries
+
+ [OK] Successfully migrated to version: DoctrineMigrations\Version20261016220000
+
+
++ docker compose exec -T php php bin/console doctrine:schema:validate
+
+Mapping
+-------
+
+ [OK] The mapping files are correct.                                            
+
+Database
+--------
+
+ [OK] The database schema is in sync with the mapping files.                    
+
++ date -Iseconds
+2026-11-02T14:26:53+01:00
++ echo INSTALL_DONE
+INSTALL_DONE

@@ -23,7 +23,7 @@ Contrôle en lecture seule après le nettoyage : la racine `https://inclusion-nu
 
 ## Procédure du déploiement manuel
 
-1. Vérifier que `main` contient la version de l'application à déployer. La branche `main2` de `cundovar/vue-symfony` a avancé de deux commits depuis le snapshot importé dans le nouveau dépôt ; ces commits ajoutent notamment des fonctions de consultation hors ligne. Ils ne sont pas encore importés dans `cundovar/inclusion-numerique` ([comparaison des branches](https://github.com/cundovar/vue-symfony/compare/30da5e5b98c17fa1ad3740346f53a782cd3543dc...main2)).
+1. Vérifier que la PR de synchronisation des deux commits récents de `main2` est fusionnée et que la CI est verte avant de choisir la version à déployer.
 2. Dans GitHub, lancer « CI/CD » sur `main` avec `deploy` coché. Le job reconstruit l'archive, puis l'envoie par `rsync --delete` dans `/home/egflbug/inclusion-numerique`.
 3. `rsync` conserve sur OVH `.env`, `.env.*`, `.ovhconfig`, `var/` et le lien `public/uploads`. Le job supprime `var/cache/prod` et exécute `cache:warmup`.
 4. Vérifier les pages du site et les ressources après déploiement. Aucune migration de production n'est lancée par ce workflow.

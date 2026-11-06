@@ -1,0 +1,39 @@
+ Found 18 mapped entities:
+
+ [OK]   App\Entity\LanguageQCM
+ [OK]   App\Entity\PageContent
+ [OK]   App\Entity\PageBlock
+ [OK]   App\Entity\SuperMenu
+ [OK]   App\Entity\Menus
+ [OK]   App\Entity\Seo
+ [OK]   App\Entity\NiveauCours
+ [OK]   App\Entity\User
+ [OK]   App\Entity\Category
+ [OK]   App\Entity\NiveauQCM
+ [OK]   App\Entity\Logo
+ [OK]   App\Entity\ChoicesQCM
+ [OK]   App\Entity\PositionMenus
+ [OK]   App\Entity\CourseMedia
+ [OK]   App\Entity\SiteConfiguration
+ [OK]   App\Entity\QCM
+ [OK]   App\Entity\PasswordResetToken
+ [OK]   App\Entity\Page
+
+In ExceptionConverter.php line 112:
+                                                                               
+  An exception occurred in the driver: SQLSTATE[HY000] [2002] Connection refu  
+  sed                                                                          
+                                                                               
+
+In Exception.php line 24:
+                                             
+  SQLSTATE[HY000] [2002] Connection refused  
+                                             
+
+In PDOConnect.php line 25:
+                                             
+  SQLSTATE[HY000] [2002] Connection refused  
+                                             
+
+doctrine:schema:create [--em EM] [--dump-sql]
+
