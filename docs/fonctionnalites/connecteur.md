@@ -5,7 +5,7 @@ Le site expose un serveur MCP à l'adresse `https://<site>/mcp`. On l'ajoute com
 Le connecteur prépare des cours conformes au référentiel [`regles/`](../../regles/README.md), puis les **publie** avec `publier_cours`, seulement si aucun contrôle bloquant ne reste et si **un autre connecteur** a donné un avis **favorable**. Il peut aussi confier le cours à une personne (`soumettre_en_revue`). Il prépare et publie aussi des **QCM** selon la même règle (voir [QCM](#qcm)).
 
 ::: warning Transition avec Médiateur
-Le connecteur vient de Médiateur (`c87941f`). Tant que la base est commune, les tables OAuth le sont aussi : les jetons de chaque site sont cloisonnés (voir [Sécurité](../securite/index.md#assistant-de-redaction)). Il faut donc **ajouter de nouveau le connecteur** dans claude.ai ou ChatGPT avec l'adresse `https://inclusion-numerique.varascundo.com/mcp`. Déploiement et bascule : [Déploiement](../deploiement/index.md#connecteur-mcp-et-images). <Status is="ci" />
+Le connecteur vient de Médiateur (`c87941f`). Tant que la base est commune, les tables OAuth le sont aussi : les jetons de chaque site sont cloisonnés (voir [Sécurité](../securite/index.md#assistant-de-rédaction)). Il faut donc **ajouter de nouveau le connecteur** dans claude.ai ou ChatGPT avec l'adresse `https://inclusion-numerique.varascundo.com/mcp`. Déploiement et bascule : [Déploiement](../deploiement/index.md#connecteur-mcp-et-images). <Status is="ci" />
 :::
 
 ## Mise en service

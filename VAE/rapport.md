@@ -10,13 +10,13 @@ Provenance : le socle Vue 3 / Symfony 6.4 vient de DevDoc ; Médiateur numériqu
 
 Les dix commits propres à `main2` ont été écrits avec l'assistance de Claude Opus 5.5 (mention `Co-Authored-By` dans chacun).
 
-Le dépôt dédié `cundovar/inclusion-numerique` reprend cette histoire. Le site a déjà été déployé sur OVH ; depuis le retrait de l'ancien code le 6 novembre 2026, la racine répond 404. Le transfert des deux commits récents est en cours de validation avant un déploiement manuel.
+Le dépôt dédié `cundovar/inclusion-numerique` reprend cette histoire. Il est déployé sur OVH depuis le 6 novembre 2026 (contrôle du site le même jour).
 
 ## BC01 — Développer une application sécurisée
 
 - Environnement de travail Docker et commandes de validation communes (`make check`) ; harness d'agents IA qui protège les fichiers sensibles et impose la validation ([harness](../docs/harness/index.md)). Installation complète non encore consignée.
 - Interface Vue 3 à deux entrées publiques, PWA consultable hors ligne, espace apprenant facultatif, héritée de Médiateur ; nom du site propre à Inclusion par `SITE_NAME` ([fonctionnalités](../docs/fonctionnalites/index.md)).
-- Composants métier : visibilité des contenus réservés, PDF des cours, compte apprenant, informations légales. Le connecteur MCP, OAuth et la capture automatique, retirés d'Inclusion le 2 novembre, sont repris le 6 novembre avec des jetons cloisonnés entre les deux sites ; validés en CI, pas encore déployés ([sécurité](../docs/securite/index.md), [connecteur](../docs/fonctionnalites/connecteur.md)).
+- Composants métier : visibilité des contenus réservés, PDF des cours, compte apprenant, informations légales. Le connecteur MCP, OAuth et la capture automatique, retirés d'Inclusion le 2 novembre, sont repris le 6 novembre avec des jetons cloisonnés entre les deux sites ; validés en CI et déployés ; une connexion réelle reste à vérifier ([sécurité](../docs/securite/index.md), [connecteur](../docs/fonctionnalites/connecteur.md)).
 - Gestion de projet par plans de phase, commits typés et CI bloquante ; chronologie, indicateurs et backlog recalculés a posteriori ([gestion de projet](../docs/gestion-de-projet.md)). Aucun suivi n'a été tenu pendant le projet.
 
 ## BC02 — Concevoir et développer une application organisée en couches

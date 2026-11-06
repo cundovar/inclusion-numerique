@@ -10,7 +10,7 @@
 | D4 | 2026-11-02 | Déployer Inclusion depuis la branche `main2` du dépôt de DevDoc, vers un dossier OVH distinct | Inclusion | `d148fd6` |
 | D5 | 2026-11-02 | Partager la base `egflbugcundo6` avec Médiateur et reprendre son code | Inclusion | `deb7543`, `95d47ac` |
 | D6 | 2026-11-02 | Ne jouer aucune migration au déploiement ; filtrer le schéma | Inclusion | `95d47ac`, `a379bfe` |
-| D7 | 2026-11-02 | Partager les images par un lien symbolique | Inclusion | `95d47ac`, `8ed912f` |
+| D7 | 2026-11-02 | Partager les images par un lien symbolique (remplacée par D9) | Inclusion | `95d47ac`, `8ed912f` |
 | D8 | 2026-11-02 | Retirer le connecteur MCP d'Inclusion (annulée par D9) | Inclusion | `a379bfe` |
 | D9 | 2026-11-06 | Reprendre le connecteur et préparer un dossier d'images propre, base commune conservée | Inclusion | Plan du 2026-11-06, `4a804ad` |
 
@@ -75,7 +75,7 @@
 - **Contexte** : Inclusion doit remplacer Médiateur et continuer après son arrêt ; la base reste commune pendant la transition (demande du 2026-11-06).
 - **Décision** : reprendre le connecteur de Médiateur `c87941f` en annulant `a379bfe` ; cloisonner les jetons par une empreinte propre au site ; remplacer le lien `public/uploads` par un dossier, avec un script de copie, de contrôle et de retour arrière.
 - **Alternative** : pour les jetons, une colonne dans `oauth_grant` a été écartée : elle aurait changé le schéma commun et exigé une modification de Médiateur.
-- **Conséquences** : les connecteurs se reconnectent sous le nouveau domaine ; après la bascule, les deux dossiers d'images divergent. Pas encore déployé.
+- **Conséquences** : les connecteurs se reconnectent sous le nouveau domaine ; après la bascule, les deux dossiers d'images divergent. Déployé le 2026-11-06 ; points ouverts dans [Déploiement](../deploiement/index.md#points-ouverts).
 
 ## Limites
 
