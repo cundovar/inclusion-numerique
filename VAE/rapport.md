@@ -32,7 +32,7 @@ Le dépôt dédié `cundovar/inclusion-numerique` reprend cette histoire. Il est
 - Déploiement documenté : OVH par rsync depuis la CI, base et images partagées avec Médiateur ([déploiement](../docs/deploiement/index.md)).
 - Déploiement historique réussi le 2026-11-02 (run 41442887513) et site contrôlé le même jour ; cet état historique ne prouve pas l'état actuel.
 
-- Workflow GitHub Actions : les contrôles PHP, migrations, front, documentation et build de release sont réussis sur la PR #2 ([run 42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700)) et sur `main` après fusion ([run 42206988450](https://github.com/cundovar/inclusion-numerique/actions/runs/42206988450)). Le déploiement du premier push sur `main` a échoué car le workflow ciblait le mauvais environnement GitHub ; la correction est fusionnée et le lancement OVH reste manuel après validation de la synchronisation du code.
+- Workflow GitHub Actions : les contrôles PHP, migrations, front, documentation et build de release sont réussis sur la PR #2 ([run 42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700)) et sur `main` après fusion ([run 42206988450](https://github.com/cundovar/inclusion-numerique/actions/runs/42206988450)). Le déploiement du premier push sur `main` a échoué car le workflow ciblait le mauvais environnement GitHub ; la correction est fusionnée. Les déploiements du 6 novembre ont été lancés à la main ; le workflow déploie ensuite à chaque fusion dans `main`.
 
 ## État de la couverture
 

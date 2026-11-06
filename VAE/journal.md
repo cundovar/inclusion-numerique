@@ -2,6 +2,7 @@
 
 ## 2026-11-06
 
+- Déploiement OVH rendu automatique à chaque push sur `main`, à la demande du candidat (`.github/workflows/ci.yml`) ; seules les PR annulent leur run précédent. Pas encore constaté sur un run réel au moment de cette entrée.
 - Déploiement du connecteur : lancements manuels [42219628118](https://github.com/cundovar/inclusion-numerique/actions/runs/42219628118) (`da91cd0`) et [42232789812](https://github.com/cundovar/inclusion-numerique/actions/runs/42232789812) (`cd95e06`), jobs `build` et `deploy` réussis. Sauvegarde de la base annoncée par le candidat, restauration non essayée.
 - Contrôle du site par `curl` et Chrome : `/` en 302, `/spa/` et `/docs/` en 200, `/.env` en 403, `/mcp` en 401 sans jeton ou avec un jeton inventé, métadonnées OAuth du domaine.
 - Page vide à `/spa/public/spa/` signalée par le candidat : redirection ancienne en cache dans Chrome, origine non établie. Correction par le routeur (PR #6, `43bd498`, co-signé par Claude Opus 5.5), `/public/spa/` ramène à `/spa/` en production.

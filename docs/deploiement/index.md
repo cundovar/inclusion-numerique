@@ -2,7 +2,7 @@
 
 ## Pipeline GitHub Actions
 
-Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exécute sur les pull requests vers `main` et les pushes sur `main`. Il valide PHP, MySQL/migrations, Vue et VitePress, puis construit l'archive de production. Le déploiement OVH est **manuel** : depuis la branche `main`, lancer le workflow et cocher `deploy`.
+Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exécute sur les pull requests vers `main` et les pushes sur `main`. Il valide PHP, MySQL/migrations, Vue et VitePress, puis construit l'archive de production. Le déploiement OVH est **automatique** à chaque push sur `main`, donc à chaque fusion d'une PR, si tous les contrôles passent. Lancer le workflow à la main avec `deploy` coché reste possible pour redéployer sans nouveau commit.
 
 | Job | Rôle | Quand |
 |---|---|---|
@@ -10,8 +10,8 @@ Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exéc
 | `migrations` | Montée, validation, retour arrière et remontée sur MySQL 8 de CI | PR et push sur `main` |
 | `front` | ESLint, Vitest et build Vue | PR et push sur `main` |
 | `docs` | Build VitePress, avec échec sur lien interne mort | PR et push sur `main` |
-| `build` | Archive de production avec dépendances PHP, build Vue et documentation | PR et push sur `main` ; lancement manuel avec `deploy=true` |
-| `deploy` | Envoi à OVH et reconstruction du cache, sans migration | Lancement manuel depuis `main` avec `deploy=true` seulement |
+| `build` | Archive de production avec dépendances PHP, build Vue et documentation | PR et push sur `main` ; relance manuelle avec `deploy=true` |
+| `deploy` | Envoi à OVH et reconstruction du cache, sans migration | Push sur `main` après réussite des contrôles ; relance manuelle avec `deploy=true` |
 
 Les runs [42204743070](https://github.com/cundovar/inclusion-numerique/actions/runs/42204743070) et [42205300321](https://github.com/cundovar/inclusion-numerique/actions/runs/42205300321) (2026-11-06) ont validé PHP, migrations MySQL, Vue, VitePress et le build de release. Le second a tenté le déploiement après fusion de la PR #1, mais l'authentification SSH a échoué car le job ne recevait pas `SSHPASS`. La PR #2 corrige l'environnement et rend le déploiement manuel. Son run [42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700) et le run post-fusion sur `main` [42206988450](https://github.com/cundovar/inclusion-numerique/actions/runs/42206988450) ont validé tous les contrôles et le build ; `deploy` a été ignoré dans les deux cas. <Status is="ci" />
 
@@ -19,7 +19,7 @@ Le run [42217518469](https://github.com/cundovar/inclusion-numerique/actions/run
 
 ## État actuel d'OVH
 
-Le dossier cible est `/home/egflbug/inclusion-numerique`. Le connecteur y a été déployé le 2026-11-06 par le lancement manuel [42219628118](https://github.com/cundovar/inclusion-numerique/actions/runs/42219628118) (`da91cd0`), puis la version `cd95e06` par [42232789812](https://github.com/cundovar/inclusion-numerique/actions/runs/42232789812) (correction de la page vide et service de capture en sous-module). Aucune migration n'a été jouée. <Status is="ci" />
+Le dossier cible est `/home/egflbug/inclusion-numerique`. Le connecteur y a été déployé le 2026-11-06 par le lancement manuel [42219628118](https://github.com/cundovar/inclusion-numerique/actions/runs/42219628118) (`da91cd0`), puis la version `cd95e06` par [42232789812](https://github.com/cundovar/inclusion-numerique/actions/runs/42232789812) (correction de la page vide et service de capture en sous-module), tous deux lancés à la main, avant le passage au déploiement automatique. Aucune migration n'a été jouée. <Status is="ci" />
 
 Contrôle du site le 2026-11-06, par `curl` et dans Chrome : <Status is="prod" />
 
@@ -38,10 +38,14 @@ Le 404 relevé à la racine avant ce déploiement ne vaut donc plus.
 
 Un navigateur pouvait arriver sur une page vide à `/spa/public/spa/`. Le serveur répondait correctement, mais Chrome gardait en cache une redirection de `/spa` vers `/public/spa/`, dont l'origine n'est pas établie. Le routeur corrige désormais ces adresses ([`ancienneAdressePublic.js`](../../front/src/router/ancienneAdressePublic.js)). Une redirection côté serveur aurait pu boucler avec ce cache.
 
-## Procédure du déploiement manuel
+## Procédure de déploiement
 
-1. Vérifier que la CI de `main` est verte.
-2. Dans GitHub, lancer « CI/CD » sur `main` avec `deploy` coché. Le job reconstruit l'archive, puis l'envoie par `rsync --delete` dans `/home/egflbug/inclusion-numerique`.
+::: warning Fusionner, c'est mettre en ligne
+Une entité modifiée a besoin de sa migration dans la base commune, jouée par le déploiement de Médiateur : ce workflow n'en lance aucune. Coordonner les deux avant de fusionner. Seules les PR annulent leur run précédent : un push sur `main` ne coupe pas un déploiement en cours, il attend son tour.
+:::
+
+1. Fusionner la PR dans `main`.
+2. Le workflow relance les contrôles ; s'ils passent, il reconstruit l'archive, puis l'envoie par `rsync --delete` dans `/home/egflbug/inclusion-numerique`.
 3. `rsync` conserve sur OVH `.env`, `.env.*`, `.ovhconfig`, `var/` et `public/uploads`. Le job supprime `var/cache/prod` et exécute `cache:warmup`.
 4. Vérifier les pages du site et les ressources après déploiement. Aucune migration de production n'est lancée par ce workflow.
 
