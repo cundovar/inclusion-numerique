@@ -1,0 +1,22 @@
+=== composer install --prefer-dist --no-interaction --no-progress -q
+=== exit 2 : composer install --prefer-dist --no-interaction --no-progress -q
+=== lint-php
+=== exit 0 : lint-php
+=== php bin/console lint:container
+=== exit 255 : php bin/console lint:container
+=== composer analyse -- --memory-limit=1G
+=== exit 127 : composer analyse -- --memory-limit=1G
+=== composer test
+=== exit 127 : composer test
+=== npm ci --prefix front --no-audit --no-fund
+=== exit 0 : npm ci --prefix front --no-audit --no-fund
+=== npm run lint --prefix front
+=== exit 0 : npm run lint --prefix front
+=== npm test --prefix front
+ ✓ tests/unit/pwa/precache.spec.js (4 tests) 313ms
+ Test Files  33 passed (33)
+=== exit 0 : npm test --prefix front
+=== npm run check --prefix front
+✓ built in 8.67s
+precache  39 entries (2156.60 KiB)
+=== exit 0 : npm run check --prefix front

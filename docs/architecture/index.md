@@ -40,10 +40,10 @@ Cette organisation est reprise de DevDoc ([reprise](../conception/reprise-devdoc
 - Modèle relationnel Doctrine : parcours (`Category`), contenus (`Page`, `PageContent`, `PageBlock`), niveaux (`NiveauCours`), captures (`CourseMedia`), QCM (`QCM`, `ChoicesQCM`, `NiveauQCM`, `LanguageQCM`), accès réservés (`AccesReserve`), comptes (`User`, `PasswordResetToken`), configuration (`SiteConfiguration`, `Seo`, menus, logo).
 - Schéma géré uniquement par 13 migrations (`migrations/`), vérifiées en CI par montée, `doctrine:schema:validate`, retour arrière et remontée. <Status is="ci" />
 - Côté client : IndexedDB (`front/src/utils/offlineDb.js`, bibliothèque `idb`) pour les modules préparés hors ligne, vidée à la déconnexion. <Status is="ci" />
-- MCD et MLD formalisés : <Status is="prevu" />
+- MCD, MLD et diagramme de séquence de l'accès filtré : [modèle de données](../conception/base-de-donnees.md) <Status is="local" /> ; choix structurants : [décisions d'architecture](../conception/decisions-architecture.md).
 
 ## Intégrations
 
 - **MCP** : aucun serveur sur ce site ; le connecteur est celui de mediateur (voir le [connecteur](../fonctionnalites/connecteur.md)).
 - **E-mail** : Brevo par `symfony/brevo-mailer` (mot de passe oublié).
-- **Capture** : `RemoteCaptureRunner` appelle le service Netcup en HTTPS ; en développement, `NodeCaptureRunner` exécute le moteur local.
+- **Capture** : aucun moteur sur ce site depuis `a379bfe` ; les captures s'ajoutent dans le back-office (`CaptureFileManager`) ou par le connecteur de Médiateur.

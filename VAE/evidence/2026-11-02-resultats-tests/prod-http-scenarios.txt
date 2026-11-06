@@ -1,0 +1,18 @@
+# Scénarios HTTP en lecture seule — 2026-11-02T14:25:50+01:00
+## F5 PDF
+HTTP/2 200 
+content-type: application/pdf
+content-length: 178479
+%PDF-
+Title:           Utiliser le clavier — Inclusion numérique
+Producer:        dompdf 3.1.6 + CPDF
+Pages:           4
+## F9 /admin sans session
+302 -> https://inclusion-numerique.varascundo.com/login
+## F10 routes retirées et fichiers sensibles
+/mcp                                       404
+/oauth/authorize                           404
+/.well-known/oauth-authorization-server    404
+/VAE/README.md                             404
+/.env                                      403
+## Méthodes : uniquement GET (curl par défaut) et lecture des en-têtes

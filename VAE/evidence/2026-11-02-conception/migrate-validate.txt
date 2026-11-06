@@ -1,0 +1,12 @@
+
+ [OK] Successfully migrated to version: DoctrineMigrations\Version20261016220000
+
+
+
+ [OK] The mapping files are correct.                                            
+
+Database
+--------
+
+ [OK] The database schema is in sync with the mapping files.                    
+

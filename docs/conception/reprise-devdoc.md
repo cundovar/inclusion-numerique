@@ -1,5 +1,7 @@
 # Reprise du code de DevDoc
 
+> Page héritée de Médiateur numérique : elle décrit la reprise de DevDoc dans le dépôt `cundovar/mediateur-numerique-formation`, le 15 octobre 2026. Inclusion numérique a repris ensuite le code de Médiateur (`c87941f`) sur la branche `main2` du dépôt de DevDoc, dont l'historique est donc présent dans `main2` ([origine et dépendances](../index.md#origine-et-dépendances)). Les dossiers « ce dépôt » et « ce projet » ci-dessous désignent Médiateur.
+
 Date : 15 octobre 2026.
 
 ## Source

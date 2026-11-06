@@ -1,0 +1,17 @@
+=== lint-php
+=== exit 0 : lint-php
+=== php bin/console lint:container
+ [OK] The container was linted successfully: all services are injected with     
+=== exit 0 : php bin/console lint:container
+=== php bin/console lint:twig templates
+ [OK] All 22 Twig files contain valid syntax.                                   
+=== exit 0 : php bin/console lint:twig templates
+=== php bin/console lint:yaml config
+ [OK] All 29 YAML files contain valid syntax.                                   
+=== exit 0 : php bin/console lint:yaml config
+=== composer analyse -- --memory-limit=1G
+ [OK] No errors                                                                 
+=== exit 0 : composer analyse -- --memory-limit=1G
+=== composer test
+OK (89 tests, 324 assertions)
+=== exit 0 : composer test

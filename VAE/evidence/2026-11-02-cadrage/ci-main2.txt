@@ -1,0 +1,29 @@
+# CI main2 — gh run list/view, exécuté le 2026-11-02T13:40:25+01:00
+41442887513	30da5e5b	success	2026-11-02T12:13:11Z	docs(main2): describe inclusion-numerique deploy and CI instead of me…
+41440222629	a379bfe1	success	2026-11-02T11:52:39Z	refactor(main2): remove the MCP connector from inclusion-numerique
+41436221028	8ed912fe	success	2026-11-02T11:21:44Z	fix(deploy): keep the uploads symlink on inclusion-numerique
+41434122894	e32f39e5	success	2026-11-02T11:06:35Z	docs(deploiement): document the inclusion-numerique site on the share…
+41430174319	95d47ac0	success	2026-11-02T10:36:32Z	refactor(main2): take over mediateur's code for inclusion-numerique
+41426436068	a3ca6234	success	2026-11-02T10:09:05Z	docs(vae): record the shared-database migration in production
+41424149466	deb7543e	success	2026-11-02T09:52:14Z	feat(db): run main2 on mediateur's shared database
+41418691976	d148fd63	success	2026-11-02T09:11:59Z	ci(deploy): deploy main2 to inclusion-numerique.varascundo.com
+## run 41442887513
+https://github.com/cundovar/vue-symfony/actions/runs/41442887513
+main2
+30da5e5b98c17fa1ad3740346f53a782cd3543dc
+PHP (syntaxe, PHPStan, PHPUnit)	success	2026-11-02T12:14:00Z
+Front Vue (ESLint, Vitest, build)	success	2026-11-02T12:13:52Z
+Migrations MySQL	success	2026-11-02T12:14:04Z
+Documentation VitePress	success	2026-11-02T12:13:43Z
+Build release	success	2026-11-02T12:15:19Z
+Deploy inclusion-numerique (OVH)	success	2026-11-02T12:16:09Z
+## run 41440222629
+https://github.com/cundovar/vue-symfony/actions/runs/41440222629
+main2
+a379bfe1cc4eb3094d9634cd351c2f0fb7e1d0e5
+Front Vue (ESLint, Vitest, build)	success	2026-11-02T11:53:16Z
+Migrations MySQL	success	2026-11-02T11:53:38Z
+Documentation VitePress	success	2026-11-02T11:53:11Z
+PHP (syntaxe, PHPStan, PHPUnit)	success	2026-11-02T11:53:35Z
+Build release	success	2026-11-02T11:54:50Z
+Deploy inclusion-numerique (OVH)	success	2026-11-02T11:55:36Z

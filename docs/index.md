@@ -1,6 +1,17 @@
-# Site de formation à la médiation numérique
+# Inclusion numérique
 
-Site libre et gratuit qui forme deux publics : les **adultes et seniors** qui apprennent le numérique (« J'apprends le numérique ») et les **médiateurs** qui apprennent à les accompagner (« J'accompagne des personnes »). Les cours sont consultables sans compte, sur téléphone comme en atelier à faible connexion.
+[Inclusion numérique](https://inclusion-numerique.varascundo.com/spa/) est un site libre et gratuit qui forme deux publics : les **adultes et seniors** qui apprennent le numérique (« J'apprends le numérique ») et les **médiateurs** qui apprennent à les accompagner (« J'accompagne des personnes »). Les cours sont consultables sans compte, sur téléphone comme en atelier à faible connexion.
+
+## Origine et dépendances
+
+| Élément | Inclusion numérique | Preuve |
+|---|---|---|
+| Code | Dépôt dédié [`cundovar/inclusion-numerique`](https://github.com/cundovar/inclusion-numerique), branche `main`, issu de `main2` de DevDoc. Le code reprend celui de Médiateur numérique ([`cundovar/mediateur-numerique-formation`](https://github.com/cundovar/mediateur-numerique-formation), commit `c87941f`), lui-même construit sur le socle de DevDoc ([reprise](conception/reprise-devdoc.md)). | <Status is="code" /> |
+| Base de données | `egflbugcundo6`, partagée avec Médiateur ; aucune migration jouée par ce site | <Status is="code" /> |
+| Images | `public/uploads`, lien vers le dossier de Médiateur | <Status is="prod" /> |
+| Connecteur MCP | Aucun sur ce site ; les contenus sont rédigés par celui de Médiateur | <Status is="code" /> |
+
+Détail et contrôles : [déploiement](deploiement/index.md#base-et-fichiers-partagés). Les preuves de DevDoc et de Médiateur ne valent pas pour ce site.
 
 Cette documentation décrit le fonctionnement réel du dépôt. Chaque information importante porte un badge de niveau de preuve :
 
@@ -19,12 +30,12 @@ Cette documentation décrit le fonctionnement réel du dépôt. Chaque informati
 | Interface | Vue 3, Vite, Pinia, Tailwind, PWA hors ligne | <Status is="ci" /> |
 | API et back-office | Symfony 6.4, API Platform, EasyAdmin, MySQL 8 | <Status is="ci" /> |
 | Assistant de rédaction | Connecteur MCP de mediateur (base partagée), aucun sur ce site | <Status is="local" /> |
-| Hébergement | OVH (`inclusion-numerique.varascundo.com`), workflow CI/CD corrigé en PR #2 ; déploiement manuel après synchronisation du code | <Status is="ci" /> |
+| Hébergement | OVH (`inclusion-numerique.varascundo.com`), workflow CI/CD corrigé en PR #2 ; déploiement manuel après validation de la synchronisation | <Status is="ci" /> |
 
 ## Parcourir
 
 - [Besoin et publics](conception/index.md) et [reprise du socle DevDoc](conception/reprise-devdoc.md)
-- [Fonctionnalités](fonctionnalites/index.md), [guide d'édition](fonctionnalites/edition.md), [connecteur MCP](fonctionnalites/connecteur.md)
+- [Fonctionnalités](fonctionnalites/index.md), [guide d'édition](fonctionnalites/edition.md), [connecteur MCP (retiré)](fonctionnalites/connecteur.md)
 - [Architecture](architecture/index.md) et [sécurité](securite/index.md)
 - [Tests](tests/index.md), [déploiement et CI](deploiement/index.md), [harness des agents](harness/index.md)
 - [Dossier VAE](vae/index.md)

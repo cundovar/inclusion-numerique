@@ -28,5 +28,11 @@ Parcours → modules → cours (leçons) → QCM, avec captures pédagogiques so
 
 ## Ce qui manque
 
-- Maquettes : aucune maquette dans le dépôt ; l'interface reprend directement les composants de DevDoc. <Status is="prevu" />
-- User stories avec critères d'acceptation : non rédigées ; les plans de phase de `aidd_docs/tasks/` en tiennent lieu pour les fonctions récentes.
+Pages ajoutées le 2026-11-02, toutes formalisées a posteriori :
+
+- [User stories et cas d'utilisation](besoins.md), avec des critères observables et leur niveau de preuve.
+- [Écrans et enchaînements](maquettes.md) : aucune maquette n'a précédé le développement ; la page décrit les écrans existants à partir du routeur et de captures datées du site publié.
+- [Modèle de données](base-de-donnees.md) : MCD, MLD et accès aux données, tirés des migrations de `main2`.
+- [Décisions d'architecture](decisions-architecture.md) et [gestion de projet](../gestion-de-projet.md).
+
+Reste à faire : essais avec des apprenants et audit d'accessibilité. <Status is="prevu" />

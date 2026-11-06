@@ -1,6 +1,8 @@
 # Dossier VAE
 
-Le projet est présenté pour le titre professionnel **Concepteur développeur d'applications** ([RNCP37873](https://www.francecompetences.fr/recherche/rncp/37873/), niveau 6).
+Inclusion numérique est présenté pour le titre professionnel **Concepteur développeur d'applications** ([RNCP37873](https://www.francecompetences.fr/recherche/rncp/37873/), niveau 6).
+
+Version de référence : branche `main2` de `cundovar/vue-symfony`, commit `30da5e5` (cadrage du 2026-11-02 : [inventaire](../../VAE/evidence/2026-11-02-cadrage/inventaire.md)). Le code reprend celui de Médiateur numérique, lui-même construit sur DevDoc, et partage la base et les images de Médiateur ([origine et dépendances](../index.md#origine-et-dépendances)).
 
 Le dossier canonique est dans le dépôt, sous `VAE/`. Cette page l'introduit sans le dupliquer.
 
@@ -22,4 +24,4 @@ Le dossier canonique est dans le dépôt, sous `VAE/`. Cette page l'introduit sa
 
 ## Niveaux de preuve
 
-Les badges du site reprennent les statuts du registre : <Status is="code" /> <Status is="local" /> <Status is="ci" /> <Status is="prod" /> <Status is="prevu" />. Un statut ne monte qu'avec la commande, le run CI ou le contrôle de production correspondant. Aucune preuve du projet DevDoc n'est utilisée.
+Les badges du site reprennent les statuts du registre : <Status is="code" /> <Status is="local" /> <Status is="ci" /> <Status is="prod" /> <Status is="prevu" />. Un statut ne monte qu'avec la commande, le run CI ou le contrôle de production correspondant. Aucune preuve de DevDoc ni de Médiateur n'est présentée comme une preuve d'Inclusion numérique : leurs runs et contrôles restent attribués à leur projet.
