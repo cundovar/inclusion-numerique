@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { installerRechargementVersion } from './rechargementVersion'
+import { ancienneAdressePublic } from './ancienneAdressePublic'
 
 // Views (lazy-loaded)
 const PageContent = () => import('../components/features/pages/PageContent.vue')
@@ -15,6 +16,7 @@ const ExercicePage = () => import('../views/ExercicePage.vue')
 const MonEspacePage = () => import('../views/MonEspacePage.vue')
 
 const routes = [
+  ancienneAdressePublic,
   // Route accueil
   {
     path: '/',
