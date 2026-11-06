@@ -4,7 +4,7 @@
 
 ## Projet
 
-Site de formation libre et gratuit à la médiation numérique, pour deux publics : les adultes et seniors qui apprennent le numérique, et les médiateurs qui apprennent à accompagner. Le socle Vue 3 / Symfony 6.4 a été repris de DevDoc le 15 octobre 2026, puis allégé et adapté ; le dépôt, la base et le déploiement sont indépendants. Le site est en ligne sur OVH ; un service de capture tourne séparément sur Netcup.
+Site de formation libre et gratuit à la médiation numérique, pour deux publics : les adultes et seniors qui apprennent le numérique, et les médiateurs qui apprennent à accompagner. Le socle Vue 3 / Symfony 6.4 a été repris de DevDoc le 15 octobre 2026, puis allégé et adapté ; le dépôt et le déploiement sont indépendants, tandis que la base et les images sont historiquement partagées avec mediateur. Le site a déjà été déployé sur OVH ; après le retrait de l'ancien code le 6 novembre 2026, la racine répond 404 et attend la synchronisation du code puis un déploiement manuel depuis le dépôt dédié. Un service de capture tourne séparément sur Netcup.
 
 ## BC01 — Développer une application sécurisée
 
@@ -24,7 +24,7 @@ Site de formation libre et gratuit à la médiation numérique, pour deux public
 
 - Tests PHPUnit, Vitest et moteur de capture exécutés en CI. Le scénario Playwright hérité n'est pas exécutable en l'état ([tests](../docs/tests/index.md)).
 - Déploiement documenté : OVH par rsync depuis la CI, service de capture sur Netcup ([déploiement](../docs/deploiement/index.md)).
-- Pipeline GitHub Actions jusqu'à la production, avec un déploiement réussi le 2026-10-20 et un site qui répond au contrôle du 2026-10-30.
+- Workflow GitHub Actions : les contrôles PHP, migrations, front, documentation et build de release ont réussi ; le premier déploiement sur push main a échoué car le job ne recevait pas le secret SSH (environnement GitHub mal référencé). Une PR corrige cet environnement et maintient le déploiement manuel jusqu'à synchronisation du code.
 
 ## État de la couverture
 

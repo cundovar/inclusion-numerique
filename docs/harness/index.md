@@ -86,14 +86,14 @@ Dans un environnement où le proxy refuse les archives GitHub, `composer install
 
 ### Déploiement en production
 
-`.github/workflows/ci.yml` (« CI/CD ») déploie inclusion-numerique à chaque push sur `main2`, une fois tous les contrôles verts :
+`.github/workflows/ci.yml` (« CI/CD ») lance les contrôles et construit l'archive de release sur les PR vers `main` et les pushes sur `main`. Il ne déploie pas automatiquement : depuis `main`, le job OVH part uniquement lorsqu'on lance le workflow manuellement avec l'entrée `deploy` cochée :
 
 1. `build` assemble l'archive : `composer install --no-dev`, build Vue dans `public/build` et `public/spa`, documentation VitePress dans `public/docs`, sans les dossiers de développement (`tests`, `docs`, `VAE`, `front`, configuration des agents…). Détail : [déploiement et CI](../deploiement/index.md).
-2. `deploy` (environnement GitHub `inclusion-numerique`) l'envoie dans `/home/egflbug/inclusion-numerique` par `rsync --delete`, en gardant sur le serveur `.env`, `var/` et le lien `public/uploads` (images de mediateur), puis supprime `var/cache/prod` et le reconstruit avec `cache:warmup`.
+2. `deploy` (environnement GitHub `production`) l'envoie dans `/home/egflbug/inclusion-numerique` par `rsync --delete`, en gardant sur le serveur `.env`, `var/` et le lien `public/uploads` (images de mediateur), puis supprime `var/cache/prod` et le reconstruit avec `cache:warmup`.
 
-Le mot de passe SSH est le secret `OVH_SSH_PASSWORD` ; l'empreinte du serveur est dans `.github/ovh_known_hosts`. Le `.env` de production se crée et se modifie directement sur le serveur, jamais dans le dépôt.
+Le mot de passe SSH est le secret d'environnement GitHub `production/OVH_SSH_PASSWORD` ; l'empreinte du serveur est dans `.github/ovh_known_hosts`. Le `.env` de production se crée et se modifie directement sur le serveur, jamais dans le dépôt. Le secret doit être configuré dans **Settings → Environments → production → Environment secrets**. Le job de déploiement ne s'exécute que manuellement depuis `main` avec `deploy=true`.
 
-Un push sur `main2` passe donc en production, sans migration : la base `egflbugcundo6` appartient à mediateur, qui la fait évoluer par son propre déploiement. Une entité modifiée ici sans la même migration chez mediateur casserait le site. Le `.env` de production fixe `MCP_PUBLIC_URL` (adresse https du site), utilisée pour les liens des e-mails.
+Le déploiement manuel ne lance aucune migration : l'application utilise historiquement la base partagée avec mediateur, qui la fait évoluer par son propre déploiement. Une entité modifiée ici sans la même migration chez mediateur casserait le site. Le `.env` existant reste sur OVH et fixe notamment `MCP_PUBLIC_URL` (adresse https du site), utilisée pour les liens des e-mails. La PR #1 a validé les contrôles et le build, mais son déploiement a échoué car le workflow attendait `OVH_SSH_PASSWORD` dans l'environnement `inclusion-numerique` alors que ce secret est configuré dans `production`. La PR #2 corrige cet environnement et impose un lancement manuel ; aucun code n'a été remis en production. Le dépôt a été créé depuis un snapshot de `main2` ; deux commits plus récents de cette branche, dont des améliorations hors ligne, restent à importer avant de choisir une version à déployer.
 
 Contrôles du harness lui-même :
 

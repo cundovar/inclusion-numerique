@@ -18,7 +18,7 @@ Volume présent dans le dépôt : 32 fichiers de test PHPUnit et 28 fichiers Vit
 ## Environnements
 
 - **Local** : conteneurs `php` et `front` (`make check` enchaîne syntaxe PHP, PHPStan, ESLint, PHPUnit, Vitest et build Vite).
-- **CI** : `.github/workflows/ci.yml` sur chaque pull request et chaque push sur `main2`, avec un `.env` de test écrit par le workflow.
+- **CI** : `.github/workflows/ci.yml` sur les pull requests vers `main` et les pushes sur `main`, avec un `.env` de test écrit par le workflow.
 
 ## Critères
 
@@ -28,4 +28,4 @@ Volume présent dans le dépôt : 32 fichiers de test PHPUnit et 28 fichiers Vit
 
 ## Dernière exécution vérifiée
 
-Run [41440222629](https://github.com/cundovar/vue-symfony/actions/runs/41440222629) (`main2`, `a379bfe1`, 2026-11-02) : les 6 jobs ont réussi, dont le build de cette documentation. En local sur le même commit, `make check` a réussi (88 tests PHPUnit, 28 fichiers Vitest, build). <Status is="ci" />
+Runs [42204743070](https://github.com/cundovar/inclusion-numerique/actions/runs/42204743070) et [42205300321](https://github.com/cundovar/inclusion-numerique/actions/runs/42205300321) (2026-11-06) : PHP/PHPUnit, migrations MySQL, ESLint/Vitest/build Vue, VitePress et build de release réussis. Le déploiement du push vers `main` a échoué car `SSHPASS` était vide : le workflow ciblait l'environnement GitHub `inclusion-numerique`, alors que le secret est dans `production`. La PR #2 corrige le nom d'environnement et garde le déploiement manuel. <Status is="ci" />

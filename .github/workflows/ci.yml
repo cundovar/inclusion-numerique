@@ -233,10 +233,9 @@ jobs:
     needs: build
     if: >-
       github.ref == 'refs/heads/main' &&
-      (github.event_name == 'push' ||
-       (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
+      github.event_name == 'workflow_dispatch' && inputs.deploy == true
     runs-on: ubuntu-latest
-    environment: inclusion-numerique
+    environment: production
     concurrency: inclusion-numerique
     env:
       OVH_HOST: ssh.cluster130.hosting.ovh.net
