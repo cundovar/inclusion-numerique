@@ -2,7 +2,7 @@
 
 ## Pipeline GitHub Actions
 
-Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exécute sur les pull requests vers `main` et les pushes sur `main`. Il valide PHP, MySQL/migrations, Vue et VitePress, puis construit l'archive de production. Le déploiement OVH est **automatique** à chaque push sur `main`, donc à chaque fusion d'une PR, si tous les contrôles passent. Lancer le workflow à la main avec `deploy` coché reste possible pour redéployer sans nouveau commit.
+Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exécute sur les pull requests vers `main` et les pushes sur `main`. Il valide PHP, MySQL/migrations, Vue et VitePress, puis construit l'archive de production. Le déploiement OVH est **automatique** à chaque push sur `main`, donc à chaque fusion d'une PR, si tous les contrôles passent. Lancer le workflow à la main avec `deploy` coché reste possible pour redéployer sans nouveau commit. Premier déploiement automatique : run [42236440873](https://github.com/cundovar/inclusion-numerique/actions/runs/42236440873), fusion de la PR #9 (`6027dea`), jobs `build` et `deploy` réussis, site contrôlé ensuite. <Status is="prod" />
 
 | Job | Rôle | Quand |
 |---|---|---|
@@ -93,25 +93,27 @@ Les chemins `/uploads/course-media/<nom>` sont relatifs : aucune réécriture en
 
 ### Résultat de la bascule
 
-Le 2026-11-06, `prepare` et `verify` ont donné « Copie conforme : 91 fichiers, 107M ». Le candidat a ensuite annoncé la bascule (`switch`) ; sa sortie n'est pas consignée. <Status is="prod" />
+Le 2026-11-06, le candidat a lancé `switch` sur le serveur et transmis sa sortie : « Copie conforme : 91 fichiers, 107M », « Bascule faite ». `ls -ld public/uploads` montre un dossier et non plus un lien, avec 91 fichiers. <Status is="prod" />
 
-Contrôle depuis l'extérieur le même jour : les 91 images listées par `/api/captures` répondent 200 sur Inclusion, avec le même contenu que sur Médiateur (empreintes SHA-256) ; le PDF de `utiliser-le-clavier` répond 200 et contient 2 images. <Status is="prod" />
+Contrôle depuis l'extérieur après la bascule : les 91 images listées par `/api/captures` répondent 200 sur Inclusion, avec le même contenu que sur Médiateur (SHA-256) ; les PDF de `utiliser-le-clavier` et `utiliser-la-souris` répondent 200 et contiennent respectivement 2 et 3 images. Ces PDF étaient peut-être déjà en cache. <Status is="prod" />
 
-Ce contrôle réussirait aussi avec l'ancien lien, et le PDF était peut-être déjà en cache : il ne prouve pas à lui seul que le dossier a changé.
+Un premier contrôle identique, fait avant la bascule réelle, passait par l'ancien lien : seul le contrôle du dossier sur le serveur distingue les deux états.
+
+### Connexion réelle du connecteur
+
+Le 2026-11-06, le candidat a connecté le connecteur par OAuth avec son compte administrateur. Une lecture réelle (`lister_catalogue_qcm`) a répondu avec l'adresse d'Inclusion : le jeton et l'en-tête `Authorization` arrivent donc jusqu'à PHP. Aucune écriture n'a été essayée. <Status is="prod" />
 
 ### Points ouverts
 
 | À vérifier ou corriger | Moyen |
 |---|---|
-| `public/uploads` est bien un dossier de 91 fichiers | `ls -ld` et `find -type f` sur le serveur |
-| Connexion réelle d'un client, avec le compte administrateur, et arrivée de l'en-tête `Authorization` jusqu'à PHP | Ajouter le connecteur dans claude.ai ou ChatGPT |
 | Jetons de Médiateur refusés sur Inclusion, connecteur de Médiateur toujours utilisable | Essai réel ; pour l'instant, seulement les tests automatiques (<Status is="ci" />) |
 | Image créée après la bascule, capture par le service Netcup | Essai depuis le back-office et le connecteur |
 | PWA hors ligne avec les images déplacées, parcours sur mobile | Essai dans un navigateur |
 | `/sitemap.xml` annonce des adresses en `http://localhost:8080` | Anomalie constatée le 2026-11-06, à corriger |
 | Le site répond aussi sous `/public/...` (par exemple `/public/spa/`, `/public/build/...`) | Adresses en double, à fermer sans boucler avec les caches |
 
-Arrêter Médiateur et reconnecter tous les clients seulement après ces contrôles.
+Reconnecter les autres clients, puis arrêter Médiateur seulement après ces contrôles.
 
 ## Publication VitePress
 

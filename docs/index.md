@@ -8,8 +8,8 @@
 |---|---|---|
 | Code | Dépôt dédié [`cundovar/inclusion-numerique`](https://github.com/cundovar/inclusion-numerique), branche `main`, issu de `main2` de DevDoc. Le code reprend celui de Médiateur numérique ([`cundovar/mediateur-numerique-formation`](https://github.com/cundovar/mediateur-numerique-formation), commit `c87941f`), lui-même construit sur le socle de DevDoc ([reprise](conception/reprise-devdoc.md)). | <Status is="code" /> |
 | Base de données | `egflbugcundo6`, partagée avec Médiateur ; aucune migration jouée par ce site | <Status is="code" /> |
-| Images | 91 images servies par ce site ; [bascule vers un dossier propre](deploiement/index.md#résultat-de-la-bascule) annoncée, dossier à confirmer sur le serveur | <Status is="prod" /> |
-| Connecteur MCP | Repris de Médiateur sur `/mcp`, jetons cloisonnés ; déployé, refuse les accès sans jeton valide ; connexion réelle à vérifier | <Status is="prod" /> |
+| Images | 91 images servies par ce site ; dans son [propre dossier](deploiement/index.md#résultat-de-la-bascule) depuis la bascule du 2026-11-06 | <Status is="prod" /> |
+| Connecteur MCP | Repris de Médiateur sur `/mcp`, jetons cloisonnés ; déployé, refuse les accès sans jeton valide ; connexion réelle réussie le 2026-11-06 | <Status is="prod" /> |
 
 Détail et contrôles : [déploiement](deploiement/index.md#base-et-fichiers-partagés). Les preuves de DevDoc et de Médiateur ne valent pas pour ce site.
 
@@ -29,8 +29,8 @@ Cette documentation décrit le fonctionnement réel du dépôt. Chaque informati
 |---|---|---|
 | Interface | Vue 3, Vite, Pinia, Tailwind, PWA hors ligne | <Status is="ci" /> |
 | API et back-office | Symfony 6.4, API Platform, EasyAdmin, MySQL 8 | <Status is="ci" /> |
-| Assistant de rédaction | Connecteur MCP du site (`/mcp`), déployé ; connexion réelle à vérifier | <Status is="prod" /> |
-| Hébergement | OVH (`inclusion-numerique.varascundo.com`), déploiement automatique à chaque fusion dans `main` (pas encore constaté) | <Status is="code" /> |
+| Assistant de rédaction | Connecteur MCP du site (`/mcp`), déployé et utilisé en lecture | <Status is="prod" /> |
+| Hébergement | OVH (`inclusion-numerique.varascundo.com`), déploiement automatique à chaque fusion dans `main` | <Status is="prod" /> |
 
 ## Parcourir
 
