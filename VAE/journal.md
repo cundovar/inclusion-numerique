@@ -2,6 +2,11 @@
 
 ## 2026-11-06
 
+- Correction : la bascule « annoncée » plus bas n'avait pas eu lieu. Le contrôle `ls -ld` du candidat montrait encore le lien vers Médiateur, et le contrôle des 91 images passait par ce lien. Elle a ensuite été faite : sortie de `switch` transmise, `public/uploads` est un dossier de 91 fichiers. Après la bascule : 91 images sur 91 servies, identiques à Médiateur (SHA-256), deux PDF avec leurs images.
+- Connexion OAuth réelle faite par le candidat ; lecture `lister_catalogue_qcm` réussie avec l'adresse d'Inclusion. Aucune écriture essayée.
+- Premier déploiement automatique constaté : run [42236440873](https://github.com/cundovar/inclusion-numerique/actions/runs/42236440873), fusion de la PR #9 (`6027dea`).
+- Restent à vérifier : refus réel des jetons de Médiateur, écriture par le connecteur, image créée après la bascule, capture Netcup, hors ligne après bascule, restauration de la sauvegarde.
+
 - Déploiement OVH rendu automatique à chaque push sur `main`, à la demande du candidat (`.github/workflows/ci.yml`) ; seules les PR annulent leur run précédent. Pas encore constaté sur un run réel au moment de cette entrée.
 - Déploiement du connecteur : lancements manuels [42219628118](https://github.com/cundovar/inclusion-numerique/actions/runs/42219628118) (`da91cd0`) et [42232789812](https://github.com/cundovar/inclusion-numerique/actions/runs/42232789812) (`cd95e06`), jobs `build` et `deploy` réussis. Sauvegarde de la base annoncée par le candidat, restauration non essayée.
 - Contrôle du site par `curl` et Chrome : `/` en 302, `/spa/` et `/docs/` en 200, `/.env` en 403, `/mcp` en 401 sans jeton ou avec un jeton inventé, métadonnées OAuth du domaine.

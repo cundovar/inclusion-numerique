@@ -16,7 +16,7 @@ Le dépôt dédié `cundovar/inclusion-numerique` reprend cette histoire. Il est
 
 - Environnement de travail Docker et commandes de validation communes (`make check`) ; harness d'agents IA qui protège les fichiers sensibles et impose la validation ([harness](../docs/harness/index.md)). Installation complète non encore consignée.
 - Interface Vue 3 à deux entrées publiques, PWA consultable hors ligne, espace apprenant facultatif, héritée de Médiateur ; nom du site propre à Inclusion par `SITE_NAME` ([fonctionnalités](../docs/fonctionnalites/index.md)).
-- Composants métier : visibilité des contenus réservés, PDF des cours, compte apprenant, informations légales. Le connecteur MCP, OAuth et la capture automatique, retirés d'Inclusion le 2 novembre, sont repris le 6 novembre avec des jetons cloisonnés entre les deux sites ; validés en CI et déployés ; une connexion réelle reste à vérifier ([sécurité](../docs/securite/index.md), [connecteur](../docs/fonctionnalites/connecteur.md)).
+- Composants métier : visibilité des contenus réservés, PDF des cours, compte apprenant, informations légales. Le connecteur MCP, OAuth et la capture automatique, retirés d'Inclusion le 2 novembre, sont repris le 6 novembre avec des jetons cloisonnés entre les deux sites ; validés en CI et déployés, avec une connexion réelle réussie en lecture ([sécurité](../docs/securite/index.md), [connecteur](../docs/fonctionnalites/connecteur.md)).
 - Gestion de projet par plans de phase, commits typés et CI bloquante ; chronologie, indicateurs et backlog recalculés a posteriori ([gestion de projet](../docs/gestion-de-projet.md)). Aucun suivi n'a été tenu pendant le projet.
 
 ## BC02 — Concevoir et développer une application organisée en couches
