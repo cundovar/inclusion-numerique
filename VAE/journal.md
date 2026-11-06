@@ -4,7 +4,7 @@
 
 - Préparation de la CI/CD du dépôt dédié `cundovar/inclusion-numerique` : PR #1 a corrigé le déclenchement sur `main`, la génération de l'archive et la protection Apache des fichiers `.env*` ; elle a été fusionnée par l'utilisateur.
 - Runs [42204743070](https://github.com/cundovar/inclusion-numerique/actions/runs/42204743070) (PR) et [42205300321](https://github.com/cundovar/inclusion-numerique/actions/runs/42205300321) (push `main`) : PHP/PHPUnit, migrations MySQL, Vue/Vitest, VitePress et build de release réussis. Le déploiement a échoué à l'authentification, car le job ciblait l'environnement `inclusion-numerique` alors que `OVH_SSH_PASSWORD` est configuré dans `production` (nom vérifié sans lire sa valeur).
-- Une PR #2 corrige l'environnement attendu et rend le déploiement manuel. Aucun déploiement n'est encore réalisé. La CI de la PR #2 est en attente.
+- La PR #2 corrige l'environnement attendu (`production`) et rend le déploiement manuel. Son run [42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700) a validé PHP/PHPUnit, migrations MySQL, front/Vitest, VitePress et le build de release ; `deploy` a été ignoré sur la PR. Aucun nouveau déploiement n'a été réalisé.
 - Comparaison GitHub : `main2` de `cundovar/vue-symfony` a deux commits après le snapshot importé dans le dépôt dédié ; ils incluent des améliorations de consultation hors ligne. La version à déployer reste à synchroniser et vérifier.
 - Contrôle OVH en lecture seule après retrait de l'ancien code : `/` répond 404 et `/.env` 403. Le contenu du `.env` n'a pas été consulté, la base n'a pas été modifiée et aucun déploiement du nouveau dépôt n'a été lancé.
 

@@ -13,7 +13,7 @@ Le workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) s'exéc
 | `build` | Archive de production avec dépendances PHP, build Vue et documentation | PR et push sur `main` ; lancement manuel avec `deploy=true` |
 | `deploy` | Envoi à OVH et reconstruction du cache, sans migration | Lancement manuel depuis `main` avec `deploy=true` seulement |
 
-La [PR #1](https://github.com/cundovar/inclusion-numerique/pull/1) a été contrôlée par les runs [42204743070](https://github.com/cundovar/inclusion-numerique/actions/runs/42204743070) et [42205300321](https://github.com/cundovar/inclusion-numerique/actions/runs/42205300321) (2026-11-06) : PHP, migrations MySQL, Vue, VitePress et build de release ont réussi. Le déploiement du push sur `main` a échoué à l'authentification SSH, car le job ne recevait pas `SSHPASS`. La cause identifiée est un nom d'environnement incorrect dans le workflow ; une PR de correction est en cours. <Status is="ci" />
+Les runs [42204743070](https://github.com/cundovar/inclusion-numerique/actions/runs/42204743070) et [42205300321](https://github.com/cundovar/inclusion-numerique/actions/runs/42205300321) (2026-11-06) ont validé PHP, migrations MySQL, Vue, VitePress et le build de release. Le second a tenté le déploiement après fusion de la PR #1, mais l'authentification SSH a échoué car le job ne recevait pas `SSHPASS`. La PR #2 corrige l'environnement et rend le déploiement manuel. Son run [42206685700](https://github.com/cundovar/inclusion-numerique/actions/runs/42206685700) a validé tous les contrôles et le build ; `deploy` a été ignoré sur la PR. <Status is="ci" />
 
 ## État actuel d'OVH
 
@@ -38,7 +38,7 @@ Le site a historiquement utilisé la base partagée avec mediateur. Le workflow 
 
 ## Publication VitePress
 
-La documentation est construite avec `base: '/docs/'` et `cleanUrls`, puis copiée dans `public/docs/`. Les règles Apache `public/.htaccess` et `.htaccess` racine servent les pages profondes sans extension `.html` et redirigent `/docs` vers `/docs/`. Le build VitePress de la PR #1 a réussi en CI ; la publication sur le domaine attend un déploiement. <Status is="ci" />
+La documentation est construite avec `base: '/docs/'` et `cleanUrls`, puis copiée dans `public/docs/`. Les règles Apache `public/.htaccess` et `.htaccess` racine servent les pages profondes sans extension `.html` et redirigent `/docs` vers `/docs/`. Le build VitePress de la PR #2 a réussi dans le run 42206685700 ; la publication sur le domaine attend un déploiement. <Status is="ci" />
 
 ## Service de capture Netcup
 
