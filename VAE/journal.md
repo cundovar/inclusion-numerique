@@ -2,6 +2,13 @@
 
 ## 2026-11-06
 
+- Déploiement du connecteur : lancements manuels [42219628118](https://github.com/cundovar/inclusion-numerique/actions/runs/42219628118) (`da91cd0`) et [42232789812](https://github.com/cundovar/inclusion-numerique/actions/runs/42232789812) (`cd95e06`), jobs `build` et `deploy` réussis. Sauvegarde de la base annoncée par le candidat, restauration non essayée.
+- Contrôle du site par `curl` et Chrome : `/` en 302, `/spa/` et `/docs/` en 200, `/.env` en 403, `/mcp` en 401 sans jeton ou avec un jeton inventé, métadonnées OAuth du domaine.
+- Page vide à `/spa/public/spa/` signalée par le candidat : redirection ancienne en cache dans Chrome, origine non établie. Correction par le routeur (PR #6, `43bd498`, co-signé par Claude Opus 5.5), `/public/spa/` ramène à `/spa/` en production.
+- Images, sorties transmises par le candidat : `inventory` (91 fichiers, 107 Mo, 91 médias, 0 manquant, 0 lien, aucune URL absolue) et `prepare` + `verify` (« Copie conforme : 91 fichiers, 107M »). Bascule annoncée sans sortie transmise. Depuis l'extérieur : 91 images sur 91 servies, identiques à Médiateur par SHA-256 ; ce contrôle réussirait aussi avec l'ancien lien.
+- Anomalies relevées, non corrigées : `/sitemap.xml` annonce `http://localhost:8080` ; le site répond aussi sous `/public/...`.
+- Restent à vérifier : dossier `public/uploads` sur le serveur, connexion OAuth réelle, refus réel des jetons de Médiateur, image créée après la bascule, capture Netcup, hors ligne après bascule.
+
 - Reprise du connecteur MCP et préparation du dossier d'images propre (plan du jour, PR #5, `4a804ad`, `6b566b8`, co-signés par Claude Opus 5.5). Jetons OAuth cloisonnés sans changement de schéma ; script `deploy/uploads-inclusion.sh`.
 - Run [42217518469](https://github.com/cundovar/inclusion-numerique/actions/runs/42217518469), commit `6b566b8` : tous les jobs réussis (PHP : 180 tests, 926 assertions), `deploy` ignoré. Le run précédent, 42217207046 sur `4a804ad`, a échoué sur une erreur du nouveau test, corrigée par `6b566b8`.
 - Contrôles locaux : `make check-fast` réussi ; étapes `prepare`, `verify`, `switch` et `rollback` du script sur de faux dossiers. `make check` complet non exécuté en local, à la demande du candidat : la CI en tient lieu.

@@ -62,7 +62,7 @@ flowchart LR
 |---|---|---|---|---|
 | US-E1 | En tant que responsable, je veux corriger un cours, un lien ou une capture sans toucher au code. | Le back-office liste et modifie les cours et les captures ; `/admin` exige `ROLE_ADMIN`. | EasyAdmin `src/Controller/Admin/`, `CaptureFileManager` | `BackOfficePagesTest`, `CaptureBackOfficeTest`, `AccessControlTest` <Status is="ci" /> |
 | US-E2 | … qu'un brouillon reste invisible du public. | Un cours au statut `brouillon` n'apparaît ni dans l'API publique, ni dans le plan du site, ni en PDF. | `PublishedContentExtension`, `SitemapController`, `CourseVisibility` | `PublishedContentApiTest` (dont `testSitemapOnlyListsPublishedPages`), `CoursePdfTest` <Status is="ci" /> |
-| US-E3 | … rédiger avec un assistant IA. | Connecteur du site sur `/mcp` : brouillons, contrôles bloquants, relecture par un autre connecteur, publication. Pas encore déployé. | [Connecteur](../fonctionnalites/connecteur.md) | `tests/Functional/Mcp/`, `OAuthFlowTest` <Status is="ci" /> |
+| US-E3 | … rédiger avec un assistant IA. | Connecteur du site sur `/mcp` : brouillons, contrôles bloquants, relecture par un autre connecteur, publication. Déployé le 2026-11-06 ; connexion réelle à vérifier. | [Connecteur](../fonctionnalites/connecteur.md) | `tests/Functional/Mcp/`, `OAuthFlowTest` <Status is="ci" /> |
 
 ## Hors périmètre
 

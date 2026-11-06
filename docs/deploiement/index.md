@@ -19,38 +19,55 @@ Le run [42217518469](https://github.com/cundovar/inclusion-numerique/actions/run
 
 ## État actuel d'OVH
 
-Le dossier cible est `/home/egflbug/inclusion-numerique`. Le 2026-11-06, l'ancien code applicatif a été retiré de ce dossier en conservant `.env`, `.ovhconfig`, `var/` et le lien `public/uploads`. La base de données n'a pas été modifiée. Le nouveau dépôt n'a pas encore été déployé.
+Le dossier cible est `/home/egflbug/inclusion-numerique`. Le connecteur y a été déployé le 2026-11-06 par le lancement manuel [42219628118](https://github.com/cundovar/inclusion-numerique/actions/runs/42219628118) (`da91cd0`), puis la version `cd95e06` par [42232789812](https://github.com/cundovar/inclusion-numerique/actions/runs/42232789812) (correction de la page vide et service de capture en sous-module). Aucune migration n'a été jouée. <Status is="ci" />
 
-Contrôle en lecture seule après le nettoyage : la racine `https://inclusion-numerique.varascundo.com/` répond 404 car `public/index.php` n'est pas encore déployé ; `/.env` répond 403. Le `.htaccess` racine désactive le listing et bloque l'accès HTTP aux fichiers `.env*`. <Status is="prod" />
+Contrôle du site le 2026-11-06, par `curl` et dans Chrome : <Status is="prod" />
+
+| Adresse | Réponse |
+|---|---|
+| `/` | 302 vers `/spa` |
+| `/spa/`, `/docs/` | 200 |
+| `/.env` | 403 |
+| `/mcp` sans jeton, ou avec un jeton inventé | 401, avec l'adresse des métadonnées OAuth |
+| `/.well-known/oauth-protected-resource`, `/.well-known/oauth-authorization-server` | Adresses d'Inclusion |
+| `/public/spa/` | Le routeur ramène à `/spa/`, l'accueil s'affiche |
+
+Le 404 relevé à la racine avant ce déploiement ne vaut donc plus.
+
+### Page vide après une ancienne redirection
+
+Un navigateur pouvait arriver sur une page vide à `/spa/public/spa/`. Le serveur répondait correctement, mais Chrome gardait en cache une redirection de `/spa` vers `/public/spa/`, dont l'origine n'est pas établie. Le routeur corrige désormais ces adresses ([`ancienneAdressePublic.js`](../../front/src/router/ancienneAdressePublic.js)). Une redirection côté serveur aurait pu boucler avec ce cache.
 
 ## Procédure du déploiement manuel
 
-1. Vérifier que la PR de synchronisation des deux commits récents de `main2` est fusionnée et que la CI est verte avant de choisir la version à déployer.
+1. Vérifier que la CI de `main` est verte.
 2. Dans GitHub, lancer « CI/CD » sur `main` avec `deploy` coché. Le job reconstruit l'archive, puis l'envoie par `rsync --delete` dans `/home/egflbug/inclusion-numerique`.
-3. `rsync` conserve sur OVH `.env`, `.env.*`, `.ovhconfig`, `var/` et le lien `public/uploads`. Le job supprime `var/cache/prod` et exécute `cache:warmup`.
+3. `rsync` conserve sur OVH `.env`, `.env.*`, `.ovhconfig`, `var/` et `public/uploads`. Le job supprime `var/cache/prod` et exécute `cache:warmup`.
 4. Vérifier les pages du site et les ressources après déploiement. Aucune migration de production n'est lancée par ce workflow.
 
 Le mot de passe SSH est le secret `OVH_SSH_PASSWORD` de l'environnement GitHub `production` (**Settings → Environments → production → Environment secrets**). Le workflow doit référencer le même nom avec `environment: production`. L'empreinte SSH est dans [`.github/ovh_known_hosts`](../../.github/ovh_known_hosts). Le `.env` de production reste sur OVH, jamais dans le dépôt ni dans GitHub Actions.
 
 ### Base et fichiers partagés
 
-Le site a historiquement utilisé la base partagée avec mediateur. Le workflow n'exécute aucune migration : les changements de schéma doivent être coordonnés avec le déploiement de mediateur. Le contenu exact du `.env` OVH n'a pas été lu pendant la préparation de cette PR.
+Le site a historiquement utilisé la base partagée avec mediateur. Le workflow n'exécute aucune migration : les changements de schéma doivent être coordonnés avec le déploiement de mediateur. Le contenu du `.env` OVH n'a pas été lu.
 
-`public/uploads` est encore un lien symbolique vers `/home/egflbug/mediateur/public/uploads`. L'exclusion `--exclude='public/uploads'` sans barre finale préserve aussi bien ce lien que le dossier propre qui le remplacera ; `var/`, exclu aussi, garde la copie de préparation.
+L'exclusion `--exclude='public/uploads'` sans barre finale protège ce chemin, qu'il soit un lien ou un dossier ; `var/`, exclu aussi, garde la copie de préparation.
 
 ## Connecteur MCP et images
 
-Inclusion reprend le connecteur de Médiateur et aura son propre dossier d'images, pour pouvoir continuer après l'arrêt de Médiateur. La base reste commune pendant la transition. <Status is="prevu" />
+Inclusion reprend le connecteur de Médiateur et a son propre dossier d'images, pour pouvoir continuer après l'arrêt de Médiateur. La base reste commune pendant la transition. **Ne pas arrêter Médiateur tant que les [points ouverts](#points-ouverts) ne sont pas levés.**
 
-### Avant de déployer
+### Contrôles avant déploiement
 
 | Contrôle | Pourquoi |
 |---|---|
-| Sauvegarde de la base, restauration essayée sur une copie isolée | Le code du connecteur écrit dans la base commune |
-| `deploy/uploads-inclusion.sh inventory` | Fichiers, volume, liens, espace libre, images manquantes, URL absolues en base. Lecture seule. **Pas encore exécuté** |
+| Sauvegarde de la base | Le code du connecteur écrit dans la base commune. Faite par le candidat avant le déploiement ; restauration non essayée |
+| `deploy/uploads-inclusion.sh inventory` | Fichiers, volume, liens, espace libre, images manquantes, URL absolues en base. Lecture seule. Résultat ci-dessous |
 | Présence de `oauth_client`, `oauth_grant`, `oauth_authorization_code` et `qcm_draft` | Ce site ne joue aucune migration : le schéma commun vient de Médiateur (`c87941f`, mêmes migrations). Aucune migration n'a été ajoutée |
 | `.env` OVH : `MCP_PUBLIC_URL=https://inclusion-numerique.varascundo.com` | Adresse annoncée aux connecteurs |
 | `.env` OVH : `CAPTURE_SERVICE_URL`, `CAPTURE_SERVICE_TOKEN` | Sans eux, `capturer_page` échoue : OVH n'a ni Node ni Chromium. Le reste du connecteur fonctionne |
+
+Résultat de `inventory` le 2026-11-06, lancé par le candidat : 91 fichiers (107 Mo, dossier `course-media`), 91 médias en base, 0 manquant, 0 lien, aucune URL absolue vers `/uploads`. Le script ne compte pas les noms lus en base : le contrôle de l'API ci-dessous le complète. <Status is="prod" />
 
 ### Bascule des images
 
@@ -70,12 +87,27 @@ Les deux dossiers ne se synchronisent pas. La base étant commune, une image ajo
 
 Les chemins `/uploads/course-media/<nom>` sont relatifs : aucune réécriture en base n'est prévue, sauf si l'inventaire trouve des URL absolues.
 
-### Après le déploiement
+### Résultat de la bascule
 
-1. Contrôler `/mcp` sans jeton (401), `/.well-known/oauth-authorization-server`, un parcours OAuth réel avec un compte administrateur et l'envoi de l'en-tête `Authorization` jusqu'à PHP.
-2. Vérifier qu'un connecteur de Médiateur continue de fonctionner sur Médiateur, et que ses jetons sont refusés sur Inclusion.
-3. Contrôler une image existante et une image créée après la bascule.
-4. Reconnecter les clients sur Inclusion. Arrêter Médiateur seulement après ces contrôles.
+Le 2026-11-06, `prepare` et `verify` ont donné « Copie conforme : 91 fichiers, 107M ». Le candidat a ensuite annoncé la bascule (`switch`) ; sa sortie n'est pas consignée. <Status is="prod" />
+
+Contrôle depuis l'extérieur le même jour : les 91 images listées par `/api/captures` répondent 200 sur Inclusion, avec le même contenu que sur Médiateur (empreintes SHA-256) ; le PDF de `utiliser-le-clavier` répond 200 et contient 2 images. <Status is="prod" />
+
+Ce contrôle réussirait aussi avec l'ancien lien, et le PDF était peut-être déjà en cache : il ne prouve pas à lui seul que le dossier a changé.
+
+### Points ouverts
+
+| À vérifier ou corriger | Moyen |
+|---|---|
+| `public/uploads` est bien un dossier de 91 fichiers | `ls -ld` et `find -type f` sur le serveur |
+| Connexion réelle d'un client, avec le compte administrateur, et arrivée de l'en-tête `Authorization` jusqu'à PHP | Ajouter le connecteur dans claude.ai ou ChatGPT |
+| Jetons de Médiateur refusés sur Inclusion, connecteur de Médiateur toujours utilisable | Essai réel ; pour l'instant, seulement les tests automatiques (<Status is="ci" />) |
+| Image créée après la bascule, capture par le service Netcup | Essai depuis le back-office et le connecteur |
+| PWA hors ligne avec les images déplacées, parcours sur mobile | Essai dans un navigateur |
+| `/sitemap.xml` annonce des adresses en `http://localhost:8080` | Anomalie constatée le 2026-11-06, à corriger |
+| Le site répond aussi sous `/public/...` (par exemple `/public/spa/`, `/public/build/...`) | Adresses en double, à fermer sans boucler avec les caches |
+
+Arrêter Médiateur et reconnecter tous les clients seulement après ces contrôles.
 
 ## Publication VitePress
 
